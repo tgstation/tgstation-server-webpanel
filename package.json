@@ -2,6 +2,7 @@
   "name": "tgstation-server-control-panel",
   "version": "0.1.0",
   "private": false,
+  "homepage": "https://github.com/tgstation/tgstation-server-control-panel",
   "author": {
     "name": "Cyberboss"
   },
