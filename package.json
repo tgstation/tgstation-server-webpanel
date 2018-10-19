@@ -1,8 +1,13 @@
 {
   "name": "tgstation-server-control-panel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
-  "homepage": "https://github.com/tgstation/tgstation-server-control-panel",
+  "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
+  "repository": "github:tgstation/tgstation-server-control-panel",
+  "bugs": {
+    "url": "https://github.com/tgstation/tgstation-server-control-panel/issues"
+  },
+  "license": "AGPL-3.0-or-later",
   "author": {
     "name": "Cyberboss"
   },
