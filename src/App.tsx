@@ -1,9 +1,11 @@
 import * as React from 'react';
-import './App.css';
 
+import IAppProps from './IAppProps';
+
+import './App.css';
 import logo from './logo.svg';
 
-class App extends React.Component {
+class App extends React.Component<IAppProps> {
   public render() {
     return (
       <div className="App">
