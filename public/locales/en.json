@@ -1,3 +1,6 @@
 {
-    
+    "login.title": "Login",
+    "login.username": "Username",
+    "login.password": "Password",
+    "login.submit": "Login"
 }

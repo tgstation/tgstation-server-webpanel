@@ -14,7 +14,9 @@
   "main": "build/lib/App.js",
   "types": "build/lib/App.d.ts",
   "dependencies": {
-    "react": "^16.5.2"
+    "react": "^16.5.2",
+    "react-intl": "^2.7.1",
+    "react-spinners": "^0.4.7"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -27,6 +29,7 @@
     "@types/node": "^10.12.0",
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
+    "@types/react-intl": "^2.3.11",
     "minify-json": "^1.0.0",
     "react-dom": "^16.5.2",
     "react-scripts-ts": "3.1.0",
