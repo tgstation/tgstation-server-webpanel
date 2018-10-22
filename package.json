@@ -1,6 +1,6 @@
 {
   "name": "tgstation-server-control-panel",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": false,
   "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
   "repository": "github:tgstation/tgstation-server-control-panel",
@@ -18,7 +18,7 @@
   },
   "scripts": {
     "start": "react-scripts-ts start",
-    "build": "rm -rf build && tsc && cpx \"./src/**/*.css\" ./build/lib && cp -r public build/ && rm -rf build/public/index.html ./build/lib/index.css && minify-json build/public",
+    "build": "rm -rf build && tsc && cpx \"./src/**/*.css\" ./build/lib && cpx \"./src/**/*.svg\" ./build/lib && cp -r public build/ && rm -rf build/public/index.html ./build/lib/index.css && minify-json build/public",
     "test": "react-scripts-ts test --env=jsdom --watchAll",
     "eject": "react-scripts-ts eject"
   },

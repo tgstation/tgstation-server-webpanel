@@ -7,6 +7,6 @@ import Locales from './translations/Locales';
 const apiUrl = process.env.TGS || "http://localhost:5000";
 
 ReactDOM.render(
-  <App serverAddress={apiUrl} locale={Locales.enCA} />,
+  <App serverAddress={apiUrl} locale={Locales.en} />,
   document.getElementById('root') as HTMLElement
 );

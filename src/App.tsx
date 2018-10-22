@@ -18,8 +18,7 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public async componentDidMount(){
-    const translationPromise = this.loadTranslation();
-    const translation = await translationPromise;
+    const translation = await this.loadTranslation();
     const newState: IAppState = {translation};
     this.setState(newState);
   }
@@ -28,14 +27,7 @@ class App extends React.Component<IAppProps, IAppState> {
     if (this.state.translation == null) return this.renderLoading();
 
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
-      </div>
+      <div className="App" />
     );
   }
 
@@ -52,11 +44,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
   private renderLoading(): React.ReactNode {
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Loading...</h1>
-        </header>
-      </div>
+      <div className="App" />
     );
   }
 }
