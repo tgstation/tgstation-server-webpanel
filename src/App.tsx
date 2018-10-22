@@ -2,6 +2,11 @@ import * as React from "react";
 
 import IAppProps from "./IAppProps";
 
+import { Provider } from "react-redux";
+import { createStore, Store } from "redux";
+import IRootState from './store/IRootState';
+import MainReducer from './store/MainReducer';
+
 import "./App.css";
 
 import { IntlProvider } from 'react-intl';
@@ -15,18 +20,27 @@ import Login from './components/Login';
 
 interface IAppState {
   translation?: ITranslation;
+  store: Store<IRootState>;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
-    this.state = {};
+    this.state = {
+      store: createStore(MainReducer, {
+        serverAddress: this.props.serverAddress
+      })
+    };
   }
 
   public async componentDidMount() {
     const translation = await this.loadTranslation();
-    const newState: IAppState = { translation };
-    this.setState(newState);
+    this.setState((prevState: Readonly<IAppState>) => {
+      return {
+        store: prevState.store,
+        translation
+      }
+    });
   }
 
   public render(): React.ReactNode {
@@ -38,13 +52,16 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   private renderInnards(): React.ReactNode {
-    if (this.state.translation == null) return this.renderLoading();
+    if (this.state.translation == null)
+      return this.renderLoading();
 
     return (
       <div className="App-main">
-        <IntlProvider locale={this.state.translation.locale} messages={this.state.translation.messages}>
-          <Login />
-        </IntlProvider>
+        <Provider store={this.state.store}>
+          <IntlProvider locale={this.state.translation.locale} messages={this.state.translation.messages}>
+            <Login />
+          </IntlProvider>
+        </Provider>
       </div>
     );
   }
