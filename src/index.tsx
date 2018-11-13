@@ -1,12 +1,14 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+
 import App from './App';
-import './index.css';
 import Locales from './translations/Locales';
+
+import './index.css';
 
 const apiUrl = process.env.TGS || "http://localhost:5000";
 
-ReactDOM.render(
-  <App serverAddress={apiUrl} locale={Locales.en} />,
-  document.getElementById('root') as HTMLElement
-);
+const rootNode = document.getElementById('root') as HTMLElement;
+const appTsx = <App serverAddress={apiUrl} locale={Locales.en} />;
+
+ReactDOM.render(appTsx, rootNode);

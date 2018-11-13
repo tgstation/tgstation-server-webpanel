@@ -1,9 +1,10 @@
 import ICredentials from './ICredentials';
 
 interface IRootState {
-    serverAddress: string;
-
-    credentials?: ICredentials;
+    credentials: ICredentials;
+    loggedIn: boolean;
+    loginError?: string;
+    refreshingToken: boolean;
 }
 
 export default IRootState;

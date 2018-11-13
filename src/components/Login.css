@@ -1,7 +1,7 @@
 .Login {
     display: grid;
     grid-template-columns: 20% 60% 20%;
-    grid-template-rows: 30% auto auto auto auto 30%;
+    grid-template-rows: 25% auto auto auto auto auto 25%;
     grid-gap: 5px;
 }
 
@@ -25,4 +25,46 @@
 .Login-submit {
     grid-row: 5;
     grid-column: 2;
+}
+
+.Login-error {
+    grid-row: 6;
+    grid-column: 2;
+
+    color: red;
+    font-size: 150%;
+    text-align: center;
+    
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.Login-loading {
+    color: white;
+    text-align: center;
+    margin: auto;
+    font-size: 150%;
+}
+
+.Login-loading-text:after {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    -webkit-animation: ellipsis steps(4,end) 2000ms infinite;      
+    animation: ellipsis steps(4,end) 2000ms infinite;
+    content: "\2026"; /* ascii code for the ellipsis character */
+    width: 0px;
+}
+
+@keyframes ellipsis {
+to {
+    width: 1.25em;    
+}
+}
+
+@-webkit-keyframes ellipsis {
+to {
+    width: 1.25em;    
+}
 }

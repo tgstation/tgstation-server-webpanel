@@ -1,4 +1,4 @@
-import IHttpClient from './helpers/IHttpClient';
+import IHttpClient from './clients/IHttpClient';
 import ITranslationFactory from './translations/ITranslationFactory';
 
 interface IAppProps {

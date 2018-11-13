@@ -1,4 +1,4 @@
-import IHttpClient from '../helpers/IHttpClient';
+import IHttpClient from '../clients/IHttpClient';
 import ILocalization from './ILocalization';
 import ITranslation from "./ITranslation";
 import ITranslationFactory from './ITranslationFactory';

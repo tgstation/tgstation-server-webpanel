@@ -1,22 +1,23 @@
 import * as React from "react";
-
-import IAppProps from "./IAppProps";
+import { IntlProvider } from 'react-intl';
+import { RingLoader } from 'react-spinners';
 
 import { Provider } from "react-redux";
 import { createStore, Store } from "redux";
+
+import IAppProps from "./IAppProps";
+
 import IRootState from './store/IRootState';
 import MainReducer from './store/MainReducer';
 
-import "./App.css";
+import HttpClient from "./clients/HttpClient";
 
-import { IntlProvider } from 'react-intl';
-import HttpClient from "./helpers/HttpClient";
 import ITranslation from "./translations/ITranslation";
 import TranslationFactory from "./translations/TranslationFactory";
 
-import { RingLoader } from 'react-spinners';
+import Root from './components/Root';
 
-import Login from './components/Login';
+import "./App.css";
 
 interface IAppState {
   translation?: ITranslation;
@@ -28,7 +29,12 @@ class App extends React.Component<IAppProps, IAppState> {
     super(props);
     this.state = {
       store: createStore(MainReducer, {
-        serverAddress: this.props.serverAddress
+        credentials: {
+          password: "",
+          username: ""
+        },
+        loggedIn: false,
+        refreshingToken: false
       })
     };
   }
@@ -59,7 +65,7 @@ class App extends React.Component<IAppProps, IAppState> {
       <div className="App-main">
         <Provider store={this.state.store}>
           <IntlProvider locale={this.state.translation.locale} messages={this.state.translation.messages}>
-            <Login />
+            <Root />
           </IntlProvider>
         </Provider>
       </div>
@@ -69,7 +75,7 @@ class App extends React.Component<IAppProps, IAppState> {
   private async loadTranslation(): Promise<ITranslation> {
     let translationFactory = this.props.translationFactory;
     if (translationFactory == null) {
-      const httpClient = this.props.httpClient || new HttpClient();
+      const httpClient = this.props.httpClient || new HttpClient(this.props.serverAddress);
       translationFactory = new TranslationFactory(httpClient);
     }
     return await translationFactory.loadTranslation(
