@@ -28,10 +28,10 @@ class Login extends React.Component<IProps> {
         return (
             <div className="Login">
                 <h1 className="Login-title"><FormattedMessage id="login.title" /></h1>
-                <input type="text" name="username" className="form-control Login-username" onChange={this.updateUsername} value={this.props.username} placeholder={this.props.intl.formatMessage({
+                <input type="text" name="username" autoComplete="on" className="form-control Login-username" onChange={this.updateUsername} value={this.props.username} placeholder={this.props.intl.formatMessage({
                     id: "login.username"
                 })} />
-                <input type="password" name="password" className="form-control Login-password" onChange={this.updatePassword} value={this.props.password} placeholder={this.props.intl.formatMessage({
+                <input type="password" name="password" autoComplete="on" className="form-control Login-password" onChange={this.updatePassword} value={this.props.password} placeholder={this.props.intl.formatMessage({
                     id: "login.password"
                 })} />
                 <button onClick={this.tryLogin} className="Login-submit" disabled={!this.props.username || !this.props.password} >
