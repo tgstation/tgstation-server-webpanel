@@ -9,10 +9,13 @@ class ServerResponse<TModel> {
     }
 
     public async getModel(): Promise<TModel> {
-        if (!this.response.ok)
-            throw new Error("Tried to read a non-ok response model!")
-        const json = await this.response.json();
-        return json as TModel;
+        if (!this.model) {
+            if (!this.response.ok)
+                throw new Error("Tried to read a non-ok response model!");
+            const json = await this.response.json();
+            this.model = json as TModel;
+        } 
+        return this.model;
     }
 
     public async getError(): Promise<string> {
