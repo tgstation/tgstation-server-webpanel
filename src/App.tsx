@@ -45,7 +45,7 @@ class App extends React.Component<IAppProps, IAppState> {
       return {
         store: prevState.store,
         translation
-      }
+      };
     });
   }
 

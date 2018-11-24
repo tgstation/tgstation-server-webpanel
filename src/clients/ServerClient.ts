@@ -32,7 +32,7 @@ class ServerClient implements IServerClient, IApiClient {
     public async doLogin(username: string, password: string): Promise<ServerResponse<IToken>> {
         this.cancelLoginRefresh();
         const headers = this.getStandardHeaders();
-        headers.append("Username", username)
+        headers.append("Username", username);
         headers.append(AuthorizationHeader, "Password " + password);
         const requestInfo: RequestInit = {
             headers,
@@ -43,7 +43,7 @@ class ServerClient implements IServerClient, IApiClient {
         const serverResponse = new ServerResponse<IToken>(response);
         if (serverResponse.response.ok) {
             this.token = await serverResponse.getModel();
-            this.tokenRefreshTimeout = setTimeout(() => this.loginRefresh(username, password))
+            this.tokenRefreshTimeout = setTimeout(() => this.loginRefresh(username, password));
         }
         return serverResponse;
     }

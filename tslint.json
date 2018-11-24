@@ -8,6 +8,7 @@
     ]
   },
   "rules": {
-    "curly": [true, "as-needed"]
+    "curly": [true, "as-needed"],
+    "semicolon": [true, "always"]
   }
 }

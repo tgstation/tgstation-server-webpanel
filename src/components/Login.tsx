@@ -24,7 +24,7 @@ interface IDispatchProps {
     beginLogin: () => void;
 }
 
-type IProps = IStateProps & IDispatchProps & InjectedIntlProps
+type IProps = IStateProps & IDispatchProps & InjectedIntlProps;
 
 class Login extends React.Component<IProps> {
     constructor(props: IProps) {
@@ -63,12 +63,12 @@ class Login extends React.Component<IProps> {
 
     private renderLoginError(): React.ReactNode {
         if(!this.props.loginError)
-            return null
+            return null;
         return (
             <p className="Login-error">
                 {this.props.loginError}
             </p>
-        )
+        );
     }
 
     private updateUsername(event: React.ChangeEvent<HTMLInputElement>) {
@@ -96,7 +96,7 @@ const mapStateToProps = (state: IRootState, ownProps: any): IStateProps => ({
     credentials: state.credentials,
     gettingToken: state.refreshingToken,
     loginError: state.loginError
-})
+});
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: any): IDispatchProps => ({
     beginLogin: () => dispatch({

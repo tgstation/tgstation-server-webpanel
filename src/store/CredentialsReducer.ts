@@ -10,6 +10,6 @@ const CredentialsReducer = (state: IRootState, action: ICredentialsAction): IRoo
             break;
     }
     return state;
-}
+};
 
 export default CredentialsReducer;
