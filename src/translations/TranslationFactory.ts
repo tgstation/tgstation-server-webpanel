@@ -18,7 +18,7 @@ class TranslationFactory implements ITranslationFactory {
   }
 
   public async loadTranslation(locale: string): Promise<ITranslation> {
-    const response = await this.httpClient.runRequest("/locales/" + locale + ".json");
+    const response = await this.httpClient.runRequest("/locales/" + locale + ".json", undefined, true);
 
     if (response.status < 200 || response.status >= 300) {
       let shortHandedLocale = TranslationFactory.getShortHandedLocale(locale);

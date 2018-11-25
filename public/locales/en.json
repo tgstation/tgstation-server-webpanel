@@ -1,4 +1,5 @@
 {
+    "login.bad_user_pass": "Invalid username/password!",
     "login.title": "Login",
     "login.username": "Username",
     "login.password": "Password",

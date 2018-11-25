@@ -5,11 +5,16 @@ import { RingLoader } from 'react-spinners';
 import { connect } from 'react-redux';
 import { Action, Dispatch } from 'redux';
 
-import ICredentials from 'src/store/ICredentials';
+import IServerClient from 'src/clients/IServerClient';
+
+import ICredentials from 'src/models/ICredentials';
+
 import IRootState from 'src/store/IRootState';
+import IErrorAction from 'src/store/subactiontypes/IErrorAction';
 
 import Actions from 'src/store/Actions';
-import { CredentialsActionType, ICredentialsAction } from 'src/store/ICredentialsAction';
+import ActionTypes from 'src/store/ActionTypes';
+import ICredentialsAction from 'src/store/subactiontypes/ICredentialsAction';
 
 import './Login.css';
 
@@ -21,10 +26,15 @@ interface IStateProps {
 
 interface IDispatchProps {
     updateCredentials: (newCredentials: ICredentials) => void;
-    beginLogin: () => void;
+    dispatchBeginLogin: () => void;
+    finishLogin: (error?: string) => void;
 }
 
-type IProps = IStateProps & IDispatchProps & InjectedIntlProps;
+interface IOwnProps {
+    serverClient: IServerClient;
+}
+
+type IProps = IStateProps & IDispatchProps & IOwnProps & InjectedIntlProps;
 
 class Login extends React.Component<IProps> {
     constructor(props: IProps) {
@@ -62,7 +72,7 @@ class Login extends React.Component<IProps> {
     }
 
     private renderLoginError(): React.ReactNode {
-        if(!this.props.loginError)
+        if (!this.props.loginError)
             return null;
         return (
             <p className="Login-error">
@@ -88,28 +98,54 @@ class Login extends React.Component<IProps> {
     }
 
     private tryLogin(event: React.MouseEvent<HTMLButtonElement>) {
-        this.props.beginLogin();
+        this.props.dispatchBeginLogin();
+        const finishLogin = this.props.finishLogin;
+        this.props.serverClient.doLogin(this.props.credentials)
+            .then(serverResponse => {
+                if (!serverResponse.response.ok)
+                    if (serverResponse.response.status === 401)
+                        finishLogin(this.props.intl.formatMessage({
+                            id: "login.bad_user_pass"
+                        }));
+                    else
+                        serverResponse.getError().then(finishLogin);
+                else
+                    finishLogin();
+            });
     }
 }
 
-const mapStateToProps = (state: IRootState, ownProps: any): IStateProps => ({
+const mapStateToProps = (state: IRootState, ownProps: IOwnProps): IStateProps => ({
     credentials: state.credentials,
     gettingToken: state.refreshingToken,
     loginError: state.loginError
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: any): IDispatchProps => ({
-    beginLogin: () => dispatch({
+const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: IOwnProps): IDispatchProps => ({
+    dispatchBeginLogin: () => dispatch({
         type: Actions.BeginLogin
     }),
+    finishLogin: (error: string) => {
+        if (error) {
+            const action: IErrorAction = {
+                action: Actions.LoginError,
+                error,
+                type: ActionTypes.Error
+            };
+            dispatch(action);
+        } else
+            dispatch({
+                type: Actions.LoginComplete
+            });
+    },
     updateCredentials: (newCredentials: ICredentials) => {
         const credentialsUpdateDispatch: ICredentialsAction = {
             action: Actions.CredentialsUpdate,
             credentials: newCredentials,
-            type: CredentialsActionType
+            type: ActionTypes.Credentials
         };
         dispatch(credentialsUpdateDispatch);
     }
 });
 
-export default connect<IStateProps, IDispatchProps, {}>(mapStateToProps, mapDispatchToProps)(injectIntl(Login));
+export default connect<IStateProps, IDispatchProps, IOwnProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Login));

@@ -2,6 +2,7 @@ import IApiClient from './IApiClient';
 import IHttpClient from './IHttpClient';
 import IServerClient from "./IServerClient";
 
+import ICredentials from 'src/models/ICredentials';
 import IToken from 'src/models/IToken';
 import ServerResponse from 'src/models/ServerResponse';
 
@@ -14,9 +15,10 @@ class ServerClient implements IServerClient, IApiClient {
     private onLoginRefreshStart?: () => void;
     private onLoginRefreshFailure?: () => void;
 
-    private tokenRefreshTimeout: number | null;
+    private tokenRefreshTimeout: NodeJS.Timeout | null;
 
-    constructor() {
+    constructor(httpClient: IHttpClient) {
+        this.httpClient = httpClient;
         this.loginRefresh = this.loginRefresh.bind(this);
     }
 
@@ -29,11 +31,11 @@ class ServerClient implements IServerClient, IApiClient {
         this.onLoginRefreshFailure = onLoginRefreshFailure;
     }
 
-    public async doLogin(username: string, password: string): Promise<ServerResponse<IToken>> {
+    public async doLogin(credentials: ICredentials): Promise<ServerResponse<IToken>> {
         this.cancelLoginRefresh();
         const headers = this.getStandardHeaders();
-        headers.append("Username", username);
-        headers.append(AuthorizationHeader, "Password " + password);
+        headers.append("Username", credentials.username);
+        headers.append(AuthorizationHeader, "Password " + credentials.password);
         const requestInfo: RequestInit = {
             headers,
             method: "POST"
@@ -43,7 +45,7 @@ class ServerClient implements IServerClient, IApiClient {
         const serverResponse = new ServerResponse<IToken>(response);
         if (serverResponse.response.ok) {
             this.token = await serverResponse.getModel();
-            this.tokenRefreshTimeout = setTimeout(() => this.loginRefresh(username, password));
+            this.tokenRefreshTimeout = setTimeout(() => this.loginRefresh(credentials), this.token.expiresAt.getTime() - new Date().getTime());
         }
         return serverResponse;
     }
@@ -73,10 +75,10 @@ class ServerClient implements IServerClient, IApiClient {
         }
     }
 
-    private async loginRefresh(username: string, password: string) {
+    private async loginRefresh(credentials: ICredentials) {
         if (this.onLoginRefreshStart)
             this.onLoginRefreshStart();
-        const result = await this.doLogin(username, password);
+        const result = await this.doLogin(credentials);
         if (this.onLoginRefreshFailure && (!result.response.ok || !await result.getModel()))
             this.onLoginRefreshFailure();
     }
@@ -84,7 +86,7 @@ class ServerClient implements IServerClient, IApiClient {
     private getStandardHeaders(): Headers {
         return new Headers({
             "Accept": "application/json",
-            "Api": "4.0.0.0",
+            "Api": "Tgstation.Server.Api/4.0.0.0",
             "Content-Type": "application/json",
             "User-Agent": "tgstation-server-control-panel/4.0.0.0",
         });

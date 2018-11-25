@@ -11,6 +11,8 @@ import IRootState from './store/IRootState';
 import MainReducer from './store/MainReducer';
 
 import HttpClient from "./clients/HttpClient";
+import IHttpClient from './clients/IHttpClient';
+import ServerClient from './clients/ServerClient';
 
 import ITranslation from "./translations/ITranslation";
 import TranslationFactory from "./translations/TranslationFactory";
@@ -65,17 +67,21 @@ class App extends React.Component<IAppProps, IAppState> {
       <div className="App-main">
         <Provider store={this.state.store}>
           <IntlProvider locale={this.state.translation.locale} messages={this.state.translation.messages}>
-            <Root />
+            <Root serverClient={new ServerClient(this.getHttpClient())} />
           </IntlProvider>
         </Provider>
       </div>
     );
   }
 
+  private getHttpClient(): IHttpClient {
+    return this.props.httpClient || new HttpClient(this.props.serverAddress);
+  }
+
   private async loadTranslation(): Promise<ITranslation> {
     let translationFactory = this.props.translationFactory;
     if (translationFactory == null) {
-      const httpClient = this.props.httpClient || new HttpClient(this.props.serverAddress);
+      const httpClient = this.getHttpClient();
       translationFactory = new TranslationFactory(httpClient);
     }
     return await translationFactory.loadTranslation(
