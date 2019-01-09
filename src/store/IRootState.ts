@@ -1,4 +1,4 @@
-import ICredentials from '../models/ICredentials';
+import ICredentials from "../models/ICredentials";
 
 interface IRootState {
     credentials: ICredentials;

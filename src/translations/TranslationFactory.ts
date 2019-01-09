@@ -1,14 +1,15 @@
-import IHttpClient from '../clients/IHttpClient';
-import ILocalization from './ILocalization';
+import IHttpClient from "../clients/IHttpClient";
+
+import ILocalization from "./ILocalization";
 import ITranslation from "./ITranslation";
-import ITranslationFactory from './ITranslationFactory';
-import Locales from './Locales';
+import ITranslationFactory from "./ITranslationFactory";
+import Locales from "./Locales";
 
 class TranslationFactory implements ITranslationFactory {
   private static readonly fallbackLocale: string = Locales.en;
 
   private static getShortHandedLocale(locale: string): string {
-    return locale.split('-')[0];
+    return locale.split("-")[0];
   }
 
   private readonly httpClient: IHttpClient;

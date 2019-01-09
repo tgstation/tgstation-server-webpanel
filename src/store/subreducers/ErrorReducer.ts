@@ -1,6 +1,6 @@
-import Actions from '../Actions';
+import Actions from "../Actions";
 import IRootState from "../IRootState";
-import IErrorAction from '../subactiontypes/IErrorAction';
+import IErrorAction from "../subactiontypes/IErrorAction";
 
 const CredentialsReducer = (state: IRootState, action: IErrorAction): IRootState => {
     switch (action.action) {
