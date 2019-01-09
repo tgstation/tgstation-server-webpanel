@@ -25,7 +25,8 @@
     "build": "npm run clean && tsc -p tsconfig.prod.json && tslint -p tsconfig.prod.json && cpx \"./src/**/*.css\" ./build/lib && cpx \"./src/**/*.svg\" ./build/lib && cp -r public build/ && rimraf build/public/index.html ./build/lib/index.css && minify-json build/public",
     "clean": "rimraf build",
     "test": "react-scripts test --env=jsdom --watchAll",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prepack": "npm run build"
   },
   "devDependencies": {
     "@types/jest": "^23.3.5",
