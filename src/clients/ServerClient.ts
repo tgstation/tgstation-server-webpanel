@@ -47,7 +47,9 @@ class ServerClient implements IServerClient, IApiClient {
         const serverResponse = new ServerResponse<IToken>(response);
         if (serverResponse.response.ok) {
             this.token = await serverResponse.getModel();
-            this.tokenRefreshTimeout = setTimeout(() => this.loginRefresh(credentials), this.token.expiresAt.getTime() - new Date().getTime());
+            this.tokenRefreshTimeout = setTimeout(
+                () => this.loginRefresh(credentials),
+                new Date(this.token.expiresAt).getTime() - new Date().getTime());
         }
         return serverResponse;
     }

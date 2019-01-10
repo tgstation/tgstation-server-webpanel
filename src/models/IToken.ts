@@ -1,6 +1,6 @@
 interface IToken {
     bearer: string;
-    expiresAt: Date;
+    expiresAt: string;
 }
 
 export default IToken;

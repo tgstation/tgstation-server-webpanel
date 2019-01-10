@@ -132,7 +132,7 @@ class Login extends React.Component<IProps> {
             serverResponse.getError().then(finishLogin);
         else
           finishLogin();
-      });
+      }).catch(err => finishLogin((err as Error).message));
   }
 }
 
