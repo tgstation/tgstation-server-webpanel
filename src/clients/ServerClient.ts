@@ -49,7 +49,7 @@ class ServerClient implements IServerClient, IApiClient {
             this.token = await serverResponse.getModel();
             this.tokenRefreshTimeout = setTimeout(
                 () => this.loginRefresh(credentials),
-                new Date(this.token.expiresAt).getTime() - new Date().getTime());
+                new Date(this.token.expiresAt).getTime() - Date.now() + 30000); // 30 second buffer
         }
         return serverResponse;
     }
