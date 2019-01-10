@@ -55,7 +55,7 @@ class Login extends React.Component<IProps> {
         </div>
       );
     return (
-      <div className="Login">
+      <form onSubmit={this.tryLogin} className="Login">
         <h1 className="Login-title">
           <FormattedMessage id="login.title" />
         </h1>
@@ -78,14 +78,14 @@ class Login extends React.Component<IProps> {
           placeholder={this.props.intl.formatMessage({ id: "login.password" })}
         />
         <button
-          onClick={this.tryLogin}
+          type="submit"
           className="Login-submit"
           disabled={!this.props.credentials.username || !this.props.credentials.password}
         >
           <FormattedMessage id="login.submit" />
         </button>
         {this.renderLoginError()}
-      </div>
+      </form>
     );
   }
 
@@ -115,7 +115,7 @@ class Login extends React.Component<IProps> {
     });
   }
 
-  private tryLogin(event: React.MouseEvent<HTMLButtonElement>) {
+  private tryLogin(event: React.MouseEvent<HTMLFormElement>) {
     this.props.dispatchBeginLogin();
     const finishLogin = this.props.finishLogin;
     this.props.serverClient
