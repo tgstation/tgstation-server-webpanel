@@ -4,7 +4,7 @@ import IServerClient from "./IServerClient";
 
 import ICredentials from 'src/models/ICredentials';
 import IToken from 'src/models/IToken';
-import ServerResponse from 'src/models/ServerResponse';
+import ServerResponse from '../models/ServerResponse';
 
 const AuthorizationHeader: string = "Authorization";
 

@@ -12,9 +12,9 @@ import ICredentials from 'src/models/ICredentials';
 import IRootState from 'src/store/IRootState';
 import IErrorAction from 'src/store/subactiontypes/IErrorAction';
 
-import Actions from 'src/store/Actions';
-import ActionTypes from 'src/store/ActionTypes';
 import ICredentialsAction from 'src/store/subactiontypes/ICredentialsAction';
+import Actions from '../store/Actions';
+import ActionTypes from '../store/ActionTypes';
 
 import './Login.css';
 
