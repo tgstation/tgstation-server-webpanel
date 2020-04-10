@@ -1,10 +1,10 @@
-import IApiClient from './IApiClient';
-import IHttpClient from './IHttpClient';
+import IApiClient from "./IApiClient";
+import IHttpClient from "./IHttpClient";
 import IServerClient from "./IServerClient";
 
-import ICredentials from 'src/models/ICredentials';
-import IToken from 'src/models/IToken';
-import ServerResponse from '../models/ServerResponse';
+import ICredentials from "../models/ICredentials";
+import IToken from "../models/IToken";
+import ServerResponse from "../models/ServerResponse";
 
 const AuthorizationHeader: string = "Authorization";
 
@@ -20,6 +20,8 @@ class ServerClient implements IServerClient, IApiClient {
     constructor(httpClient: IHttpClient) {
         this.httpClient = httpClient;
         this.loginRefresh = this.loginRefresh.bind(this);
+        this.token = null;
+        this.tokenRefreshTimeout = null;
     }
 
     public getToken(): IToken | null {
@@ -45,7 +47,9 @@ class ServerClient implements IServerClient, IApiClient {
         const serverResponse = new ServerResponse<IToken>(response);
         if (serverResponse.response.ok) {
             this.token = await serverResponse.getModel();
-            this.tokenRefreshTimeout = setTimeout(() => this.loginRefresh(credentials), this.token.expiresAt.getTime() - new Date().getTime());
+            this.tokenRefreshTimeout = setTimeout(
+                () => this.loginRefresh(credentials),
+                new Date(this.token.expiresAt).getTime() - Date.now() + 30000); // 30 second buffer
         }
         return serverResponse;
     }
@@ -60,7 +64,7 @@ class ServerClient implements IServerClient, IApiClient {
             headers.append("Instance", instanceId.toString());
         const requestInfo: RequestInit = {
             headers,
-            method: verb,
+            method: verb
         };
         if (body)
             requestInfo.body = JSON.stringify(body);
@@ -88,7 +92,7 @@ class ServerClient implements IServerClient, IApiClient {
             "Accept": "application/json",
             "Api": "Tgstation.Server.Api/4.0.0.0",
             "Content-Type": "application/json",
-            "User-Agent": "tgstation-server-control-panel/4.0.0.0",
+            "User-Agent": "tgstation-server-control-panel/4.0.0.0"
         });
     }
 }

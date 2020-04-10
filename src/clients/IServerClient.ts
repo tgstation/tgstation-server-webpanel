@@ -1,12 +1,12 @@
-import IToken from "src/models/IToken";
-import ServerResponse from 'src/models/ServerResponse';
+import IToken from "../models/IToken";
+import ServerResponse from "../models/ServerResponse";
 
-import ICredentials from 'src/models/ICredentials';
+import ICredentials from "../models/ICredentials";
 
 interface IServerClient {
-    getToken(): IToken | null;
+  getToken(): IToken | null;
 
-    doLogin(credentials: ICredentials): Promise<ServerResponse<IToken>>;
+  doLogin(credentials: ICredentials): Promise<ServerResponse<IToken>>;
 }
 
 export default IServerClient;

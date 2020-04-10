@@ -1,4 +1,4 @@
-import ISubAction from '../ISubActionType';
+import ISubAction from "../ISubActionType";
 
 interface IErrorAction extends ISubAction {
     error: string;
