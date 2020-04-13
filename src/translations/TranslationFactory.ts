@@ -4,6 +4,7 @@ import ILocalization from "./ILocalization";
 import ITranslation from "./ITranslation";
 import ITranslationFactory from "./ITranslationFactory";
 import Locales from "./Locales";
+import Translation from './Translation';
 
 class TranslationFactory implements ITranslationFactory {
   private static readonly fallbackLocale: string = Locales.en;
@@ -19,7 +20,11 @@ class TranslationFactory implements ITranslationFactory {
   }
 
   public async loadTranslation(locale: string): Promise<ITranslation> {
-    const response = await this.httpClient.runRequest("/locales/" + locale + ".json", undefined, true);
+    const requestPath = (process.env.NODE_ENV === 'development'
+      ? 'tgstation-server-control-panel'
+      : '')
+      + "/locales/" + locale + ".json";
+    const response = await this.httpClient.runRequest(requestPath, undefined, true);
 
     if (response.status < 200 || response.status >= 300) {
       let shortHandedLocale = TranslationFactory.getShortHandedLocale(locale);
@@ -30,14 +35,10 @@ class TranslationFactory implements ITranslationFactory {
       }
       return await this.loadTranslation(shortHandedLocale);
     }
+
     const json = await response.json() as ILocalization;
 
-    const translation: ITranslation = {
-      locale,
-      messages: json
-    };
-
-    return translation;
+    return new Translation(locale, json);
   }
 }
 

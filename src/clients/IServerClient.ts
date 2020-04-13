@@ -1,12 +1,15 @@
-import IToken from "../models/IToken";
-import ServerResponse from "../models/ServerResponse";
-
 import ICredentials from "../models/ICredentials";
+import ServerResponse from '../models/ServerResponse';
+
+import { Token } from './generated';
+import ITranslation from '../translations/ITranslation';
 
 interface IServerClient {
-  getToken(): IToken | null;
+  loggedIn(): boolean;
 
-  doLogin(credentials: ICredentials): Promise<ServerResponse<IToken>>;
+  tryLogin(credentials: ICredentials): Promise<ServerResponse<Token>>;
+
+  setTranslation(translation: ITranslation): void;
 }
 
 export default IServerClient;

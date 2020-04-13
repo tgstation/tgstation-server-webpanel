@@ -9,6 +9,9 @@ import './index.css';
 const apiUrl = process.env.TGS || "http://localhost:5000";
 
 const rootNode = document.getElementById('root') as HTMLElement;
-const appTsx = <App serverAddress={apiUrl} locale={Locales.en} />;
+const appTsx =
+    <React.StrictMode>
+        <App serverAddress={apiUrl} locale={Locales.en} />
+    </React.StrictMode>;
 
 ReactDOM.render(appTsx, rootNode);

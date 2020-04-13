@@ -1,5 +1,3 @@
-interface ILocalization {
+export default interface ILocalization {
   [stringID: string]: string;
 }
-
-export default ILocalization;

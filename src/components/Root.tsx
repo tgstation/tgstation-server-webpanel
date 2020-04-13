@@ -1,29 +1,33 @@
 import * as React from "react";
 
-import { connect } from "react-redux";
-import { Action, Dispatch } from "redux";
-
 import IServerClient from "../clients/IServerClient";
-
-import IRootState from "../store/IRootState";
-import PageType from "../store/PageType";
 
 import Home from "./Home";
 import Login from "./Login";
 import Navbar from "./Navbar";
 
-interface IStateProps {
-  loggedIn: boolean;
-  pageType: PageType;
-}
+import { PageType } from '../models/PageType';
 
-interface IOwnProps {
+import './Root.css'
+
+interface IProps {
   serverClient: IServerClient;
 }
 
-type IProps = IStateProps & IOwnProps;
+interface IState {
+  pageType: PageType
+}
 
-class Root extends React.Component<IProps> {
+export default class Root extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
+    super(props);
+    this.state = {
+      pageType: PageType.Home
+    }
+
+    this.stateRefresh = this.stateRefresh.bind(this);
+  }
+
   public render(): React.ReactNode {
     return (
       <div className="Root">
@@ -33,8 +37,8 @@ class Root extends React.Component<IProps> {
   }
 
   private renderInterior(): React.ReactNode {
-    if (!this.props.loggedIn)
-      return <Login serverClient={this.props.serverClient} />;
+    if (!this.props.serverClient.loggedIn())
+      return <Login serverClient={this.props.serverClient} onSuccessfulLogin={this.stateRefresh} />;
 
     return (
       <div className="Root-active">
@@ -45,20 +49,15 @@ class Root extends React.Component<IProps> {
   }
 
   private renderPage(): React.ReactNode {
-    switch (this.props.pageType) {
+    switch (this.state.pageType) {
       case PageType.Home:
         return <Home />;
       default:
         throw new Error("Invalid PageType!");
     }
   }
+
+  private stateRefresh(): void {
+    this.setState(prevState => prevState);
+  }
 }
-
-const mapStateToProps = (state: IRootState, ownProps: IOwnProps): IStateProps => ({
-  loggedIn: state.loggedIn,
-  pageType: state.pageType
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: IOwnProps): any => ({});
-
-export default connect<IStateProps, {}, IOwnProps, IRootState>(mapStateToProps, mapDispatchToProps)(Root);

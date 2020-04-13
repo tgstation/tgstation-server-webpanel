@@ -5,6 +5,10 @@
     grid-gap: 5px;
 }
 
+.Login-loading {
+    display: grid;
+}
+
 .Login-title {
     color: white;
     text-align: center;
@@ -40,10 +44,9 @@
     align-items: flex-end;
 }
 
-.Login-loading {
+.Login-loading-text {
     color: white;
     text-align: center;
-    margin: auto;
     font-size: 150%;
 }
 

@@ -2,13 +2,7 @@ import * as React from "react";
 import { IntlProvider } from "react-intl";
 import { RingLoader } from "react-spinners";
 
-import { Provider } from "react-redux";
-import { createStore, Store } from "redux";
-
 import IAppProps from "./IAppProps";
-
-import IRootState from "./store/IRootState";
-import MainReducer from "./store/MainReducer";
 
 import HttpClient from "./clients/HttpClient";
 import IHttpClient from "./clients/IHttpClient";
@@ -23,12 +17,11 @@ import Root from "./components/Root";
 
 import "./App.css";
 
-interface IAppState {
+interface IState {
   translation?: ITranslation;
-  store: Store<IRootState>;
 }
 
-class App extends React.Component<IAppProps, IAppState> {
+class App extends React.Component<IAppProps, IState> {
   private readonly httpClient: IHttpClient;
   private readonly serverClient: IServerClient;
   private readonly translationFactory: ITranslationFactory;
@@ -40,23 +33,13 @@ class App extends React.Component<IAppProps, IAppState> {
     this.serverClient = this.props.serverClient || new ServerClient(this.httpClient);
     this.translationFactory = this.props.translationFactory || new TranslationFactory(this.httpClient);
 
-    this.state = {
-      store: createStore(MainReducer, {
-        credentials: {
-          password: "",
-          username: ""
-        },
-        loggedIn: false,
-        refreshingToken: false
-      })
-    };
+    this.state = {};
   }
 
   public async componentDidMount() {
     const translation = await this.loadTranslation();
-    this.setState((prevState: Readonly<IAppState>) => {
+    this.setState((prevState: Readonly<IState>) => {
       return {
-        store: prevState.store,
         translation
       };
     });
@@ -76,20 +59,20 @@ class App extends React.Component<IAppProps, IAppState> {
 
     return (
       <div className="App-main">
-        <Provider store={this.state.store}>
-          <IntlProvider
-            locale={this.state.translation.locale}
-            messages={this.state.translation.messages}
-          >
-            <Root serverClient={this.serverClient} />
-          </IntlProvider>
-        </Provider>
+        <IntlProvider
+          locale={this.state.translation.locale}
+          messages={this.state.translation.messages}
+        >
+          <Root serverClient={this.serverClient} />
+        </IntlProvider>
       </div>
     );
   }
 
-  private loadTranslation(): Promise<ITranslation> {
-    return this.translationFactory.loadTranslation(this.props.locale);
+  private async loadTranslation(): Promise<ITranslation> {
+    const translation = await this.translationFactory.loadTranslation(this.props.locale);
+    this.serverClient.setTranslation(translation);
+    return translation;
   }
 
   private renderLoading(): React.ReactNode {

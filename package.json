@@ -1,6 +1,6 @@
 {
   "name": "tgstation-server-control-panel",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "private": false,
   "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
   "repository": "github:tgstation/tgstation-server-control-panel",
@@ -14,44 +14,56 @@
   "main": "build/lib/App.js",
   "types": "build/lib/App.d.ts",
   "dependencies": {
-    "react": "^16.5.2",
+    "react": "^16.13.1",
     "react-intl": "^2.7.1",
-    "react-redux": "^5.0.7",
-    "react-spinners": "^0.4.7",
-    "redux": "^4.0.1"
+    "react-spinners": "^0.4.7"
   },
   "scripts": {
+    "generate_api": "cross-conf-env openapi-generator generate -g typescript-fetch --http-user-agent tgstation-server-control-panel/$npm_package_version -i https://github.com/tgstation/tgstation-server/releases/download/api-v$npm_package_tgs_api_version/swagger.json --minimal-update -o src/clients/generated --skip-validate-spec --additional-properties=typescriptThreePlus=true",
     "start": "react-scripts start",
-    "build": "npm run clean && tsc -p tsconfig.prod.json && tslint -p tsconfig.prod.json && cpx \"./src/**/*.css\" ./build/lib && cpx \"./src/**/*.svg\" ./build/lib && cp -r public build/ && rimraf build/public/index.html ./build/lib/index.css && minify-json build/public",
-    "clean": "rimraf build",
+    "build": "npm run generate_api && npm run clean_build && tsc -p tsconfig.prod.json && cpx \"./src/**/*.css\" ./build/lib && cpx \"./src/**/*.svg\" ./build/lib && cp -r public build/ && rimraf build/public/index.html ./build/lib/index.css && minify-json build/public",
+    "clean": "npm run clean_build && npm run clean_generated",
+    "clean_build": "rimraf build",
+    "clean_generated": "rimraf src/clients/generated",
     "test": "react-scripts test --env=jsdom --watchAll",
-    "eject": "react-scripts eject",
-    "prepack": "npm run build"
+    "prepack": "npm run clean_generated && npm run build"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.5",
-    "@types/node": "^10.12.0",
-    "@types/react": "^16.4.18",
-    "@types/react-dom": "^16.0.9",
+    "@openapitools/openapi-generator-cli": "^1.0.12-4.3.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.12.35",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.6",
     "@types/react-intl": "^2.3.11",
-    "@types/react-redux": "^6.0.9",
     "cpx": "^1.5.0",
+    "cross-conf-env": "^1.1.2",
     "minify-json": "^1.0.0",
-    "react-dom": "^16.5.2",
-    "react-scripts": "^2.1.3",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1",
     "rimraf": "^2.6.3",
-    "tslint": "^5.12.0",
-    "tslint-react": "^3.6.0",
-    "typescript": "^3.1.3"
+    "typescript": "^3.7.5"
   },
+  "tgs_api_version": "5.0.0",
   "files": [
     "build/lib",
     "build/public"
   ],
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

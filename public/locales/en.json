@@ -3,5 +3,7 @@
     "login.title": "Login",
     "login.username": "Username",
     "login.password": "Password",
-    "login.submit": "Login"
+    "login.submit": "Login",
+    "login.loading": "Logging In",
+    "fetch_api_error": "Failed to complete the web request! Check your browser console!"
 }

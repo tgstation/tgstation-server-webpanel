@@ -1,31 +1,56 @@
-import IApiClient from "./IApiClient";
 import IHttpClient from "./IHttpClient";
 import IServerClient from "./IServerClient";
 
 import ICredentials from "../models/ICredentials";
-import IToken from "../models/IToken";
 import ServerResponse from "../models/ServerResponse";
 
-const AuthorizationHeader: string = "Authorization";
+import { ConfigurationParameters, Configuration, ApiResponse, HomeApi } from './generated';
+import { Token } from "./generated/models";
 
-class ServerClient implements IServerClient, IApiClient {
-    private readonly httpClient: IHttpClient;
-    private token: IToken | null;
+import ITranslation from '../translations/ITranslation';
+
+export default class ServerClient implements IServerClient {
+    private static readonly UserAgent: string = ServerClient.getUserAgent();
+    private static readonly ApiVersion: string = ServerClient.getApiVersion();
+
+    private credentials: ICredentials | null;
+    private token: Token | null;
+
+    private translation: ITranslation | null;
 
     private onLoginRefreshStart?: () => void;
     private onLoginRefreshFailure?: () => void;
 
     private tokenRefreshTimeout: NodeJS.Timeout | null;
 
-    constructor(httpClient: IHttpClient) {
-        this.httpClient = httpClient;
+    constructor(private readonly httpClient: IHttpClient) {
         this.loginRefresh = this.loginRefresh.bind(this);
         this.token = null;
         this.tokenRefreshTimeout = null;
+        this.credentials = null;
+        this.translation = null;
+
+        const configParameters: ConfigurationParameters = {
+            basePath: httpClient.serverUrl,
+            accessToken: () => this.token?.bearer || "",
+            headers: {
+                "Accept": "application/json"
+            }
+        }
+
+        // eslint-disable-next-line
+        const apiConfig = new Configuration(configParameters);
     }
 
-    public getToken(): IToken | null {
-        return this.token;
+    public setTranslation(translation: ITranslation): void {
+        this.translation = translation;
+    }
+
+    public loggedIn(): boolean {
+        if (!this.token?.expiresAt)
+            return false;
+        const now = new Date();
+        return this.token.expiresAt > now;
     }
 
     public setRefreshHandlers(onLoginRefreshStart?: () => void, onLoginRefreshFailure?: () => void) {
@@ -33,43 +58,107 @@ class ServerClient implements IServerClient, IApiClient {
         this.onLoginRefreshFailure = onLoginRefreshFailure;
     }
 
-    public async doLogin(credentials: ICredentials): Promise<ServerResponse<IToken>> {
-        this.cancelLoginRefresh();
-        const headers = this.getStandardHeaders();
-        headers.append("Username", credentials.username);
-        headers.append(AuthorizationHeader, "Password " + credentials.password);
-        const requestInfo: RequestInit = {
-            headers,
-            method: "POST"
-        };
-        const response = await this.httpClient.runRequest("/", requestInfo);
+    public tryLogin(credentials: ICredentials): Promise<ServerResponse<Token>> {
+        this.credentials = credentials;
+        return this.tryRefreshLogin();
+    }
 
-        const serverResponse = new ServerResponse<IToken>(response);
-        if (serverResponse.response.ok) {
-            this.token = await serverResponse.getModel();
-            this.tokenRefreshTimeout = setTimeout(
-                () => this.loginRefresh(credentials),
-                new Date(this.token.expiresAt).getTime() - Date.now() + 30000); // 30 second buffer
+    public async tryRefreshLogin(): Promise<ServerResponse<Token>> {
+        this.cancelLoginRefresh();
+
+        if (!this.credentials) {
+            throw new Error('Invalid credentials!');
         }
+
+        // we need to create this configuration object every time because it's where the username/parameters are set
+        const loginHomeApi = new HomeApi(
+            new Configuration({
+                basePath: this.httpClient.serverUrl,
+                headers: {
+                    "Accept": "application/json"
+                },
+                username: this.credentials.userName,
+                password: this.credentials.password
+            }));
+
+        const serverResponse = await this.makeApiRequest(
+            loginHomeApi.homeControllerCreateTokenRaw.bind(loginHomeApi),
+            null,
+            null,
+            false);
+
+        if (!serverResponse)
+            throw new Error('Login request returned null!');
+
+        if (serverResponse.model) {
+            this.token = serverResponse.model;
+
+            if (serverResponse.model?.expiresAt) {
+                this.tokenRefreshTimeout = setTimeout(
+                    () => this.loginRefresh(),
+                    new Date(serverResponse.model.expiresAt).getTime() - Date.now());
+            }
+        }
+        else {
+            this.credentials = null;
+        }
+
         return serverResponse;
     }
 
-    public makeApiRequest(route: string, verb: string, body?: object, instanceId?: number): Promise<Response> {
-        if (this.token == null)
-            throw new Error("token is unset!");
+    private static getApiVersion(): string {
+        const packageJson = require('../../package.json');
+        return `Tgstation.Server.Api/${packageJson.tgs_api_version}`;
+    }
 
-        const headers = this.getStandardHeaders();
-        headers.append(AuthorizationHeader, this.token.bearer);
-        if (instanceId)
-            headers.append("Instance", instanceId.toString());
-        const requestInfo: RequestInit = {
-            headers,
-            method: verb
-        };
-        if (body)
-            requestInfo.body = JSON.stringify(body);
+    private static getUserAgent(): string {
+        const packageJson = require('../../package.json');
+        return `${packageJson.name}/${packageJson.version}`;
+    }
 
-        return this.httpClient.runRequest(route, requestInfo);
+    private async makeApiRequest<TRequestParameters, TModel>(
+        rawRequestFunc: (requestParameters: TRequestParameters) => Promise<ApiResponse<TModel>>,
+        instanceId?: number | null,
+        requestParameters?: TRequestParameters | null,
+        requiresToken: boolean = true): Promise<ServerResponse<TModel> | null> {
+
+        if (!this.translation)
+            throw new Error('ServerClient translation not set!');
+
+        if (requiresToken && !this.token) {
+            const refreshResponse = await this.tryRefreshLogin();
+            if (!refreshResponse.model) {
+                if (this.onLoginRefreshFailure) {
+                    this.onLoginRefreshFailure();
+                }
+
+                return null;
+            }
+        }
+
+        requestParameters = requestParameters || {} as TRequestParameters;
+
+        const basicRequestParameters = {
+            api: ServerClient.ApiVersion,
+            userAgent: ServerClient.UserAgent,
+            instanceId
+        }
+
+        requestParameters = { ...basicRequestParameters, ...requestParameters };
+
+        try {
+            const apiResponse = await rawRequestFunc(requestParameters);
+            const model = await apiResponse.value();
+
+            return new ServerResponse(this.translation, apiResponse.raw, model)
+        }
+        catch (thrownResponse) {
+            if (!(thrownResponse instanceof Response)) {
+                return new ServerResponse(this.translation);
+            }
+
+            return new ServerResponse(this.translation, thrownResponse);
+        }
     }
 
     public cancelLoginRefresh() {
@@ -79,22 +168,11 @@ class ServerClient implements IServerClient, IApiClient {
         }
     }
 
-    private async loginRefresh(credentials: ICredentials) {
+    private async loginRefresh() {
         if (this.onLoginRefreshStart)
             this.onLoginRefreshStart();
-        const result = await this.doLogin(credentials);
-        if (this.onLoginRefreshFailure && (!result.response.ok || !await result.getModel()))
+        const result = await this.tryRefreshLogin();
+        if (this.onLoginRefreshFailure && !result)
             this.onLoginRefreshFailure();
     }
-
-    private getStandardHeaders(): Headers {
-        return new Headers({
-            "Accept": "application/json",
-            "Api": "Tgstation.Server.Api/4.0.0.0",
-            "Content-Type": "application/json",
-            "User-Agent": "tgstation-server-control-panel/4.0.0.0"
-        });
-    }
 }
-
-export default ServerClient;
