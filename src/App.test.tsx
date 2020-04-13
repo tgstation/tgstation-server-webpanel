@@ -7,13 +7,11 @@ import App from './App';
 import ITranslation from './translations/ITranslation';
 import ITranslationFactory from './translations/ITranslationFactory';
 import Locales from './translations/Locales';
+import Translation from './translations/Translation';
 
 class FakeTranslationFactory implements ITranslationFactory {
   public loadTranslation(locale: string): Promise<ITranslation> {
-    return Promise.resolve<ITranslation>({
-      locale: Locales.enCA,
-      messages: {}
-    });
+    return Promise.resolve<ITranslation>(new Translation(Locales.enCA, {}));
   }
 }
 

@@ -11,14 +11,6 @@
             "name": "Launch Chrome",
             "url": "http://localhost:3000/tgstation-server-control-panel",
             "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "firefox",
-            "request": "launch",
-            "reAttach": true,
-            "name": "Launch Firefox",
-            "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}"
         }
     ]
 }
