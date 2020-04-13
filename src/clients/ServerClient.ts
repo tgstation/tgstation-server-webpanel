@@ -59,6 +59,10 @@ export default class ServerClient implements IServerClient, IApiClient {
         return this.token.expiresAt > now;
     }
 
+    public getToken(): Token | null {
+        return this.token;
+    }
+
     public setRefreshHandlers(onLoginRefreshStart?: () => void, onLoginRefreshFailure?: () => void) {
         this.onLoginRefreshStart = onLoginRefreshStart;
         this.onLoginRefreshFailure = onLoginRefreshFailure;

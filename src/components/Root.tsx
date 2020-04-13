@@ -5,6 +5,7 @@ import IServerClient from "../clients/IServerClient";
 import Home from "./Home";
 import Login from "./Login";
 import Navbar from "./Navbar";
+import Setup from './Setup';
 
 import { PageType } from '../models/PageType';
 
@@ -15,35 +16,35 @@ interface IProps {
 }
 
 interface IState {
-  pageType: PageType
+  pageType?: PageType,
 }
 
 export default class Root extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = {
-      pageType: PageType.Home
-    }
+    this.state = {};
 
-    this.stateRefresh = this.stateRefresh.bind(this);
+    this.postLogin = this.postLogin.bind(this);
+    this.navigateToPage = this.navigateToPage.bind(this);
+    this.checkLoggedIn = this.checkLoggedIn.bind(this);
   }
 
   public render(): React.ReactNode {
+    if (!this.props.serverClient.loggedIn())
+      return <Login serverClient={this.props.serverClient} onSuccessfulLogin={this.postLogin} />;
+
+    const currentPage = this.state.pageType;
+    if (currentPage == null)
+      throw new Error("state.pageType should be set here!");
+
     return (
       <div className="Root">
-        {this.renderInterior()}
-      </div>
-    );
-  }
-
-  private renderInterior(): React.ReactNode {
-    if (!this.props.serverClient.loggedIn())
-      return <Login serverClient={this.props.serverClient} onSuccessfulLogin={this.stateRefresh} />;
-
-    return (
-      <div className="Root-active">
-        <Navbar />
-        {this.renderPage()}
+        <div className="Root-nav">
+          <Navbar checkLoggedIn={this.checkLoggedIn} navigateToPage={this.navigateToPage} currentPage={currentPage} userClient={this.props.serverClient.user} />
+        </div>
+        <div className="Root-content">
+          {this.renderPage()}
+        </div>
       </div>
     );
   }
@@ -52,12 +53,28 @@ export default class Root extends React.Component<IProps, IState> {
     switch (this.state.pageType) {
       case PageType.Home:
         return <Home />;
+      case PageType.Setup:
+        return <Setup />;
       default:
         throw new Error("Invalid PageType!");
     }
   }
 
-  private stateRefresh(): void {
-    this.setState(prevState => prevState);
+  private checkLoggedIn(): void {
+    this.setState(prevState => {
+      return {
+        pageType: prevState.pageType
+      }
+    })
+  }
+
+  private navigateToPage(pageType: PageType): void {
+    this.setState({
+      pageType
+    });
+  }
+
+  private postLogin(runInitialSetup: boolean): void {
+    this.navigateToPage(runInitialSetup ? PageType.Setup : PageType.Home);
   }
 }

@@ -30,7 +30,7 @@ interface IState {
 
 interface IOwnProps {
   serverClient: IServerClient;
-  onSuccessfulLogin(): void;
+  onSuccessfulLogin(runInitialSetup: boolean): void;
 }
 
 type IProps = IOwnProps & InjectedIntlProps
@@ -283,7 +283,7 @@ class Login extends React.Component<IProps, IState> {
     await this.presentErrorResult(passwordUpdateResult, OperationState.PromptAdminPassword);
 
     if (passwordUpdateResult.model && await this.tryLoginImpl(true)) {
-      this.props.onSuccessfulLogin();
+      this.props.onSuccessfulLogin(true);
     }
   }
 
@@ -293,7 +293,7 @@ class Login extends React.Component<IProps, IState> {
 
     await this.tryLoginImpl();
 
-    this.props.onSuccessfulLogin();
+    this.props.onSuccessfulLogin(false);
   }
 
   private async tryLoginImpl(skipOperationEarlyOut: boolean = false): Promise<boolean> {
@@ -329,12 +329,12 @@ class Login extends React.Component<IProps, IState> {
     if (result.model == null) {
       if (result.response?.status === 401) {
         if (nextOperation === OperationState.PromptAdminPassword) {
-          errorMessage = "login.admin_password_changed";
+          errorMessage = 'login.admin_password_changed';
           nextOperation = OperationState.PromptNormal;
         }
         else {
           errorMessage = this.props.intl.formatMessage({
-            id: "login.bad_user_pass"
+            id: 'login.bad_user_pass'
           })
         }
       } else {
