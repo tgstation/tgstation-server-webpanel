@@ -25,7 +25,7 @@
     "clean": "npm run clean_build && npm run clean_generated",
     "clean_build": "rimraf build",
     "clean_generated": "rimraf src/clients/generated",
-    "test": "react-scripts test --env=jsdom --watchAll",
+    "test": "npm run generate_api && react-scripts test --env=jsdom --watchAll",
     "prepack": "npm run clean_generated && npm run build"
   },
   "devDependencies": {
