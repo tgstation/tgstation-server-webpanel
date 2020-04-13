@@ -5,7 +5,7 @@ interface ITranslation {
   readonly locale: string;
   readonly messages: ILocalization;
 
-  forErrorCode(errorCode: ErrorCode, serverMessage: string): string;
+  forErrorCode(errorCode: ErrorCode, serverMessage?: string): string;
 }
 
 export default ITranslation;

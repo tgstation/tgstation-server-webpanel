@@ -1,17 +1,22 @@
 import IHttpClient from "./IHttpClient";
 import IServerClient from "./IServerClient";
-
-import ICredentials from "../models/ICredentials";
-import ServerResponse from "../models/ServerResponse";
+import IUserClient from './IUserClient';
+import IApiClient from './IApiClient';
+import UsersClient from './UserClient';
 
 import { ConfigurationParameters, Configuration, ApiResponse, HomeApi } from './generated';
 import { Token } from "./generated/models";
 
+import ICredentials from "../models/ICredentials";
+import ServerResponse from "../models/ServerResponse";
+
 import ITranslation from '../translations/ITranslation';
 
-export default class ServerClient implements IServerClient {
+export default class ServerClient implements IServerClient, IApiClient {
     private static readonly UserAgent: string = ServerClient.getUserAgent();
     private static readonly ApiVersion: string = ServerClient.getApiVersion();
+
+    public readonly user: IUserClient;
 
     private credentials: ICredentials | null;
     private token: Token | null;
@@ -40,6 +45,7 @@ export default class ServerClient implements IServerClient {
 
         // eslint-disable-next-line
         const apiConfig = new Configuration(configParameters);
+        this.user = new UsersClient(this, apiConfig);
     }
 
     public setTranslation(translation: ITranslation): void {
@@ -106,17 +112,7 @@ export default class ServerClient implements IServerClient {
         return serverResponse;
     }
 
-    private static getApiVersion(): string {
-        const packageJson = require('../../package.json');
-        return `Tgstation.Server.Api/${packageJson.tgs_api_version}`;
-    }
-
-    private static getUserAgent(): string {
-        const packageJson = require('../../package.json');
-        return `${packageJson.name}/${packageJson.version}`;
-    }
-
-    private async makeApiRequest<TRequestParameters, TModel>(
+    public async makeApiRequest<TRequestParameters, TModel>(
         rawRequestFunc: (requestParameters: TRequestParameters) => Promise<ApiResponse<TModel>>,
         instanceId?: number | null,
         requestParameters?: TRequestParameters | null,
@@ -159,6 +155,16 @@ export default class ServerClient implements IServerClient {
 
             return new ServerResponse(this.translation, thrownResponse);
         }
+    }
+
+    private static getApiVersion(): string {
+        const packageJson = require('../../package.json');
+        return `Tgstation.Server.Api/${packageJson.tgs_api_version}`;
+    }
+
+    private static getUserAgent(): string {
+        const packageJson = require('../../package.json');
+        return `${packageJson.name}/${packageJson.version}`;
     }
 
     public cancelLoginRefresh() {
