@@ -16,6 +16,5 @@ class FakeTranslationFactory implements ITranslationFactory {
 }
 
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  render(<App serverAddress="https://tgs.fakesite.net" locale={Locales.enCA} translationFactory={new FakeTranslationFactory()} />, div);
+  render(<App serverAddress="https://tgs.fakesite.net" locale={Locales.enCA} translationFactory={new FakeTranslationFactory()} />);
 });
