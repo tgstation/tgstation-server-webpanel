@@ -77,6 +77,8 @@ export default class Root extends React.Component<IProps, IState> {
   }
 
   private postLogin(): void {
+    // begin retrieving user details for permissions
+    this.props.serverClient.users.getCurrentCached();
     this.navigateToPage(PageType.Home);
   }
 }

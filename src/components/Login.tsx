@@ -73,7 +73,7 @@ class Login extends React.Component<IProps, IState> {
     });
 
     // Get user details so we may update the password
-    const user = await this.props.serverClient.users.getCurrent();
+    const user = await this.props.serverClient.users.getCurrentCached();
     if (!user?.model) {
       // Weird, but reset things
       this.resetToEmptyLogin();

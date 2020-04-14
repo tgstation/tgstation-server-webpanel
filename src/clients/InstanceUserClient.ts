@@ -5,10 +5,12 @@ import IInstanceUserClient from './IInstanceUserClient';
 import IApiClient from './IApiClient';
 
 import ServerResponse from '../models/ServerResponse';
+import TgsResponse from '../models/TgsResponse';
 
 export default class InstanceUserClient extends ComponentClient implements IInstanceUserClient {
     private readonly instanceUserApi: InstanceUserApi;
 
+    private currentUserPromise: TgsResponse<InstanceUser> | null;
     private currentUser: ServerResponse<InstanceUser> | null;
     private currentCacheToken: Token | null;
 
@@ -17,29 +19,39 @@ export default class InstanceUserClient extends ComponentClient implements IInst
 
         this.instanceUserApi = new InstanceUserApi(apiClient.config);
 
+        this.currentUserPromise = null;
         this.currentUser = null;
         this.currentCacheToken = null;
     }
 
-    public async getCurrentCached(): Promise<ServerResponse<InstanceUser> | null> {
+    public async getCurrentCached(forceRefresh?: boolean): Promise<ServerResponse<InstanceUser> | null> {
+        if (forceRefresh) {
+            this.currentCacheToken = null;
+            this.currentUser = null;
+        }
+
         if (this.currentUser && this.currentCacheToken === this.getToken()) {
             return this.currentUser;
         }
 
-        return await this.getCurrent();
-    }
+        const controlOfPromise = !this.currentUserPromise;
+        if (controlOfPromise) {
+            this.currentUserPromise = this.makeApiRequest(this.instanceUserApi.instanceUserControllerReadRaw.bind(this.instanceUserApi));;
+        }
 
-    public async getCurrent(): Promise<ServerResponse<InstanceUser> | null> {
-        const result = await this.makeApiRequest(this.instanceUserApi.instanceUserControllerReadRaw.bind(this.instanceUserApi));
-        if (result?.model) {
-            this.currentUser = result;
-            this.currentCacheToken = this.getToken();
-        } else {
-            this.currentUser = null;
-            this.currentCacheToken = null;
+        const result = await this.currentUserPromise;
+
+        if (controlOfPromise) {
+            this.currentUserPromise = null;
+            if (result?.model) {
+                this.currentUser = result;
+                this.currentCacheToken = this.getToken();
+            } else {
+                this.currentUser = null;
+                this.currentCacheToken = null;
+            }
         }
 
         return result;
     }
-
 }
