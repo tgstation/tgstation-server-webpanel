@@ -2,10 +2,10 @@ import IUsersClient from './IUserClient';
 import IApiClient from './IApiClient';
 
 import { User, UserUpdate, Token } from './generated/models';
-import { Configuration, UserApi } from './generated';
+import { UserApi } from './generated';
 
 import ServerResponse from '../models/ServerResponse';
-import { TgsResponse } from '../models/TgsResponse';
+import TgsResponse from '../models/TgsResponse';
 
 export default class UsersClient implements IUsersClient {
     private readonly userApi: UserApi;
@@ -13,8 +13,8 @@ export default class UsersClient implements IUsersClient {
     private currentUser: ServerResponse<User> | null;
     private currentCacheToken: Token | null;
 
-    constructor(private readonly apiClient: IApiClient, apiConfig: Configuration) {
-        this.userApi = new UserApi(apiConfig);
+    constructor(private readonly apiClient: IApiClient) {
+        this.userApi = new UserApi(apiClient.config);
         this.currentUser = null;
         this.currentCacheToken = null;
     }

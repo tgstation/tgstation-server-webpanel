@@ -3,17 +3,18 @@ import IUserClient from './IUserClient';
 import ICredentials from "../models/ICredentials";
 import ServerResponse from '../models/ServerResponse';
 
-import { Token } from './generated';
+import { Token, Instance } from './generated';
 import ITranslation from '../translations/ITranslation';
+import IInstanceClient from './IInstanceClient';
 
-interface IServerClient {
-  readonly user: IUserClient;
+export default interface IServerClient {
+  readonly users: IUserClient;
 
   loggedIn(): boolean;
 
-  tryLogin(credentials: ICredentials): Promise<ServerResponse<Token>>;
+  tryLogin(credentials: ICredentials): Promise<ServerResponse<Readonly<Token>>>;
 
   setTranslation(translation: ITranslation): void;
-}
 
-export default IServerClient;
+  createInstanceClient(instance: Instance): IInstanceClient;
+}

@@ -1,3 +1,5 @@
 import ServerResponse from './ServerResponse';
 
-export type TgsResponse<TModel> = Promise<ServerResponse<TModel> | null>;
+type TgsResponse<TModel> = Promise<ServerResponse<TModel> | null>;
+
+export default TgsResponse;

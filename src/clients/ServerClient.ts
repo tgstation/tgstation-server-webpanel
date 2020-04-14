@@ -1,22 +1,27 @@
 import IHttpClient from "./IHttpClient";
 import IServerClient from "./IServerClient";
 import IUserClient from './IUserClient';
-import IApiClient from './IApiClient';
 import UsersClient from './UserClient';
+import IInstanceClient from './IInstanceClient';
 
-import { ConfigurationParameters, Configuration, ApiResponse, HomeApi } from './generated';
-import { Token } from "./generated/models";
+import IApiClient, { RawRequestFunc } from './IApiClient';
+
+import { ConfigurationParameters, Configuration, HomeApi } from './generated';
+import { Token, Instance } from "./generated/models";
 
 import ICredentials from "../models/ICredentials";
 import ServerResponse from "../models/ServerResponse";
 
 import ITranslation from '../translations/ITranslation';
+import InstanceClient from './InstanceClient';
 
 export default class ServerClient implements IServerClient, IApiClient {
     private static readonly UserAgent: string = ServerClient.getUserAgent();
     private static readonly ApiVersion: string = ServerClient.getApiVersion();
 
-    public readonly user: IUserClient;
+    public readonly users: IUserClient;
+
+    public readonly config: Configuration;
 
     private credentials: ICredentials | null;
     private token: Token | null;
@@ -44,8 +49,15 @@ export default class ServerClient implements IServerClient, IApiClient {
         }
 
         // eslint-disable-next-line
-        const apiConfig = new Configuration(configParameters);
-        this.user = new UsersClient(this, apiConfig);
+        this.config = new Configuration(configParameters);
+        this.users = new UsersClient(this);
+    }
+
+    public createInstanceClient(instance: Instance): IInstanceClient {
+        if (!instance.id)
+            throw new Error('Instance missing ID!');
+
+        return new InstanceClient(this, instance.id);
     }
 
     public setTranslation(translation: ITranslation): void {
@@ -117,7 +129,7 @@ export default class ServerClient implements IServerClient, IApiClient {
     }
 
     public async makeApiRequest<TRequestParameters, TModel>(
-        rawRequestFunc: (requestParameters: TRequestParameters) => Promise<ApiResponse<TModel>>,
+        rawRequestFunc: RawRequestFunc<TRequestParameters, TModel>,
         instanceId?: number | null,
         requestParameters?: TRequestParameters | null,
         requiresToken: boolean = true): Promise<ServerResponse<TModel> | null> {

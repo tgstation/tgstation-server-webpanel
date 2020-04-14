@@ -42,7 +42,7 @@ export default class Root extends React.Component<IProps, IState> {
     return (
       <div className="Root">
         <div className="Root-nav">
-          <Navbar checkLoggedIn={this.checkLoggedIn} navigateToPage={this.navigateToPage} currentPage={currentPage} userClient={this.props.serverClient.user} />
+          <Navbar checkLoggedIn={this.checkLoggedIn} navigateToPage={this.navigateToPage} currentPage={currentPage} userClient={this.props.serverClient.users} />
         </div>
         <div className="Root-content">
           {this.renderPage()}
@@ -56,7 +56,7 @@ export default class Root extends React.Component<IProps, IState> {
       case PageType.Home:
         return <Home navigateToPage={this.navigateToPage} />;
       case PageType.UserManager:
-        return <UserManager userClient={this.props.serverClient.user} />
+        return <UserManager userClient={this.props.serverClient.users} />
       default:
         throw new Error("Invalid PageType!");
     }
