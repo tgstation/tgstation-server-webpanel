@@ -5,7 +5,5 @@ cache:
   - npm
 node_js:
   - "10"
-before_script:
-  - npm ci
 script:
   - npm test
