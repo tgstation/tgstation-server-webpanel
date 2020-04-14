@@ -1,6 +1,8 @@
 {
     "error_code_missing_message": "Message not present in error, refer to API documentation!",
     "fetch_api_error": "Failed to complete the web request! The server either didn't respond or the request timed out!",
+    "home.instances": "Server Instances",
+    "home.users": "User Manager",
     "login.admin_password_changed": "The default admin password appears to have been changed!",
     "login.bad_user_pass": "Invalid username/password!",
     "login.confirm_password": "Confirm Password",

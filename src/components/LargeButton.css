@@ -1,0 +1,24 @@
+.LargeButton {
+    border-radius: 25px;
+    background-color: rgb(86, 86, 90);
+    display: grid;
+}
+
+.LargeButton-inner {
+    display: grid;
+    grid-template-rows: 80% 20%;
+}
+
+.LargeButton-inner span {
+    font-size: 175px;
+    grid-row: 1;
+    margin: auto;
+}
+
+.LargeButton-text {
+    grid-row: 2;
+}
+
+.LargeButton-text span {
+    font-size: 30px;
+}

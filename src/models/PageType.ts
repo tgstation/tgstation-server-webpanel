@@ -1,4 +1,5 @@
 export enum PageType {
     Home,
-    Setup
+    InstanceManager,
+    UserManager
 }

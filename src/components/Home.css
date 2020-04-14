@@ -1,0 +1,17 @@
+.Home{
+    display: grid;
+    grid-template-rows: 25% 50% 25%;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+}
+
+.Home-instances {
+    grid-row: 2;
+    grid-column: 2;
+    display: grid;
+}
+
+.Home-user {
+    grid-row: 2;
+    grid-column: 4;
+    display: grid;
+}

@@ -5,7 +5,7 @@ import IServerClient from "../clients/IServerClient";
 import Home from "./Home";
 import Login from "./Login";
 import Navbar from "./Navbar";
-import Setup from './Setup';
+import UserManager from './UserManager';
 
 import { PageType } from '../models/PageType';
 
@@ -16,13 +16,15 @@ interface IProps {
 }
 
 interface IState {
-  pageType?: PageType,
+  pageType: PageType,
 }
 
 export default class Root extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = {};
+    this.state = {
+      pageType: PageType.Home
+    };
 
     this.postLogin = this.postLogin.bind(this);
     this.navigateToPage = this.navigateToPage.bind(this);
@@ -52,9 +54,9 @@ export default class Root extends React.Component<IProps, IState> {
   private renderPage(): React.ReactNode {
     switch (this.state.pageType) {
       case PageType.Home:
-        return <Home />;
-      case PageType.Setup:
-        return <Setup />;
+        return <Home navigateToPage={this.navigateToPage} />;
+      case PageType.UserManager:
+        return <UserManager userClient={this.props.serverClient.user} />
       default:
         throw new Error("Invalid PageType!");
     }
@@ -74,7 +76,7 @@ export default class Root extends React.Component<IProps, IState> {
     });
   }
 
-  private postLogin(runInitialSetup: boolean): void {
-    this.navigateToPage(runInitialSetup ? PageType.Setup : PageType.Home);
+  private postLogin(): void {
+    this.navigateToPage(PageType.Home);
   }
 }

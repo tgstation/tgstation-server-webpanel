@@ -30,7 +30,7 @@ interface IState {
 
 interface IOwnProps {
   serverClient: IServerClient;
-  onSuccessfulLogin(runInitialSetup: boolean): void;
+  onSuccessfulLogin(): void;
 }
 
 type IProps = IOwnProps & InjectedIntlProps
@@ -283,7 +283,7 @@ class Login extends React.Component<IProps, IState> {
     await this.presentErrorResult(passwordUpdateResult, OperationState.PromptAdminPassword);
 
     if (passwordUpdateResult.model && await this.tryLoginImpl(true)) {
-      this.props.onSuccessfulLogin(true);
+      this.props.onSuccessfulLogin();
     }
   }
 
@@ -293,7 +293,7 @@ class Login extends React.Component<IProps, IState> {
 
     await this.tryLoginImpl();
 
-    this.props.onSuccessfulLogin(false);
+    this.props.onSuccessfulLogin();
   }
 
   private async tryLoginImpl(skipOperationEarlyOut: boolean = false): Promise<boolean> {
