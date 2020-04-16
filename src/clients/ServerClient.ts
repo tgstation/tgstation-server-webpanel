@@ -28,8 +28,7 @@ export default class ServerClient implements IServerClient, IApiClient {
 
     private translation: ITranslation | null;
 
-    private onLoginRefreshStart?: () => void;
-    private onLoginRefreshFailure?: () => void;
+    private loginRefreshHandlers: Array<(promise: Promise<ServerResponse<Readonly<Token>>>) => void>;
 
     private tokenRefreshTimeout: NodeJS.Timeout | null;
 
@@ -51,6 +50,15 @@ export default class ServerClient implements IServerClient, IApiClient {
         // eslint-disable-next-line
         this.config = new Configuration(configParameters);
         this.users = new UsersClient(this);
+
+        this.loginRefreshHandlers = [];
+    }
+
+    public setLoginRefreshHandler(handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void): void {
+        this.loginRefreshHandlers.push(handler);
+    }
+    public clearLoginRefreshHandler(handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void): void {
+        this.loginRefreshHandlers = this.loginRefreshHandlers.filter(oldHandler => oldHandler !== handler);
     }
 
     public createInstanceClient(instance: Instance): IInstanceClient {
@@ -75,57 +83,10 @@ export default class ServerClient implements IServerClient, IApiClient {
         return this.token;
     }
 
-    public setRefreshHandlers(onLoginRefreshStart?: () => void, onLoginRefreshFailure?: () => void) {
-        this.onLoginRefreshStart = onLoginRefreshStart;
-        this.onLoginRefreshFailure = onLoginRefreshFailure;
-    }
-
     public tryLogin(credentials: ICredentials): Promise<ServerResponse<Token>> {
+        const initialLogin = !this.credentials || this.credentials.userName !== credentials.userName || this.credentials.password !== credentials.password;
         this.credentials = credentials;
-        return this.tryRefreshLogin();
-    }
-
-    public async tryRefreshLogin(): Promise<ServerResponse<Token>> {
-        this.cancelLoginRefresh();
-
-        if (!this.credentials) {
-            throw new Error('Invalid credentials!');
-        }
-
-        // we need to create this configuration object every time because it's where the username/parameters are set
-        const loginHomeApi = new HomeApi(
-            new Configuration({
-                basePath: this.httpClient.serverUrl,
-                headers: {
-                    "Accept": "application/json"
-                },
-                username: this.credentials.userName,
-                password: this.credentials.password
-            }));
-
-        const serverResponse = await this.makeApiRequest(
-            loginHomeApi.homeControllerCreateTokenRaw.bind(loginHomeApi),
-            null,
-            null,
-            false);
-
-        if (!serverResponse)
-            throw new Error('Login request returned null!');
-
-        if (serverResponse.model) {
-            this.token = serverResponse.model;
-
-            if (serverResponse.model?.expiresAt) {
-                this.tokenRefreshTimeout = setTimeout(
-                    () => this.loginRefresh(),
-                    new Date(serverResponse.model.expiresAt).getTime() - Date.now());
-            }
-        }
-        else {
-            this.credentials = null;
-        }
-
-        return serverResponse;
+        return this.tryRefreshLogin(initialLogin);
     }
 
     public async makeApiRequest<TRequestParameters, TModel>(
@@ -138,12 +99,10 @@ export default class ServerClient implements IServerClient, IApiClient {
             throw new Error('ServerClient translation not set!');
 
         if (requiresToken && !this.token) {
-            const refreshResponse = await this.tryRefreshLogin();
-            if (!refreshResponse.model) {
-                if (this.onLoginRefreshFailure) {
-                    this.onLoginRefreshFailure();
-                }
+            const refreshPromise = this.tryRefreshLogin(false);
 
+            const refreshResponse = await refreshPromise;
+            if (!refreshResponse.model) {
                 return null;
             }
         }
@@ -183,18 +142,63 @@ export default class ServerClient implements IServerClient, IApiClient {
         return `${packageJson.name}/${packageJson.version}`;
     }
 
-    public cancelLoginRefresh() {
+    private async tryRefreshLogin(initialLogin: boolean): Promise<ServerResponse<Token>> {
+        this.cancelLoginRefresh();
+
+        if (!this.credentials) {
+            throw new Error('Invalid credentials!');
+        }
+
+        // we need to create this configuration object every time because it's where the username/parameters are set
+        const loginHomeApi = new HomeApi(
+            new Configuration({
+                basePath: this.httpClient.serverUrl,
+                headers: {
+                    "Accept": "application/json"
+                },
+                username: this.credentials.userName,
+                password: this.credentials.password
+            }));
+
+        const responsePromise = this.makeApiRequest(
+            loginHomeApi.homeControllerCreateTokenRaw.bind(loginHomeApi),
+            null,
+            null,
+            false) as Promise<ServerResponse<Token>>;
+
+        if (initialLogin) {
+            this.loginRefreshHandlers.forEach(handler => handler(responsePromise));
+        }
+
+        const serverResponse = await responsePromise;
+
+        if (!serverResponse)
+            throw new Error('Login request returned null!');
+
+        if (serverResponse.model) {
+            this.token = serverResponse.model;
+
+            if (serverResponse.model?.expiresAt) {
+                this.tokenRefreshTimeout = setTimeout(
+                    () => this.loginRefresh(),
+                    new Date(serverResponse.model.expiresAt).getTime() - Date.now());
+            }
+        }
+        else {
+            this.credentials = null;
+        }
+
+        return serverResponse;
+    }
+
+    private async loginRefresh(): Promise<void> {
+        await this.tryRefreshLogin(false);
+    }
+
+    private cancelLoginRefresh() {
         if (this.tokenRefreshTimeout) {
             clearTimeout(this.tokenRefreshTimeout);
             this.tokenRefreshTimeout = null;
         }
-    }
-
-    private async loginRefresh() {
-        if (this.onLoginRefreshStart)
-            this.onLoginRefreshStart();
-        const result = await this.tryRefreshLogin();
-        if (this.onLoginRefreshFailure && !result)
-            this.onLoginRefreshFailure();
     }
 }

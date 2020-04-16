@@ -53,6 +53,10 @@ export default class UsersClient implements IUsersClient {
         return result;
     }
 
+    public list(): TgsResponse<User[]> {
+        return this.apiClient.makeApiRequest(this.userApi.userControllerListRaw.bind(this.userApi));
+    }
+
     public update(userUpdate: UserUpdate): TgsResponse<User> {
         return this.apiClient.makeApiRequest(this.userApi.userControllerUpdateRaw.bind(this.userApi), null, {
             userUpdate

@@ -17,4 +17,7 @@ export default interface IServerClient {
   setTranslation(translation: ITranslation): void;
 
   createInstanceClient(instance: Instance): IInstanceClient;
+
+  setLoginRefreshHandler(handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void): void;
+  clearLoginRefreshHandler(handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void): void;
 }

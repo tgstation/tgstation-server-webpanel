@@ -1,0 +1,13 @@
+.User-manager-users {
+    display: grid;
+    grid-template-rows: 20% auto;
+}
+
+.User-manager-own {
+    display: grid;
+}
+
+.User-manager-others {
+    border-top: 5px solid rgb(34, 17, 82);
+    display: grid;
+}

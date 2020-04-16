@@ -36,7 +36,7 @@ class App extends React.Component<IAppProps, IState> {
     this.state = {};
   }
 
-  public async componentDidMount() {
+  public async componentDidMount(): Promise<void> {
     const translation = await this.loadTranslation();
     this.setState((prevState: Readonly<IState>) => {
       return {

@@ -37,7 +37,7 @@ class Navbar extends React.Component<IProps, IState> {
         this.navigateHome = this.navigateHome.bind(this);
     }
 
-    public async componentDidMount() {
+    public async componentDidMount(): Promise<void> {
         if (this.state.retryIn != null && this.state.retryIn < new Date()) {
             this.retryTimer = setTimeout(this.retryGetUser, this.state.retryIn.getMilliseconds() - Date.now());
             return;
@@ -81,9 +81,6 @@ class Navbar extends React.Component<IProps, IState> {
             <div className="Navbar">
                 <button className={this.props.currentPage === PageType.Home ? 'active' : ''} onClick={this.navigateHome}>
                     <FormattedMessage id="navbar.home" />
-                </button>
-                <button>
-                    <FormattedMessage id="navbar.setup" />
                 </button>
                 <div className="Navbar-user">
                     {this.renderUser()}

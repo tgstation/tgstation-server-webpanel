@@ -1,16 +1,22 @@
 import * as React from "react";
+import { CSSTransition } from 'react-transition-group';
 
 import './Home.css';
-import LargeButton from './LargeButton';
+import LargeButton from './utils/LargeButton';
 import { PageType } from '../models/PageType';
+import TransitionsComponent from './utils/TransitionsComponent';
 
 interface IProps {
     navigateToPage(pageType: PageType): void;
 }
 
-class Home extends React.Component<IProps> {
+export default class Home extends TransitionsComponent<IProps> {
     public constructor(props: IProps) {
-        super(props);
+        super(props, 700);
+
+        this.state = {
+            transitionsIn: true
+        };
 
         this.navigateInstances = this.navigateInstances.bind(this);
         this.navigateUsers = this.navigateUsers.bind(this);
@@ -20,10 +26,14 @@ class Home extends React.Component<IProps> {
         return (
             <div className="Home">
                 <div className="Home-instances">
-                    <LargeButton glyph="hdd" messageId="home.instances" onClick={this.navigateInstances} />
+                    <CSSTransition in={this.state.transitionsIn} appear={true} classNames="Home-instances" timeout={this.transitionsMaxDuration}>
+                        <LargeButton glyph="hdd" messageId="home.instances" onClick={() => this.fadeThenExecuteExit(this.navigateInstances)} />
+                    </CSSTransition>
                 </div>
                 <div className="Home-user">
-                    <LargeButton glyph="user" messageId="home.users" onClick={this.navigateUsers} />
+                    <CSSTransition in={this.state.transitionsIn} appear={true} classNames="Home-user" timeout={this.transitionsMaxDuration}>
+                        <LargeButton glyph="user" messageId="home.users" onClick={() => this.fadeThenExecuteExit(this.navigateUsers)} />
+                    </CSSTransition>
                 </div>
             </div>
         );
@@ -37,5 +47,3 @@ class Home extends React.Component<IProps> {
         this.props.navigateToPage(PageType.UserManager);
     }
 }
-
-export default Home;

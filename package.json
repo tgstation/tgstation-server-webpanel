@@ -22,7 +22,9 @@
     "@strongdm/glyphicon": "0.0.5",
     "react": "^16.13.1",
     "react-intl": "^2.7.1",
-    "react-spinners": "^0.4.7"
+    "react-scrollbar": "^0.5.6",
+    "react-spinners": "^0.4.7",
+    "react-transition-group": "^4.3.0"
   },
   "scripts": {
     "generate_api": "cross-conf-env openapi-generator generate -g typescript-fetch --http-user-agent tgstation-server-control-panel/$npm_package_version -i https://github.com/tgstation/tgstation-server/releases/download/api-v$npm_package_tgs_api_version/swagger.json --minimal-update -o src/clients/generated --skip-validate-spec --additional-properties=typescriptThreePlus=true",
@@ -44,6 +46,8 @@
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.6",
     "@types/react-intl": "^2.3.11",
+    "@types/react-scrollbar": "^0.5.1",
+    "@types/react-transition-group": "^4.2.4",
     "cpx": "^1.5.0",
     "cross-conf-env": "^1.1.2",
     "minify-json": "^1.0.0",

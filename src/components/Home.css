@@ -10,8 +10,52 @@
     display: grid;
 }
 
+.Home-instances-appear {
+    opacity: 0;
+    transform: translateY(40%);
+}
+
+.Home-instances-appear-active {
+    opacity: 1;
+    transform: translateY(0%);
+    transition: 500ms;
+}
+
+.Home-instances-exit-active {
+    transform: translateY(0%);
+}
+
+.Home-instances-exit-active {
+    opacity: 0;
+    transform: translateY(40%);
+    transition: 500ms;
+}
+
 .Home-user {
     grid-row: 2;
     grid-column: 4;
     display: grid;
+}
+
+.Home-user-appear {
+    opacity: 0;
+    transform: translateY(40%);
+}
+
+.Home-user-appear-active {
+    opacity: 1;
+    transform: translateY(0%);
+    transition: 500ms;
+    transition-delay: 200ms;
+}
+
+.Home-user-exit {
+    transform: translateY(0%);
+}
+
+.Home-user-exit-active {
+    opacity: 0;
+    transform: translateY(40%);
+    transition: 500ms;
+    transition-delay: 200ms;
 }

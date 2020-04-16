@@ -9,7 +9,7 @@ import { User } from '../clients/generated';
 import ICredentials from "../models/ICredentials";
 import ServerResponse from '../models/ServerResponse';
 
-import "./Login.css";
+import './Login.css';
 
 enum OperationState {
   PromptNormal,
@@ -31,6 +31,7 @@ interface IState {
 interface IOwnProps {
   serverClient: IServerClient;
   onSuccessfulLogin(): void;
+  loginRefreshError?: string;
 }
 
 type IProps = IOwnProps & InjectedIntlProps
@@ -51,7 +52,8 @@ class Login extends React.Component<IProps, IState> {
         password: 'ISolemlySwearToDeleteTheDataDirectory'
       },
       operation: OperationState.LoginDefaultAdmin,
-      passwordConfirm: ''
+      passwordConfirm: '',
+      loginError: props.loginRefreshError
     }
   }
 

@@ -1,4 +1,5 @@
 .Root{
+    overflow: hidden;
     display: grid;
     grid-template-rows: 7% auto;
 }
