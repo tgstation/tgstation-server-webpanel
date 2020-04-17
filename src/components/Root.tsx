@@ -8,7 +8,7 @@ import { PageType } from '../models/PageType';
 import ServerResponse from '../models/ServerResponse';
 
 import Home from "./Home";
-import Login from "./Login";
+import Login from "./login/Login";
 import Navbar from "./Navbar";
 import UserManager from './userManager/UserManager';
 
@@ -34,6 +34,7 @@ export default class Root extends React.Component<IProps, IState> {
     this.navigateToPage = this.navigateToPage.bind(this);
     this.checkLoggedIn = this.checkLoggedIn.bind(this);
     this.handleLoginRefresh = this.handleLoginRefresh.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   public componentWillUnmount(): void {
@@ -51,7 +52,7 @@ export default class Root extends React.Component<IProps, IState> {
     return (
       <div className="Root">
         <div className="Root-nav">
-          <Navbar checkLoggedIn={this.checkLoggedIn} navigateToPage={this.navigateToPage} currentPage={currentPage} userClient={this.props.serverClient.users} />
+          <Navbar checkLoggedIn={this.checkLoggedIn} navigateToPage={this.navigateToPage} currentPage={currentPage} userClient={this.props.serverClient.users} logoutAction={this.logout} />
         </div>
         <div className="Root-content">
           {this.renderPage()}
@@ -105,5 +106,13 @@ export default class Root extends React.Component<IProps, IState> {
         loginError
       };
     });
+  }
+
+  private logout(): void {
+    this.props.serverClient.logout();
+    this.setState({
+      pageType: PageType.Home,
+      loginError: "login.logout"
+    })
   }
 }

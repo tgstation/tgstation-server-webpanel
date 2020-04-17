@@ -19,6 +19,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.13.0",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.9",
+    "@matsun/reactiscapslockactive": "^1.1.0",
     "@strongdm/glyphicon": "0.0.5",
     "react": "^16.13.1",
     "react-intl": "^2.7.1",

@@ -1,10 +1,11 @@
 import * as React from "react";
 import { CSSTransition } from 'react-transition-group';
 
-import './Home.css';
 import LargeButton from './utils/LargeButton';
 import { PageType } from '../models/PageType';
 import TransitionsComponent from './utils/TransitionsComponent';
+
+import './Home.css';
 
 interface IProps {
     navigateToPage(pageType: PageType): void;

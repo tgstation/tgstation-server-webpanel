@@ -17,12 +17,14 @@ interface IProps {
     currentPage: PageType;
     navigateToPage(pageType: PageType): void;
     checkLoggedIn(): void;
+    logoutAction(): void;
 }
 
 interface IState {
     currentUser?: User;
     loadingError?: string;
     retryIn?: Date;
+    usernameHovered: boolean;
 }
 
 class Navbar extends React.Component<IProps, IState> {
@@ -30,11 +32,16 @@ class Navbar extends React.Component<IProps, IState> {
 
     public constructor(props: IProps) {
         super(props);
-        this.state = {};
+        this.state = {
+            usernameHovered: false
+        };
         this.retryTimer = null;
 
         this.retryGetUser = this.retryGetUser.bind(this);
         this.navigateHome = this.navigateHome.bind(this);
+        this.logoutClick = this.logoutClick.bind(this);
+        this.onHover = this.onHover.bind(this);
+        this.offHover = this.offHover.bind(this);
     }
 
     public async componentDidMount(): Promise<void> {
@@ -105,9 +112,11 @@ class Navbar extends React.Component<IProps, IState> {
             );
         if (this.state.currentUser)
             return (
-                <span className="Navbar-user-name">
-                    {this.state.currentUser.name}
-                </span>
+                <button className="Navbar-user-name" onClick={this.logoutClick} onMouseEnter={this.onHover} onMouseLeave={this.offHover}>
+                    {this.state.usernameHovered
+                        ? <FormattedMessage id="navbar.logout" />
+                        : this.state.currentUser.name}
+                </button>
             );
 
         return (
@@ -115,6 +124,32 @@ class Navbar extends React.Component<IProps, IState> {
                 <SyncLoader color={"white"} />
             </div>
         );
+    }
+
+    private onHover(): void {
+        this.setState(prevState => {
+            return {
+                usernameHovered: true,
+                currentUser: prevState.currentUser,
+                loadingError: prevState.loadingError,
+                retryIn: prevState.retryIn
+            };
+        })
+    }
+
+    private offHover(): void {
+        this.setState(prevState => {
+            return {
+                usernameHovered: false,
+                currentUser: prevState.currentUser,
+                loadingError: prevState.loadingError,
+                retryIn: prevState.retryIn
+            };
+        })
+    }
+
+    private logoutClick(): void {
+        this.props.logoutAction();
     }
 
     private navigateHome(): void {

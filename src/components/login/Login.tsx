@@ -2,12 +2,14 @@ import * as React from "react";
 import { FormattedMessage, InjectedIntlProps, injectIntl } from "react-intl";
 import { RingLoader } from "react-spinners";
 
-import IServerClient from "../clients/IServerClient";
+import IServerClient from "../../clients/IServerClient";
 
-import { User } from '../clients/generated';
+import { User } from '../../clients/generated';
 
-import ICredentials from "../models/ICredentials";
-import ServerResponse from '../models/ServerResponse';
+import ICredentials from "../../models/ICredentials";
+import ServerResponse from '../../models/ServerResponse';
+
+import PasswordField from '../utils/PasswordField';
 
 import './Login.css';
 
@@ -52,12 +54,25 @@ class Login extends React.Component<IProps, IState> {
         password: 'ISolemlySwearToDeleteTheDataDirectory'
       },
       operation: OperationState.LoginDefaultAdmin,
-      passwordConfirm: '',
-      loginError: props.loginRefreshError
+      passwordConfirm: ''
     }
   }
 
   public async componentDidMount() {
+    if (this.props.loginRefreshError) {
+      this.setState({
+        credentials: {
+          userName: '',
+          password: ''
+        },
+        operation: OperationState.PromptNormal,
+        passwordConfirm: '',
+        loginError: this.props.loginRefreshError
+      });
+
+      return;
+    }
+
     // Try to login as the default admin
     await this.tryLoginImpl();
     if (!this.props.serverClient.loggedIn()) {
@@ -124,14 +139,14 @@ class Login extends React.Component<IProps, IState> {
           value={this.state.credentials.userName}
           placeholder={this.props.intl.formatMessage({ id: "login.username" })}
         />
-        <input
-          type="password"
-          name="password"
-          className="form-control Login-password"
-          onChange={this.updatePassword}
-          value={this.state.credentials.password}
-          placeholder={this.props.intl.formatMessage({ id: "login.password" })}
-        />
+        <div className="Login-password">
+          <PasswordField
+            name="password"
+            onChange={this.updatePassword}
+            value={this.state.credentials.password}
+            placeholder={this.props.intl.formatMessage({ id: "login.password" })}
+          />
+        </div>
         <button
           type="submit"
           className="Login-submit"
@@ -150,22 +165,22 @@ class Login extends React.Component<IProps, IState> {
         <h1 className="Login-title">
           <FormattedMessage id="login.password_update" />
         </h1>
-        <input
-          type="password"
-          name="password"
-          className="form-control Login-username"
-          onChange={this.updatePassword}
-          value={this.state.credentials.password}
-          placeholder={this.props.intl.formatMessage({ id: "login.password" })}
-        />
-        <input
-          type="password"
-          name="confirm_password"
-          className="form-control Login-password"
-          onChange={this.updatePasswordConfirm}
-          value={this.state.passwordConfirm}
-          placeholder={this.props.intl.formatMessage({ id: "login.confirm_password" })}
-        />
+        <div className="Login-username">
+          <PasswordField
+            name="password"
+            onChange={this.updatePassword}
+            value={this.state.credentials.password}
+            placeholder={this.props.intl.formatMessage({ id: "login.password" })}
+          />
+        </div>
+        <div className="Login-password">
+          <PasswordField
+            name="confirm_password"
+            onChange={this.updatePasswordConfirm}
+            value={this.state.passwordConfirm}
+            placeholder={this.props.intl.formatMessage({ id: "login.confirm_password" })}
+          />
+        </div>
         <button
           type="submit"
           className="Login-submit"

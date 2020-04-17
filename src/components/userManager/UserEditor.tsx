@@ -15,9 +15,6 @@ interface IProps {
 
 export default class UserEditor extends React.Component<IProps> {
     public render(): React.ReactNode {
-        if (!this.props.user.name)
-            throw new Error("props.user.name should be set here!");
-
         return <div />
     }
 }

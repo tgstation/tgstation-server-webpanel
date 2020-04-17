@@ -13,6 +13,7 @@ export default interface IServerClient {
   loggedIn(): boolean;
 
   tryLogin(credentials: ICredentials): Promise<ServerResponse<Readonly<Token>>>;
+  logout(): void;
 
   setTranslation(translation: ITranslation): void;
 

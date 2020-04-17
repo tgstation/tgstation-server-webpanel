@@ -48,7 +48,7 @@ export default class UserManager extends React.Component<IProps, IState>{
             editingUser: null,
             errorMessage: null,
             allUsers: null
-        }
+        };
     }
 
     public async componentDidMount(): Promise<void> {
@@ -68,11 +68,7 @@ export default class UserManager extends React.Component<IProps, IState>{
             return this.renderError();
 
         if (!this.state.allUsers && this.state.operation !== Operation.LoadingUsers)
-            return (
-                <div className="User-manager-own">
-                    {this.renderOwnUser()}
-                </div>
-            );
+            return this.renderOwnUser();
 
         return (
             <div className="User-manager-users">
@@ -92,7 +88,7 @@ export default class UserManager extends React.Component<IProps, IState>{
 
     private renderOwnUser(): React.ReactNode {
         if (!this.state.ownUser)
-            return <RingLoader className="User-manager-loading" />;
+            return this.renderLoader();
 
         return (
             <div className="User-manager-own">
@@ -104,9 +100,21 @@ export default class UserManager extends React.Component<IProps, IState>{
         );
     }
 
+    private renderLoader(): React.ReactNode {
+        return (
+            <div className="User-manager-loading">
+                <RingLoader color="#E3EFFC" size={500} />
+            </div>
+        );
+    }
+
     private renderOtherUsers(): React.ReactNode {
         if (this.state.operation === Operation.LoadingUsers)
-            return <RingLoader className="User-manager-loading" />;
+            return (
+                <div className="User-manager-loading-others">
+                    {this.renderLoader()}
+                </div>
+            );
 
         if (this.state.errorMessage)
             return this.renderError();
@@ -161,30 +169,51 @@ export default class UserManager extends React.Component<IProps, IState>{
             // login refresh fail handled higher up
             return;
 
-        if (!ownUser.model) {
+        const result = ownUser.model;
+        if (!result) {
             const errorMessage = await ownUser.getError();
-            this.setState({
-                operation: Operation.Idle,
-                errorMessage
+            this.setState(prevState => {
+                return {
+                    operation: Operation.Idle,
+                    errorMessage,
+                    allUsers: null,
+                    ownUser: null,
+                    editingUser: prevState.editingUser
+                };
             });
             return;
         }
 
-        if (!ownUser.model.administrationRights)
+        this.setState(prevState => {
+            return {
+                operation: Operation.Idle,
+                allUsers: prevState.allUsers,
+                ownUser: result,
+                editingUser: prevState.editingUser,
+                errorMessage: prevState.errorMessage
+            };
+        });
+
+        if (!result.administrationRights)
             throw new Error('administrationRights was null!');
 
-        const canContinue = (ownUser.model.administrationRights & AdministrationRights.ReadUsers) !== 0;
-
-        this.setState({
-            operation: canContinue ? Operation.LoadingUsers : Operation.Idle,
-            ownUser: ownUser.model
-        });
+        const canContinue = (result.administrationRights & AdministrationRights.ReadUsers) !== 0;
 
         if (canContinue)
             await this.refreshOthers();
     }
 
     private async refreshOthers(): Promise<void> {
+        this.setState(prevState => {
+            return {
+                operation: Operation.LoadingUsers,
+                allUsers: prevState.allUsers,
+                ownUser: prevState.ownUser,
+                editingUser: prevState.editingUser,
+                errorMessage: prevState.errorMessage
+            };
+        });
+
         const allUsers = await this.props.userClient.list();
         if (!allUsers)
             // login refresh fail handled higher up
@@ -197,11 +226,17 @@ export default class UserManager extends React.Component<IProps, IState>{
                 return {
                     operation: Operation.Idle,
                     errorMessage,
-                    ownUser: prevState.ownUser
+                    ownUser: prevState.ownUser,
+                    editingUser: prevState.editingUser,
+                    allUsers: prevState.allUsers
                 };
             });
             return;
         }
+
+        // dummy users
+        for (let i = 2; i < 5; i++)
+            result.push({ ...this.state.ownUser, ...{ id: i, name: `user_number_${i}` } });
 
         this.setState(prevState => {
             return {
@@ -218,7 +253,7 @@ export default class UserManager extends React.Component<IProps, IState>{
         const updatedUser = await this.props.userClient.getId(user);
         if (!updatedUser)
             // login refresh fail handled higher up
-            return false;
+            return true;
 
         if (!updatedUser.model) {
             const errorMessage = await updatedUser.getError();
@@ -226,15 +261,17 @@ export default class UserManager extends React.Component<IProps, IState>{
                 return {
                     operation: Operation.Idle,
                     errorMessage,
-                    ownUser: prevState.ownUser
+                    ownUser: prevState.ownUser,
+                    editingUser: prevState.editingUser,
+                    allUsers: prevState.allUsers
                 };
             });
 
-            return false;
+            return true;
         }
 
         this.updateUser(updatedUser.model);
-        return true;
+        return false;
     }
 
     private updateUser(updatedUser: User): void {

@@ -1,3 +1,21 @@
+.User-manager-loading {
+    display: grid;
+    margin: auto;
+}
+
+.User-manager-loading-others {
+    grid-row: 2;
+    grid-column: 2;
+    display: grid;
+}
+
+.User-manager-error {
+    display: grid;
+    margin: auto;
+    color: red;
+    font-size: 200%;
+}
+
 .User-manager-users {
     display: grid;
     grid-template-rows: 20% auto;

@@ -72,6 +72,11 @@ export default class ServerClient implements IServerClient, IApiClient {
         this.translation = translation;
     }
 
+    public logout(): void {
+        this.credentials = null;
+        this.token = null;
+    }
+
     public loggedIn(): boolean {
         if (!this.token?.expiresAt)
             return false;
