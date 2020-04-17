@@ -10,15 +10,10 @@
 }
 
 .LargeButton-inner span {
-    font-size: 175px;
     grid-row: 1;
     margin: auto;
 }
 
 .LargeButton-text {
     grid-row: 2;
-}
-
-.LargeButton-text span {
-    font-size: 30px;
 }

@@ -6,8 +6,10 @@ import Glyphicon from '@strongdm/glyphicon'
 import './LargeButton.css';
 
 interface IProps {
+    fontSize: string;
+    textSize?: string;
     glyph: string;
-    messageId: string;
+    messageId?: string;
     onClick(): void;
 }
 
@@ -16,12 +18,20 @@ export default class LargeButton extends React.Component<IProps>{
         return (
             <button className="LargeButton" onClick={this.props.onClick}>
                 <div className="LargeButton-inner">
-                    <Glyphicon glyph={this.props.glyph} />
-                    <div className="LargeButton-text">
-                        <FormattedMessage id={this.props.messageId} />
+                    <div style={{ fontSize: this.props.fontSize }}>
+                        <Glyphicon glyph={this.props.glyph} />
+                    </div>
+                    <div className="LargeButton-text" style={{ fontSize: this.props.textSize || "30px" }}>
+                        {this.renderMessage()}
                     </div>
                 </div>
             </button>
         );
+    }
+
+    private renderMessage(): React.ReactNode {
+        return this.props.messageId
+            ? <FormattedMessage id={this.props.messageId} />
+            : <div />;
     }
 }

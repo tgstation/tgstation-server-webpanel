@@ -1,0 +1,5 @@
+.UserBadge {
+    border-radius: 25px;
+    background-color: rgb(86, 86, 90);
+    display: grid;
+}

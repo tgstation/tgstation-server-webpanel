@@ -1,13 +1,45 @@
 .User-manager-users {
     display: grid;
     grid-template-rows: 20% auto;
+    grid-template-columns: 10% auto 10%;
 }
 
 .User-manager-own {
+    grid-column: 2;
+    display: grid;
+    margin: 10px;
+    grid-template-columns: 75% 25%;
+    grid-column-gap: 10px;
+}
+
+.User-manager-own-refresh {
     display: grid;
 }
 
 .User-manager-others {
-    border-top: 5px solid rgb(34, 17, 82);
     display: grid;
+    grid-column: 2;
+    grid-template-rows: 0% 15% auto;
+    border-top: 5px solid rgb(34, 17, 82);
+    grid-row-gap: 10px;
+}
+
+.User-manager-editor-controls {
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-column-gap: 10px;
+    margin: 5px;
+}
+
+.User-manager-editor {
+    grid-row: 3;
+    display: grid;
+}
+
+.User-manager-editor div {
+    display: grid;
+    grid-row-gap: 10px;
+    grid-template-rows: auto auto auto auto auto auto auto;
+    grid-row-gap: 10px;
 }

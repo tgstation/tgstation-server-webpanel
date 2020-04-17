@@ -8,6 +8,9 @@ interface IProps {
     userClient: IUserClient;
     user: User;
     own: boolean;
+
+    updateAction(user: User): void;
+    backAction(): void;
 }
 
 export default class UserEditor extends React.Component<IProps> {

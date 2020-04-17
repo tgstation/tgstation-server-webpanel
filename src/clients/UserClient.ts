@@ -63,4 +63,12 @@ export default class UsersClient implements IUsersClient {
         });
     }
 
+    public getId(user: User): TgsResponse<User> {
+        if (!user.id)
+            throw new Error('user.Id was null!');
+
+        return this.apiClient.makeApiRequest(this.userApi.userControllerGetIdRaw.bind(this.userApi), null, {
+            id: user.id
+        });
+    }
 }

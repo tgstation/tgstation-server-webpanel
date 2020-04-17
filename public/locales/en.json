@@ -18,5 +18,6 @@
     "login.username": "Username",
     "navbar.error": "Error Loading User",
     "navbar.home": "Home",
-    "navbar.user_prefix": "Logged in as"
+    "navbar.user_prefix": "Logged in as",
+    "user_manager.refresh_all": "Refresh All"
 }
