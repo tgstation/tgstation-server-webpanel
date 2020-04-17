@@ -234,10 +234,6 @@ export default class UserManager extends React.Component<IProps, IState>{
             return;
         }
 
-        // dummy users
-        for (let i = 2; i < 5; i++)
-            result.push({ ...this.state.ownUser, ...{ id: i, name: `user_number_${i}` } });
-
         this.setState(prevState => {
             return {
                 operation: Operation.Idle,
