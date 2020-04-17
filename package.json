@@ -1,80 +1,89 @@
 {
-  "name": "tgstation-server-control-panel",
-  "version": "0.2.0",
-  "private": false,
-  "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
-  "repository": "github:tgstation/tgstation-server-control-panel",
-  "bugs": {
-    "url": "https://github.com/tgstation/tgstation-server-control-panel/issues"
-  },
-  "license": "AGPL-3.0-or-later",
-  "author": {
-    "name": "Cyberboss"
-  },
-  "main": "build/lib/App.js",
-  "types": "build/lib/App.d.ts",
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.28",
-    "@fortawesome/free-brands-svg-icons": "^5.13.0",
-    "@fortawesome/free-regular-svg-icons": "^5.13.0",
-    "@fortawesome/free-solid-svg-icons": "^5.13.0",
-    "@fortawesome/react-fontawesome": "^0.1.9",
-    "@matsun/reactiscapslockactive": "^1.1.0",
-    "@strongdm/glyphicon": "0.0.5",
-    "react": "^16.13.1",
-    "react-intl": "^2.7.1",
-    "react-scrollbar": "^0.5.6",
-    "react-spinners": "^0.4.7",
-    "react-transition-group": "^4.3.0"
-  },
-  "scripts": {
-    "generate_api": "cross-conf-env openapi-generator generate -g typescript-fetch --http-user-agent tgstation-server-control-panel/$npm_package_version -i https://github.com/tgstation/tgstation-server/releases/download/api-v$npm_package_tgs_api_version/swagger.json --minimal-update -o src/clients/generated --skip-validate-spec --additional-properties=typescriptThreePlus=true",
-    "start": "react-scripts start",
-    "build": "npm run generate_api && npm run clean_build && tsc -p tsconfig.prod.json && cpx \"./src/**/*.css\" ./build/lib && cpx \"./src/**/*.svg\" ./build/lib && cp -r public build/ && rimraf build/public/index.html ./build/lib/index.css && minify-json build/public",
-    "clean": "npm run clean_build && npm run clean_generated",
-    "clean_build": "rimraf build",
-    "clean_generated": "rimraf src/clients/generated",
-    "test": "npm run generate_api && react-scripts test",
-    "prepack": "npm run clean_generated && npm run build"
-  },
-  "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^1.0.12-4.3.0",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.35",
-    "@types/react": "^16.9.34",
-    "@types/react-dom": "^16.9.6",
-    "@types/react-intl": "^2.3.11",
-    "@types/react-scrollbar": "^0.5.1",
-    "@types/react-transition-group": "^4.2.4",
-    "cpx": "^1.5.0",
-    "cross-conf-env": "^1.1.2",
-    "minify-json": "^1.0.0",
-    "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
-    "rimraf": "^2.6.3",
-    "typescript": "^3.7.5"
-  },
-  "tgs_api_version": "5.0.0",
-  "files": [
-    "build/lib",
-    "build/public"
-  ],
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+    "name": "tgstation-server-control-panel",
+    "version": "0.2.0",
+    "private": false,
+    "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
+    "repository": "github:tgstation/tgstation-server-control-panel",
+    "bugs": {
+        "url": "https://github.com/tgstation/tgstation-server-control-panel/issues"
+    },
+    "license": "AGPL-3.0-or-later",
+    "author": {
+        "name": "Cyberboss"
+    },
+    "main": "build/lib/App.js",
+    "types": "build/lib/App.d.ts",
+    "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^1.2.28",
+        "@fortawesome/free-brands-svg-icons": "^5.13.0",
+        "@fortawesome/free-regular-svg-icons": "^5.13.0",
+        "@fortawesome/free-solid-svg-icons": "^5.13.0",
+        "@fortawesome/react-fontawesome": "^0.1.9",
+        "@matsun/reactiscapslockactive": "^1.1.0",
+        "@strongdm/glyphicon": "0.0.5",
+        "react": "^16.13.1",
+        "react-intl": "^2.7.1",
+        "react-scrollbar": "^0.5.6",
+        "react-spinners": "^0.4.7",
+        "react-transition-group": "^4.3.0"
+    },
+    "scripts": {
+        "generate_api": "cross-conf-env openapi-generator generate -g typescript-fetch --http-user-agent tgstation-server-control-panel/$npm_package_version -i https://github.com/tgstation/tgstation-server/releases/download/api-v$npm_package_tgs_api_version/swagger.json --minimal-update -o src/clients/generated --skip-validate-spec --additional-properties=typescriptThreePlus=true",
+        "start": "react-scripts start",
+        "build": "npm run clean && npm run generate_api && npm run lint && tsc -p tsconfig.prod.json && cpx \"./src/**/*.css\" ./build/lib && cpx \"./src/**/*.svg\" ./build/lib && cp -r public build/ && rimraf build/public/index.html ./build/lib/index.css && minify-json build/public",
+        "clean": "npm run clean_build && npm run clean_generated",
+        "clean_build": "rimraf build",
+        "clean_generated": "rimraf src/clients/generated",
+        "test": "npm run generate_api && react-scripts test",
+        "prepack": "npm run build",
+        "lint": "eslint ./src/**/*.{ts,tsx}",
+        "lint-fix": "eslint --fix ./src/**/*.{ts,tsx}"
+    },
+    "devDependencies": {
+        "@openapitools/openapi-generator-cli": "^1.0.12-4.3.0",
+        "@testing-library/jest-dom": "^4.2.4",
+        "@testing-library/react": "^9.5.0",
+        "@testing-library/user-event": "^7.2.1",
+        "@types/jest": "^24.9.1",
+        "@types/node": "^12.12.35",
+        "@types/react": "^16.9.34",
+        "@types/react-dom": "^16.9.6",
+        "@types/react-intl": "^2.3.11",
+        "@types/react-scrollbar": "^0.5.1",
+        "@types/react-transition-group": "^4.2.4",
+        "@typescript-eslint/eslint-plugin": "^2.28.0",
+        "@typescript-eslint/parser": "^2.28.0",
+        "cpx": "^1.5.0",
+        "cross-conf-env": "^1.1.2",
+        "eslint": "^6.8.0",
+        "eslint-config-prettier": "^6.10.1",
+        "eslint-plugin-prettier": "^3.1.3",
+        "eslint-plugin-react": "^7.19.0",
+        "minify-json": "^1.0.0",
+        "prettier": "^2.0.4",
+        "react-dom": "^16.13.1",
+        "react-scripts": "3.4.1",
+        "rimraf": "^2.6.3",
+        "typescript": "^3.7.5"
+    },
+    "tgs_api_version": "5.0.0",
+    "files": [
+        "build/lib",
+        "build/public"
     ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
 }
