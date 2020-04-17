@@ -4,7 +4,7 @@ import { User } from '../../clients/generated';
 
 import IUserClient from '../../clients/IUserClient';
 
-import './UserEditor.css'
+import './UserEditor.css';
 
 interface IProps {
     userClient: IUserClient;
@@ -17,6 +17,6 @@ interface IProps {
 
 export default class UserEditor extends React.Component<IProps> {
     public render(): React.ReactNode {
-        return <div className="UserEditor" />
+        return <div className="UserEditor" />;
     }
 }

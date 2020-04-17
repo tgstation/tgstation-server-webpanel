@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import { CSSTransition } from 'react-transition-group';
 
 import LargeButton from './utils/LargeButton';
@@ -27,13 +27,35 @@ export default class Home extends TransitionsComponent<IProps> {
         return (
             <div className="Home">
                 <div className="Home-instances">
-                    <CSSTransition in={this.state.transitionsIn} appear={true} classNames="Home-instances" timeout={this.transitionsMaxDuration}>
-                        <LargeButton fontSize="195px" glyph="hdd" messageId="home.instances" onClick={() => this.fadeThenExecuteExit(this.navigateInstances)} />
+                    <CSSTransition
+                        in={this.state.transitionsIn}
+                        appear={true}
+                        classNames="Home-instances"
+                        timeout={this.transitionsMaxDuration}>
+                        <LargeButton
+                            fontSize="195px"
+                            glyph="hdd"
+                            messageId="home.instances"
+                            onClick={() =>
+                                this.fadeThenExecuteExit(this.navigateInstances)
+                            }
+                        />
                     </CSSTransition>
                 </div>
                 <div className="Home-user">
-                    <CSSTransition in={this.state.transitionsIn} appear={true} classNames="Home-user" timeout={this.transitionsMaxDuration}>
-                        <LargeButton fontSize="195px" glyph="user" messageId="home.users" onClick={() => this.fadeThenExecuteExit(this.navigateUsers)} />
+                    <CSSTransition
+                        in={this.state.transitionsIn}
+                        appear={true}
+                        classNames="Home-user"
+                        timeout={this.transitionsMaxDuration}>
+                        <LargeButton
+                            fontSize="195px"
+                            glyph="user"
+                            messageId="home.users"
+                            onClick={() =>
+                                this.fadeThenExecuteExit(this.navigateUsers)
+                            }
+                        />
                     </CSSTransition>
                 </div>
             </div>

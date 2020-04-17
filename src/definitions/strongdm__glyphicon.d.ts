@@ -6,4 +6,4 @@ interface IProps {
     glyph: string;
 }
 
-class Glyphicon extends React.Component<IProps>{ }
+class Glyphicon extends React.Component<IProps> {}

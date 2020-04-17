@@ -10,11 +10,17 @@ import Locales from './translations/Locales';
 import Translation from './translations/Translation';
 
 class FakeTranslationFactory implements ITranslationFactory {
-  public loadTranslation(locale: string): Promise<ITranslation> {
-    return Promise.resolve<ITranslation>(new Translation(Locales.enCA, {}));
-  }
+    public loadTranslation(locale: string): Promise<ITranslation> {
+        return Promise.resolve<ITranslation>(new Translation(locale, {}));
+    }
 }
 
 it('renders without crashing', () => {
-  render(<App serverAddress="https://tgs.fakesite.net" locale={Locales.enCA} translationFactory={new FakeTranslationFactory()} />);
+    render(
+        <App
+            serverAddress="https://tgs.fakesite.net"
+            locale={Locales.enCA}
+            translationFactory={new FakeTranslationFactory()}
+        />
+    );
 });

@@ -7,7 +7,8 @@ import IApiClient from './IApiClient';
 import ServerResponse from '../models/ServerResponse';
 import TgsResponse from '../models/TgsResponse';
 
-export default class InstanceUserClient extends ComponentClient implements IInstanceUserClient {
+export default class InstanceUserClient extends ComponentClient
+    implements IInstanceUserClient {
     private readonly instanceUserApi: InstanceUserApi;
 
     private currentUserPromise: TgsResponse<InstanceUser> | null;
@@ -24,7 +25,9 @@ export default class InstanceUserClient extends ComponentClient implements IInst
         this.currentCacheToken = null;
     }
 
-    public async getCurrentCached(forceRefresh?: boolean): Promise<ServerResponse<InstanceUser> | null> {
+    public async getCurrentCached(
+        forceRefresh?: boolean
+    ): Promise<ServerResponse<InstanceUser> | null> {
         if (forceRefresh) {
             this.currentCacheToken = null;
             this.currentUser = null;
@@ -36,7 +39,11 @@ export default class InstanceUserClient extends ComponentClient implements IInst
 
         const controlOfPromise = !this.currentUserPromise;
         if (controlOfPromise) {
-            this.currentUserPromise = this.makeApiRequest(this.instanceUserApi.instanceUserControllerReadRaw.bind(this.instanceUserApi));;
+            this.currentUserPromise = this.makeApiRequest(
+                this.instanceUserApi.instanceUserControllerReadRaw.bind(
+                    this.instanceUserApi
+                )
+            );
         }
 
         const result = await this.currentUserPromise;

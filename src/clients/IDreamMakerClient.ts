@@ -1,3 +1,1 @@
-export default interface IDreamMakerClient {
-
-}
+export default interface IDreamMakerClient {}

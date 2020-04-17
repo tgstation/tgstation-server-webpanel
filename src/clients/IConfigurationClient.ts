@@ -1,3 +1,1 @@
-export default interface IConfigurationClient {
-
-}
+export default interface IConfigurationClient {}

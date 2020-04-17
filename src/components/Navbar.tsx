@@ -1,8 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import Glyphicon from '@strongdm/glyphicon'
+import Glyphicon from '@strongdm/glyphicon';
 
 import IUserClient from '../clients/IUserClient';
 import { User } from '../clients/generated';
@@ -46,7 +46,10 @@ class Navbar extends React.Component<IProps, IState> {
 
     public async componentDidMount(): Promise<void> {
         if (this.state.retryIn != null && this.state.retryIn < new Date()) {
-            this.retryTimer = setTimeout(this.retryGetUser, this.state.retryIn.getMilliseconds() - Date.now());
+            this.retryTimer = setTimeout(
+                this.retryGetUser,
+                this.state.retryIn.getMilliseconds() - Date.now()
+            );
             return;
         }
 
@@ -65,7 +68,7 @@ class Navbar extends React.Component<IProps, IState> {
                 return {
                     loadingError,
                     retryIn
-                }
+                };
             });
 
             return;
@@ -86,12 +89,14 @@ class Navbar extends React.Component<IProps, IState> {
     public render(): React.ReactNode {
         return (
             <div className="Navbar">
-                <button className={this.props.currentPage === PageType.Home ? 'active' : ''} onClick={this.navigateHome}>
+                <button
+                    className={
+                        this.props.currentPage === PageType.Home ? 'active' : ''
+                    }
+                    onClick={this.navigateHome}>
                     <FormattedMessage id="navbar.home" />
                 </button>
-                <div className="Navbar-user">
-                    {this.renderUser()}
-                </div>
+                <div className="Navbar-user">{this.renderUser()}</div>
             </div>
         );
     }
@@ -101,7 +106,7 @@ class Navbar extends React.Component<IProps, IState> {
             return (
                 <div className="Navbar-user-error">
                     <div className="Navbar-user-error-glyph">
-                        <Glyphicon glyph='exclamation-sign' />
+                        <Glyphicon glyph="exclamation-sign" />
                     </div>
                     <p className="Navbar-user-error-text">
                         <FormattedMessage id="navbar.error" />:
@@ -112,16 +117,22 @@ class Navbar extends React.Component<IProps, IState> {
             );
         if (this.state.currentUser)
             return (
-                <button className="Navbar-user-name" onClick={this.logoutClick} onMouseEnter={this.onHover} onMouseLeave={this.offHover}>
-                    {this.state.usernameHovered
-                        ? <FormattedMessage id="navbar.logout" />
-                        : this.state.currentUser.name}
+                <button
+                    className="Navbar-user-name"
+                    onClick={this.logoutClick}
+                    onMouseEnter={this.onHover}
+                    onMouseLeave={this.offHover}>
+                    {this.state.usernameHovered ? (
+                        <FormattedMessage id="navbar.logout" />
+                    ) : (
+                        this.state.currentUser.name
+                    )}
                 </button>
             );
 
         return (
             <div className="Navbar-user-loading">
-                <SyncLoader color={"white"} />
+                <SyncLoader color={'white'} />
             </div>
         );
     }
@@ -134,7 +145,7 @@ class Navbar extends React.Component<IProps, IState> {
                 loadingError: prevState.loadingError,
                 retryIn: prevState.retryIn
             };
-        })
+        });
     }
 
     private offHover(): void {
@@ -145,7 +156,7 @@ class Navbar extends React.Component<IProps, IState> {
                 loadingError: prevState.loadingError,
                 retryIn: prevState.retryIn
             };
-        })
+        });
     }
 
     private logoutClick(): void {

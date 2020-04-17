@@ -1,5 +1,5 @@
-import IHttpClient from "./IHttpClient";
-import IServerClient from "./IServerClient";
+import IHttpClient from './IHttpClient';
+import IServerClient from './IServerClient';
 import IUserClient from './IUserClient';
 import UsersClient from './UserClient';
 import IInstanceClient from './IInstanceClient';
@@ -7,10 +7,10 @@ import IInstanceClient from './IInstanceClient';
 import IApiClient, { RawRequestFunc } from './IApiClient';
 
 import { ConfigurationParameters, Configuration, HomeApi } from './generated';
-import { Token, Instance } from "./generated/models";
+import { Token, Instance } from './generated/models';
 
-import ICredentials from "../models/ICredentials";
-import ServerResponse from "../models/ServerResponse";
+import ICredentials from '../models/ICredentials';
+import ServerResponse from '../models/ServerResponse';
 
 import ITranslation from '../translations/ITranslation';
 import InstanceClient from './InstanceClient';
@@ -28,7 +28,9 @@ export default class ServerClient implements IServerClient, IApiClient {
 
     private translation: ITranslation | null;
 
-    private loginRefreshHandlers: Array<(promise: Promise<ServerResponse<Readonly<Token>>>) => void>;
+    private loginRefreshHandlers: Array<
+        (promise: Promise<ServerResponse<Readonly<Token>>>) => void
+    >;
 
     private tokenRefreshTimeout: NodeJS.Timeout | null;
 
@@ -41,11 +43,11 @@ export default class ServerClient implements IServerClient, IApiClient {
 
         const configParameters: ConfigurationParameters = {
             basePath: httpClient.serverUrl,
-            accessToken: () => this.token?.bearer || "",
+            accessToken: () => this.token?.bearer || '',
             headers: {
-                "Accept": "application/json"
+                Accept: 'application/json'
             }
-        }
+        };
 
         // eslint-disable-next-line
         this.config = new Configuration(configParameters);
@@ -54,16 +56,21 @@ export default class ServerClient implements IServerClient, IApiClient {
         this.loginRefreshHandlers = [];
     }
 
-    public setLoginRefreshHandler(handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void): void {
+    public setLoginRefreshHandler(
+        handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
+    ): void {
         this.loginRefreshHandlers.push(handler);
     }
-    public clearLoginRefreshHandler(handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void): void {
-        this.loginRefreshHandlers = this.loginRefreshHandlers.filter(oldHandler => oldHandler !== handler);
+    public clearLoginRefreshHandler(
+        handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
+    ): void {
+        this.loginRefreshHandlers = this.loginRefreshHandlers.filter(
+            oldHandler => oldHandler !== handler
+        );
     }
 
     public createInstanceClient(instance: Instance): IInstanceClient {
-        if (!instance.id)
-            throw new Error('Instance missing ID!');
+        if (!instance.id) throw new Error('Instance missing ID!');
 
         return new InstanceClient(this, instance.id);
     }
@@ -78,8 +85,7 @@ export default class ServerClient implements IServerClient, IApiClient {
     }
 
     public loggedIn(): boolean {
-        if (!this.token?.expiresAt)
-            return false;
+        if (!this.token?.expiresAt) return false;
         const now = new Date();
         return this.token.expiresAt > now;
     }
@@ -89,7 +95,10 @@ export default class ServerClient implements IServerClient, IApiClient {
     }
 
     public tryLogin(credentials: ICredentials): Promise<ServerResponse<Token>> {
-        const initialLogin = !this.credentials || this.credentials.userName !== credentials.userName || this.credentials.password !== credentials.password;
+        const initialLogin =
+            !this.credentials ||
+            this.credentials.userName !== credentials.userName ||
+            this.credentials.password !== credentials.password;
         this.credentials = credentials;
         return this.tryRefreshLogin(initialLogin);
     }
@@ -98,8 +107,8 @@ export default class ServerClient implements IServerClient, IApiClient {
         rawRequestFunc: RawRequestFunc<TRequestParameters, TModel>,
         instanceId?: number | null,
         requestParameters?: TRequestParameters | null,
-        requiresToken: boolean = true): Promise<ServerResponse<TModel> | null> {
-
+        requiresToken: boolean = true
+    ): Promise<ServerResponse<TModel> | null> {
         if (!this.translation)
             throw new Error('ServerClient translation not set!');
 
@@ -112,13 +121,13 @@ export default class ServerClient implements IServerClient, IApiClient {
             }
         }
 
-        requestParameters = requestParameters || {} as TRequestParameters;
+        requestParameters = requestParameters || ({} as TRequestParameters);
 
         const basicRequestParameters = {
             api: ServerClient.ApiVersion,
             userAgent: ServerClient.UserAgent,
             instanceId
-        }
+        };
 
         requestParameters = { ...basicRequestParameters, ...requestParameters };
 
@@ -126,9 +135,8 @@ export default class ServerClient implements IServerClient, IApiClient {
             const apiResponse = await rawRequestFunc(requestParameters);
             const model = await apiResponse.value();
 
-            return new ServerResponse(this.translation, apiResponse.raw, model)
-        }
-        catch (thrownResponse) {
+            return new ServerResponse(this.translation, apiResponse.raw, model);
+        } catch (thrownResponse) {
             if (!(thrownResponse instanceof Response)) {
                 return new ServerResponse(this.translation);
             }
@@ -147,7 +155,9 @@ export default class ServerClient implements IServerClient, IApiClient {
         return `${packageJson.name}/${packageJson.version}`;
     }
 
-    private async tryRefreshLogin(initialLogin: boolean): Promise<ServerResponse<Token>> {
+    private async tryRefreshLogin(
+        initialLogin: boolean
+    ): Promise<ServerResponse<Token>> {
         this.cancelLoginRefresh();
 
         if (!this.credentials) {
@@ -159,26 +169,29 @@ export default class ServerClient implements IServerClient, IApiClient {
             new Configuration({
                 basePath: this.httpClient.serverUrl,
                 headers: {
-                    "Accept": "application/json"
+                    Accept: 'application/json'
                 },
                 username: this.credentials.userName,
                 password: this.credentials.password
-            }));
+            })
+        );
 
         const responsePromise = this.makeApiRequest(
             loginHomeApi.homeControllerCreateTokenRaw.bind(loginHomeApi),
             null,
             null,
-            false) as Promise<ServerResponse<Token>>;
+            false
+        ) as Promise<ServerResponse<Token>>;
 
         if (initialLogin) {
-            this.loginRefreshHandlers.forEach(handler => handler(responsePromise));
+            this.loginRefreshHandlers.forEach(handler =>
+                handler(responsePromise)
+            );
         }
 
         const serverResponse = await responsePromise;
 
-        if (!serverResponse)
-            throw new Error('Login request returned null!');
+        if (!serverResponse) throw new Error('Login request returned null!');
 
         if (serverResponse.model) {
             this.token = serverResponse.model;
@@ -186,10 +199,11 @@ export default class ServerClient implements IServerClient, IApiClient {
             if (serverResponse.model?.expiresAt) {
                 this.tokenRefreshTimeout = setTimeout(
                     () => this.loginRefresh(),
-                    new Date(serverResponse.model.expiresAt).getTime() - Date.now());
+                    new Date(serverResponse.model.expiresAt).getTime() -
+                        Date.now()
+                );
             }
-        }
-        else {
+        } else {
             this.credentials = null;
         }
 

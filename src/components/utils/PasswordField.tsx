@@ -37,28 +37,36 @@ class PasswordField extends React.Component<IProps, IState> {
                     const capsLockWarning = active && this.state.focused;
                     let placeholder = this.props.placeholder;
                     if (capsLockWarning)
-                        placeholder = `${placeholder} (${this.props.intl.formatMessage({ id: 'password.capslock' })})`
-                    return <input
-                        type="password"
-                        className={capsLockWarning ? "form-control PasswordField-caps" : "form-control"}
-                        name={this.props.name}
-                        onChange={this.props.onChange}
-                        onFocus={this.onFocus}
-                        onBlur={this.onBlur}
-                        value={this.props.value}
-                        placeholder={placeholder}
-                    />;
+                        placeholder = `${placeholder} (${this.props.intl.formatMessage(
+                            { id: 'password.capslock' }
+                        )})`;
+                    return (
+                        <input
+                            type="password"
+                            className={
+                                capsLockWarning
+                                    ? 'form-control PasswordField-caps'
+                                    : 'form-control'
+                            }
+                            name={this.props.name}
+                            onChange={this.props.onChange}
+                            onFocus={this.onFocus}
+                            onBlur={this.onBlur}
+                            value={this.props.value}
+                            placeholder={placeholder}
+                        />
+                    );
                 }}
             </ReactIsCapsLockActive>
         );
     }
 
     private onBlur(): void {
-        this.setState({ focused: false })
+        this.setState({ focused: false });
     }
 
     private onFocus(): void {
-        this.setState({ focused: true })
+        this.setState({ focused: true });
     }
 }
 

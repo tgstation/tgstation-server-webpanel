@@ -2,7 +2,9 @@ import { ApiResponse, Token, Configuration } from './generated';
 
 import TgsResponse from '../models/TgsResponse';
 
-export type RawRequestFunc<TRequestParameters, TModel> = (requestParameters: TRequestParameters) => Promise<ApiResponse<TModel>>;
+export type RawRequestFunc<TRequestParameters, TModel> = (
+    requestParameters: TRequestParameters
+) => Promise<ApiResponse<TModel>>;
 
 export default interface IApiClient {
     readonly config: Configuration;
@@ -13,5 +15,6 @@ export default interface IApiClient {
         rawRequestFunc: RawRequestFunc<TRequestParameters, TModel>,
         instanceId?: number | null,
         requestParameters?: TRequestParameters | any | null,
-        requiresToken?: boolean): TgsResponse<TModel>;
+        requiresToken?: boolean
+    ): TgsResponse<TModel>;
 }

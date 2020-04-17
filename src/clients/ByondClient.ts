@@ -6,7 +6,8 @@ import IApiClient from './IApiClient';
 
 import TgsResponse from '../models/TgsResponse';
 
-export default class ByondClient extends ComponentClient implements IByondClient {
+export default class ByondClient extends ComponentClient
+    implements IByondClient {
     private readonly byondApi: ByondApi;
 
     constructor(apiClient: IApiClient, instanceId: number) {
@@ -16,6 +17,8 @@ export default class ByondClient extends ComponentClient implements IByondClient
     }
 
     public read(): TgsResponse<Byond> {
-        return this.makeApiRequest(this.byondApi.byondControllerReadRaw.bind(this.byondApi));
+        return this.makeApiRequest(
+            this.byondApi.byondControllerReadRaw.bind(this.byondApi)
+        );
     }
 }

@@ -4,7 +4,8 @@ import ComponentClient from './ComponentClient';
 import IDreamDaemonClient from './IDreamDaemonClient';
 import IApiClient from './IApiClient';
 
-export default class DreamDaemonClient extends ComponentClient implements IDreamDaemonClient {
+export default class DreamDaemonClient extends ComponentClient
+    implements IDreamDaemonClient {
     private readonly dreamDaemonApi: DreamDaemonApi;
 
     constructor(apiClient: IApiClient, instanceId: number) {

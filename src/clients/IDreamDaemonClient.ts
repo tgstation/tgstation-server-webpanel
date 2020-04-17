@@ -1,3 +1,1 @@
-export default interface IDreamDaemonClient {
-
-}
+export default interface IDreamDaemonClient {}

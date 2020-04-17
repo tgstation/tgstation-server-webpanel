@@ -1,3 +1,1 @@
-export default interface IChatClient {
-
-}
+export default interface IChatClient {}

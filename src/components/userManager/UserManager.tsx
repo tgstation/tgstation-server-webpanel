@@ -4,7 +4,11 @@ import ScrollArea from 'react-scrollbar';
 
 import IUserClient from '../../clients/IUserClient';
 
-import { User, AdministrationRights, InstanceManagerRights } from '../../clients/generated';
+import {
+    User,
+    AdministrationRights,
+    InstanceManagerRights
+} from '../../clients/generated';
 
 import UserEditor from './UserEditor';
 import LargeButton from '../utils/LargeButton';
@@ -30,7 +34,7 @@ interface IState {
     allUsers: ReadonlyArray<User> | null;
 }
 
-export default class UserManager extends React.Component<IProps, IState>{
+export default class UserManager extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
@@ -57,17 +61,23 @@ export default class UserManager extends React.Component<IProps, IState>{
 
     public render(): React.ReactNode {
         if (this.state.editingUser)
-            return <UserEditor
-                userClient={this.props.userClient}
-                user={this.state.editingUser}
-                backAction={this.stopEditing}
-                updateAction={this.updateUser}
-                own={(this.state.editingUser.id === this.state.ownUser?.id)} />;
+            return (
+                <UserEditor
+                    userClient={this.props.userClient}
+                    user={this.state.editingUser}
+                    backAction={this.stopEditing}
+                    updateAction={this.updateUser}
+                    own={this.state.editingUser.id === this.state.ownUser?.id}
+                />
+            );
 
         if (!this.state.ownUser && this.state.errorMessage)
             return this.renderError();
 
-        if (!this.state.allUsers && this.state.operation !== Operation.LoadingUsers)
+        if (
+            !this.state.allUsers &&
+            this.state.operation !== Operation.LoadingUsers
+        )
             return this.renderOwnUser();
 
         return (
@@ -79,22 +89,28 @@ export default class UserManager extends React.Component<IProps, IState>{
     }
 
     private renderError(): React.ReactNode {
-        return (
-            <p className="User-manager-error">
-                {this.state.errorMessage}
-            </p>
-        );
+        return <p className="User-manager-error">{this.state.errorMessage}</p>;
     }
 
     private renderOwnUser(): React.ReactNode {
-        if (!this.state.ownUser)
-            return this.renderLoader();
+        if (!this.state.ownUser) return this.renderLoader();
 
         return (
             <div className="User-manager-own">
-                <UserBadge user={this.state.ownUser} refreshAction={this.refreshId} editAction={this.editUser} own={true} />
+                <UserBadge
+                    user={this.state.ownUser}
+                    refreshAction={this.refreshId}
+                    editAction={this.editUser}
+                    own={true}
+                />
                 <div className="User-manager-own-refresh">
-                    <LargeButton textSize="15px" fontSize="50px" glyph="refresh" messageId="user_manager.refresh_all" onClick={this.refresh} />
+                    <LargeButton
+                        textSize="15px"
+                        fontSize="50px"
+                        glyph="refresh"
+                        messageId="user_manager.refresh_all"
+                        onClick={this.refresh}
+                    />
                 </div>
             </div>
         );
@@ -116,26 +132,48 @@ export default class UserManager extends React.Component<IProps, IState>{
                 </div>
             );
 
-        if (this.state.errorMessage)
-            return this.renderError();
+        if (this.state.errorMessage) return this.renderError();
 
         if (!this.state.allUsers)
-            throw new Error("state.allUsers should be set here!");
+            throw new Error('state.allUsers should be set here!');
 
         let otherEditors = this.state.allUsers
             .filter(user => user.id !== this.state.ownUser?.id)
-            .map(user => <UserBadge user={user} refreshAction={this.refreshId} editAction={this.editUser} own={false} key={user.id} />);
+            .map(user => (
+                <UserBadge
+                    user={user}
+                    refreshAction={this.refreshId}
+                    editAction={this.editUser}
+                    own={false}
+                    key={user.id}
+                />
+            ));
 
         if (!this.state.ownUser?.administrationRights)
             throw new Error('state.ownUser.administrationRights was null!');
 
         const editButtons = [
-            <LargeButton fontSize="50px" glyph="refresh" onClick={this.refreshOthers} key={-2} />
+            <LargeButton
+                fontSize="50px"
+                glyph="refresh"
+                onClick={this.refreshOthers}
+                key={-2}
+            />
         ];
 
-        if ((this.state.ownUser.administrationRights & AdministrationRights.WriteUsers) !== 0)
+        if (
+            (this.state.ownUser.administrationRights &
+                AdministrationRights.WriteUsers) !==
+            0
+        )
             editButtons.push(
-                <LargeButton textSize="30px" fontSize="50px" glyph="plus" onClick={this.addUser} key={-1} />
+                <LargeButton
+                    textSize="30px"
+                    fontSize="50px"
+                    glyph="plus"
+                    onClick={this.addUser}
+                    key={-1}
+                />
             );
 
         return (
@@ -147,12 +185,11 @@ export default class UserManager extends React.Component<IProps, IState>{
                     {otherEditors}
                 </ScrollArea>
             </div>
-        )
+        );
     }
 
     private async refresh(clearUserCache: boolean = true): Promise<void> {
-        if (this.state.operation !== Operation.Idle)
-            return;
+        if (this.state.operation !== Operation.Idle) return;
 
         this.setState(prevState => {
             return {
@@ -161,10 +198,12 @@ export default class UserManager extends React.Component<IProps, IState>{
                 allUsers: null,
                 errorMessage: null,
                 editingUser: prevState.editingUser
-            }
+            };
         });
 
-        const ownUser = await this.props.userClient.getCurrentCached(clearUserCache);
+        const ownUser = await this.props.userClient.getCurrentCached(
+            clearUserCache
+        );
         if (!ownUser)
             // login refresh fail handled higher up
             return;
@@ -197,10 +236,11 @@ export default class UserManager extends React.Component<IProps, IState>{
         if (!result.administrationRights)
             throw new Error('administrationRights was null!');
 
-        const canContinue = (result.administrationRights & AdministrationRights.ReadUsers) !== 0;
+        const canContinue =
+            (result.administrationRights & AdministrationRights.ReadUsers) !==
+            0;
 
-        if (canContinue)
-            await this.refreshOthers();
+        if (canContinue) await this.refreshOthers();
     }
 
     private async refreshOthers(): Promise<void> {
@@ -271,18 +311,20 @@ export default class UserManager extends React.Component<IProps, IState>{
     }
 
     private updateUser(updatedUser: User): void {
-        if (updatedUser.id == null)
-            throw new Error('updatedUser.id was null!');
+        if (updatedUser.id == null) throw new Error('updatedUser.id was null!');
 
         this.setState(prevState => {
             return {
                 operation: prevState.operation,
-                allUsers: prevState.allUsers?.map(user => {
-                    if (user.id === updatedUser.id)
-                        return updatedUser;
-                    return user;
-                }) || null,
-                ownUser: prevState.ownUser?.id === updatedUser.id ? updatedUser : prevState.ownUser,
+                allUsers:
+                    prevState.allUsers?.map(user => {
+                        if (user.id === updatedUser.id) return updatedUser;
+                        return user;
+                    }) || null,
+                ownUser:
+                    prevState.ownUser?.id === updatedUser.id
+                        ? updatedUser
+                        : prevState.ownUser,
                 editingUser: prevState.editingUser,
                 errorMessage: prevState.errorMessage
             };
@@ -297,7 +339,7 @@ export default class UserManager extends React.Component<IProps, IState>{
                 editingUser: null,
                 errorMessage: prevState.errorMessage,
                 allUsers: prevState.allUsers
-            }
+            };
         });
     }
 
@@ -309,7 +351,7 @@ export default class UserManager extends React.Component<IProps, IState>{
                 editingUser: user,
                 errorMessage: prevState.errorMessage,
                 allUsers: prevState.allUsers
-            }
+            };
         });
     }
 

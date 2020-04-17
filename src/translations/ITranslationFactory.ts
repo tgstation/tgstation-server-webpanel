@@ -1,4 +1,4 @@
-import ITranslation from "./ITranslation";
+import ITranslation from './ITranslation';
 
 interface ITranslationFactory {
     loadTranslation(locale: string): Promise<ITranslation>;

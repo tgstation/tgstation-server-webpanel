@@ -1,4 +1,4 @@
-import IHttpClient from "./IHttpClient";
+import IHttpClient from './IHttpClient';
 
 class HttpClient implements IHttpClient {
     readonly serverUrl: string;
@@ -7,11 +7,15 @@ class HttpClient implements IHttpClient {
         this.serverUrl = serverUrl;
     }
 
-    public runRequest(route: string, requestInfo?: RequestInit, fullRoute?: boolean): Promise<Response> {
+    public runRequest(
+        route: string,
+        requestInfo?: RequestInit,
+        fullRoute?: boolean
+    ): Promise<Response> {
         if (!fullRoute && this.serverUrl) {
             route = this.serverUrl + route;
             requestInfo = requestInfo || {};
-            requestInfo.mode = "cors";
+            requestInfo.mode = 'cors';
         }
         return fetch(route, requestInfo);
     }

@@ -1,6 +1,6 @@
 import IUserClient from './IUserClient';
 
-import ICredentials from "../models/ICredentials";
+import ICredentials from '../models/ICredentials';
 import ServerResponse from '../models/ServerResponse';
 
 import { Token, Instance } from './generated';
@@ -8,17 +8,23 @@ import ITranslation from '../translations/ITranslation';
 import IInstanceClient from './IInstanceClient';
 
 export default interface IServerClient {
-  readonly users: IUserClient;
+    readonly users: IUserClient;
 
-  loggedIn(): boolean;
+    loggedIn(): boolean;
 
-  tryLogin(credentials: ICredentials): Promise<ServerResponse<Readonly<Token>>>;
-  logout(): void;
+    tryLogin(
+        credentials: ICredentials
+    ): Promise<ServerResponse<Readonly<Token>>>;
+    logout(): void;
 
-  setTranslation(translation: ITranslation): void;
+    setTranslation(translation: ITranslation): void;
 
-  createInstanceClient(instance: Instance): IInstanceClient;
+    createInstanceClient(instance: Instance): IInstanceClient;
 
-  setLoginRefreshHandler(handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void): void;
-  clearLoginRefreshHandler(handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void): void;
+    setLoginRefreshHandler(
+        handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
+    ): void;
+    clearLoginRefreshHandler(
+        handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
+    ): void;
 }

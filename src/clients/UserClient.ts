@@ -22,19 +22,26 @@ export default class UsersClient implements IUsersClient {
         this.currentCacheToken = null;
     }
 
-    public async getCurrentCached(forceRefresh?: boolean): Promise<ServerResponse<User> | null> {
+    public async getCurrentCached(
+        forceRefresh?: boolean
+    ): Promise<ServerResponse<User> | null> {
         if (forceRefresh) {
             this.currentCacheToken = null;
             this.currentUser = null;
         }
 
-        if (this.currentUser && this.currentCacheToken === this.apiClient.getToken()) {
+        if (
+            this.currentUser &&
+            this.currentCacheToken === this.apiClient.getToken()
+        ) {
             return this.currentUser;
         }
 
         const controlOfPromise = !this.currentUserPromise;
         if (controlOfPromise) {
-            this.currentUserPromise = this.apiClient.makeApiRequest(this.userApi.userControllerReadRaw.bind(this.userApi));
+            this.currentUserPromise = this.apiClient.makeApiRequest(
+                this.userApi.userControllerReadRaw.bind(this.userApi)
+            );
         }
 
         const result = await this.currentUserPromise;
@@ -54,21 +61,30 @@ export default class UsersClient implements IUsersClient {
     }
 
     public list(): TgsResponse<User[]> {
-        return this.apiClient.makeApiRequest(this.userApi.userControllerListRaw.bind(this.userApi));
+        return this.apiClient.makeApiRequest(
+            this.userApi.userControllerListRaw.bind(this.userApi)
+        );
     }
 
     public update(userUpdate: UserUpdate): TgsResponse<User> {
-        return this.apiClient.makeApiRequest(this.userApi.userControllerUpdateRaw.bind(this.userApi), null, {
-            userUpdate
-        });
+        return this.apiClient.makeApiRequest(
+            this.userApi.userControllerUpdateRaw.bind(this.userApi),
+            null,
+            {
+                userUpdate
+            }
+        );
     }
 
     public getId(user: User): TgsResponse<User> {
-        if (!user.id)
-            throw new Error('user.Id was null!');
+        if (!user.id) throw new Error('user.Id was null!');
 
-        return this.apiClient.makeApiRequest(this.userApi.userControllerGetIdRaw.bind(this.userApi), null, {
-            id: user.id
-        });
+        return this.apiClient.makeApiRequest(
+            this.userApi.userControllerGetIdRaw.bind(this.userApi),
+            null,
+            {
+                id: user.id
+            }
+        );
     }
 }

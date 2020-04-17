@@ -1,3 +1,1 @@
-export default interface IRepositoryClient {
-
-}
+export default interface IRepositoryClient {}

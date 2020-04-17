@@ -4,7 +4,8 @@ import ComponentClient from './ComponentClient';
 import IRepositoryClient from './IRepositoryClient';
 import IApiClient from './IApiClient';
 
-export default class RepositoryClient extends ComponentClient implements IRepositoryClient {
+export default class RepositoryClient extends ComponentClient
+    implements IRepositoryClient {
     private readonly repositoryApi: RepositoryApi;
 
     constructor(apiClient: IApiClient, instanceId: number) {

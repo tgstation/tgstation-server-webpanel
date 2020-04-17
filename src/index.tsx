@@ -6,12 +6,13 @@ import Locales from './translations/Locales';
 
 import './index.css';
 
-const apiUrl = process.env.TGS || "http://localhost:5000";
+const apiUrl = process.env.TGS || 'http://localhost:5000';
 
 const rootNode = document.getElementById('root') as HTMLElement;
-const appTsx =
+const appTsx = (
     <React.StrictMode>
         <App serverAddress={apiUrl} locale={Locales.en} />
-    </React.StrictMode>;
+    </React.StrictMode>
+);
 
 ReactDOM.render(appTsx, rootNode);

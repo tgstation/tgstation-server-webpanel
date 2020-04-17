@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { User, AdministrationRights } from '../../clients/generated';
 
-import Glyphicon from '@strongdm/glyphicon'
+import Glyphicon from '@strongdm/glyphicon';
 
 import './UserBadge.css';
 import { FormattedMessage, InjectedIntlProps, injectIntl } from 'react-intl';
@@ -17,7 +17,7 @@ interface IOwnProps {
 }
 
 interface IState {
-    refreshing: boolean
+    refreshing: boolean;
     refreshError?: boolean;
 }
 
@@ -50,14 +50,16 @@ class UserBadge extends React.Component<IProps, IState> {
             throw new Error('props.user.createdAt should be set!');
 
         let createdBy = this.props.user.createdBy?.name;
-        if (!createdBy)
-            createdBy = 'TGS';
+        if (!createdBy) createdBy = 'TGS';
 
         const enabledGlyph = this.props.user.enabled ? 'check' : 'cross';
         const enabledClass = this.props.user.enabled ? 'enabled' : 'disabled';
 
         const editSection = [
-            <button className="UserBadge-refresh" onClick={this.refresh}>
+            <button
+                className="UserBadge-refresh"
+                onClick={this.refresh}
+                key={1}>
                 <FormattedMessage id="user_badge.refresh" />
             </button>
         ];
@@ -71,28 +73,55 @@ class UserBadge extends React.Component<IProps, IState> {
         if (canWrite)
             editSection.unshift(
                 <button className="UserBadge-edit" onClick={this.edit}>
-                    <FormattedMessage id={canWrite ? 'user_badge.edit' : 'user_badge.change_password'} />
+                    <FormattedMessage
+                        id={
+                            canWrite
+                                ? 'user_badge.edit'
+                                : 'user_badge.change_password'
+                        }
+                    />
                 </button>
             );
 
         return (
-            <div className={(this.state.refreshError ? 'UserBadge UserBadge-error' : 'UserBadge')}>
-                <div className="UserBadge-glyph" style={{ color: this.getUserColor() }}>
+            <div
+                className={
+                    this.state.refreshError
+                        ? 'UserBadge UserBadge-error'
+                        : 'UserBadge'
+                }>
+                <div
+                    className="UserBadge-glyph"
+                    style={{ color: this.getUserColor() }}>
                     <Glyphicon glyph="user" />
                 </div>
                 <p className="UserBadge-name">
-                    <FormattedMessage id="user_badge.name" values={{ name: this.props.user.name }} />
+                    <FormattedMessage
+                        id="user_badge.name"
+                        values={{ name: this.props.user.name }}
+                    />
                 </p>
                 <p className="UserBadge-id">
-                    <FormattedMessage id="user_badge.id" values={{ id: this.props.user.id }} />
+                    <FormattedMessage
+                        id="user_badge.id"
+                        values={{ id: this.props.user.id }}
+                    />
                 </p>
                 <p className="UserBadge-created-on">
-                    <FormattedMessage id="user_badge.created_on" values={{ createdOn: this.props.intl.formatDate(createdAt) }} />
+                    <FormattedMessage
+                        id="user_badge.created_on"
+                        values={{
+                            createdOn: this.props.intl.formatDate(createdAt)
+                        }}
+                    />
                 </p>
                 <p className="UserBadge-created-by">
-                    <FormattedMessage id="user_badge.created_by" values={{ name: createdBy }} />
+                    <FormattedMessage
+                        id="user_badge.created_by"
+                        values={{ name: createdBy }}
+                    />
                 </p>
-                <div className={"UserBadge-state user-" + enabledClass}>
+                <div className={'UserBadge-state user-' + enabledClass}>
                     <Glyphicon glyph={enabledGlyph} />
                 </div>
                 {editSection}
@@ -101,7 +130,8 @@ class UserBadge extends React.Component<IProps, IState> {
     }
 
     private getUserColor(): string {
-        function hashCode(str: string) { // java String#hashCode
+        function hashCode(str: string) {
+            // java String#hashCode
             var hash = 0;
             for (var i = 0; i < str.length; i++) {
                 hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -110,11 +140,9 @@ class UserBadge extends React.Component<IProps, IState> {
         }
 
         function intToRGB(i: number) {
-            var c = (i & 0x00FFFFFF)
-                .toString(16)
-                .toUpperCase();
+            var c = (i & 0x00ffffff).toString(16).toUpperCase();
 
-            return "00000".substring(0, 6 - c.length) + c;
+            return '00000'.substring(0, 6 - c.length) + c;
         }
 
         const userId = this.props.user.id;
@@ -130,8 +158,7 @@ class UserBadge extends React.Component<IProps, IState> {
     }
 
     private async refresh(): Promise<void> {
-        if (this.state.refreshing)
-            return;
+        if (this.state.refreshing) return;
 
         const refreshPromise = this.props.refreshAction(this.props.user);
         this.setState({
