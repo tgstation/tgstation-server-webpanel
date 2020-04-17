@@ -10,7 +10,7 @@ export default abstract class TransitionsComponent<
     IProps,
     IChildState = {}
 > extends React.Component<IProps, IChildState & IOwnState> {
-    constructor(
+    public constructor(
         props: IProps,
         protected readonly transitionsMaxDuration: number
     ) {

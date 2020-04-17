@@ -7,7 +7,7 @@ import TgsResponse from '../models/TgsResponse';
 export default abstract class ComponentClient implements IApiClient {
     public readonly config: Configuration;
 
-    constructor(
+    public constructor(
         private readonly apiClient: IApiClient,
         private readonly instanceId: number
     ) {

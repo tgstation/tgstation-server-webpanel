@@ -14,7 +14,7 @@ export default class UsersClient implements IUsersClient {
     private currentUser: ServerResponse<User> | null;
     private currentCacheToken: Token | null;
 
-    constructor(private readonly apiClient: IApiClient) {
+    public constructor(private readonly apiClient: IApiClient) {
         this.userApi = new UserApi(apiClient.config);
 
         this.currentUserPromise = null;

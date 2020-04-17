@@ -8,7 +8,7 @@ export default class DreamMakerClient extends ComponentClient
     implements IDreamMakerClient {
     private readonly dreamMakerApi: DreamMakerApi;
 
-    constructor(apiClient: IApiClient, instanceId: number) {
+    public constructor(apiClient: IApiClient, instanceId: number) {
         super(apiClient, instanceId);
 
         this.dreamMakerApi = new DreamMakerApi(apiClient.config);

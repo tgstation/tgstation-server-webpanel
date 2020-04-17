@@ -15,7 +15,7 @@ export default class InstanceUserClient extends ComponentClient
     private currentUser: ServerResponse<InstanceUser> | null;
     private currentCacheToken: Token | null;
 
-    constructor(apiClient: IApiClient, instanceId: number) {
+    public constructor(apiClient: IApiClient, instanceId: number) {
         super(apiClient, instanceId);
 
         this.instanceUserApi = new InstanceUserApi(apiClient.config);

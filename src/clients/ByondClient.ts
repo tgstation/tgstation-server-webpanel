@@ -10,7 +10,7 @@ export default class ByondClient extends ComponentClient
     implements IByondClient {
     private readonly byondApi: ByondApi;
 
-    constructor(apiClient: IApiClient, instanceId: number) {
+    public constructor(apiClient: IApiClient, instanceId: number) {
         super(apiClient, instanceId);
 
         this.byondApi = new ByondApi(apiClient.config);

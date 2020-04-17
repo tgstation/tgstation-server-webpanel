@@ -26,7 +26,7 @@ export default class InstanceClient implements IInstanceClient {
     public readonly config: IConfigurationClient;
     public readonly users: IInstanceUserClient;
 
-    constructor(apiClient: IApiClient, instanceId: number) {
+    public constructor(apiClient: IApiClient, instanceId: number) {
         this.repo = new RepositoryClient(apiClient, instanceId);
         this.byond = new ByondClient(apiClient, instanceId);
         this.dreamMaker = new DreamMakerClient(apiClient, instanceId);

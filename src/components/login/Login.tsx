@@ -39,7 +39,7 @@ interface IOwnProps {
 type IProps = IOwnProps & InjectedIntlProps;
 
 class Login extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
+    public constructor(props: IProps) {
         super(props);
         this.updateUsername = this.updateUsername.bind(this);
         this.updatePassword = this.updatePassword.bind(this);

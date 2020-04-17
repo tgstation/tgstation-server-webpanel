@@ -26,7 +26,7 @@ class App extends React.Component<IAppProps, IState> {
     private readonly serverClient: IServerClient;
     private readonly translationFactory: ITranslationFactory;
 
-    constructor(props: IAppProps) {
+    public constructor(props: IAppProps) {
         super(props);
 
         this.httpClient =

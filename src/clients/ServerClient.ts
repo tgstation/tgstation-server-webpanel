@@ -34,7 +34,7 @@ export default class ServerClient implements IServerClient, IApiClient {
 
     private tokenRefreshTimeout: NodeJS.Timeout | null;
 
-    constructor(private readonly httpClient: IHttpClient) {
+    public constructor(private readonly httpClient: IHttpClient) {
         this.loginRefresh = this.loginRefresh.bind(this);
         this.token = null;
         this.tokenRefreshTimeout = null;

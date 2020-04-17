@@ -19,7 +19,7 @@ interface IState {
 type IProps = IOwnProps & InjectedIntlProps;
 
 class PasswordField extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
+    public constructor(props: IProps) {
         super(props);
 
         this.onFocus = this.onFocus.bind(this);

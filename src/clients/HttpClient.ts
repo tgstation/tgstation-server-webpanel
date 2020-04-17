@@ -1,9 +1,9 @@
 import IHttpClient from './IHttpClient';
 
 class HttpClient implements IHttpClient {
-    readonly serverUrl: string;
+    public readonly serverUrl: string;
 
-    constructor(serverUrl: string) {
+    public constructor(serverUrl: string) {
         this.serverUrl = serverUrl;
     }
 

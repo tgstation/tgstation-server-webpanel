@@ -8,7 +8,7 @@ export default class ConfigurationClient extends ComponentClient
     implements IConfigurationClient {
     private readonly configurationApi: ConfigurationApi;
 
-    constructor(apiClient: IApiClient, instanceId: number) {
+    public constructor(apiClient: IApiClient, instanceId: number) {
         super(apiClient, instanceId);
 
         this.configurationApi = new ConfigurationApi(apiClient.config);

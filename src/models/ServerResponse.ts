@@ -3,7 +3,7 @@ import { ErrorMessage } from '../clients/generated/models';
 import ITranslation from '../translations/ITranslation';
 
 export default class ServerResponse<TModel> {
-    constructor(
+    public constructor(
         private readonly translation: ITranslation,
         public readonly response?: Response,
         public readonly model?: TModel

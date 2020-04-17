@@ -15,7 +15,7 @@ class TranslationFactory implements ITranslationFactory {
 
     private readonly httpClient: IHttpClient;
 
-    constructor(httpClient: IHttpClient) {
+    public constructor(httpClient: IHttpClient) {
         this.httpClient = httpClient;
     }
 

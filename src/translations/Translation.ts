@@ -4,12 +4,12 @@ import ILocalization from './ILocalization';
 import { ErrorCode } from '../clients/generated';
 
 export default class Translation implements ITranslation {
-    constructor(
+    public constructor(
         public readonly locale: string,
         public readonly messages: ILocalization
     ) {}
 
-    forErrorCode(errorCode: ErrorCode, serverMessage?: string): string {
+    public forErrorCode(errorCode: ErrorCode, serverMessage?: string): string {
         if (this.locale.startsWith('en')) {
             if (serverMessage) {
                 return serverMessage;

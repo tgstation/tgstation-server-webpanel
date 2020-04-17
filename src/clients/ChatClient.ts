@@ -7,7 +7,7 @@ import IApiClient from './IApiClient';
 export default class ChatClient extends ComponentClient implements IChatClient {
     private readonly chatApi: ChatApi;
 
-    constructor(apiClient: IApiClient, instanceId: number) {
+    public constructor(apiClient: IApiClient, instanceId: number) {
         super(apiClient, instanceId);
 
         this.chatApi = new ChatApi(apiClient.config);

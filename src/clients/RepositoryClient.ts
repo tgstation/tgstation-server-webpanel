@@ -8,7 +8,7 @@ export default class RepositoryClient extends ComponentClient
     implements IRepositoryClient {
     private readonly repositoryApi: RepositoryApi;
 
-    constructor(apiClient: IApiClient, instanceId: number) {
+    public constructor(apiClient: IApiClient, instanceId: number) {
         super(apiClient, instanceId);
 
         this.repositoryApi = new RepositoryApi(apiClient.config);

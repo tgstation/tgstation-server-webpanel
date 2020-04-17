@@ -30,6 +30,12 @@
         "prettier"
     ],
     "rules": {
+        "@typescript-eslint/explicit-member-accessibility": [
+            "error",
+            {
+                "accessibility": "explicit"
+            }
+        ],
         "linebreak-style": "off",
         "no-unused-vars": "off",
         "prettier/prettier": "error",

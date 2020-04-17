@@ -8,7 +8,7 @@ export default class DreamDaemonClient extends ComponentClient
     implements IDreamDaemonClient {
     private readonly dreamDaemonApi: DreamDaemonApi;
 
-    constructor(apiClient: IApiClient, instanceId: number) {
+    public constructor(apiClient: IApiClient, instanceId: number) {
         super(apiClient, instanceId);
 
         this.dreamDaemonApi = new DreamDaemonApi(apiClient.config);
