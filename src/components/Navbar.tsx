@@ -67,7 +67,8 @@ class Navbar extends React.Component<IProps, IState> {
             this.setState(prevState => {
                 return {
                     loadingError,
-                    retryIn
+                    retryIn,
+                    usernameHovered: prevState.usernameHovered
                 };
             });
 

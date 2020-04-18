@@ -68,6 +68,7 @@ export default class UserManager extends React.Component<IProps, IState> {
                     backAction={this.stopEditing}
                     updateAction={this.updateUser}
                     own={this.state.editingUser.id === this.state.ownUser?.id}
+                    refreshAction={this.refreshId}
                 />
             );
 

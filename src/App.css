@@ -11,6 +11,13 @@
   display: grid;
 }
 
+.App-error {
+    color: red;
+    font-size: 150%;
+    margin: auto;
+}
+
+
 .App-main {
   display: grid;
 }

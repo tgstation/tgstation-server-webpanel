@@ -11,9 +11,9 @@ import { PropagateLoader } from 'react-spinners';
 interface IOwnProps {
     user: User;
     own: boolean;
+    editAction?: (user: User) => void;
 
     refreshAction(user: User): Promise<boolean>;
-    editAction(user: User): void;
 }
 
 interface IState {
@@ -70,7 +70,7 @@ class UserBadge extends React.Component<IProps, IState> {
 
         const canWrite = (adminRights & AdministrationRights.WriteUsers) !== 0;
 
-        if (canWrite)
+        if (canWrite && this.props.editAction)
             editSection.unshift(
                 <button className="UserBadge-edit" onClick={this.edit}>
                     <FormattedMessage
@@ -88,6 +88,8 @@ class UserBadge extends React.Component<IProps, IState> {
                 className={
                     this.state.refreshError
                         ? 'UserBadge UserBadge-error'
+                        : !this.props.editAction
+                        ? 'UserBadge-editor'
                         : 'UserBadge'
                 }>
                 <div
@@ -95,12 +97,7 @@ class UserBadge extends React.Component<IProps, IState> {
                     style={{ color: this.getUserColor() }}>
                     <Glyphicon glyph="user" />
                 </div>
-                <p className="UserBadge-name">
-                    <FormattedMessage
-                        id="user_badge.name"
-                        values={{ name: this.props.user.name }}
-                    />
-                </p>
+                <p className="UserBadge-name">{this.renderName()}</p>
                 <p className="UserBadge-id">
                     <FormattedMessage
                         id="user_badge.id"
@@ -153,7 +150,29 @@ class UserBadge extends React.Component<IProps, IState> {
         return `#${col}`;
     }
 
+    private renderName(): React.ReactNode {
+        if (this.props.user.systemIdentifier)
+            return (
+                <React.Fragment>
+                    <FormattedMessage
+                        id="user_badge.system_id"
+                        values={{ name: this.props.user.systemIdentifier }}
+                    />
+                    <span> ({this.props.user.name})</span>
+                </React.Fragment>
+            );
+
+        return (
+            <FormattedMessage
+                id="user_badge.name"
+                values={{ name: this.props.user.name }}
+            />
+        );
+    }
+
     private edit(): void {
+        if (!this.props.editAction)
+            throw new Error('props.editAction should be set here!');
         this.props.editAction(this.props.user);
     }
 

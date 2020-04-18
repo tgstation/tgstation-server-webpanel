@@ -1,5 +1,7 @@
 import IHttpClient from '../clients/IHttpClient';
 
+import ServerResponse from '../models/ServerResponse';
+
 import ILocalization from './ILocalization';
 import ITranslation from './ITranslation';
 import ITranslationFactory from './ITranslationFactory';
@@ -19,12 +21,14 @@ class TranslationFactory implements ITranslationFactory {
         this.httpClient = httpClient;
     }
 
-    public async loadTranslation(locale: string): Promise<ITranslation> {
-        const requestPath =
+    public async loadTranslation(
+        locale: string
+    ): Promise<ServerResponse<ITranslation>> {
+        let requestPath =
             process.env.NODE_ENV === 'development'
                 ? 'tgstation-server-control-panel'
                 : '';
-        '/locales/' + locale + '.json';
+        requestPath = requestPath + '/locales/' + locale + '.json';
         const response = await this.httpClient.runRequest(
             requestPath,
             undefined,
@@ -43,9 +47,20 @@ class TranslationFactory implements ITranslationFactory {
             return await this.loadTranslation(shortHandedLocale);
         }
 
-        const json = (await response.json()) as ILocalization;
+        let model: ITranslation | null = null;
+        try {
+            const localization = (await response.json()) as ILocalization;
+            model = new Translation(locale, localization);
+        } catch (e) {
+            return new ServerResponse<ITranslation>(
+                null,
+                null,
+                null,
+                `Error loading localization for locale '${locale}': ${e.toString()}`
+            );
+        }
 
-        return new Translation(locale, json);
+        return new ServerResponse(model, response, model);
     }
 }
 

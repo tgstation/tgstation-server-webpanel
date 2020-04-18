@@ -22,6 +22,7 @@
     "navbar.home": "Home",
     "navbar.logout": "Logout",
     "navbar.user_prefix": "Logged in as",
+    "server_response.exception": "An exception occurred while deserializing the error message: ",
     "user_badge.created_by": "Created By: {name}",
     "user_badge.created_on": "Created On: {createdOn}",
     "user_badge.edit": "Edit",
@@ -29,5 +30,6 @@
     "user_badge.id": "ID: {id}",
     "user_badge.name": "Name: {name}",
     "user_badge.refresh": "Refresh",
+    "user_badge.system_id": "System Identifier: {name}",
     "user_manager.refresh_all": "Refresh All"
 }

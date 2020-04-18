@@ -4,6 +4,10 @@
     display: grid;
 }
 
+.UserBadge-editor {
+    display: grid;
+}
+
 .UserBadge.UserBadge-error {
     border-radius: 25px;
     background-color: rgb(255, 72, 0);

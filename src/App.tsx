@@ -19,6 +19,7 @@ import './App.css';
 
 interface IState {
     translation?: ITranslation;
+    translationError?: string;
 }
 
 class App extends React.Component<IAppProps, IState> {
@@ -41,12 +42,7 @@ class App extends React.Component<IAppProps, IState> {
     }
 
     public async componentDidMount(): Promise<void> {
-        const translation = await this.loadTranslation();
-        this.setState((prevState: Readonly<IState>) => {
-            return {
-                translation
-            };
-        });
+        await this.loadTranslation();
     }
 
     public render(): React.ReactNode {
@@ -54,6 +50,9 @@ class App extends React.Component<IAppProps, IState> {
     }
 
     private renderInnards(): React.ReactNode {
+        if (this.state.translationError != null)
+            return <p className="App-error">{this.state.translationError}</p>;
+
         if (this.state.translation == null) return this.renderLoading();
 
         return (
@@ -67,12 +66,25 @@ class App extends React.Component<IAppProps, IState> {
         );
     }
 
-    private async loadTranslation(): Promise<ITranslation> {
-        const translation = await this.translationFactory.loadTranslation(
+    private async loadTranslation(): Promise<void> {
+        const translationResponse = await this.translationFactory.loadTranslation(
             this.props.locale
         );
+
+        const translation = translationResponse.model;
+        if (!translation) {
+            const error = await translationResponse.getError();
+            this.setState({
+                translationError: error || 'An unknown error occurred'
+            });
+
+            return;
+        }
+
         this.serverClient.setTranslation(translation);
-        return translation;
+        this.setState({
+            translation
+        });
     }
 
     private renderLoading(): React.ReactNode {
