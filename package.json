@@ -35,6 +35,7 @@
         "clean_build": "rimraf build",
         "clean_generated": "rimraf src/clients/generated",
         "test": "npm run generate_api && react-scripts test",
+        "print_version": "node -e \"fs.writeFileSync('./package_version.txt', process.env.npm_package_version);\"",
         "prepack": "npm run build",
         "lint": "eslint ./src/**/*.{ts,tsx}",
         "lint-fix": "eslint --fix ./src/**/*.{ts,tsx}"
