@@ -7,7 +7,7 @@ node_js:
   - "10"
 script:
   - npm run build
-  - npm test
+  - npm test --passWithNoTests
 before_deploy:
   - npm run print_version
   - export RELEASE_VERSION=`cat package_version.txt`
