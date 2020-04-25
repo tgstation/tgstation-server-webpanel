@@ -23,4 +23,4 @@ deploy:
   api_key: $NPM_TOKEN
   on:
     branch: master
-    condition: $TGS_DEPLOY = "Do it."
+    condition: $TGS_DEPLOY
