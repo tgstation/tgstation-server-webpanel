@@ -145,13 +145,22 @@ export default class ServerClient implements IServerClient, IApiClient {
         }
     }
 
+    private static loadPackageJson(): any {
+        const jsonPath =
+            process.env.NODE_ENV === 'development'
+                ? '../../package.json'
+                : '../../../package.json';
+
+        return require(jsonPath);
+    }
+
     private static getApiVersion(): string {
-        const packageJson = require('../../package.json');
+        const packageJson = ServerClient.loadPackageJson();
         return `Tgstation.Server.Api/${packageJson.tgs_api_version}`;
     }
 
     private static getUserAgent(): string {
-        const packageJson = require('../../package.json');
+        const packageJson = ServerClient.loadPackageJson();
         return `${packageJson.name}/${packageJson.version}`;
     }
 
