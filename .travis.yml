@@ -7,14 +7,15 @@ node_js:
   - "10"
 script:
   - npm run build
-before_deploy:
+after_success:
   - npm run print_version
   - export RELEASE_VERSION=`cat package_version.txt`
   - if [ ! [ git tag --list | egrep -q "^$RELEASE_VERSION$" ]]; then export TGS_DEPLOY="Do it."; fi
-  - if [ $TGS_DEPLOY = "Do it." ]; then git config --local user.name "tgstation-server"; fi
-  - if [ $TGS_DEPLOY = "Do it." ]; then git config --local user.email "tgstation-server@users.noreply.github.com"l fi
-  - if [ $TGS_DEPLOY = "Do it." ]; then git tag -a $RELEASE_VERSION -m "Automatic travis deployment of version $RELEASE_VERSION"; fi
-  - if [ $TGS_DEPLOY = "Do it." ]; then git push --tags "https://$GITHUB_TOKEN@github.com/tgstation/tgstation-server-control-panel"; fi
+before_deploy:
+  - git config --local user.name "tgstation-server"
+  - git config --local user.email "tgstation-server@users.noreply.github.com"
+  - git tag -a $RELEASE_VERSION -m "Automatic travis deployment of version $RELEASE_VERSION"
+  - git push --tags "https://$GITHUB_TOKEN@github.com/tgstation/tgstation-server-control-panel"
 deploy:
   provider: npm
   email: $NPM_EMAIL
