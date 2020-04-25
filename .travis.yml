@@ -12,11 +12,6 @@ after_success:
   - export RELEASE_VERSION=`cat package_version.txt`
   - export CONDITION=$(git tag --list | egrep "$RELEASE_VERSION")
   - if test $CONDITION; then export TGS_DEPLOY=Dewit; fi
-before_deploy:
-  - git config --local user.name "tgstation-server"
-  - git config --local user.email "tgstation-server@users.noreply.github.com"
-  - git tag -a $RELEASE_VERSION -m "Automatic travis deployment of version $RELEASE_VERSION"
-  - git push --tags "https://$GITHUB_TOKEN@github.com/tgstation/tgstation-server-control-panel"
 deploy:
   provider: npm
   email: $NPM_EMAIL
@@ -24,3 +19,8 @@ deploy:
   on:
     branch: master
     condition: $TGS_DEPLOY=Dewit
+after_deploy:
+  - git config --local user.name "tgstation-server"
+  - git config --local user.email "tgstation-server@users.noreply.github.com"
+  - git tag -a $RELEASE_VERSION -m "Automatic travis deployment of version $RELEASE_VERSION"
+  - git push --tags "https://$GITHUB_TOKEN@github.com/tgstation/tgstation-server-control-panel"
