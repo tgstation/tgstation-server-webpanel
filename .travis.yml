@@ -10,7 +10,8 @@ script:
 after_success:
   - npm run print_version
   - export RELEASE_VERSION=`cat package_version.txt`
-  - if [ ! [ git tag --list | egrep -q "^$RELEASE_VERSION$" ]]; then export TGS_DEPLOY="Do it."; fi
+  - export CONDITION=$(git tag --list | egrep "$RELEASE_VERSION")
+  - if test $CONDITION; then export TGS_DEPLOY="Do it."; fi
 before_deploy:
   - git config --local user.name "tgstation-server"
   - git config --local user.email "tgstation-server@users.noreply.github.com"
