@@ -2,7 +2,7 @@ import * as React from 'react';
 import { injectIntl, InjectedIntlProps } from 'react-intl';
 
 import ReactIsCapsLockActive from '@matsun/reactiscapslockactive';
-import './PasswordField.css';
+import ColouredField, { ColourMode } from './ColouredField';
 
 interface IOwnProps {
     value: string;
@@ -41,19 +41,19 @@ class PasswordField extends React.Component<IProps, IState> {
                             { id: 'password.capslock' }
                         )})`;
                     return (
-                        <input
+                        <ColouredField
                             type="password"
-                            className={
+                            mode={
                                 capsLockWarning
-                                    ? 'form-control PasswordField-caps'
-                                    : 'form-control'
+                                    ? ColourMode.Yellow
+                                    : ColourMode.Red
                             }
-                            name={this.props.name}
-                            onChange={this.props.onChange}
-                            onFocus={this.onFocus}
                             onBlur={this.onBlur}
-                            value={this.props.value}
+                            onFocus={this.onFocus}
                             placeholder={placeholder}
+                            value={this.props.value}
+                            name={name}
+                            onChange={this.props.onChange}
                         />
                     );
                 }}
