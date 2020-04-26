@@ -8,6 +8,7 @@ interface IOwnProps {
     value: string;
     placeholder: string;
     name: string;
+    minumumLength?: number;
 
     onChange(event: React.ChangeEvent<HTMLInputElement>): void;
 }
@@ -40,14 +41,18 @@ class PasswordField extends React.Component<IProps, IState> {
                         placeholder = `${placeholder} (${this.props.intl.formatMessage(
                             { id: 'password.capslock' }
                         )})`;
+
+                    const mode =
+                        this.props.minumumLength == null ||
+                        this.props.value.length >= this.props.minumumLength
+                            ? capsLockWarning
+                                ? ColourMode.Yellow
+                                : ColourMode.Normal
+                            : ColourMode.Red;
                     return (
                         <ColouredField
                             type="password"
-                            mode={
-                                capsLockWarning
-                                    ? ColourMode.Yellow
-                                    : ColourMode.Red
-                            }
+                            mode={mode}
                             onBlur={this.onBlur}
                             onFocus={this.onFocus}
                             placeholder={placeholder}
