@@ -33,8 +33,8 @@
     "user_badge.system_id": "System Identifier: {name}",
     "user_manager.refresh_all": "Refresh All",
     "user_editor.ar_change_version": "Allow upgrading and downgrading the current server version",
-    "user_editor.ar_restart_host": "Allow restarting the server",
     "user_editor.ar_edit_own_password": "Allow the user to change their password",
     "user_editor.ar_read_users": "Allow reading other users infomation.",
+    "user_editor.ar_restart_host": "Allow restarting the server",
     "user_editor.ar_write_users": "Allow editing all users."
 }
