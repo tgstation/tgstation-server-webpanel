@@ -199,7 +199,7 @@ export default class ServerClient implements IServerClient, IApiClient {
     }
 
     public static getUserAgent(): string {
-        return 'tgstation-server-control-panel/0.3.1';
+        return 'tgstation-server-control-panel/0.4.0';
     }
 
     private async tryRefreshLogin(
