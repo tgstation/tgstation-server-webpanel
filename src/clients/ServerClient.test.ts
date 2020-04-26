@@ -4,7 +4,9 @@ it('Has correct API version', () => {
     const packageJson = require('../../package.json');
     const apiVersion = packageJson.tgs_api_version;
 
-    expect(ServerClient.getApiVersion()).toBe(apiVersion);
+    const apiHeader = ServerClient.getApiVersion();
+
+    expect(apiHeader).toBe(`Tgstation.Server.Api/${apiVersion}`);
 });
 
 it('Has correct User-Agent', () => {
