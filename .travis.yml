@@ -1,4 +1,5 @@
 os: linux
+dist: xenial
 language: node_js
 env:
   - CI=true
@@ -17,8 +18,8 @@ after_success:
 deploy:
   provider: npm
   email: $NPM_EMAIL
-  api_key: $NPM_TOKEN
-  skip_cleanup: true
+  api_token: $NPM_TOKEN
+  edge: true
   on:
     branch: master
     condition: $TGS_DEPLOY=Dewit
