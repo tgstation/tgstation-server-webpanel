@@ -26,7 +26,7 @@ export default class RightsCheckbox<TRight> extends React.Component<
                     type="checkbox"
                     checked={
                         (((this.props.currentRights as any) as number) &
-                            ((this.props.rightToChange as any) as number)) !=
+                            ((this.props.rightToChange as any) as number)) !==
                         0
                     }
                     onChange={this.handleCheck}
@@ -37,6 +37,6 @@ export default class RightsCheckbox<TRight> extends React.Component<
 
     private handleCheck(event: React.ChangeEvent<HTMLInputElement>) {
         const checked = event.target.checked;
-        this.props.setRight(this.props.right, checked);
+        this.props.setRight(this.props.rightToChange, checked);
     }
 }

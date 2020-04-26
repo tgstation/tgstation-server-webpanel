@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Token } from '../clients/generated';
+import { Token, ServerInformation } from '../clients/generated';
 
 import IServerClient from '../clients/IServerClient';
 
@@ -21,6 +21,7 @@ interface IProps {
 interface IState {
     pageType: PageType;
     loginError?: string;
+    serverInformation?: ServerInformation;
 }
 
 export default class Root extends React.Component<IProps, IState> {
@@ -44,7 +45,10 @@ export default class Root extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
-        if (!this.props.serverClient.loggedIn())
+        if (
+            !this.props.serverClient.loggedIn() ||
+            !this.state.serverInformation
+        )
             return (
                 <Login
                     serverClient={this.props.serverClient}
@@ -64,7 +68,7 @@ export default class Root extends React.Component<IProps, IState> {
                         checkLoggedIn={this.checkLoggedIn}
                         navigateToPage={this.navigateToPage}
                         currentPage={currentPage}
-                        userClient={this.props.serverClient.users}
+                        serverClient={this.props.serverClient}
                         logoutAction={this.logout}
                     />
                 </div>
@@ -74,12 +78,18 @@ export default class Root extends React.Component<IProps, IState> {
     }
 
     private renderPage(): React.ReactNode {
+        if (!this.state.serverInformation)
+            throw new Error('state.serverInformation should be set here!');
+
         switch (this.state.pageType) {
             case PageType.Home:
                 return <Home navigateToPage={this.navigateToPage} />;
             case PageType.UserManager:
                 return (
-                    <UserManager userClient={this.props.serverClient.users} />
+                    <UserManager
+                        userClient={this.props.serverClient.users}
+                        serverInformation={this.state.serverInformation}
+                    />
                 );
             default:
                 throw new Error('Invalid PageType!');
@@ -94,15 +104,24 @@ export default class Root extends React.Component<IProps, IState> {
         });
     }
 
-    private navigateToPage(pageType: PageType): void {
-        this.setState({
-            pageType
+    private navigateToPage(
+        pageType: PageType,
+        serverInformation?: ServerInformation
+    ): void {
+        this.setState(prevState => {
+            return {
+                serverInformation:
+                    serverInformation || prevState.serverInformation,
+                pageType
+            };
         });
     }
 
-    private postLogin(): void {
+    private async postLogin(
+        serverInformation: ServerInformation
+    ): Promise<void> {
         this.props.serverClient.setLoginRefreshHandler(this.handleLoginRefresh);
-        this.navigateToPage(PageType.Home);
+        this.navigateToPage(PageType.Home, serverInformation);
     }
 
     private async handleLoginRefresh(

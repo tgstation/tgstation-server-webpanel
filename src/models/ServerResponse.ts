@@ -32,9 +32,9 @@ export default class ServerResponse<TModel> {
                 const json = await this.response.json();
                 const errorMessage = json as ErrorMessage;
                 if (errorMessage.errorCode != null) {
-                    let message = `HTTP ${this.response.status}: ${
+                    let message = `HTTP ${this.response.status}: Code ${
                         errorMessage.errorCode
-                    } ${this.translation.forErrorCode(
+                    }: ${this.translation.forErrorCode(
                         errorMessage.errorCode,
                         errorMessage.message
                     )}`;

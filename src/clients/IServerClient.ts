@@ -1,11 +1,13 @@
+import { Token, Instance, ServerInformation } from './generated';
+
 import IUserClient from './IUserClient';
+import IInstanceClient from './IInstanceClient';
 
 import ICredentials from '../models/ICredentials';
 import ServerResponse from '../models/ServerResponse';
+import TgsResponse from '../models/TgsResponse';
 
-import { Token, Instance } from './generated';
 import ITranslation from '../translations/ITranslation';
-import IInstanceClient from './IInstanceClient';
 
 export default interface IServerClient {
     readonly users: IUserClient;
@@ -16,6 +18,10 @@ export default interface IServerClient {
         credentials: ICredentials
     ): Promise<ServerResponse<Readonly<Token>>>;
     logout(): void;
+
+    getServerInformationCached(
+        forceRefresh?: boolean
+    ): TgsResponse<ServerInformation>;
 
     setTranslation(translation: ITranslation): void;
 

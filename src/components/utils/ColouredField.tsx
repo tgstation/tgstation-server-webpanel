@@ -37,7 +37,7 @@ export default class ColouredField extends React.Component<IProps> {
             <input
                 type={this.props.type}
                 className={
-                    this.props.mode != ColourMode.Normal
+                    this.props.mode !== ColourMode.Normal
                         ? `form-control ColouredField-${colourModeClass}`
                         : 'form-control'
                 }

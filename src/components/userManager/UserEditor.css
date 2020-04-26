@@ -17,3 +17,139 @@
     grid-row: 2;
     display: grid;
 }
+
+.UserEditor-edits {
+    grid-row: 3;
+    display: grid;
+    grid-template-rows: auto auto auto auto 10%;
+}
+
+.UserEditor-enable {
+    grid-row: 1;
+    border-radius: 25px;
+    background-color: green;
+    color: white;
+    grid-template-columns: auto auto;
+}
+
+.UserEditor-disable {
+    grid-row: 1;
+    border-radius: 25px;
+    background-color: red;
+    color: white;
+    grid-template-columns: auto auto;
+}
+
+.UserEditor-sysid {
+    grid-row: 2;
+    grid-column: 1 span 2;
+}
+
+.UserEditor-name {
+    grid-row: 2;
+    grid-column: 1;
+}
+
+.UserEditor-password {
+    grid-row: 2;
+    grid-column: 2;
+}
+
+.UserEditor-ar {
+    grid-row: 3;
+    display: grid;
+    grid-template-rows: 25% 25% 25% 25%;
+    grid-template-columns: 50% 50%;
+}
+
+.UserEditor-ar-title {
+    grid-row: 1;
+    grid-column: 1 span 2;
+}
+
+.UserEditor-ar-ChangeVersion {
+    grid-row: 2;
+    grid-column: 1;
+    display: grid;
+}
+
+.UserEditor-ar-RestartHost {
+    grid-row: 2;
+    grid-column: 2;
+    display: grid;
+}
+
+.UserEditor-ar-EditOwnPassword {
+    grid-row: 3;
+    grid-column: 1;
+    display: grid;
+}
+
+.UserEditor-ar-ReadUsers {
+    grid-row: 3;
+    grid-column: 2;
+    display: grid;
+}
+
+.UserEditor-ar-WriteUsers {
+    grid-row: 4;
+    grid-column: 1 span 2;
+    display: grid;
+}
+
+.UserEditor-ir {
+    grid-row: 4;
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 50% 50%;
+}
+
+.UserEditor-ir-title {
+    grid-row: 1;
+    grid-column: 1 span 2;
+}
+
+.UserEditor-ir-Read {
+    grid-row: 2;
+    grid-column: 1 span 2;
+}
+
+.UserEditor-ir-Create {
+    grid-row: 3;
+    grid-column: 1;
+}
+
+.UserEditor-ir-Online {
+    grid-row: 3;
+    grid-column: 2;
+}
+
+.UserEditor-ir-List {
+    grid-row: 4;
+    grid-column: 1;
+}
+
+.UserEditor-ir-Detach {
+    grid-row: 4;
+    grid-column: 2;
+}
+
+.UserEditor-ir-Rename {
+    grid-row: 5;
+    grid-column: 1;
+}
+
+.UserEditor-ir-AutoUpdate {
+    grid-row: 5;
+    grid-column: 2;
+}
+
+.UserEditor-ir-ConfigMode {
+    grid-row: 6;
+    grid-column: 1;
+}
+
+.UserEditor-ir-Relocate {
+    grid-row: 6;
+    grid-column: 2;
+}

@@ -18,7 +18,8 @@
     "login.title": "Login",
     "login.username": "Username",
     "password.capslock": "Capslock is enabled",
-    "navbar.error": "Error Loading User",
+    "navbar.user_error": "Error loading current user",
+    "navbar.server_error": "Error loading server information",
     "navbar.home": "Home",
     "navbar.logout": "Logout",
     "navbar.user_prefix": "Logged in as",
@@ -36,5 +37,16 @@
     "user_editor.ar_edit_own_password": "Allow the user to change their password",
     "user_editor.ar_read_users": "Allow reading other users infomation.",
     "user_editor.ar_restart_host": "Allow restarting the server",
-    "user_editor.ar_write_users": "Allow editing all users."
+    "user_editor.ar_write_users": "Allow editing all users",
+    "user_editor.enable": "Enable User",
+    "user_editor.disable": "Disable User",
+    "user_editor.ir_auto_update": "Allow changing the auto update setting of instances",
+    "user_editor.ir_config_mode": "Allow changing the configuration mode of instances (Disabled, Remote, User)",
+    "user_editor.ir_create": "Allow creating new instances",
+    "user_editor.ir_detach": "Allow detaching instances",
+    "user_editor.ir_list": "Allow viewing all instances",
+    "user_editor.ir_online": "Allow enabling or disabling instances",
+    "user_editor.ir_read": "Allow viewing instances the user has access to",
+    "user_editor.ir_relocate": "Allow changing locations of instances",
+    "user_editor.ir_rename": "Allow renaming instances"
 }

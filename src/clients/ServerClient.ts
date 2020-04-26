@@ -3,17 +3,17 @@ import IServerClient from './IServerClient';
 import IUserClient from './IUserClient';
 import UsersClient from './UserClient';
 import IInstanceClient from './IInstanceClient';
-
+import InstanceClient from './InstanceClient';
 import IApiClient, { RawRequestFunc } from './IApiClient';
 
 import { ConfigurationParameters, Configuration, HomeApi } from './generated';
-import { Token, Instance } from './generated/models';
+import { Token, Instance, ServerInformation } from './generated/models';
 
 import ICredentials from '../models/ICredentials';
 import ServerResponse from '../models/ServerResponse';
+import TgsResponse from '../models/TgsResponse';
 
 import ITranslation from '../translations/ITranslation';
-import InstanceClient from './InstanceClient';
 
 export default class ServerClient implements IServerClient, IApiClient {
     private static readonly UserAgent: string = ServerClient.getUserAgent();
@@ -25,6 +25,12 @@ export default class ServerClient implements IServerClient, IApiClient {
 
     private credentials: ICredentials | null;
     private token: Token | null;
+
+    private currentServerInformationPromise: TgsResponse<
+        ServerInformation
+    > | null;
+    private currentServerInformation: ServerResponse<ServerInformation> | null;
+    private currentServerInformationCacheToken: Token | null;
 
     private translation: ITranslation | null;
 
@@ -40,6 +46,9 @@ export default class ServerClient implements IServerClient, IApiClient {
         this.tokenRefreshTimeout = null;
         this.credentials = null;
         this.translation = null;
+        this.currentServerInformation = null;
+        this.currentServerInformationCacheToken = null;
+        this.currentServerInformationPromise = null;
 
         const configParameters: ConfigurationParameters = {
             basePath: httpClient.serverUrl,
@@ -54,6 +63,45 @@ export default class ServerClient implements IServerClient, IApiClient {
         this.users = new UsersClient(this);
 
         this.loginRefreshHandlers = [];
+    }
+
+    public async getServerInformationCached(
+        forceRefresh?: boolean
+    ): Promise<ServerResponse<ServerInformation> | null> {
+        if (forceRefresh) {
+            this.currentServerInformationCacheToken = null;
+            this.currentServerInformation = null;
+        }
+
+        if (
+            this.currentServerInformation &&
+            this.currentServerInformationCacheToken === this.getToken()
+        ) {
+            return this.currentServerInformation;
+        }
+
+        const controlOfPromise = !this.currentServerInformationPromise;
+        if (controlOfPromise) {
+            const homeApi = new HomeApi(this.config);
+            this.currentServerInformationPromise = this.makeApiRequest(
+                homeApi.homeControllerHomeRaw.bind(homeApi)
+            );
+        }
+
+        const result = await this.currentServerInformationPromise;
+
+        if (controlOfPromise) {
+            this.currentServerInformationPromise = null;
+            if (result?.model) {
+                this.currentServerInformation = result;
+                this.currentServerInformationCacheToken = this.getToken();
+            } else {
+                this.currentServerInformation = null;
+                this.currentServerInformationCacheToken = null;
+            }
+        }
+
+        return result;
     }
 
     public setLoginRefreshHandler(
@@ -145,23 +193,13 @@ export default class ServerClient implements IServerClient, IApiClient {
         }
     }
 
-    private static loadPackageJson(): any {
-        const jsonPath =
-            process.env.NODE_ENV === 'development'
-                ? '../../package.json'
-                : '../../../package.json';
-
-        return require(jsonPath);
+    public static getApiVersion(): string {
+        const apiVersion = '5.0.1';
+        return `Tgstation.Server.Api/${apiVersion}`;
     }
 
-    private static getApiVersion(): string {
-        const packageJson = ServerClient.loadPackageJson();
-        return `Tgstation.Server.Api/${packageJson.tgs_api_version}`;
-    }
-
-    private static getUserAgent(): string {
-        const packageJson = ServerClient.loadPackageJson();
-        return `${packageJson.name}/${packageJson.version}`;
+    public static getUserAgent(): string {
+        return 'tgstation-server-contol-panel/0.3.0';
     }
 
     private async tryRefreshLogin(

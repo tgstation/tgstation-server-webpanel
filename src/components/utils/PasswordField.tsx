@@ -57,7 +57,7 @@ class PasswordField extends React.Component<IProps, IState> {
                             onFocus={this.onFocus}
                             placeholder={placeholder}
                             value={this.props.value}
-                            name={name}
+                            name={this.props.name}
                             onChange={this.props.onChange}
                         />
                     );

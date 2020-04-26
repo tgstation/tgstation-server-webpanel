@@ -4,7 +4,7 @@ import { RingLoader } from 'react-spinners';
 
 import IServerClient from '../../clients/IServerClient';
 
-import { User } from '../../clients/generated';
+import { User, ServerInformation } from '../../clients/generated';
 
 import ICredentials from '../../models/ICredentials';
 import ServerResponse from '../../models/ServerResponse';
@@ -28,11 +28,12 @@ interface IState {
     operation: OperationState;
     passwordConfirm: string;
     currentUser?: User;
+    serverInformation?: ServerInformation;
 }
 
 interface IOwnProps {
     serverClient: IServerClient;
-    onSuccessfulLogin(): void;
+    onSuccessfulLogin(serverInformation: ServerInformation): void;
     loginRefreshError?: string;
 }
 
@@ -76,7 +77,7 @@ class Login extends React.Component<IProps, IState> {
         }
 
         // Try to login as the default admin
-        await this.tryLoginImpl();
+        await this.tryLoginImpl(false);
         if (!this.props.serverClient.loggedIn()) {
             this.resetToEmptyLogin();
             return;
@@ -337,29 +338,29 @@ class Login extends React.Component<IProps, IState> {
             OperationState.PromptAdminPassword
         );
 
-        if (passwordUpdateResult.model && (await this.tryLoginImpl(true))) {
-            this.props.onSuccessfulLogin();
+        if (passwordUpdateResult.model) {
+            const serverInfo = await this.tryLoginImpl(true);
+            if (serverInfo) this.props.onSuccessfulLogin(serverInfo);
         }
     }
 
     private async tryLogin(event: React.MouseEvent<HTMLFormElement>) {
         if (event) event.preventDefault();
 
-        await this.tryLoginImpl();
-
-        this.props.onSuccessfulLogin();
+        const serverInfo = await this.tryLoginImpl(false);
+        if (serverInfo) this.props.onSuccessfulLogin(serverInfo);
     }
 
     private async tryLoginImpl(
-        skipOperationEarlyOut: boolean = false
-    ): Promise<boolean> {
+        skipOperationEarlyOut: boolean
+    ): Promise<ServerInformation | null> {
         let nextOperation: OperationState;
         if (this.state.operation !== OperationState.LoginDefaultAdmin) {
             if (
                 this.state.operation !== OperationState.PromptNormal &&
                 !skipOperationEarlyOut
             ) {
-                return false;
+                return null;
             }
             nextOperation = OperationState.LoginNormal;
         } else {
@@ -383,7 +384,24 @@ class Login extends React.Component<IProps, IState> {
         );
         await this.presentErrorResult(loginResult, OperationState.PromptNormal);
 
-        return !!loginResult.model;
+        if (!loginResult.model) return null;
+
+        const infoResult = await this.props.serverClient.getServerInformationCached();
+        if (!infoResult) return null;
+        await this.presentErrorResult(infoResult, OperationState.PromptNormal);
+
+        this.setState(prevState => {
+            return {
+                credentials: prevState.credentials,
+                loginError: prevState.loginError,
+                operation: prevState.operation,
+                passwordConfirm: prevState.passwordConfirm,
+                currentUser: prevState.currentUser,
+                serverInformation: infoResult.model
+            };
+        });
+
+        return infoResult.model || null;
     }
 
     private async presentErrorResult<TModel>(

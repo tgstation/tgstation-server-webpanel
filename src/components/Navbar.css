@@ -30,9 +30,44 @@
   color: white;
 }
 
-.Navbar-user {
+.Navbar-info {
+    grid-column: 1;
+    display: grid;
+}
+
+.Navbar-info-loading {
+  margin: auto;
   display: grid;
+}
+
+.Navbar-info-error {
+  display: grid;
+  grid-template-columns: 25% auto;
+  font-size: 40px;
+  color: white;
   grid-column: 4;
+}
+
+.Navbar-info-error-glyph span {
+  grid-column: 1;
+  vertical-align: middle;
+}
+
+.Navbar-info-error-text {
+  grid-column: 2;
+  font-size: 10px;
+  text-align: center;
+  margin: auto;
+}
+
+
+.Navbar-home {
+    grid-column: 2;
+}
+
+.Navbar-user {
+    grid-column: 4;
+    display: grid;
 }
 
 .Navbar-user-name {

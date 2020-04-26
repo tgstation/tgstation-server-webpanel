@@ -7,7 +7,8 @@ import IUserClient from '../../clients/IUserClient';
 import {
     User,
     AdministrationRights,
-    InstanceManagerRights
+    InstanceManagerRights,
+    ServerInformation
 } from '../../clients/generated';
 
 import UserEditor from './UserEditor';
@@ -18,6 +19,7 @@ import UserBadge from './UserBadge';
 
 interface IProps {
     userClient: IUserClient;
+    serverInformation: ServerInformation;
 }
 
 enum Operation {
@@ -60,7 +62,11 @@ export default class UserManager extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
-        if (this.state.editingUser)
+        if (this.state.editingUser) {
+            if (this.state.ownUser?.administrationRights == null)
+                throw new Error(
+                    'state.ownUser.administrationRights should be set here!'
+                );
             return (
                 <UserEditor
                     userClient={this.props.userClient}
@@ -69,8 +75,15 @@ export default class UserManager extends React.Component<IProps, IState> {
                     updateAction={this.updateUser}
                     own={this.state.editingUser.id === this.state.ownUser?.id}
                     refreshAction={this.refreshId}
+                    serverInformation={this.props.serverInformation}
+                    passwordOnly={
+                        (this.state.ownUser.administrationRights &
+                            AdministrationRights.WriteUsers) ===
+                        0
+                    }
                 />
             );
+        }
 
         if (!this.state.ownUser && this.state.errorMessage)
             return this.renderError();
