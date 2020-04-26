@@ -14,7 +14,7 @@ after_success:
   - npm run print_version
   - export RELEASE_VERSION=`cat package_version.txt`
   - export CONDITION=$(git tag --list | egrep "$RELEASE_VERSION")
-  - if test $CONDITION; then export TGS_DEPLOY=Dewit; fi
+  - if ! test $CONDITION; then export TGS_DEPLOY=Dewit; fi
 deploy:
   provider: npm
   email: $NPM_EMAIL
