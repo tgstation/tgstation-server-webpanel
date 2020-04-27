@@ -67,7 +67,7 @@
         "rimraf": "^2.6.3",
         "typescript": "^3.7.5"
     },
-    "tgs_api_version": "5.0.1",
+    "tgs_api_version": "6.0.0",
     "files": [
         "build/lib",
         "build/public"

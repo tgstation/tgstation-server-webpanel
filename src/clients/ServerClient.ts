@@ -194,7 +194,7 @@ export default class ServerClient implements IServerClient, IApiClient {
     }
 
     public static getApiVersion(): string {
-        const apiVersion = '5.0.1';
+        const apiVersion = '6.0.0';
         return `Tgstation.Server.Api/${apiVersion}`;
     }
 
