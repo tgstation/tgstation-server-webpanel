@@ -84,10 +84,7 @@ export default class Navbar extends React.Component<IProps, IState> {
         if (this.state.serverInformation)
             return (
                 <h4>
-                    tgstation-server v
-                    {this.state.serverInformation.version?.major}.
-                    {this.state.serverInformation.version?.minor}.
-                    {this.state.serverInformation.version?.build}
+                    tgstation-server v{this.state.serverInformation.version}
                 </h4>
             );
 
