@@ -57,11 +57,14 @@ export default class Navbar extends React.Component<IProps, IState> {
         return (
             <div className="Navbar">
                 <div className="Navbar-version">{this.renderVersion()}</div>
-                <div className="Navbar-home">
-                    <NavLink to={Home.Route} activeClassName="active">
+                <NavLink
+                    className="Navbar-home"
+                    to={Home.Route}
+                    activeClassName="active">
+                    <button>
                         <FormattedMessage id="navbar.home" />
-                    </NavLink>
-                </div>
+                    </button>
+                </NavLink>
                 <div className="Navbar-user">{this.renderUser()}</div>
             </div>
         );

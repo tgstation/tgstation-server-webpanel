@@ -7,6 +7,14 @@
   grid-template-rows: auto;
 }
 
+.Navbar-version {
+  margin: auto;
+}
+
+.Navbar h4 {
+  color: white;
+}
+
 /* Style the links inside the navigation bar */
 .Navbar button {
   float: left;
@@ -25,7 +33,7 @@
 }
 
 /* Add a color to the active/current link */
-.Navbar button.active {
+.Navbar .active button {
   background-color: #040041;
   color: white;
 }
