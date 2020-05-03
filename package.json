@@ -22,7 +22,7 @@
         "@matsun/reactiscapslockactive": "^1.1.0",
         "@strongdm/glyphicon": "0.0.5",
         "react": "^16.13.1",
-        "react-intl": "^2.7.1",
+        "react-intl": "^4.5.1",
         "react-router-dom": "^5.1.2",
         "react-scrollbar": "^0.5.6",
         "react-spinners": "^0.4.7"
