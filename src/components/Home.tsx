@@ -1,72 +1,40 @@
 import * as React from 'react';
-import { CSSTransition } from 'react-transition-group';
+import { Route, Link } from 'react-router-dom';
+
+import UserManager from './userManager/UserManager';
+import InstanceList from './instance/InstanceList';
 
 import LargeButton from './utils/LargeButton';
-import { PageType } from '../models/PageType';
-import TransitionsComponent from './utils/TransitionsComponent';
 
 import './Home.css';
 
-interface IProps {
-    navigateToPage(pageType: PageType): void;
-}
-
-export default class Home extends TransitionsComponent<IProps> {
-    public constructor(props: IProps) {
-        super(props, 700);
-
-        this.state = {
-            transitionsIn: true
-        };
-
-        this.navigateInstances = this.navigateInstances.bind(this);
-        this.navigateUsers = this.navigateUsers.bind(this);
-    }
+export default class Home extends React.Component {
+    public static readonly Route: string = '/';
 
     public render(): React.ReactNode {
         return (
-            <div className="Home">
-                <div className="Home-instances">
-                    <CSSTransition
-                        in={this.state.transitionsIn}
-                        appear={true}
-                        classNames="Home-instances"
-                        timeout={this.transitionsMaxDuration}>
-                        <LargeButton
-                            fontSize="195px"
-                            glyph="hdd"
-                            messageId="home.instances"
-                            onClick={() =>
-                                this.fadeThenExecuteExit(this.navigateInstances)
-                            }
-                        />
-                    </CSSTransition>
+            <Route exact path={Home.Route}>
+                <div className="Home">
+                    <div className="Home-instances">
+                        <Link to={InstanceList.Route}>
+                            <LargeButton
+                                fontSize="195px"
+                                glyph="hdd"
+                                messageId="home.instances"
+                            />
+                        </Link>
+                    </div>
+                    <div className="Home-user">
+                        <Link to={UserManager.Route}>
+                            <LargeButton
+                                fontSize="195px"
+                                glyph="user"
+                                messageId="home.users"
+                            />
+                        </Link>
+                    </div>
                 </div>
-                <div className="Home-user">
-                    <CSSTransition
-                        in={this.state.transitionsIn}
-                        appear={true}
-                        classNames="Home-user"
-                        timeout={this.transitionsMaxDuration}>
-                        <LargeButton
-                            fontSize="195px"
-                            glyph="user"
-                            messageId="home.users"
-                            onClick={() =>
-                                this.fadeThenExecuteExit(this.navigateUsers)
-                            }
-                        />
-                    </CSSTransition>
-                </div>
-            </div>
+            </Route>
         );
-    }
-
-    private navigateInstances(): void {
-        this.props.navigateToPage(PageType.InstanceManager);
-    }
-
-    private navigateUsers(): void {
-        this.props.navigateToPage(PageType.UserManager);
     }
 }

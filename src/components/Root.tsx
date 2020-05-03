@@ -1,153 +1,75 @@
 import * as React from 'react';
+import { Route } from 'react-router-dom';
 
-import { Token, ServerInformation } from '../clients/generated';
+import { ServerInformation } from '../clients/generated';
 
 import IServerClient from '../clients/IServerClient';
 
-import { PageType } from '../models/PageType';
-import ServerResponse from '../models/ServerResponse';
-
 import Home from './Home';
-import Login from './login/Login';
+import * as Login from './login/Login';
 import Navbar from './Navbar';
 import UserManager from './userManager/UserManager';
-
-import './Root.css';
+import AuthenticatedRoute from './utils/AuthenticatedRoute';
 
 interface IProps {
     serverClient: IServerClient;
 }
 
 interface IState {
-    pageType: PageType;
-    loginError?: string;
     serverInformation?: ServerInformation;
 }
 
 export default class Root extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
-        this.state = {
-            pageType: PageType.Home
-        };
+        this.state = {};
 
         this.postLogin = this.postLogin.bind(this);
-        this.navigateToPage = this.navigateToPage.bind(this);
-        this.checkLoggedIn = this.checkLoggedIn.bind(this);
-        this.handleLoginRefresh = this.handleLoginRefresh.bind(this);
-        this.logout = this.logout.bind(this);
-    }
-
-    public componentWillUnmount(): void {
-        this.props.serverClient.clearLoginRefreshHandler(
-            this.handleLoginRefresh
-        );
+        this.getServerInformation = this.getServerInformation.bind(this);
     }
 
     public render(): React.ReactNode {
-        if (
-            !this.props.serverClient.loggedIn() ||
-            !this.state.serverInformation
-        )
-            return (
-                <Login
-                    serverClient={this.props.serverClient}
-                    onSuccessfulLogin={this.postLogin}
-                    loginRefreshError={this.state.loginError}
-                />
-            );
-
-        const currentPage = this.state.pageType;
-        if (currentPage == null)
-            throw new Error('state.pageType should be set here!');
-
         return (
-            <div className="Root">
-                <div className="Root-nav">
-                    <Navbar
-                        checkLoggedIn={this.checkLoggedIn}
-                        navigateToPage={this.navigateToPage}
-                        currentPage={currentPage}
+            <React.Fragment>
+                <Route path={Login.Route}>
+                    <Login.Component
                         serverClient={this.props.serverClient}
-                        logoutAction={this.logout}
+                        onSuccessfulLogin={this.postLogin}
                     />
-                </div>
-                <div className="Root-content">{this.renderPage()}</div>
-            </div>
+                </Route>
+                <AuthenticatedRoute serverClient={this.props.serverClient}>
+                    <div className="Root">
+                        <div className="Root-nav">
+                            <Navbar serverClient={this.props.serverClient} />
+                        </div>
+                        <div className="Root-content">{this.renderPages()}</div>
+                    </div>
+                </AuthenticatedRoute>
+            </React.Fragment>
         );
     }
 
-    private renderPage(): React.ReactNode {
+    private getServerInformation(): ServerInformation {
         if (!this.state.serverInformation)
-            throw new Error('state.serverInformation should be set here!');
-
-        switch (this.state.pageType) {
-            case PageType.Home:
-                return <Home navigateToPage={this.navigateToPage} />;
-            case PageType.UserManager:
-                return (
-                    <UserManager
-                        userClient={this.props.serverClient.users}
-                        serverInformation={this.state.serverInformation}
-                    />
-                );
-            default:
-                throw new Error('Invalid PageType!');
-        }
+            throw new Error('state.serverInformation should be set here');
+        return this.state.serverInformation;
     }
 
-    private checkLoggedIn(): void {
-        this.setState(prevState => {
-            return {
-                pageType: prevState.pageType
-            };
-        });
+    private renderPages(): React.ReactNode {
+        return (
+            <React.Fragment>
+                <UserManager
+                    userClient={this.props.serverClient.users}
+                    serverInformationCallback={this.getServerInformation}
+                />
+                <Home />
+            </React.Fragment>
+        );
     }
 
-    private navigateToPage(
-        pageType: PageType,
-        serverInformation?: ServerInformation
-    ): void {
-        this.setState(prevState => {
-            return {
-                serverInformation:
-                    serverInformation || prevState.serverInformation,
-                pageType
-            };
-        });
-    }
-
-    private async postLogin(
-        serverInformation: ServerInformation
-    ): Promise<void> {
-        this.props.serverClient.setLoginRefreshHandler(this.handleLoginRefresh);
-        this.navigateToPage(PageType.Home, serverInformation);
-    }
-
-    private async handleLoginRefresh(
-        promise: Promise<ServerResponse<Readonly<Token>>>
-    ): Promise<void> {
-        const result = await promise;
-        if (result.model) {
-            return;
-        }
-
-        const loginError = await result.getError();
-
-        // trigger a state refresh to get a kick back to the login page
-        this.setState(prevState => {
-            return {
-                pageType: prevState.pageType,
-                loginError
-            };
-        });
-    }
-
-    private logout(): void {
-        this.props.serverClient.logout();
+    private postLogin(serverInformation: ServerInformation): void {
         this.setState({
-            pageType: PageType.Home,
-            loginError: 'login.logout'
+            serverInformation
         });
     }
 }

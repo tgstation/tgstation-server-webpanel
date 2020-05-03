@@ -10,7 +10,7 @@ interface IProps {
     textSize?: string;
     glyph: string;
     messageId?: string;
-    onClick(): void;
+    onClick?: () => void;
 }
 
 export default class LargeButton extends React.Component<IProps> {

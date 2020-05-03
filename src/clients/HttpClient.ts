@@ -3,7 +3,7 @@ import IHttpClient from './IHttpClient';
 class HttpClient implements IHttpClient {
     public readonly serverUrl: string;
 
-    public constructor(serverUrl: string) {
+    public constructor(serverUrl: string, private readonly basePath: string) {
         this.serverUrl = serverUrl;
     }
 
@@ -13,7 +13,7 @@ class HttpClient implements IHttpClient {
         fullRoute?: boolean
     ): Promise<Response> {
         if (!fullRoute && this.serverUrl) {
-            route = this.serverUrl + route;
+            route = this.basePath + route;
             requestInfo = requestInfo || {};
             requestInfo.mode = 'cors';
         }

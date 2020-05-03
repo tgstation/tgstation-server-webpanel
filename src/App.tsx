@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
+import { BrowserRouter } from 'react-router-dom';
 import { RingLoader } from 'react-spinners';
 
 import IAppProps from './IAppProps';
@@ -31,7 +32,8 @@ class App extends React.Component<IAppProps, IState> {
         super(props);
 
         this.httpClient =
-            this.props.httpClient || new HttpClient(this.props.serverAddress);
+            this.props.httpClient ||
+            new HttpClient(this.props.serverAddress, this.props.basePath);
         this.serverClient =
             this.props.serverClient || new ServerClient(this.httpClient);
         this.translationFactory =
@@ -60,7 +62,9 @@ class App extends React.Component<IAppProps, IState> {
                 <IntlProvider
                     locale={this.state.translation.locale}
                     messages={this.state.translation.messages}>
-                    <Root serverClient={this.serverClient} />
+                    <BrowserRouter basename={this.props.basePath}>
+                        <Root serverClient={this.serverClient} />
+                    </BrowserRouter>
                 </IntlProvider>
             </div>
         );

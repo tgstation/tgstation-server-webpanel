@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Route } from 'react-router';
 import { RingLoader } from 'react-spinners';
 import ScrollArea from 'react-scrollbar';
 
@@ -19,7 +20,7 @@ import UserBadge from './UserBadge';
 
 interface IProps {
     userClient: IUserClient;
-    serverInformation: ServerInformation;
+    serverInformationCallback: () => ServerInformation;
 }
 
 enum Operation {
@@ -37,6 +38,8 @@ interface IState {
 }
 
 export default class UserManager extends React.Component<IProps, IState> {
+    public static readonly Route: string = '/Users';
+
     public constructor(props: IProps) {
         super(props);
 
@@ -62,6 +65,10 @@ export default class UserManager extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
+        return <Route path={UserManager.Route}>{this.renderInternal()}</Route>;
+    }
+
+    public renderInternal(): React.ReactNode {
         if (this.state.editingUser) {
             if (this.state.ownUser?.administrationRights == null)
                 throw new Error(
@@ -75,7 +82,7 @@ export default class UserManager extends React.Component<IProps, IState> {
                     updateAction={this.updateUser}
                     own={this.state.editingUser.id === this.state.ownUser?.id}
                     refreshAction={this.refreshId}
-                    serverInformation={this.props.serverInformation}
+                    serverInformation={this.props.serverInformationCallback()}
                     passwordOnly={
                         (this.state.ownUser.administrationRights &
                             AdministrationRights.WriteUsers) ===

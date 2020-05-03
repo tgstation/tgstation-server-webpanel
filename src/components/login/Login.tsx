@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Redirect } from 'react-router';
 import { FormattedMessage, InjectedIntlProps, injectIntl } from 'react-intl';
 import { RingLoader } from 'react-spinners';
 
@@ -9,6 +10,7 @@ import { User, ServerInformation } from '../../clients/generated';
 import ICredentials from '../../models/ICredentials';
 import ServerResponse from '../../models/ServerResponse';
 
+import Home from '../Home';
 import PasswordField from '../utils/PasswordField';
 
 import './Login.css';
@@ -19,7 +21,8 @@ enum OperationState {
     LoginNormal,
     LoginDefaultAdmin,
     RetrieveCurrentUser,
-    UpdateAdminPassword
+    UpdateAdminPassword,
+    RedirectHome
 }
 
 interface IState {
@@ -38,6 +41,8 @@ interface IOwnProps {
 }
 
 type IProps = IOwnProps & InjectedIntlProps;
+
+export const Route = '/login';
 
 class Login extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
@@ -77,7 +82,7 @@ class Login extends React.Component<IProps, IState> {
         }
 
         // Try to login as the default admin
-        await this.tryLoginImpl(false);
+        await this.tryLoginImpl(false, true);
         if (!this.props.serverClient.loggedIn()) {
             this.resetToEmptyLogin();
             return;
@@ -118,6 +123,9 @@ class Login extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
+        if (this.state.operation === OperationState.RedirectHome)
+            return <Redirect to={Home.Route} />;
+
         if (
             this.state.operation === OperationState.LoginDefaultAdmin ||
             this.state.operation === OperationState.LoginNormal ||
@@ -339,20 +347,31 @@ class Login extends React.Component<IProps, IState> {
         );
 
         if (passwordUpdateResult.model) {
-            const serverInfo = await this.tryLoginImpl(true);
-            if (serverInfo) this.props.onSuccessfulLogin(serverInfo);
+            const serverInfo = await this.tryLoginImpl(true, false);
+            if (serverInfo) {
+                this.props.onSuccessfulLogin(serverInfo);
+                this.setState({
+                    operation: OperationState.RedirectHome
+                });
+            }
         }
     }
 
     private async tryLogin(event: React.MouseEvent<HTMLFormElement>) {
         if (event) event.preventDefault();
 
-        const serverInfo = await this.tryLoginImpl(false);
-        if (serverInfo) this.props.onSuccessfulLogin(serverInfo);
+        const serverInfo = await this.tryLoginImpl(false, false);
+        if (serverInfo) {
+            this.props.onSuccessfulLogin(serverInfo);
+            this.setState({
+                operation: OperationState.RedirectHome
+            });
+        }
     }
 
     private async tryLoginImpl(
-        skipOperationEarlyOut: boolean
+        skipOperationEarlyOut: boolean,
+        adminSequence: boolean
     ): Promise<ServerInformation | null> {
         let nextOperation: OperationState;
         if (this.state.operation !== OperationState.LoginDefaultAdmin) {
@@ -382,13 +401,23 @@ class Login extends React.Component<IProps, IState> {
         const loginResult = await this.props.serverClient.tryLogin(
             this.state.credentials
         );
-        await this.presentErrorResult(loginResult, OperationState.PromptNormal);
+        await this.presentErrorResult(
+            loginResult,
+            adminSequence
+                ? OperationState.PromptAdminPassword
+                : OperationState.PromptNormal
+        );
 
         if (!loginResult.model) return null;
 
         const infoResult = await this.props.serverClient.getServerInformationCached();
         if (!infoResult) return null;
-        await this.presentErrorResult(infoResult, OperationState.PromptNormal);
+        await this.presentErrorResult(
+            infoResult,
+            adminSequence
+                ? OperationState.PromptAdminPassword
+                : OperationState.PromptNormal
+        );
 
         this.setState(prevState => {
             return {
@@ -445,4 +474,4 @@ class Login extends React.Component<IProps, IState> {
     }
 }
 
-export default injectIntl(Login);
+export const Component = injectIntl(Login);

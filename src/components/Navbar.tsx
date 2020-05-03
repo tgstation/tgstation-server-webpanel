@@ -1,5 +1,5 @@
 import * as React from 'react';
-
+import { NavLink } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { BarLoader, SyncLoader } from 'react-spinners';
 
@@ -9,16 +9,12 @@ import { User, ServerInformation } from '../clients/generated';
 
 import IServerClient from '../clients/IServerClient';
 
-import { PageType } from '../models/PageType';
+import Home from './Home';
 
 import './Navbar.css';
 
 interface IProps {
     serverClient: IServerClient;
-    currentPage: PageType;
-    navigateToPage(pageType: PageType): void;
-    checkLoggedIn(): void;
-    logoutAction(): void;
 }
 
 interface IState {
@@ -30,7 +26,7 @@ interface IState {
     serverInformation?: ServerInformation;
 }
 
-class Navbar extends React.Component<IProps, IState> {
+export default class Navbar extends React.Component<IProps, IState> {
     private retryTimer: NodeJS.Timeout | null;
 
     public constructor(props: IProps) {
@@ -41,7 +37,6 @@ class Navbar extends React.Component<IProps, IState> {
         this.retryTimer = null;
 
         this.tryLoadInformation = this.tryLoadInformation.bind(this);
-        this.navigateHome = this.navigateHome.bind(this);
         this.logoutClick = this.logoutClick.bind(this);
         this.onHover = this.onHover.bind(this);
         this.offHover = this.offHover.bind(this);
@@ -62,15 +57,11 @@ class Navbar extends React.Component<IProps, IState> {
         return (
             <div className="Navbar">
                 <div className="Navbar-version">{this.renderVersion()}</div>
-                <button
-                    className={
-                        this.props.currentPage === PageType.Home
-                            ? 'Navbar-home active'
-                            : 'Navbar-home'
-                    }
-                    onClick={this.navigateHome}>
-                    <FormattedMessage id="navbar.home" />
-                </button>
+                <div className="Navbar-home">
+                    <NavLink to={Home.Route} activeClassName="active">
+                        <FormattedMessage id="navbar.home" />
+                    </NavLink>
+                </div>
                 <div className="Navbar-user">{this.renderUser()}</div>
             </div>
         );
@@ -93,7 +84,10 @@ class Navbar extends React.Component<IProps, IState> {
         if (this.state.serverInformation)
             return (
                 <h4>
-                    tgstation-server v{this.state.serverInformation.version}
+                    tgstation-server v
+                    {this.state.serverInformation.version?.major}.
+                    {this.state.serverInformation.version?.minor}.
+                    {this.state.serverInformation.version?.build}
                 </h4>
             );
 
@@ -163,17 +157,12 @@ class Navbar extends React.Component<IProps, IState> {
     }
 
     private logoutClick(): void {
-        this.props.logoutAction();
-    }
-
-    private navigateHome(): void {
-        this.props.navigateToPage(PageType.Home);
+        this.props.serverClient.logout();
     }
 
     private async loadServerInformation(): Promise<void> {
         const info = await this.props.serverClient.getServerInformationCached();
         if (!info) {
-            this.props.checkLoggedIn();
             return;
         }
 
@@ -208,7 +197,6 @@ class Navbar extends React.Component<IProps, IState> {
     private async loadUserInformation(): Promise<void> {
         const user = await this.props.serverClient.users.getCurrentCached();
         if (!user) {
-            this.props.checkLoggedIn();
             return;
         }
 
@@ -255,5 +243,3 @@ class Navbar extends React.Component<IProps, IState> {
         await serverInfoPromise;
     }
 }
-
-export default Navbar;

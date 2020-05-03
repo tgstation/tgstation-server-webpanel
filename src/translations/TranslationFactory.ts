@@ -24,16 +24,8 @@ class TranslationFactory implements ITranslationFactory {
     public async loadTranslation(
         locale: string
     ): Promise<ServerResponse<ITranslation>> {
-        let requestPath =
-            process.env.NODE_ENV === 'development'
-                ? 'tgstation-server-control-panel'
-                : '';
-        requestPath = requestPath + '/locales/' + locale + '.json';
-        const response = await this.httpClient.runRequest(
-            requestPath,
-            undefined,
-            true
-        );
+        const requestPath = `/locales/${locale}.json`;
+        const response = await this.httpClient.runRequest(requestPath);
 
         if (response.status < 200 || response.status >= 300) {
             let shortHandedLocale = TranslationFactory.getShortHandedLocale(

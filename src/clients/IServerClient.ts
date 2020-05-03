@@ -23,14 +23,15 @@ export default interface IServerClient {
         forceRefresh?: boolean
     ): TgsResponse<ServerInformation>;
 
+    getTranslation(): ITranslation | null;
     setTranslation(translation: ITranslation): void;
 
     createInstanceClient(instance: Instance): IInstanceClient;
 
-    setLoginRefreshHandler(
+    setLoginHandler(
         handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
     ): void;
-    clearLoginRefreshHandler(
+    clearLoginHandler(
         handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
     ): void;
 }

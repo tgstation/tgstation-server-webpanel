@@ -104,12 +104,12 @@ export default class ServerClient implements IServerClient, IApiClient {
         return result;
     }
 
-    public setLoginRefreshHandler(
+    public setLoginHandler(
         handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
     ): void {
         this.loginRefreshHandlers.push(handler);
     }
-    public clearLoginRefreshHandler(
+    public clearLoginHandler(
         handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
     ): void {
         this.loginRefreshHandlers = this.loginRefreshHandlers.filter(
@@ -123,6 +123,10 @@ export default class ServerClient implements IServerClient, IApiClient {
         return new InstanceClient(this, instance.id);
     }
 
+    public getTranslation(): ITranslation | null {
+        return this.translation;
+    }
+
     public setTranslation(translation: ITranslation): void {
         this.translation = translation;
     }
@@ -130,6 +134,19 @@ export default class ServerClient implements IServerClient, IApiClient {
     public logout(): void {
         this.credentials = null;
         this.token = null;
+
+        if (this.translation == null)
+            throw new Error('translation should be set here!');
+
+        const promise = Promise.resolve(
+            new ServerResponse<Readonly<Token>>(
+                this.translation,
+                null,
+                null,
+                this.translation.messages['server_client.logout']
+            )
+        );
+        this.loginRefreshHandlers.forEach(handler => handler(promise));
     }
 
     public loggedIn(): boolean {
@@ -143,12 +160,8 @@ export default class ServerClient implements IServerClient, IApiClient {
     }
 
     public tryLogin(credentials: ICredentials): Promise<ServerResponse<Token>> {
-        const initialLogin =
-            !this.credentials ||
-            this.credentials.userName !== credentials.userName ||
-            this.credentials.password !== credentials.password;
         this.credentials = credentials;
-        return this.tryRefreshLogin(initialLogin);
+        return this.tryLoginWithCredentials();
     }
 
     public async makeApiRequest<TRequestParameters, TModel>(
@@ -161,7 +174,7 @@ export default class ServerClient implements IServerClient, IApiClient {
             throw new Error('ServerClient translation not set!');
 
         if (requiresToken && !this.token) {
-            const refreshPromise = this.tryRefreshLogin(false);
+            const refreshPromise = this.tryLoginWithCredentials();
 
             const refreshResponse = await refreshPromise;
             if (!refreshResponse.model) {
@@ -186,7 +199,12 @@ export default class ServerClient implements IServerClient, IApiClient {
             return new ServerResponse(this.translation, apiResponse.raw, model);
         } catch (thrownResponse) {
             if (!(thrownResponse instanceof Response)) {
-                return new ServerResponse(this.translation);
+                return new ServerResponse<TModel>(
+                    this.translation,
+                    null,
+                    null,
+                    thrownResponse.toString()
+                );
             }
 
             return new ServerResponse(this.translation, thrownResponse);
@@ -202,9 +220,7 @@ export default class ServerClient implements IServerClient, IApiClient {
         return 'tgstation-server-control-panel/0.4.0';
     }
 
-    private async tryRefreshLogin(
-        initialLogin: boolean
-    ): Promise<ServerResponse<Token>> {
+    private async tryLoginWithCredentials(): Promise<ServerResponse<Token>> {
         this.cancelLoginRefresh();
 
         if (!this.credentials) {
@@ -230,11 +246,7 @@ export default class ServerClient implements IServerClient, IApiClient {
             false
         ) as Promise<ServerResponse<Token>>;
 
-        if (initialLogin) {
-            this.loginRefreshHandlers.forEach(handler =>
-                handler(responsePromise)
-            );
-        }
+        this.loginRefreshHandlers.forEach(handler => handler(responsePromise));
 
         const serverResponse = await responsePromise;
 
@@ -258,7 +270,7 @@ export default class ServerClient implements IServerClient, IApiClient {
     }
 
     private async loginRefresh(): Promise<void> {
-        await this.tryRefreshLogin(false);
+        await this.tryLoginWithCredentials();
     }
 
     private cancelLoginRefresh() {
