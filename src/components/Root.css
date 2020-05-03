@@ -1,7 +1,7 @@
 .Root{
     overflow: hidden;
     display: grid;
-    grid-template-rows: 7% auto;
+    grid-template-rows: 9% auto;
 }
 
 .Root-nav {

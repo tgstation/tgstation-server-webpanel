@@ -11,6 +11,8 @@ import Navbar from './Navbar';
 import UserManager from './userManager/UserManager';
 import AuthenticatedRoute from './utils/AuthenticatedRoute';
 
+import './Root.css';
+
 interface IProps {
     serverClient: IServerClient;
 }
