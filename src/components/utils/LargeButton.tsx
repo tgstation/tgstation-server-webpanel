@@ -35,7 +35,7 @@ export default class LargeButton extends React.Component<IProps> {
         return this.props.messageId ? (
             <FormattedMessage id={this.props.messageId} />
         ) : (
-            <div />
+            <React.Fragment />
         );
     }
 }

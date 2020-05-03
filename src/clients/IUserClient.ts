@@ -4,6 +4,7 @@ import TgsResponse from '../models/TgsResponse';
 
 export default interface IUserClient {
     getCurrentCached(forceRefresh?: boolean): TgsResponse<User>;
+    create(userUpdate: UserUpdate): TgsResponse<User>;
     update(userUpdate: UserUpdate): TgsResponse<User>;
     list(): TgsResponse<Array<User>>;
     getId(user: User): TgsResponse<User>;

@@ -1,8 +1,8 @@
 {
     "error_code_missing_message": "Message not present in error, refer to API documentation!",
     "fetch_api_error": "Failed to complete the web request! The server either didn't respond or the request timed out!",
-    "home.instances": "Server Instances",
-    "home.users": "User Manager",
+    "home.instances": "Instances",
+    "home.users": "Users",
     "login.admin_password_changed": "The default admin password appears to have been changed!",
     "login.bad_user_pass": "Invalid username/password!",
     "login.confirm_password": "Confirm Password",
@@ -33,11 +33,16 @@
     "user_badge.refresh": "Refresh",
     "user_badge.system_id": "System Identifier: {name}",
     "user_manager.refresh_all": "Refresh All",
+    "user_editor.apply": "Save Changes",
     "user_editor.ar_change_version": "Allow upgrading and downgrading the current server version",
     "user_editor.ar_edit_own_password": "Allow the user to change their password",
     "user_editor.ar_read_users": "Allow reading other users infomation.",
     "user_editor.ar_restart_host": "Allow restarting the server",
+    "user_editor.ar_title": "Administration Rights",
     "user_editor.ar_write_users": "Allow editing all users",
+    "user_editor.back": "Cancel",
+    "user_editor.change_username": "Change Name Capitalization",
+    "user_editor.confirm_password": "Confirm New Password",
     "user_editor.enable": "Enable User",
     "user_editor.disable": "Disable User",
     "user_editor.ir_auto_update": "Allow changing the auto update setting of instances",
@@ -48,5 +53,8 @@
     "user_editor.ir_online": "Allow enabling or disabling instances",
     "user_editor.ir_read": "Allow viewing instances the user has access to",
     "user_editor.ir_relocate": "Allow changing locations of instances",
-    "user_editor.ir_rename": "Allow renaming instances"
+    "user_editor.ir_rename": "Allow renaming instances",
+    "user_editor.ir_title": "Instance Manager Rights",
+    "user_editor.new_password": "New Password",
+    "user_editor.system_identifier_password": "Cannot change the name or password of system identity users."
 }

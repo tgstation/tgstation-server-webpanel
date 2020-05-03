@@ -18,7 +18,7 @@
 
 .User-manager-users {
     display: grid;
-    grid-template-rows: 20% auto;
+    grid-template-rows: 25% auto;
     grid-template-columns: 10% auto 10%;
 }
 

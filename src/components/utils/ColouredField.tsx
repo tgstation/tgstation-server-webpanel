@@ -9,7 +9,7 @@ export enum ColourMode {
 }
 
 interface IProps {
-    type: string;
+    type?: string;
     mode: ColourMode;
 
     value: string;

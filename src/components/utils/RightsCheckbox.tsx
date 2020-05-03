@@ -21,7 +21,6 @@ export default class RightsCheckbox<TRight> extends React.Component<
     public render(): React.ReactNode {
         return (
             <div className="RightsCheckbox">
-                <FormattedMessage id={this.props.descriptionId} />
                 <input
                     type="checkbox"
                     checked={
@@ -31,6 +30,7 @@ export default class RightsCheckbox<TRight> extends React.Component<
                     }
                     onChange={this.handleCheck}
                 />
+                <FormattedMessage id={this.props.descriptionId} />
             </div>
         );
     }

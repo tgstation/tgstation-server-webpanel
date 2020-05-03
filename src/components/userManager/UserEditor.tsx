@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { RingLoader } from 'react-spinners';
 import { InjectedIntlProps, FormattedMessage, injectIntl } from 'react-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import {
     User,
@@ -14,9 +15,11 @@ import {
 import IUserClient from '../../clients/IUserClient';
 
 import UserBadge from './UserBadge';
-
+import ColouredField, { ColourMode } from '../utils/ColouredField';
 import PasswordField from '../utils/PasswordField';
 import RightsCheckbox from '../utils/RightsCheckbox';
+
+import TgsResponse from '../../models/TgsResponse';
 
 import './UserEditor.css';
 
@@ -34,6 +37,8 @@ interface IOwnProps {
 
 interface IState {
     newUser: UserUpdate;
+    passwordConfirm: string;
+    updating: boolean;
 }
 
 type IProps = IOwnProps & InjectedIntlProps;
@@ -42,7 +47,10 @@ class UserEditor extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
 
+        this.submitChanges = this.submitChanges.bind(this);
         this.updatePassword = this.updatePassword.bind(this);
+        this.updateUsername = this.updateUsername.bind(this);
+        this.updatePasswordConfirm = this.updatePasswordConfirm.bind(this);
         this.updateAdministrationRights = this.updateAdministrationRights.bind(
             this
         );
@@ -55,6 +63,17 @@ class UserEditor extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
+        if (this.state.updating)
+            return (
+                <div className="UserEditor-loading">
+                    <RingLoader
+                        className="margin: auto"
+                        color="#E3EFFC"
+                        size={500}
+                    />
+                </div>
+            );
+
         return (
             <div className="UserEditor">
                 <div className="UserEditor-content">
@@ -65,7 +84,7 @@ class UserEditor extends React.Component<IProps, IState> {
                             refreshAction={this.props.refreshAction}
                         />
                     </div>
-                    <form>
+                    <form className="UserEditor-form">
                         <div className="UserEditor-edits">
                             {this.renderEnableDisable()}
                             {this.renderUsernameEditor()}
@@ -74,9 +93,15 @@ class UserEditor extends React.Component<IProps, IState> {
                         </div>
                         <button
                             type="submit"
-                            className="UserEditor-apply"
-                            disabled={!this.checkCanApply()}>
+                            className="UserEditor-apply form-control"
+                            disabled={!this.checkCanApply()}
+                            onClick={this.submitChanges}>
                             <FormattedMessage id="user_editor.apply" />
+                        </button>
+                        <button
+                            className="UserEditor-cancel form-control"
+                            onClick={this.props.backAction}>
+                            <FormattedMessage id="user_editor.back" />
                         </button>
                     </form>
                 </div>
@@ -87,14 +112,14 @@ class UserEditor extends React.Component<IProps, IState> {
     private renderEnableDisable(): React.ReactNode {
         if (this.state.newUser.enabled == null)
             throw new Error('state.newUser.enabled should be set here!');
-        const enabling = this.state.newUser.enabled;
+        const enabling = !this.state.newUser.enabled;
         return (
             <button
                 className={`UserEditor-${
                     enabling ? 'enable' : 'disable'
                 } form-control`}
                 onClick={this.enableDisable}>
-                <FontAwesomeIcon icon={faCheck} />
+                <FontAwesomeIcon icon={enabling ? faCheck : faTimes} />
                 <FormattedMessage
                     id={enabling ? 'user_editor.enable' : 'user_editor.disable'}
                 />
@@ -103,12 +128,12 @@ class UserEditor extends React.Component<IProps, IState> {
     }
 
     private renderRightsEditor(): React.ReactNode {
-        if (!this.state.newUser.administrationRights)
+        if (this.state.newUser.administrationRights == null)
             throw new Error(
                 'state.newUser.administrationRights should be set here!'
             );
 
-        if (!this.state.newUser.instanceManagerRights)
+        if (this.state.newUser.instanceManagerRights == null)
             throw new Error(
                 'state.newUser.instanceManagerRights should be set here!'
             );
@@ -272,44 +297,77 @@ class UserEditor extends React.Component<IProps, IState> {
     }
 
     private renderUsernameEditor(): React.ReactNode {
-        if (this.props.user.systemIdentifier)
-            return (
-                <div className="UserEditor-sysid">
-                    <p>Cannot change the name of a system user.</p>
-                </div>
-            );
+        if (this.props.user.systemIdentifier) return null;
 
+        if (this.state.newUser.name == null)
+            throw new Error('state.newUser.name should be set here!');
+        if (this.props.user.name == null)
+            throw new Error('props.user.name should be set here!');
+
+        const validNameChange =
+            this.state.newUser.name === '' ||
+            this.state.newUser.name.toUpperCase() ===
+                this.props.user.name.toUpperCase();
         return (
             <div className="UserEditor-username">
-                <div></div>
-            </div>
-        );
-    }
-
-    private renderPasswordEditor(): React.ReactNode {
-        if (this.props.user.systemIdentifier) return <div />;
-
-        if (!this.state.newUser.password)
-            throw Error('state.newUser.password should be set here!');
-        return (
-            <div className="UserEditor-password">
-                <PasswordField
-                    value={this.state.newUser.password}
+                <ColouredField
+                    mode={validNameChange ? ColourMode.Normal : ColourMode.Red}
+                    value={this.state.newUser.name}
+                    name="username"
                     placeholder={this.props.intl.formatMessage({
-                        id: 'user_editor.new_password'
+                        id: 'user_editor.change_username'
                     })}
-                    name="password"
-                    onChange={this.updatePassword}
+                    onChange={this.updateUsername}
                 />
             </div>
         );
     }
 
+    private renderPasswordEditor(): React.ReactNode {
+        if (this.props.user.systemIdentifier)
+            return (
+                <div className="UserEditor-sysid">
+                    <p>
+                        <FormattedMessage id="user_editor.system_identifier_password" />
+                    </p>
+                </div>
+            );
+
+        if (this.state.newUser.password == null)
+            throw Error('state.newUser.password should be set here!');
+        return (
+            <React.Fragment>
+                <div className="UserEditor-password">
+                    <PasswordField
+                        value={this.state.newUser.password}
+                        placeholder={this.props.intl.formatMessage({
+                            id: 'user_editor.new_password'
+                        })}
+                        name="password"
+                        onChange={this.updatePassword}
+                    />
+                </div>
+                <div className="UserEditor-password-confirm">
+                    <PasswordField
+                        value={this.state.passwordConfirm}
+                        placeholder={this.props.intl.formatMessage({
+                            id: 'user_editor.confirm_password'
+                        })}
+                        name="password_confirm"
+                        onChange={this.updatePasswordConfirm}
+                    />
+                </div>
+            </React.Fragment>
+        );
+    }
+
     private checkCanApply(): boolean {
-        //TODO: Check minimum password length
+        if (this.state.newUser.password !== this.state.passwordConfirm)
+            return false;
 
         if (
             this.props.user.id != null &&
+            this.state.newUser.name !== '' &&
             this.props.user.name?.toUpperCase() !==
                 this.state.newUser.name?.toUpperCase()
         )
@@ -340,7 +398,9 @@ class UserEditor extends React.Component<IProps, IState> {
                     instanceManagerRights:
                         prevState.newUser.instanceManagerRights,
                     administrationRights: newAdminRights
-                }
+                },
+                passwordConfirm: prevState.passwordConfirm,
+                updating: prevState.updating
             };
         });
     }
@@ -365,7 +425,9 @@ class UserEditor extends React.Component<IProps, IState> {
                     enabled: prevState.newUser.enabled,
                     instanceManagerRights: newManagerRights,
                     administrationRights: prevState.newUser.administrationRights
-                }
+                },
+                passwordConfirm: prevState.passwordConfirm,
+                updating: prevState.updating
             };
         });
     }
@@ -385,7 +447,30 @@ class UserEditor extends React.Component<IProps, IState> {
                     instanceManagerRights:
                         prevState.newUser.instanceManagerRights,
                     enabled: !prevState.newUser.enabled
-                }
+                },
+                passwordConfirm: prevState.passwordConfirm,
+                updating: prevState.updating
+            };
+        });
+    }
+
+    private updateUsername(
+        changeEvent: React.ChangeEvent<HTMLInputElement>
+    ): void {
+        const newName = changeEvent.target.value;
+
+        this.setState(prevState => {
+            return {
+                newUser: {
+                    name: newName,
+                    password: prevState.newUser.password,
+                    enabled: prevState.newUser.enabled,
+                    adminstrationRights: prevState.newUser.administrationRights,
+                    instanceManagerRights:
+                        prevState.newUser.instanceManagerRights
+                },
+                passwordConfirm: prevState.passwordConfirm,
+                updating: prevState.updating
             };
         });
     }
@@ -404,7 +489,65 @@ class UserEditor extends React.Component<IProps, IState> {
                     adminstrationRights: prevState.newUser.administrationRights,
                     instanceManagerRights:
                         prevState.newUser.instanceManagerRights
-                }
+                },
+                passwordConfirm: prevState.passwordConfirm,
+                updating: prevState.updating
+            };
+        });
+    }
+
+    private updatePasswordConfirm(
+        changeEvent: React.ChangeEvent<HTMLInputElement>
+    ): void {
+        const newPassword = changeEvent.target.value;
+
+        this.setState(prevState => {
+            return {
+                newUser: prevState.newUser,
+                passwordConfirm: newPassword,
+                updating: prevState.updating
+            };
+        });
+    }
+
+    private async submitChanges(): Promise<void> {
+        if (this.state.updating) return;
+
+        this.setState(prevState => {
+            return {
+                newUser: prevState.newUser,
+                updating: true,
+                passwordConfirm: prevState.passwordConfirm
+            };
+        });
+
+        const updatingUser: UserUpdate = { ...this.state.newUser };
+
+        if (updatingUser.name === '') updatingUser.name = undefined;
+        if (updatingUser.password === '') updatingUser.password = undefined;
+
+        updatingUser.id = this.props.user.id;
+
+        let promise: TgsResponse<User>;
+        if (updatingUser.id == null)
+            promise = this.props.userClient.create(updatingUser);
+        else promise = this.props.userClient.update(updatingUser);
+
+        const updatedUser = await promise;
+        if (!updatedUser) return;
+
+        if (!updatedUser.model) {
+            const errorMessage = await updatedUser.getError();
+            alert(errorMessage);
+        } else {
+            this.props.updateAction(updatedUser.model);
+        }
+
+        this.setState(prevState => {
+            return {
+                newUser: prevState.newUser,
+                passwordConfirm: prevState.passwordConfirm,
+                updating: false
             };
         });
     }
@@ -412,12 +555,14 @@ class UserEditor extends React.Component<IProps, IState> {
     private initialState(): IState {
         return {
             newUser: {
-                name: this.props.user.name,
+                name: '',
                 password: '',
                 administrationRights: this.props.user.administrationRights,
                 instanceManagerRights: this.props.user.instanceManagerRights,
                 enabled: this.props.user.enabled
-            }
+            },
+            passwordConfirm: '',
+            updating: false
         };
     }
 }
