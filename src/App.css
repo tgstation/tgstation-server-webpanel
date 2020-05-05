@@ -21,6 +21,22 @@
   display: grid;
 }
 
-.App-loading {
-  margin: auto;
+.Root{
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 9% auto;
+}
+
+.Root-nav {
+    grid-row: 1;
+    display: grid;
+}
+
+.Root-content {
+    grid-row: 2;
+    display: grid;
+}
+
+.Root-login {
+    display: grid;
 }

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
-import { BrowserRouter } from 'react-router-dom';
-import { RingLoader } from 'react-spinners';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import IAppProps from './IAppProps';
 
@@ -9,18 +8,25 @@ import HttpClient from './clients/HttpClient';
 import IHttpClient from './clients/IHttpClient';
 import IServerClient from './clients/IServerClient';
 import ServerClient from './clients/ServerClient';
+import { ServerInformation } from './clients/generated';
 
 import ITranslation from './translations/ITranslation';
 import ITranslationFactory from './translations/ITranslationFactory';
 import TranslationFactory from './translations/TranslationFactory';
 
-import Root from './components/Root';
+import Loading from './components/Loading';
+import * as Login from './components/login/Login';
+import Navbar from './components/Navbar';
+import Home from './components/Home';
+import UserManager from './components/userManager/UserManager';
+import AuthenticatedRoute from './components/utils/AuthenticatedRoute';
 
 import './App.css';
 
 interface IState {
     translation?: ITranslation;
     translationError?: string;
+    serverInformation?: ServerInformation;
 }
 
 class App extends React.Component<IAppProps, IState> {
@@ -39,6 +45,8 @@ class App extends React.Component<IAppProps, IState> {
         this.translationFactory =
             this.props.translationFactory ||
             new TranslationFactory(this.httpClient);
+        this.getServerInformation = this.getServerInformation.bind(this);
+        this.postLogin = this.postLogin.bind(this);
 
         this.state = {};
     }
@@ -48,14 +56,10 @@ class App extends React.Component<IAppProps, IState> {
     }
 
     public render(): React.ReactNode {
-        return <div className="App">{this.renderInnards()}</div>;
-    }
-
-    private renderInnards(): React.ReactNode {
         if (this.state.translationError != null)
             return <p className="App-error">{this.state.translationError}</p>;
 
-        if (this.state.translation == null) return this.renderLoading();
+        if (this.state.translation == null) return <Loading />;
 
         return (
             <div className="App-main">
@@ -63,7 +67,33 @@ class App extends React.Component<IAppProps, IState> {
                     locale={this.state.translation.locale}
                     messages={this.state.translation.messages}>
                     <BrowserRouter basename={this.props.basePath}>
-                        <Root serverClient={this.serverClient} />
+                        <Switch>
+                            <Route path={Login.Route}>
+                                <Login.Component
+                                    serverClient={this.serverClient}
+                                    onSuccessfulLogin={this.postLogin}
+                                />
+                            </Route>
+                            <AuthenticatedRoute
+                                serverClient={this.serverClient}>
+                                <div className="Root">
+                                    <div className="Root-nav">
+                                        <Navbar
+                                            serverClient={this.serverClient}
+                                        />
+                                    </div>
+                                    <div className="Root-content">
+                                        <UserManager
+                                            userClient={this.serverClient.users}
+                                            serverInformationCallback={
+                                                this.getServerInformation
+                                            }
+                                        />
+                                        <Home />
+                                    </div>
+                                </div>
+                            </AuthenticatedRoute>
+                        </Switch>
                     </BrowserRouter>
                 </IntlProvider>
             </div>
@@ -91,12 +121,16 @@ class App extends React.Component<IAppProps, IState> {
         });
     }
 
-    private renderLoading(): React.ReactNode {
-        return (
-            <div className="App-loading">
-                <RingLoader loading={true} color="#E3EFFC" size={500} />
-            </div>
-        );
+    private getServerInformation(): ServerInformation {
+        if (!this.state.serverInformation)
+            throw new Error('state.serverInformation should be set here');
+        return this.state.serverInformation;
+    }
+
+    private postLogin(serverInformation: ServerInformation): void {
+        this.setState({
+            serverInformation
+        });
     }
 }
 
