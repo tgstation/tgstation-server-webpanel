@@ -37,7 +37,7 @@
 .User-manager-others {
     display: grid;
     grid-column: 2;
-    grid-template-rows: 0% 15% auto;
+    grid-template-rows: 0 15% auto;
     border-top: 5px solid rgb(34, 17, 82);
     grid-row-gap: 10px;
 }
@@ -59,5 +59,4 @@
     display: grid;
     grid-row-gap: 10px;
     grid-template-rows: auto auto auto auto auto auto auto;
-    grid-row-gap: 10px;
 }

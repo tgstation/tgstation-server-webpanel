@@ -6,8 +6,8 @@
   background-position: center;
   position: absolute;
   width: 100%;
-  top: 0px;
-  bottom: 0px;
+  top: 0;
+  bottom: 0;
   display: grid;
 }
 
