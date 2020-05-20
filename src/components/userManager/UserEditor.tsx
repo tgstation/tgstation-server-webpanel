@@ -365,16 +365,12 @@ class UserEditor extends React.Component<IProps, IState> {
         if (this.state.newUser.password !== this.state.passwordConfirm)
             return false;
 
-        if (
+        return !(
             this.props.user.id != null &&
             this.state.newUser.name !== '' &&
             this.props.user.name?.toUpperCase() !==
                 this.state.newUser.name?.toUpperCase()
-        )
-            // Changing username (other than casing)
-            return false;
-
-        return true;
+        );
     }
 
     private updateAdministrationRights(

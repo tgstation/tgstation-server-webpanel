@@ -315,9 +315,7 @@ class Login extends React.Component<IProps, IState> {
         this.setState(newState);
     }
 
-    private async updateAdminPassword(
-        event: React.MouseEvent<HTMLFormElement>
-    ) {
+    private async updateAdminPassword() {
         if (this.state.operation !== OperationState.PromptAdminPassword) return;
 
         const newState: IState = {

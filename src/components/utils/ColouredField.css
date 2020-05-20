@@ -22,7 +22,7 @@
 .ColouredField-yellow {
     background-color: red !important;
     color: yellow !important;
-}red
+}
 
 .ColouredField-yellow::-webkit-input-placeholder { /* Chrome/Opera/Safari */
     color: yellow
