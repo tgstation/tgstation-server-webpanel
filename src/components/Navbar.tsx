@@ -11,8 +11,6 @@ import IServerClient from '../clients/IServerClient';
 
 import Home from './Home';
 
-import './Navbar.css';
-
 interface IProps {
     serverClient: IServerClient;
 }
@@ -22,7 +20,6 @@ interface IState {
     userNameError?: string;
     serverInfoError?: string;
     retryIn?: Date;
-    usernameHovered: boolean;
     serverInformation?: ServerInformation;
 }
 
@@ -31,15 +28,11 @@ export default class Navbar extends React.Component<IProps, IState> {
 
     public constructor(props: IProps) {
         super(props);
-        this.state = {
-            usernameHovered: false
-        };
+        this.state = {};
         this.retryTimer = null;
 
         this.tryLoadInformation = this.tryLoadInformation.bind(this);
         this.logoutClick = this.logoutClick.bind(this);
-        this.onHover = this.onHover.bind(this);
-        this.offHover = this.offHover.bind(this);
     }
 
     public async componentDidMount(): Promise<void> {
@@ -55,17 +48,25 @@ export default class Navbar extends React.Component<IProps, IState> {
 
     public render(): React.ReactNode {
         return (
-            <div className="Navbar">
-                <div className="Navbar-version">{this.renderVersion()}</div>
-                <NavLink
-                    className="Navbar-home"
-                    to={Home.Route}
-                    activeClassName="active">
-                    <button>
+            <div
+                className={
+                    'navbar navbar-dark ' +
+                    (this.state.serverInfoError || this.state.userNameError
+                        ? 'bg-danger'
+                        : 'bg-primary')
+                }>
+                <div className="navbar-expand navbar-brand">
+                    {this.renderVersion()}
+                </div>
+                <div className="navbar-nav mr-auto">
+                    <NavLink
+                        className="nav-item nav-link"
+                        to={Home.Route}
+                        activeClassName="active">
                         <FormattedMessage id="navbar.home" />
-                    </button>
-                </NavLink>
-                <div className="Navbar-user">{this.renderUser()}</div>
+                    </NavLink>
+                </div>
+                <div className="navbar-item">{this.renderUser()}</div>
             </div>
         );
     }
@@ -73,58 +74,65 @@ export default class Navbar extends React.Component<IProps, IState> {
     private renderVersion(): React.ReactNode {
         if (this.state.serverInfoError)
             return (
-                <div className="Navbar-info-error">
-                    <div className="Navbar-info-error-glyph">
+                <div>
+                    <div className="align-top d-inline-block px-1">
                         <Glyphicon glyph="exclamation-sign" />
                     </div>
-                    <p className="Navbar-info-error-text">
-                        <FormattedMessage id="navbar.info_error" />:
-                        <br />
+                    <div className="d-inline-block">
+                        <FormattedMessage id="navbar.server_error" />:{' '}
                         {this.state.serverInfoError}
-                    </p>
+                    </div>
                 </div>
             );
         if (this.state.serverInformation)
             return (
-                <h4>
+                <span>
                     tgstation-server v{this.state.serverInformation.version}
-                </h4>
+                </span>
             );
 
-        return (
-            <div className="Navbar-info-loading">
-                <BarLoader color={'white'} />
-            </div>
-        );
+        return <BarLoader color={'white'} />;
     }
 
     private renderUser(): React.ReactNode {
         if (this.state.userNameError)
             return (
-                <div className="Navbar-user-error">
-                    <div className="Navbar-user-error-glyph">
+                <div>
+                    <div className="align-top d-inline-block px-1">
                         <Glyphicon glyph="exclamation-sign" />
                     </div>
-                    <p className="Navbar-user-error-text">
-                        <FormattedMessage id="navbar.user_error" />:
-                        <br />
+                    <div className="d-inline-block">
+                        <FormattedMessage id="navbar.user_error" />:{' '}
                         {this.state.userNameError}
-                    </p>
+                    </div>
                 </div>
             );
         if (this.state.currentUser)
             return (
-                <button
-                    className="Navbar-user-name"
-                    onClick={this.logoutClick}
-                    onMouseEnter={this.onHover}
-                    onMouseLeave={this.offHover}>
-                    {this.state.usernameHovered ? (
-                        <FormattedMessage id="navbar.logout" />
-                    ) : (
-                        this.state.currentUser.name
-                    )}
-                </button>
+                <div className="dropdown">
+                    <button
+                        type="button"
+                        className={
+                            'btn dropdown-toggle ' +
+                            (this.state.serverInfoError ||
+                            this.state.userNameError
+                                ? 'btn-danger'
+                                : 'btn-primary')
+                        }
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                        {this.state.currentUser.name}
+                    </button>
+                    <div className="dropdown-menu dropdown-menu-right">
+                        <button
+                            type="button"
+                            className="dropdown-item text-right"
+                            onClick={this.logoutClick}>
+                            <FormattedMessage id="navbar.logout" />
+                        </button>
+                    </div>
+                </div>
             );
 
         return (
@@ -132,28 +140,6 @@ export default class Navbar extends React.Component<IProps, IState> {
                 <SyncLoader color={'white'} />
             </div>
         );
-    }
-
-    private onHover(): void {
-        this.setState(prevState => {
-            return {
-                usernameHovered: true,
-                currentUser: prevState.currentUser,
-                userNameError: prevState.userNameError,
-                retryIn: prevState.retryIn
-            };
-        });
-    }
-
-    private offHover(): void {
-        this.setState(prevState => {
-            return {
-                usernameHovered: false,
-                currentUser: prevState.currentUser,
-                userNameError: prevState.userNameError,
-                retryIn: prevState.retryIn
-            };
-        });
     }
 
     private logoutClick(): void {
@@ -176,8 +162,7 @@ export default class Navbar extends React.Component<IProps, IState> {
                 return {
                     serverInfoError: loadingError,
                     userNameError: prevState.userNameError,
-                    retryIn,
-                    usernameHovered: prevState.usernameHovered
+                    retryIn
                 };
             });
 
@@ -188,7 +173,6 @@ export default class Navbar extends React.Component<IProps, IState> {
             return {
                 currentUser: prevState.currentUser,
                 userNameError: prevState.userNameError,
-                usernameHovered: prevState.usernameHovered,
                 serverInformation: info.model
             };
         });
@@ -211,8 +195,7 @@ export default class Navbar extends React.Component<IProps, IState> {
                     serverInformation: prevState.serverInformation,
                     serverInfoError: prevState.serverInfoError,
                     userNameError: loadingError,
-                    retryIn,
-                    usernameHovered: prevState.usernameHovered
+                    retryIn
                 };
             });
 
@@ -222,7 +205,6 @@ export default class Navbar extends React.Component<IProps, IState> {
         this.setState(prevState => {
             return {
                 currentUser: user.model,
-                usernameHovered: prevState.usernameHovered,
                 serverInformation: prevState.serverInformation,
                 serverInfoError: prevState.serverInfoError
             };
