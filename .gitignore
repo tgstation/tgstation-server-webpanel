@@ -27,3 +27,6 @@ yarn-error.log*
 /tgstation-server-control-panel-.*\.tgz
 
 /src/clients/generated
+
+#IntelliJ project files
+/.idea
