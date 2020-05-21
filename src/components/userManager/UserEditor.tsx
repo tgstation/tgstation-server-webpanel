@@ -335,6 +335,10 @@ class UserEditor extends React.Component<IProps, IState> {
 
         if (this.state.newUser.password == null)
             throw Error('state.newUser.password should be set here!');
+        if (this.props.serverInformation.minimumPasswordLength == null)
+            throw Error(
+                'props.serverInformation.minimumPasswordLength should be set here!'
+            );
         return (
             <React.Fragment>
                 <div className="UserEditor-password">
@@ -355,6 +359,9 @@ class UserEditor extends React.Component<IProps, IState> {
                         })}
                         name="password_confirm"
                         onChange={this.updatePasswordConfirm}
+                        minumumLength={
+                            this.props.serverInformation.minimumPasswordLength
+                        }
                     />
                 </div>
             </React.Fragment>

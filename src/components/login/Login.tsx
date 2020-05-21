@@ -190,6 +190,10 @@ class Login extends React.Component<IProps, IState> {
     }
 
     private renderSetAdminPassword(): React.ReactNode {
+        if (this.state.serverInformation?.minimumPasswordLength == null)
+            throw new Error(
+                'state.serverInformation.minimumPasswordLength should be set here!'
+            );
         return (
             <form onSubmit={this.updateAdminPassword} className="Login">
                 <h1 className="Login-title">
@@ -203,6 +207,9 @@ class Login extends React.Component<IProps, IState> {
                         placeholder={this.props.intl.formatMessage({
                             id: 'login.password'
                         })}
+                        minumumLength={
+                            this.state.serverInformation.minimumPasswordLength
+                        }
                     />
                 </div>
                 <div className="Login-password">
@@ -213,6 +220,9 @@ class Login extends React.Component<IProps, IState> {
                         placeholder={this.props.intl.formatMessage({
                             id: 'login.confirm_password'
                         })}
+                        minumumLength={
+                            this.state.serverInformation.minimumPasswordLength
+                        }
                     />
                 </div>
                 <button
