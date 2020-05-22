@@ -13,7 +13,7 @@ class HttpClient implements IHttpClient {
         fullRoute?: boolean
     ): Promise<Response> {
         if (!fullRoute && this.serverUrl) {
-            route = this.basePath + route;
+            route = this.serverUrl + this.basePath + route;
             requestInfo = requestInfo || {};
             requestInfo.mode = 'cors';
         }

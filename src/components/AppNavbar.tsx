@@ -2,14 +2,17 @@ import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { BarLoader, SyncLoader } from 'react-spinners';
-
-import Glyphicon from '@strongdm/glyphicon';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 import { User, ServerInformation } from '../clients/generated';
 
 import IServerClient from '../clients/IServerClient';
 
-import Home from './Home';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Store } from '../utils/datastore';
+import { AppRoutes } from '../utils/routes';
 
 interface IProps {
     serverClient: IServerClient;
@@ -23,7 +26,7 @@ interface IState {
     serverInformation?: ServerInformation;
 }
 
-export default class Navbar extends React.Component<IProps, IState> {
+export default class AppNavbar extends React.Component<IProps, IState> {
     private retryTimer: NodeJS.Timeout | null;
 
     public constructor(props: IProps) {
@@ -48,26 +51,26 @@ export default class Navbar extends React.Component<IProps, IState> {
 
     public render(): React.ReactNode {
         return (
-            <div
-                className={
-                    'navbar navbar-dark ' +
-                    (this.state.serverInfoError || this.state.userNameError
-                        ? 'bg-danger'
-                        : 'bg-primary')
+            <Navbar
+                variant={Store.darkMode ? 'dark' : 'light'}
+                bg={
+                    this.state.userNameError || this.state.serverInfoError
+                        ? 'danger'
+                        : 'primary'
                 }>
-                <div className="navbar-expand navbar-brand">
-                    {this.renderVersion()}
-                </div>
-                <div className="navbar-nav mr-auto">
-                    <NavLink
-                        className="nav-item nav-link"
-                        to={Home.Route}
-                        activeClassName="active">
-                        <FormattedMessage id="navbar.home" />
-                    </NavLink>
-                </div>
-                <div className="navbar-item">{this.renderUser()}</div>
-            </div>
+                <Navbar.Brand>{this.renderVersion()}</Navbar.Brand>
+                <Nav className="mr-auto">
+                    <Nav.Item>
+                        <Nav.Link
+                            as={NavLink}
+                            to={AppRoutes.home}
+                            activeClassName="active">
+                            <FormattedMessage id="navbar.home" />
+                        </Nav.Link>
+                    </Nav.Item>
+                </Nav>
+                <Nav.Item>{this.renderUser()}</Nav.Item>
+            </Navbar>
         );
     }
 
@@ -76,20 +79,16 @@ export default class Navbar extends React.Component<IProps, IState> {
             return (
                 <div>
                     <div className="align-top d-inline-block px-1">
-                        <Glyphicon glyph="exclamation-sign" />
+                        <FontAwesomeIcon icon="exclamation-circle" />
                     </div>
                     <div className="d-inline-block">
-                        <FormattedMessage id="navbar.server_error" />:{' '}
-                        {this.state.serverInfoError}
+                        <FormattedMessage id="navbar.server_error" />
+                        {`: ${this.state.serverInfoError}`}
                     </div>
                 </div>
             );
         if (this.state.serverInformation)
-            return (
-                <span>
-                    tgstation-server v{this.state.serverInformation.version}
-                </span>
-            );
+            return `tgstation-server v${this.state.serverInformation.version}`;
 
         return <BarLoader color={'white'} />;
     }
@@ -99,47 +98,48 @@ export default class Navbar extends React.Component<IProps, IState> {
             return (
                 <div>
                     <div className="align-top d-inline-block px-1">
-                        <Glyphicon glyph="exclamation-sign" />
+                        <FontAwesomeIcon icon="exclamation-circle" />
                     </div>
                     <div className="d-inline-block">
-                        <FormattedMessage id="navbar.user_error" />:{' '}
-                        {this.state.userNameError}
+                        <FormattedMessage id="navbar.user_error" />
+                        {`: ${this.state.userNameError}`}
                     </div>
                 </div>
             );
         if (this.state.currentUser)
             return (
-                <div className="dropdown">
-                    <button
+                <Dropdown>
+                    <Dropdown.Toggle
+                        id="user-dropdown"
                         type="button"
-                        className={
-                            'btn dropdown-toggle ' +
-                            (this.state.serverInfoError ||
+                        /*className={
+                            this.state.serverInfoError ||
                             this.state.userNameError
                                 ? 'btn-danger'
-                                : 'btn-primary')
+                                : 'btn-primary'
+                        }*/
+                        variant={
+                            this.state.serverInfoError ||
+                            this.state.userNameError
+                                ? 'danger'
+                                : 'secondary'
                         }
                         data-toggle="dropdown"
                         aria-haspopup="true"
                         aria-expanded="false">
                         {this.state.currentUser.name}
-                    </button>
-                    <div className="dropdown-menu dropdown-menu-right">
-                        <button
-                            type="button"
-                            className="dropdown-item text-right"
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu alignRight>
+                        <Dropdown.Item
+                            className="text-right"
                             onClick={this.logoutClick}>
                             <FormattedMessage id="navbar.logout" />
-                        </button>
-                    </div>
-                </div>
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             );
 
-        return (
-            <div className="Navbar-user-loading">
-                <SyncLoader color={'white'} />
-            </div>
-        );
+        return <SyncLoader color={'white'} />;
     }
 
     private logoutClick(): void {
@@ -213,7 +213,7 @@ export default class Navbar extends React.Component<IProps, IState> {
 
     private async tryLoadInformation(): Promise<void> {
         if (this.state.retryIn != null && this.state.retryIn < new Date()) {
-            this.retryTimer = setTimeout(
+            this.retryTimer = global.setTimeout(
                 this.tryLoadInformation,
                 this.state.retryIn.getMilliseconds() - Date.now()
             );

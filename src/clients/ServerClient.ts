@@ -256,7 +256,7 @@ export default class ServerClient implements IServerClient, IApiClient {
             this.token = serverResponse.model;
 
             if (serverResponse.model?.expiresAt) {
-                this.tokenRefreshTimeout = setTimeout(
+                this.tokenRefreshTimeout = global.setTimeout(
                     () => this.loginRefresh(),
                     new Date(serverResponse.model.expiresAt).getTime() -
                         Date.now()

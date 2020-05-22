@@ -29,11 +29,6 @@
     display: grid;
 }
 
-.Root-content {
-    grid-row: 2;
-    display: grid;
-}
-
 .Root-login {
     display: grid;
 }

@@ -24,7 +24,7 @@ class TranslationFactory implements ITranslationFactory {
     public async loadTranslation(
         locale: string
     ): Promise<ServerResponse<ITranslation>> {
-        const requestPath = `/locales/${locale}.json`;
+        const requestPath = `locales/${locale}.json`;
         const response = await this.httpClient.runRequest(requestPath);
 
         if (response.status < 200 || response.status >= 300) {

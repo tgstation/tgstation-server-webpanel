@@ -2,7 +2,6 @@ import * as React from 'react';
 import { RingLoader } from 'react-spinners';
 import { InjectedIntlProps, FormattedMessage, injectIntl } from 'react-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import {
     User,
@@ -119,7 +118,7 @@ class UserEditor extends React.Component<IProps, IState> {
                     enabling ? 'enable' : 'disable'
                 } form-control`}
                 onClick={this.enableDisable}>
-                <FontAwesomeIcon icon={enabling ? faCheck : faTimes} />
+                <FontAwesomeIcon icon={enabling ? 'check' : 'times'} />
                 <FormattedMessage
                     id={enabling ? 'user_editor.enable' : 'user_editor.disable'}
                 />

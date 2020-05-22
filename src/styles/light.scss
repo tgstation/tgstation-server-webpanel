@@ -1,0 +1,9 @@
+$enable-shadows: true;
+$enable-gradients: true;
+
+$theme-colors: (
+    "primary": #ff0000
+);
+
+
+@import "~bootstrap/scss/bootstrap";

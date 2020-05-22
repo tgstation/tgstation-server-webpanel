@@ -1,6 +1,8 @@
+import { hot } from 'react-hot-loader/root';
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import Container from 'react-bootstrap/Container';
 
 import IAppProps from './IAppProps';
 
@@ -16,18 +18,25 @@ import TranslationFactory from './translations/TranslationFactory';
 
 import Loading from './components/Loading';
 import * as Login from './components/login/Login';
-import Navbar from './components/Navbar';
-import Home from './components/Home';
-import UserManager from './components/userManager/UserManager';
+import AppNavbar from './components/AppNavbar';
 import AuthenticatedRoute from './components/utils/AuthenticatedRoute';
 
 import './App.css';
+import loadable from '@loadable/component';
+import { AppRoutes } from './utils/routes';
 
 interface IState {
     translation?: ITranslation;
     translationError?: string;
     serverInformation?: ServerInformation;
 }
+
+const Load = <h3>Loading...</h3>;
+const UserManager = loadable(
+    () => import('./components/userManager/UserManager'),
+    { fallback: Load }
+);
+const Home = loadable(() => import('./components/Home'), { fallback: Load });
 
 class App extends React.Component<IAppProps, IState> {
     private readonly httpClient: IHttpClient;
@@ -50,7 +59,6 @@ class App extends React.Component<IAppProps, IState> {
 
         this.state = {};
     }
-
     public async componentDidMount(): Promise<void> {
         await this.loadTranslation();
     }
@@ -62,41 +70,42 @@ class App extends React.Component<IAppProps, IState> {
         if (this.state.translation == null) return <Loading />;
 
         return (
-            <div className="App-main">
-                <IntlProvider
-                    locale={this.state.translation.locale}
-                    messages={this.state.translation.messages}>
-                    <BrowserRouter basename={this.props.basePath}>
-                        <Switch>
-                            <Route path={Login.Route}>
-                                <Login.Component
-                                    serverClient={this.serverClient}
-                                    onSuccessfulLogin={this.postLogin}
-                                />
-                            </Route>
-                            <AuthenticatedRoute
-                                serverClient={this.serverClient}>
-                                <div className="Root">
-                                    <div className="Root-nav">
-                                        <Navbar
-                                            serverClient={this.serverClient}
-                                        />
-                                    </div>
-                                    <div className="Root-content">
+            <IntlProvider
+                locale={this.state.translation.locale}
+                messages={this.state.translation.messages}>
+                <BrowserRouter basename={this.props.basePath}>
+                    <Switch>
+                        <Route path={Login.Route}>
+                            <Login.Component
+                                serverClient={this.serverClient}
+                                onSuccessfulLogin={this.postLogin}
+                            />
+                        </Route>
+                        <AuthenticatedRoute serverClient={this.serverClient}>
+                            <div className="Root">
+                                <div className="Root-nav">
+                                    <AppNavbar
+                                        serverClient={this.serverClient}
+                                    />
+                                </div>
+                                <Container>
+                                    <Route path={AppRoutes.userManager}>
                                         <UserManager
                                             userClient={this.serverClient.users}
                                             serverInformationCallback={
                                                 this.getServerInformation
                                             }
                                         />
+                                    </Route>
+                                    <Route path={AppRoutes.home}>
                                         <Home />
-                                    </div>
-                                </div>
-                            </AuthenticatedRoute>
-                        </Switch>
-                    </BrowserRouter>
-                </IntlProvider>
-            </div>
+                                    </Route>
+                                </Container>
+                            </div>
+                        </AuthenticatedRoute>
+                    </Switch>
+                </BrowserRouter>
+            </IntlProvider>
         );
     }
 
@@ -134,4 +143,4 @@ class App extends React.Component<IAppProps, IState> {
     }
 }
 
-export default App;
+export default hot(App);

@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { Route } from 'react-router';
 import { RingLoader } from 'react-spinners';
-import ScrollArea from 'react-scrollbar';
 
 import IUserClient from '../../clients/IUserClient';
 
@@ -38,8 +36,6 @@ interface IState {
 }
 
 export default class UserManager extends React.Component<IProps, IState> {
-    public static readonly Route: string = '/Users';
-
     public constructor(props: IProps) {
         super(props);
 
@@ -65,10 +61,6 @@ export default class UserManager extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
-        return <Route path={UserManager.Route}>{this.renderInternal()}</Route>;
-    }
-
-    public renderInternal(): React.ReactNode {
         if (this.state.editingUser) {
             if (this.state.ownUser?.administrationRights == null)
                 throw new Error(
@@ -128,7 +120,7 @@ export default class UserManager extends React.Component<IProps, IState> {
                     <LargeButton
                         textSize="15px"
                         fontSize="50px"
-                        glyph="refresh"
+                        glyph="sync"
                         messageId="user_manager.refresh_all"
                         onClick={this.refresh}
                     />
@@ -176,7 +168,7 @@ export default class UserManager extends React.Component<IProps, IState> {
         const editButtons = [
             <LargeButton
                 fontSize="50px"
-                glyph="refresh"
+                glyph="sync"
                 onClick={this.refreshOthers}
                 key={-2}
             />
@@ -202,9 +194,7 @@ export default class UserManager extends React.Component<IProps, IState> {
                 <div className="User-manager-editor-controls">
                     {editButtons}
                 </div>
-                <ScrollArea className="User-manager-editor">
-                    {otherEditors}
-                </ScrollArea>
+                {otherEditors}
             </div>
         );
     }

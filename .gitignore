@@ -5,9 +5,11 @@
 
 # testing
 /coverage
+/stats.json
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -30,3 +32,4 @@ yarn-error.log*
 
 #IntelliJ project files
 /.idea
+

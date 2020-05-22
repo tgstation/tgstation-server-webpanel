@@ -1,0 +1,27 @@
+$enable-shadows: true;
+$enable-gradients: true;
+
+$theme-colors: (
+    "primary": #0e3e52,
+    "secondary": #3671a6,
+);
+
+$body-bg: #212529;
+$body-color: #e9ecef;
+
+$dropdown-bg: #495057;
+$dropdown-color: black;
+$dropdown-link-color: black;
+$dropdown-link-hover-color: black;
+$dropdown-link-hover-bg: darken($dropdown-bg, 5%);
+
+@import "~bootstrap/scss/bootstrap";
+
+.navbar {
+    font-weight: 600;
+}
+
+
+
+
+

@@ -2,11 +2,10 @@ import * as React from 'react';
 
 import { User, AdministrationRights } from '../../clients/generated';
 
-import Glyphicon from '@strongdm/glyphicon';
-
 import './UserBadge.css';
 import { FormattedMessage, InjectedIntlProps, injectIntl } from 'react-intl';
 import { PropagateLoader } from 'react-spinners';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface IOwnProps {
     user: User;
@@ -52,7 +51,7 @@ class UserBadge extends React.Component<IProps, IState> {
         let createdBy = this.props.user.createdBy?.name;
         if (!createdBy) createdBy = 'TGS';
 
-        const enabledGlyph = this.props.user.enabled ? 'check' : 'cross';
+        const enabledGlyph = this.props.user.enabled ? 'check' : 'times';
         const enabledClass = this.props.user.enabled ? 'enabled' : 'disabled';
 
         const editSection = [
@@ -95,7 +94,7 @@ class UserBadge extends React.Component<IProps, IState> {
                 <div
                     className="UserBadge-glyph"
                     style={{ color: this.getUserColor() }}>
-                    <Glyphicon glyph="user" />
+                    <FontAwesomeIcon icon="user" />
                 </div>
                 <p className="UserBadge-name">{this.renderName()}</p>
                 <p className="UserBadge-id">
@@ -119,7 +118,7 @@ class UserBadge extends React.Component<IProps, IState> {
                     />
                 </p>
                 <div className={'UserBadge-state user-' + enabledClass}>
-                    <Glyphicon glyph={enabledGlyph} />
+                    <FontAwesomeIcon icon={enabledGlyph} />
                 </div>
                 {editSection}
             </div>
