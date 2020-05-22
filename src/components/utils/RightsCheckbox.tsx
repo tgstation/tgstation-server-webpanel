@@ -9,9 +9,7 @@ interface IProps<TRight> {
     setRight: (right: TRight, enable: boolean) => void;
 }
 
-export default class RightsCheckbox<TRight> extends React.Component<
-    IProps<TRight>
-> {
+export default class RightsCheckbox<TRight> extends React.Component<IProps<TRight>> {
     public constructor(props: IProps<TRight>) {
         super(props);
 

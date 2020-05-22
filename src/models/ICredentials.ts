@@ -1,4 +1,4 @@
-export default interface ICredentials {
+export interface ICredentials {
     userName: string;
     password: string;
 }

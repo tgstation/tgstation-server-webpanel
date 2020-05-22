@@ -1,58 +1,105 @@
+import { hot } from 'react-hot-loader/root';
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import Container from 'react-bootstrap/Container';
 
 import IAppProps from './IAppProps';
 
-import HttpClient from './clients/HttpClient';
-import IHttpClient from './clients/IHttpClient';
-import IServerClient from './clients/IServerClient';
 import ServerClient from './clients/ServerClient';
-import { ServerInformation } from './clients/generated';
 
 import ITranslation from './translations/ITranslation';
 import ITranslationFactory from './translations/ITranslationFactory';
 import TranslationFactory from './translations/TranslationFactory';
 
-import Loading from './components/Loading';
-import * as Login from './components/login/Login';
-import Navbar from './components/Navbar';
-import Home from './components/Home';
-import UserManager from './components/userManager/UserManager';
-import AuthenticatedRoute from './components/utils/AuthenticatedRoute';
+import Login from './components/login/Login';
+import AppNavbar from './components/AppNavbar';
 
 import './App.css';
+import loadable from '@loadable/component';
+import { AppRoutes } from './utils/routes';
+import ErrorBoundary from './components/utils/ErrorBoundary';
+import Loading from './components/utils/Loading';
+import Reload from './components/utils/Reload';
+import { StatusCode } from './models/InternalComms/InternalStatus';
+import { ErrorCode } from './models/InternalComms/InternalError';
 
 interface IState {
     translation?: ITranslation;
     translationError?: string;
-    serverInformation?: ServerInformation;
+    loggedIn: boolean;
+    loading: boolean;
 }
 
+const LoadSpin = <Loading />;
+
+const Home = loadable(() => import('./components/Home'), {
+    fallback: LoadSpin
+});
+
 class App extends React.Component<IAppProps, IState> {
-    private readonly httpClient: IHttpClient;
-    private readonly serverClient: IServerClient;
     private readonly translationFactory: ITranslationFactory;
 
     public constructor(props: IAppProps) {
         super(props);
 
-        this.httpClient =
-            this.props.httpClient ||
-            new HttpClient(this.props.serverAddress, this.props.basePath);
-        this.serverClient =
-            this.props.serverClient || new ServerClient(this.httpClient);
-        this.translationFactory =
-            this.props.translationFactory ||
-            new TranslationFactory(this.httpClient);
-        this.getServerInformation = this.getServerInformation.bind(this);
-        this.postLogin = this.postLogin.bind(this);
+        this.translationFactory = this.props.translationFactory || new TranslationFactory();
 
-        this.state = {};
+        this.state = {
+            loggedIn: false,
+            loading: true
+        };
     }
-
     public async componentDidMount(): Promise<void> {
-        await this.loadTranslation();
+        ServerClient.on('loginSuccess', () => {
+            this.setState({
+                loggedIn: true
+            });
+        });
+        ServerClient.on('logout', () => {
+            this.setState({
+                loggedIn: false
+            });
+        });
+
+        await Promise.all([this.loadTranslation(), ServerClient.wait4Init()]);
+
+        let usr: string | null = null;
+        let pwd: string | null = null;
+        try {
+            //private browsing on safari can throw when using storage
+            usr = window.sessionStorage.getItem('username');
+            pwd = window.sessionStorage.getItem('password');
+        } catch (e) {
+            (() => {})(); //noop
+        }
+
+        if (usr && pwd) {
+            const res = await ServerClient.login({ userName: usr, password: pwd });
+            if (res.code == StatusCode.ERROR) {
+                if (
+                    res.error?.code == ErrorCode.LOGIN_DISABLED ||
+                    res.error?.code == ErrorCode.LOGIN_FAIL
+                ) {
+                    try {
+                        //private browsing on safari can throw when using storage
+                        window.sessionStorage.removeItem('username');
+                        window.sessionStorage.removeItem('password');
+                    } catch (e) {
+                        (() => {})(); //noop
+                    }
+                }
+            } else if (res.code == StatusCode.OK) {
+                this.setState({
+                    loggedIn: true,
+                    loading: false
+                });
+                return;
+            }
+        }
+        this.setState({
+            loading: false
+        });
     }
 
     public render(): React.ReactNode {
@@ -60,78 +107,51 @@ class App extends React.Component<IAppProps, IState> {
             return <p className="App-error">{this.state.translationError}</p>;
 
         if (this.state.translation == null) return <Loading />;
-
+        console.log(`rendering: loggedin: ${this.state.loggedIn} | loading: ${this.state.loading}`);
         return (
-            <div className="App-main">
-                <IntlProvider
-                    locale={this.state.translation.locale}
-                    messages={this.state.translation.messages}>
-                    <BrowserRouter basename={this.props.basePath}>
-                        <Switch>
-                            <Route path={Login.Route}>
-                                <Login.Component
-                                    serverClient={this.serverClient}
-                                    onSuccessfulLogin={this.postLogin}
-                                />
-                            </Route>
-                            <AuthenticatedRoute
-                                serverClient={this.serverClient}>
-                                <div className="Root">
-                                    <div className="Root-nav">
-                                        <Navbar
-                                            serverClient={this.serverClient}
-                                        />
-                                    </div>
-                                    <div className="Root-content">
-                                        <UserManager
-                                            userClient={this.serverClient.users}
-                                            serverInformationCallback={
-                                                this.getServerInformation
-                                            }
-                                        />
-                                        <Home />
-                                    </div>
-                                </div>
-                            </AuthenticatedRoute>
-                        </Switch>
-                    </BrowserRouter>
-                </IntlProvider>
-            </div>
+            <IntlProvider
+                locale={this.state.translation.locale}
+                messages={this.state.translation.messages}>
+                <BrowserRouter basename={BASEPATH}>
+                    <AppNavbar />
+                    <Container className="mt-5 mb-5">
+                        {this.state.loading ? (
+                            <Loading />
+                        ) : (
+                            <ErrorBoundary>
+                                <Reload>
+                                    {this.state.loggedIn ? (
+                                        <Switch>
+                                            <Route exact path={AppRoutes.home.route}>
+                                                <Home />
+                                            </Route>
+                                        </Switch>
+                                    ) : (
+                                        <Login />
+                                    )}
+                                </Reload>
+                            </ErrorBoundary>
+                        )}
+                    </Container>
+                </BrowserRouter>
+            </IntlProvider>
         );
     }
 
     private async loadTranslation(): Promise<void> {
-        const translationResponse = await this.translationFactory.loadTranslation(
-            this.props.locale
-        );
-
-        const translation = translationResponse.model;
-        if (!translation) {
-            const error = await translationResponse.getError();
+        try {
+            const translation = await this.translationFactory.loadTranslation(this.props.locale);
+            this.setState({
+                translation
+            });
+        } catch (error) {
             this.setState({
                 translationError: error || 'An unknown error occurred'
             });
 
             return;
         }
-
-        this.serverClient.setTranslation(translation);
-        this.setState({
-            translation
-        });
-    }
-
-    private getServerInformation(): ServerInformation {
-        if (!this.state.serverInformation)
-            throw new Error('state.serverInformation should be set here');
-        return this.state.serverInformation;
-    }
-
-    private postLogin(serverInformation: ServerInformation): void {
-        this.setState({
-            serverInformation
-        });
     }
 }
 
-export default App;
+export default hot(App);

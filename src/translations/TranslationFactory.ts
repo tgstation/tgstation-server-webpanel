@@ -1,8 +1,3 @@
-import IHttpClient from '../clients/IHttpClient';
-
-import ServerResponse from '../models/ServerResponse';
-
-import ILocalization from './ILocalization';
 import ITranslation from './ITranslation';
 import ITranslationFactory from './ITranslationFactory';
 import Locales from './Locales';
@@ -15,22 +10,11 @@ class TranslationFactory implements ITranslationFactory {
         return locale.split('-')[0];
     }
 
-    private readonly httpClient: IHttpClient;
+    public async loadTranslation(locale: string): Promise<ITranslation> {
+        const localization = await import(`./locales/${locale}.json`);
 
-    public constructor(httpClient: IHttpClient) {
-        this.httpClient = httpClient;
-    }
-
-    public async loadTranslation(
-        locale: string
-    ): Promise<ServerResponse<ITranslation>> {
-        const requestPath = `/locales/${locale}.json`;
-        const response = await this.httpClient.runRequest(requestPath);
-
-        if (response.status < 200 || response.status >= 300) {
-            let shortHandedLocale = TranslationFactory.getShortHandedLocale(
-                locale
-            );
+        if (!localization) {
+            let shortHandedLocale = TranslationFactory.getShortHandedLocale(locale);
             if (shortHandedLocale === locale) {
                 if (shortHandedLocale === TranslationFactory.fallbackLocale)
                     throw new Error('Invalid locale: ' + locale);
@@ -41,18 +25,12 @@ class TranslationFactory implements ITranslationFactory {
 
         let model: ITranslation | null = null;
         try {
-            const localization = (await response.json()) as ILocalization;
             model = new Translation(locale, localization);
         } catch (e) {
-            return new ServerResponse<ITranslation>(
-                null,
-                null,
-                null,
-                `Error loading localization for locale '${locale}': ${e.toString()}`
-            );
+            throw Error(`Error loading localization for locale '${locale}': ${e.toString()}`);
         }
 
-        return new ServerResponse(model, response, model);
+        return model;
     }
 }
 

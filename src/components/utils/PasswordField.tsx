@@ -38,9 +38,9 @@ class PasswordField extends React.Component<IProps, IState> {
                     const capsLockWarning = active && this.state.focused;
                     let placeholder = this.props.placeholder;
                     if (capsLockWarning)
-                        placeholder = `${placeholder} (${this.props.intl.formatMessage(
-                            { id: 'password.capslock' }
-                        )})`;
+                        placeholder = `${placeholder} (${this.props.intl.formatMessage({
+                            id: 'password.capslock'
+                        })})`;
 
                     const mode =
                         this.props.minumumLength == null ||

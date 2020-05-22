@@ -5,7 +5,6 @@
     "jsx": "react",
     "lib": ["es5", "es6", "dom"],
     "rootDir": "src",
-    "noEmit": false,
     "isolatedModules": false
   },
   "include": null

@@ -1,4 +1,4 @@
-.Home{
+.Home {
     display: grid;
     grid-template-rows: 25% 50% 25%;
     grid-template-columns: 20% 20% 20% 20% 20%;

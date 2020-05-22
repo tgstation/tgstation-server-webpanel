@@ -1,0 +1,25 @@
+openapi: "3.0.2"
+info:
+  title: empty response
+  version: v0.1
+components:
+  schemas:
+    object:
+      type: object
+      properties:
+        id:
+          type: string
+  responses:
+    created:
+      description: 'object created'
+paths:
+  "/":
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/object'
+      responses:
+        204:
+          $ref: '#/components/responses/created'

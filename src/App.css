@@ -2,10 +2,10 @@
     background-size: 50%;
     background: #1e1e1e url(logo.svg) no-repeat center;
     position: absolute;
-  width: 100%;
-  top: 0;
-  bottom: 0;
-  display: grid;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    display: grid;
 }
 
 .App-error {
@@ -15,23 +15,13 @@
 }
 
 .App-main {
-  display: grid;
+    display: grid;
 }
 
-.Root{
+.Root {
     overflow: hidden;
     display: grid;
     grid-template-rows: 9% auto;
-}
-
-.Root-nav {
-    grid-row: 1;
-    display: grid;
-}
-
-.Root-content {
-    grid-row: 2;
-    display: grid;
 }
 
 .Root-login {

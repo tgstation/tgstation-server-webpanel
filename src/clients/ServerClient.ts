@@ -1,282 +1,417 @@
-import IHttpClient from './IHttpClient';
-import IServerClient from './IServerClient';
-import IUserClient from './IUserClient';
-import UsersClient from './UserClient';
-import IInstanceClient from './IInstanceClient';
-import InstanceClient from './InstanceClient';
-import IApiClient, { RawRequestFunc } from './IApiClient';
+import { Client, Components } from './_generated';
+import { AxiosError, AxiosResponse, OpenAPIClientAxios } from 'openapi-client-axios';
+import { ICredentials } from '../models/ICredentials';
+import { TypedEmitter } from 'tiny-typed-emitter/lib';
+import InternalError, { ErrorCode, GenericErrors } from '../models/InternalComms/InternalError';
+import InternalStatus, { StatusCode } from '../models/InternalComms/InternalStatus';
+import { Document } from 'openapi-client-axios/types/client';
 
-import { ConfigurationParameters, Configuration, HomeApi } from './generated';
-import { Token, Instance, ServerInformation } from './generated/models';
+interface IEvents {
+    loginSuccess: (token: Components.Schemas.Token) => void;
+    logout: () => void;
+    accessDenied: () => void;
+    loadServerInfo: (
+        serverInfo: InternalStatus<Components.Schemas.ServerInformation, GenericErrors>
+    ) => void;
+    initialized: () => void;
+}
 
-import ICredentials from '../models/ICredentials';
-import ServerResponse from '../models/ServerResponse';
-import TgsResponse from '../models/TgsResponse';
+export type LoginErrors =
+    | GenericErrors
+    | ErrorCode.LOGIN_DISABLED
+    | ErrorCode.LOGIN_FAIL
+    | ErrorCode.LOGIN_NOCREDS;
+export type ServerInfoErrors = GenericErrors;
 
-import ITranslation from '../translations/ITranslation';
+class ServerClient extends TypedEmitter<IEvents> {
+    private static readonly globalHandledCodes = [400, 401, 403, 409, 500, 501, 503];
 
-export default class ServerClient implements IServerClient, IApiClient {
-    private static readonly UserAgent: string = ServerClient.getUserAgent();
-    private static readonly ApiVersion: string = ServerClient.getApiVersion();
+    //api
+    // @ts-ignore  //this will be undefined at the start but there shouldnt be any requests before the api is initialized, same as below
+    private api: OpenAPIClientAxios; //api object, handles sending requests and configuring things
+    // @ts-ignore
+    public apiClient: Client; //client to interface with the api
+    private initialized = false;
 
-    public readonly users: IUserClient;
+    //token
+    private _token?: Components.Schemas.Token;
+    public get token() {
+        return this._token;
+    }
+    private refreshTokenTimer?: number;
 
-    public readonly config: Configuration;
+    //credentials
+    private credentials?: ICredentials;
 
-    private credentials: ICredentials | null;
-    private token: Token | null;
+    //serverInfo
+    private _serverInfo?: InternalStatus<Components.Schemas.ServerInformation, ErrorCode.OK>;
+    public get serverInfo() {
+        return this._serverInfo;
+    }
+    private loadingServerInfo = false;
 
-    private currentServerInformationPromise: TgsResponse<
-        ServerInformation
-    > | null;
-    private currentServerInformation: ServerResponse<ServerInformation> | null;
-    private currentServerInformationCacheToken: Token | null;
-
-    private translation: ITranslation | null;
-
-    private loginRefreshHandlers: Array<
-        (promise: Promise<ServerResponse<Readonly<Token>>>) => void
-    >;
-
-    private tokenRefreshTimeout: NodeJS.Timeout | null;
-
-    public constructor(private readonly httpClient: IHttpClient) {
-        this.loginRefresh = this.loginRefresh.bind(this);
-        this.token = null;
-        this.tokenRefreshTimeout = null;
-        this.credentials = null;
-        this.translation = null;
-        this.currentServerInformation = null;
-        this.currentServerInformationCacheToken = null;
-        this.currentServerInformationPromise = null;
-
-        const configParameters: ConfigurationParameters = {
-            basePath: httpClient.serverUrl,
-            accessToken: () => this.token?.bearer || '',
-            headers: {
-                Accept: 'application/json'
-            }
-        };
-
-        // eslint-disable-next-line
-        this.config = new Configuration(configParameters);
-        this.users = new UsersClient(this);
-
-        this.loginRefreshHandlers = [];
+    public constructor() {
+        super();
+        // noinspection JSIgnoredPromiseFromCall
+        this.initApi();
     }
 
-    public async getServerInformationCached(
-        forceRefresh?: boolean
-    ): Promise<ServerResponse<ServerInformation> | null> {
-        if (forceRefresh) {
-            this.currentServerInformationCacheToken = null;
-            this.currentServerInformation = null;
-        }
-
-        if (
-            this.currentServerInformation &&
-            this.currentServerInformationCacheToken === this.getToken()
-        ) {
-            return this.currentServerInformation;
-        }
-
-        const controlOfPromise = !this.currentServerInformationPromise;
-        if (controlOfPromise) {
-            const homeApi = new HomeApi(this.config);
-            this.currentServerInformationPromise = this.makeApiRequest(
-                homeApi.homeControllerHomeRaw.bind(homeApi)
-            );
-        }
-
-        const result = await this.currentServerInformationPromise;
-
-        if (controlOfPromise) {
-            this.currentServerInformationPromise = null;
-            if (result?.model) {
-                this.currentServerInformation = result;
-                this.currentServerInformationCacheToken = this.getToken();
-            } else {
-                this.currentServerInformation = null;
-                this.currentServerInformationCacheToken = null;
-            }
-        }
-
-        return result;
-    }
-
-    public setLoginHandler(
-        handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
-    ): void {
-        this.loginRefreshHandlers.push(handler);
-    }
-    public clearLoginHandler(
-        handler: (promise: Promise<ServerResponse<Readonly<Token>>>) => void
-    ): void {
-        this.loginRefreshHandlers = this.loginRefreshHandlers.filter(
-            oldHandler => oldHandler !== handler
-        );
-    }
-
-    public createInstanceClient(instance: Instance): IInstanceClient {
-        if (!instance.id) throw new Error('Instance missing ID!');
-
-        return new InstanceClient(this, instance.id);
-    }
-
-    public getTranslation(): ITranslation | null {
-        return this.translation;
-    }
-
-    public setTranslation(translation: ITranslation): void {
-        this.translation = translation;
-    }
-
-    public logout(): void {
-        this.credentials = null;
-        this.token = null;
-
-        if (this.translation == null)
-            throw new Error('translation should be set here!');
-
-        const promise = Promise.resolve(
-            new ServerResponse<Readonly<Token>>(
-                this.translation,
-                null,
-                null,
-                this.translation.messages['server_client.logout']
-            )
-        );
-        this.loginRefreshHandlers.forEach(handler => handler(promise));
-    }
-
-    public loggedIn(): boolean {
-        if (!this.token?.expiresAt) return false;
-        const now = new Date();
-        return this.token.expiresAt > now;
-    }
-
-    public getToken(): Token | null {
-        return this.token;
-    }
-
-    public tryLogin(credentials: ICredentials): Promise<ServerResponse<Token>> {
-        this.credentials = credentials;
-        return this.tryLoginWithCredentials();
-    }
-
-    public async makeApiRequest<TRequestParameters, TModel>(
-        rawRequestFunc: RawRequestFunc<TRequestParameters, TModel>,
-        instanceId?: number | null,
-        requestParameters?: TRequestParameters | null,
-        requiresToken: boolean = true
-    ): Promise<ServerResponse<TModel> | null> {
-        if (!this.translation)
-            throw new Error('ServerClient translation not set!');
-
-        if (requiresToken && !this.token) {
-            const refreshPromise = this.tryLoginWithCredentials();
-
-            const refreshResponse = await refreshPromise;
-            if (!refreshResponse.model) {
-                return null;
-            }
-        }
-
-        requestParameters = requestParameters || ({} as TRequestParameters);
-
-        const basicRequestParameters = {
-            api: ServerClient.ApiVersion,
-            userAgent: ServerClient.UserAgent,
-            instanceId
-        };
-
-        requestParameters = { ...basicRequestParameters, ...requestParameters };
-
-        try {
-            const apiResponse = await rawRequestFunc(requestParameters);
-            const model = await apiResponse.value();
-
-            return new ServerResponse(this.translation, apiResponse.raw, model);
-        } catch (thrownResponse) {
-            if (!(thrownResponse instanceof Response)) {
-                return new ServerResponse<TModel>(
-                    this.translation,
-                    null,
-                    null,
-                    thrownResponse.toString()
-                );
-            }
-
-            return new ServerResponse(this.translation, thrownResponse);
-        }
-    }
-
-    public static getApiVersion(): string {
-        const apiVersion = '6.0.0';
-        return `Tgstation.Server.Api/${apiVersion}`;
-    }
-
-    public static getUserAgent(): string {
-        return 'tgstation-server-control-panel/0.4.0';
-    }
-
-    private async tryLoginWithCredentials(): Promise<ServerResponse<Token>> {
-        this.cancelLoginRefresh();
-
-        if (!this.credentials) {
-            throw new Error('Invalid credentials!');
-        }
-
-        // we need to create this configuration object every time because it's where the username/parameters are set
-        const loginHomeApi = new HomeApi(
-            new Configuration({
-                basePath: this.httpClient.serverUrl,
+    public async initApi() {
+        console.log('Initializing API client');
+        const defObj = (await import('./swagger.json')).default as Document;
+        this.api = new OpenAPIClientAxios({
+            definition: defObj,
+            validate: false,
+            axiosConfigDefaults: {
+                baseURL: APIPATH,
+                withCredentials: false,
                 headers: {
-                    Accept: 'application/json'
+                    Accept: 'application/json',
+                    api: `Tgstation.Server.Api/` + API_VERSION,
+                    'User-Agent': 'tgstation-server-control-panel/' + VERSION
                 },
-                username: this.credentials.userName,
-                password: this.credentials.password
-            })
-        );
-
-        const responsePromise = this.makeApiRequest(
-            loginHomeApi.homeControllerCreateTokenRaw.bind(loginHomeApi),
-            null,
-            null,
-            false
-        ) as Promise<ServerResponse<Token>>;
-
-        this.loginRefreshHandlers.forEach(handler => handler(responsePromise));
-
-        const serverResponse = await responsePromise;
-
-        if (!serverResponse) throw new Error('Login request returned null!');
-
-        if (serverResponse.model) {
-            this.token = serverResponse.model;
-
-            if (serverResponse.model?.expiresAt) {
-                this.tokenRefreshTimeout = setTimeout(
-                    () => this.loginRefresh(),
-                    new Date(serverResponse.model.expiresAt).getTime() -
-                        Date.now()
-                );
+                validateStatus: status => {
+                    return !ServerClient.globalHandledCodes.includes(status);
+                }
             }
-        } else {
-            this.credentials = null;
+        });
+        this.apiClient = await this.api.init<Client>();
+        this.apiClient.interceptors.request.use(
+            async value => {
+                if (!((value.url === '/' || value.url === '') && value.method === 'post')) {
+                    const tok = await this.wait4Token();
+                    value.headers['Authorization'] = 'Bearer ' + tok.bearer;
+                }
+                return value;
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        );
+        this.apiClient.interceptors.response.use(
+            val => val,
+            (error: AxiosError): Promise<AxiosResponse> => {
+                if (
+                    error.response &&
+                    error.response.status &&
+                    ServerClient.globalHandledCodes.includes(error.response.status)
+                ) {
+                    const res = error.response as AxiosResponse<unknown>;
+                    switch (error.response.status) {
+                        case 400: {
+                            const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                            const errorobj = new InternalError(
+                                ErrorCode.HTTP_BAD_REQUEST,
+                                {
+                                    errorMessage
+                                },
+                                res
+                            );
+                            return Promise.reject(errorobj);
+                        }
+                        case 401: {
+                            const request = error.config;
+                            if (
+                                (request.url === '/' || request.url === '') &&
+                                request.method === 'post'
+                            ) {
+                                this.logout();
+                                const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                                const errorobj = new InternalError(
+                                    ErrorCode.LOGIN_FAIL,
+                                    {
+                                        void: true
+                                    },
+                                    res
+                                );
+                                return Promise.reject(errorobj);
+                            } else {
+                                this._token = undefined; //our token is invalid, might as well clear it
+                                if (!this.credentials) {
+                                    this.logout();
+                                }
+                                return this.login().then(_ => {
+                                    return this.api.client.request(error.config);
+                                });
+                            }
+                        }
+                        case 403: {
+                            const request = error.config;
+                            if (
+                                (request.url === '/' || request.url === '') &&
+                                request.method === 'post'
+                            ) {
+                                this.logout();
+                                const errorMessage = error.response
+                                    .data as Components.Schemas.ErrorMessage;
+                                const errorobj = new InternalError(
+                                    ErrorCode.LOGIN_DISABLED,
+                                    {
+                                        void: true
+                                    },
+                                    res
+                                );
+                                return Promise.reject(errorobj);
+                            } else {
+                                this.emit('accessDenied');
+                                const errorobj = new InternalError(
+                                    ErrorCode.HTTP_ACCESS_DENIED,
+                                    {
+                                        void: true
+                                    },
+                                    res
+                                );
+                                return Promise.reject(errorobj);
+                            }
+                        }
+                        case 409: {
+                            const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                            const errorobj = new InternalError(
+                                ErrorCode.HTTP_DATA_INEGRITY,
+                                {
+                                    errorMessage
+                                },
+                                res
+                            );
+                            return Promise.reject(errorobj);
+                        }
+                        case 500: {
+                            const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                            const errorobj = new InternalError(
+                                ErrorCode.HTTP_SERVER_ERROR,
+                                {
+                                    errorMessage
+                                },
+                                res
+                            );
+                            return Promise.reject(errorobj);
+                        }
+                        case 501: {
+                            const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                            const errorobj = new InternalError(
+                                ErrorCode.HTTP_UNIMPLEMENTED,
+                                { errorMessage },
+                                res
+                            );
+                            return Promise.reject(errorobj);
+                        }
+                        case 503: {
+                            const errorobj = new InternalError(
+                                ErrorCode.HTTP_SERVER_NOT_READY,
+                                {
+                                    void: true
+                                },
+                                res
+                            );
+                            return Promise.reject(errorobj);
+                        }
+                        default: {
+                            const errorobj = new InternalError(
+                                ErrorCode.UNHANDLED_GLOBAL_RESPONSE,
+                                {
+                                    axiosResponse: res
+                                },
+                                res
+                            );
+                            return Promise.reject(errorobj);
+                        }
+                    }
+                } else {
+                    const err = error as Error;
+                    const errorobj = new InternalError(
+                        ErrorCode.AXIOS,
+                        { jsError: err },
+                        error.response
+                    );
+                    return Promise.reject(errorobj);
+                }
+            }
+        );
+        this.initialized = true;
+        this.emit('initialized');
+    }
+
+    public wait4Init(): Promise<void> {
+        return new Promise<void>(resolve => {
+            if (this.initialized) {
+                resolve();
+                return;
+            }
+            this.on('initialized', () => resolve());
+        });
+    }
+
+    public wait4Token() {
+        return new Promise<Components.Schemas.Token>(resolve => {
+            if (this.isTokenValid()) {
+                resolve(this.token);
+                return;
+            }
+            this.on('loginSuccess', token => {
+                resolve(token);
+            });
+        });
+    }
+
+    public isTokenValid() {
+        return (
+            this.credentials &&
+            this.token &&
+            this.token
+                .bearer /* &&
+            (!this.token.expiresAt || new Date(this.token.expiresAt) > new Date(Date.now()))*/
+        );
+    }
+
+    public async login(
+        newCreds?: ICredentials
+    ): Promise<InternalStatus<Components.Schemas.Token, LoginErrors>> {
+        await this.wait4Init();
+        if (newCreds) {
+            this.logout();
+            this.credentials = newCreds;
+        }
+        if (!this.credentials)
+            return new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_NOCREDS>({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.LOGIN_NOCREDS, { void: true })
+            });
+
+        let response;
+        try {
+            response = await this.apiClient.HomeController_CreateToken({}, null, {
+                auth: {
+                    username: this.credentials.userName,
+                    password: this.credentials.password
+                }
+            });
+        } catch (stat) {
+            return new InternalStatus<Components.Schemas.Token, GenericErrors>({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
         }
 
-        return serverResponse;
+        switch (response.status) {
+            case 200: {
+                const token = response.data as Components.Schemas.Token;
+                this._token = token;
+                /*if (token.expiresAt) {
+                    const expiry = new Date(token.expiresAt);
+                    const refreshtime = new Date(expiry.getTime() - 60000); //1 minute before expiry
+                    const delta = refreshtime.getTime() - new Date().getTime(); //god damn, dates are hot garbage, get the ms until the refresh time
+                    setInterval(() => this.login(), delta); //this is an arrow function so that "this" remains set
+                }*/
+                try {
+                    window.sessionStorage.setItem('username', this.credentials.userName);
+                    window.sessionStorage.setItem('password', this.credentials.password);
+                } catch (_) {
+                    (() => {})(); //noop
+                }
+                this.getServerInfo().then(() => {
+                    this.emit('loginSuccess', token);
+                });
+                return new InternalStatus<Components.Schemas.Token, ErrorCode.OK>({
+                    code: StatusCode.OK,
+                    payload: token
+                });
+            }
+            default: {
+                return new InternalStatus<Components.Schemas.Token, ErrorCode.UNHANDLED_RESPONSE>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
     }
 
-    private async loginRefresh(): Promise<void> {
-        await this.tryLoginWithCredentials();
+    public logout() {
+        if (!this.isTokenValid()) {
+            return;
+        }
+        this.credentials = undefined;
+        try {
+            window.sessionStorage.removeItem('username');
+            window.sessionStorage.removeItem('password');
+        } catch (e) {
+            (() => {})();
+        }
+        this._token = undefined;
+        if (this.refreshTokenTimer) clearTimeout(this.refreshTokenTimer);
+        this.emit('logout');
     }
 
-    private cancelLoginRefresh() {
-        if (this.tokenRefreshTimeout) {
-            clearTimeout(this.tokenRefreshTimeout);
-            this.tokenRefreshTimeout = null;
+    public async getServerInfo(): Promise<
+        InternalStatus<Components.Schemas.ServerInformation, ServerInfoErrors>
+    > {
+        if (this._serverInfo) {
+            return this._serverInfo;
+        }
+
+        if (this.loadingServerInfo) {
+            return new Promise(resolve => {
+                if (this._serverInfo) {
+                    //race condition if 2 things listen to an event or something
+                    resolve(this._serverInfo);
+                    return;
+                }
+                this.on('loadServerInfo', info => {
+                    resolve(info);
+                });
+            });
+        }
+
+        this.loadingServerInfo = true;
+
+        let response;
+        try {
+            response = await this.apiClient.HomeController_Home();
+        } catch (stat) {
+            const res = new InternalStatus<Components.Schemas.ServerInformation, GenericErrors>({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+            this.emit('loadServerInfo', res);
+            this.loadingServerInfo = false;
+            return res;
+        }
+        switch (response.status) {
+            case 200: {
+                const info = response.data as Components.Schemas.ServerInformation;
+                const cache = new InternalStatus<
+                    Components.Schemas.ServerInformation,
+                    ErrorCode.OK
+                >({
+                    code: StatusCode.OK,
+                    payload: info
+                });
+                this.emit('loadServerInfo', cache);
+                this._serverInfo = cache;
+                this.loadingServerInfo = false;
+                return cache;
+            }
+            default: {
+                const res = new InternalStatus<
+                    Components.Schemas.ServerInformation,
+                    ErrorCode.UNHANDLED_RESPONSE
+                >({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+                this.emit('loadServerInfo', res);
+                this.loadingServerInfo = false;
+                return res;
+            }
         }
     }
 }
+
+export default new ServerClient();

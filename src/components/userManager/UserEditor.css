@@ -8,7 +8,7 @@
     display: grid;
 }
 
-.UserEditor-content{
+.UserEditor-content {
     grid-row: 2;
     grid-column: 2;
     border-radius: 25px;
@@ -30,12 +30,12 @@
     grid-column-gap: 5px;
 }
 
-.UserEditor-apply{
+.UserEditor-apply {
     grid-row: 2;
     grid-column: 1;
 }
 
-.UserEditor-cancel{
+.UserEditor-cancel {
     grid-row: 2;
     grid-column: 2;
 }
