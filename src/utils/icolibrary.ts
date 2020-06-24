@@ -9,6 +9,7 @@ import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion';
 import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
+import { faTools } from '@fortawesome/free-solid-svg-icons/faTools';
 
 library.add(
     faCheck,
@@ -20,5 +21,6 @@ library.add(
     faSync,
     faPlus,
     faQuestion,
-    faHome
+    faHome,
+    faTools
 );

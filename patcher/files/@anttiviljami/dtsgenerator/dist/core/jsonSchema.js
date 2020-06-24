@@ -21,10 +21,7 @@ function parseSchema(content, url) {
 }
 exports.parseSchema = parseSchema;
 function getSubSchema(rootSchema, pointer, id) {
-    var content = JsonPointer.get(
-        rootSchema.content,
-        JsonPointer.parse(pointer)
-    );
+    var content = JsonPointer.get(rootSchema.content, JsonPointer.parse(pointer));
     if (id == null) {
         var subId = getId(rootSchema.type, content);
         var t_1 = 0;
@@ -34,17 +31,12 @@ function getSubSchema(rootSchema, pointer, id) {
                 debugger;
             }
             result.push(s.id.getAbsoluteId());
-            return s.rootSchema == null
-                ? result
-                : getParentIds_1(s.rootSchema, result);
+            return s.rootSchema == null ? result : getParentIds_1(s.rootSchema, result);
         };
         if (subId) {
             id = new schemaId_1.default(subId, getParentIds_1(rootSchema, []));
         } else {
-            id = new schemaId_1.default(
-                pointer,
-                getParentIds_1(rootSchema, [])
-            );
+            id = new schemaId_1.default(pointer, getParentIds_1(rootSchema, []));
         }
     }
     return {
@@ -127,18 +119,10 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
         walk(s.not, paths.concat('not'), parentIds);
         walkMaybeArray(s.items, paths.concat('items'), parentIds);
         walk(s.additionalItems, paths.concat('additionalItems'), parentIds);
-        walk(
-            s.additionalProperties,
-            paths.concat('additionalProperties'),
-            parentIds
-        );
+        walk(s.additionalProperties, paths.concat('additionalProperties'), parentIds);
         walkObject(s.definitions, paths.concat('definitions'), parentIds);
         walkObject(s.properties, paths.concat('properties'), parentIds);
-        walkObject(
-            s.patternProperties,
-            paths.concat('patternProperties'),
-            parentIds
-        );
+        walkObject(s.patternProperties, paths.concat('patternProperties'), parentIds);
         walkMaybeArray(s.dependencies, paths.concat('dependencies'), parentIds);
         if (schema.type === 'Draft07') {
             if ('propertyNames' in s) {
@@ -206,18 +190,24 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
                     work.push(item);
                 } else if ('$ref' in item) {
                     var result = /\/([^\/]*)$/.exec(item.$ref)[1];
-                    if (
-                        item.$ref.includes('api') ||
-                        item.$ref.includes('User-Agent')
-                    ) {
+                    if (item.$ref.includes('api') || item.$ref.includes('User-Agent')) {
                         return;
                     }
                     setSubId(item, keys.concat(result));
-                    var work = refs.get('path');
+                    if (item.$ref.includes('instance')) {
+                        var work = refs.get('header');
 
-                    if (work == null) {
-                        work = [];
-                        refs.set('path', work);
+                        if (work == null) {
+                            work = [];
+                            refs.set('header', work);
+                        }
+                    } else {
+                        var work = refs.get('path');
+
+                        if (work == null) {
+                            work = [];
+                            refs.set('path', work);
+                        }
                     }
                     work.push(item);
                 }
@@ -228,18 +218,14 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             var e_1, _a, e_2, _b;
             try {
                 for (
-                    var params_1 = tslib_1.__values(params),
-                        params_1_1 = params_1.next();
+                    var params_1 = tslib_1.__values(params), params_1_1 = params_1.next();
                     !params_1_1.done;
                     params_1_1 = params_1.next()
                 ) {
                     var _c = tslib_1.__read(params_1_1.value, 2),
                         key = _c[0],
                         param = _c[1];
-                    var _d = tslib_1.__read(
-                            buildParameterSchema(key, param, keys),
-                            2
-                        ),
+                    var _d = tslib_1.__read(buildParameterSchema(key, param, keys), 2),
                         paths = _d[0],
                         obj = _d[1];
                     setSubId(obj, paths);
@@ -248,30 +234,21 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
                 e_1 = { error: e_1_1 };
             } finally {
                 try {
-                    if (
-                        params_1_1 &&
-                        !params_1_1.done &&
-                        (_a = params_1.return)
-                    )
-                        _a.call(params_1);
+                    if (params_1_1 && !params_1_1.done && (_a = params_1.return)) _a.call(params_1);
                 } finally {
                     if (e_1) throw e_1.error;
                 }
             }
             try {
                 for (
-                    var refs_1 = tslib_1.__values(refs),
-                        refs_1_1 = refs_1.next();
+                    var refs_1 = tslib_1.__values(refs), refs_1_1 = refs_1.next();
                     !refs_1_1.done;
                     refs_1_1 = refs_1.next()
                 ) {
                     var _e = tslib_1.__read(refs_1_1.value, 2),
                         key = _e[0],
                         ref = _e[1];
-                    var _f = tslib_1.__read(
-                            buildParameterSchemaRefs(key, ref, keys),
-                            2
-                        ),
+                    var _f = tslib_1.__read(buildParameterSchemaRefs(key, ref, keys), 2),
                         paths = _f[0],
                         obj = _f[1];
                     setSubId(obj, paths);
@@ -280,17 +257,14 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
                 e_2 = { error: e_2_1 };
             } finally {
                 try {
-                    if (refs_1_1 && !refs_1_1.done && (_b = refs_1.return))
-                        _b.call(refs_1);
+                    if (refs_1_1 && !refs_1_1.done && (_b = refs_1.return)) _b.call(refs_1);
                 } finally {
                     if (e_2) throw e_2.error;
                 }
             }
         }
         function buildParameterSchema(inType, params, keys) {
-            var paths = keys
-                .slice(0, keys.length - 1)
-                .concat(inType + 'Parameters');
+            var paths = keys.slice(0, keys.length - 1).concat(inType + 'Parameters');
             var properties = {};
             params.forEach(function (item) {
                 properties[item.name] = {
@@ -314,9 +288,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             ];
         }
         function buildParameterSchemaRefs(inType, refs, keys) {
-            var paths = keys
-                .slice(0, keys.length - 1)
-                .concat(inType + 'Parameters');
+            var paths = keys.slice(0, keys.length - 1).concat(inType + 'Parameters');
             var properties = {};
             refs.forEach(function (item) {
                 if (item.$ref != null) {
@@ -368,10 +340,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             return setSubIdToAnyObject(setSubIdToPathItemV2, paths, keys);
         };
         function setSubIdToPathItemV2(pathItem, keys) {
-            setSubIdToParameters(
-                pathItem.parameters,
-                keys.concat('parameters')
-            );
+            setSubIdToParameters(pathItem.parameters, keys.concat('parameters'));
             setSubIdToOperationV2(pathItem.get, keys.concat('get'));
             setSubIdToOperationV2(pathItem.put, keys.concat('put'));
             setSubIdToOperationV2(pathItem.post, keys.concat('post'));
@@ -387,8 +356,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             }
             try {
                 for (
-                    var _b = tslib_1.__values(Object.keys(types)),
-                        _c = _b.next();
+                    var _b = tslib_1.__values(Object.keys(types)), _c = _b.next();
                     !_c.done;
                     _c = _b.next()
                 ) {
@@ -458,10 +426,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             return setSubIdToAnyObject(setSubIdToPathItemV3, paths, keys);
         };
         function setSubIdToPathItemV3(pathItem, keys) {
-            setSubIdToParameters(
-                pathItem.parameters,
-                keys.concat('parameters')
-            );
+            setSubIdToParameters(pathItem.parameters, keys.concat('parameters'));
             setSubIdToOperationV3(pathItem.get, keys.concat('get'));
             setSubIdToOperationV3(pathItem.put, keys.concat('put'));
             setSubIdToOperationV3(pathItem.post, keys.concat('post'));
@@ -485,13 +450,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
                 return;
             }
             if (typeof s.$ref === 'string') {
-                var thing =
-                    '#' +
-                    s.$ref
-                        .slice(1)
-                        .split('/')
-                        .map(convertKeyToTypeName)
-                        .join('/');
+                var thing = '#' + s.$ref.slice(1).split('/').map(convertKeyToTypeName).join('/');
                 var schemaId = new schemaId_1.default(thing);
                 s.$ref = schemaId.getAbsoluteId();
                 onFoundReference(schemaId);
@@ -509,18 +468,12 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             if (openApi.components) {
                 var components = openApi.components;
                 setSubIdToObject(components.schemas, ['components', 'schemas']);
-                setSubIdToResponsesV3(components.responses, [
-                    'components',
-                    'responses'
-                ]);
+                setSubIdToResponsesV3(components.responses, ['components', 'responses']);
                 setSubIdToParameterObjectNoName(components.parameters, [
                     'components',
                     'parameters'
                 ]);
-                setSubIdToRequestBodies(components.requestBodies, [
-                    'components',
-                    'requestBodies'
-                ]);
+                setSubIdToRequestBodies(components.requestBodies, ['components', 'requestBodies']);
             }
             if (openApi.paths) {
                 setSubIdToPathsV3(openApi.paths, ['paths']);
@@ -538,9 +491,7 @@ exports.searchAllSubSchema = searchAllSubSchema;
 function selectSchemaType(content) {
     if (content.$schema) {
         var schema = content.$schema;
-        var match = schema.match(
-            /http\:\/\/json-schema\.org\/draft-(\d+)\/schema#?/
-        );
+        var match = schema.match(/http\:\/\/json-schema\.org\/draft-(\d+)\/schema#?/);
         if (match) {
             var version = Number(match[1]);
             if (version <= 4) {

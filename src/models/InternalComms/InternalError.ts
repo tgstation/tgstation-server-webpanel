@@ -8,7 +8,7 @@ export type GenericErrors =
     | ErrorCode.HTTP_DATA_INEGRITY
     | ErrorCode.HTTP_SERVER_ERROR
     | ErrorCode.HTTP_UNIMPLEMENTED
-    | ErrorCode.HTTP_SERVER_NOT_READY
+    //    | ErrorCode.HTTP_SERVER_NOT_READY
     | ErrorCode.AXIOS
     | ErrorCode.UNHANDLED_RESPONSE
     | ErrorCode.UNHANDLED_GLOBAL_RESPONSE
@@ -21,7 +21,7 @@ export enum ErrorCode {
     HTTP_DATA_INEGRITY = 'error.http.data_integrity', //errmessage
     HTTP_SERVER_ERROR = 'error.http.server_error', //errmessage
     HTTP_UNIMPLEMENTED = 'error.http.unimplemented', //errmessage
-    HTTP_SERVER_NOT_READY = 'error.http.server_not_ready', //void
+    //auto retry    HTTP_SERVER_NOT_READY = 'error.http.server_not_ready', //void
     HTTP_ACCESS_DENIED = 'error.http.access_denied', //void
     UNHANDLED_RESPONSE = 'error.unhandled_response', //axiosresponse
     UNHANDLED_GLOBAL_RESPONSE = 'error.unhandled_global_response', //axiosresponse
@@ -89,11 +89,18 @@ export default class InternalError<T extends ErrorCode> {
             };
         }
         let debuginfo = JSON.stringify({ addon, origin });
+        //@ts-ignore //slander, replaceAll() exists >:(
         debuginfo = debuginfo.replaceAll(
             /Basic (?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?/g,
             'Basic **************'
         );
+        //@ts-ignore //slander, replaceAll() exists >:(
+        debuginfo = debuginfo.replaceAll(
+            /{"username":".+?","password":".+?"}/g,
+            '{"username":"*******","password":"*******"}'
+        );
         if (ServerClient.isTokenValid()) {
+            //@ts-ignore //slander, replaceAll() exists >:(
             debuginfo = debuginfo.replaceAll(
                 ServerClient.token?.bearer as string,
                 '**************'

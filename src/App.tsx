@@ -12,7 +12,7 @@ import ITranslation from './translations/ITranslation';
 import ITranslationFactory from './translations/ITranslationFactory';
 import TranslationFactory from './translations/TranslationFactory';
 
-import Login from './components/login/Login';
+import Login from './components/views/Login';
 import AppNavbar from './components/AppNavbar';
 
 import './App.css';
@@ -107,7 +107,6 @@ class App extends React.Component<IAppProps, IState> {
             return <p className="App-error">{this.state.translationError}</p>;
 
         if (this.state.translation == null) return <Loading />;
-        console.log(`rendering: loggedin: ${this.state.loggedIn} | loading: ${this.state.loading}`);
         return (
             <IntlProvider
                 locale={this.state.translation.locale}

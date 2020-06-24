@@ -7,7 +7,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GlobalObjects } from '../utils/globalObjects';
-import { AppRoutes } from '../utils/routes';
+import { AppRoutes, NormalRoute } from '../utils/routes';
 import { Components } from '../clients/_generated';
 import ServerClient from '../clients/ServerClient';
 import UserClient from '../clients/UserClient';
@@ -20,13 +20,15 @@ interface IState {
     userNameError?: string;
     serverInfoError?: string;
     loggedIn: boolean;
+    routes: Array<NormalRoute>;
 }
 
 export default class AppNavbar extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
         this.state = {
-            loggedIn: false
+            loggedIn: false,
+            routes: []
         };
 
         this.logoutClick = this.logoutClick.bind(this);
@@ -44,6 +46,39 @@ export default class AppNavbar extends React.Component<IProps, IState> {
             this.setState({
                 loggedIn: false
             });
+        });
+        this.refreshRoutes();
+    }
+
+    public componentDidUpdate(_: Readonly<IProps>, prevState: Readonly<IState>) {
+        if (this.state.loggedIn !== prevState.loggedIn) this.refreshRoutes();
+    }
+
+    // noinspection DuplicatedCode
+    private refreshRoutes() {
+        this.setState({ routes: [] });
+        Object.values(AppRoutes).forEach(val => {
+            if (val.isAuthorized) {
+                val.isAuthorized().then(auth => {
+                    if (val.hidden) return;
+
+                    // noinspection DuplicatedCode
+                    if (auth) {
+                        this.setState(prevState => {
+                            const newArr = Array.from(prevState.routes);
+                            newArr[val.display] = val;
+                            return {
+                                serverInfoError: prevState.serverInfoError,
+                                serverInformation: prevState.serverInformation,
+                                userNameError: prevState.userNameError,
+                                loggedIn: prevState.loggedIn,
+                                currentUser: prevState.currentUser,
+                                routes: newArr
+                            };
+                        });
+                    }
+                });
+            }
         });
     }
 
@@ -68,18 +103,16 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                                 </Nav.Link>
                             </Nav.Item>
                         ) : (
-                            Object.entries(AppRoutes).map(([id, route]) => {
-                                if (route.hidden) {
-                                    return;
-                                }
+                            this.state.routes.map(val => {
+                                if (!val) return;
                                 return (
-                                    <Nav.Item key={id}>
+                                    <Nav.Item key={val.route}>
                                         <Nav.Link
                                             as={NavLink}
-                                            to={route.route}
+                                            to={val.route}
                                             activeClassName="active"
-                                            exact={route.exact}>
-                                            <FormattedMessage id={route.name} />
+                                            exact={val.exact}>
+                                            <FormattedMessage id={val.name} />
                                         </Nav.Link>
                                     </Nav.Item>
                                 );

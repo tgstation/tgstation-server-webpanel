@@ -29,19 +29,19 @@ declare namespace Components {
             /**
              * If the server is running on a windows operating system
              */
-            windowsHost?: boolean;
+            windowsHost: boolean;
             /**
              * The GitHub repository the server is built to recieve updates from
              */
-            trackedRepositoryUrl?: string | null; // uri
+            trackedRepositoryUrl: string | null; // uri
             /**
              * The latest available version of the Tgstation.Server.Host assembly from the upstream repository. If System.Version.Major is higher than Tgstation.Server.Api.Models.Administration.NewVersion's the update cannot be applied due to API changes
              */
-            latestVersion?: string | null;
+            latestVersion: string | null;
             /**
              * Changes the version of Tgstation.Server.Host to the given version from the upstream repository
              */
-            newVersion?: string | null;
+            newVersion: string | null;
         }
         /**
          * Rights for Tgstation.Server.Api.Models.Administration
@@ -54,8 +54,8 @@ declare namespace Components {
             /**
              * The System.Version of the Tgstation.Server.Api.Models.Byond installation used for new compiles. Will be <see langword="null" /> if the user does not have permission to view it or there is no BYOND version installed. Only considers the System.Version.Major and System.Version.Minor numbers.
              */
-            version?: string | null;
-            installJob?: Job;
+            version: string | null;
+            installJob: Job;
         }
         /**
          * Rights for Tgstation.Server.Api.Models.Byond
@@ -65,32 +65,32 @@ declare namespace Components {
             /**
              * Channels the Discord bot should listen/announce in
              */
-            channels?: ChatChannel[] | null;
+            channels: ChatChannel[] | null;
             /**
              * The settings id
              */
-            id?: number; // int64
+            id: number; // int64
             /**
              * The name of the connection
              */
-            name?: string;
+            name: string;
             /**
              * If the connection is enabled
              */
-            enabled?: boolean | null;
+            enabled: boolean | null;
             /**
              * The time interval in minutes the chat bot attempts to reconnect if Tgstation.Server.Api.Models.Internal.ChatBot.Enabled and disconnected. Must not be zero.
              */
-            reconnectionInterval?: number; // int32
+            reconnectionInterval: number; // int32
             /**
              * The maximum number of Tgstation.Server.Api.Models.ChatChannels the Tgstation.Server.Api.Models.Internal.ChatBot may contain.
              */
-            channelLimit?: number; // int32
-            provider?: ChatProvider; // int32
+            channelLimit: number; // int32
+            provider: ChatProvider; // int32
             /**
              * The information used to connect to the Tgstation.Server.Api.Models.Internal.ChatBot.Provider
              */
-            connectionString?: string;
+            connectionString: string;
         }
         /**
          * Rights for Tgstation.Server.Api.Models.ChatBot
@@ -104,60 +104,60 @@ declare namespace Components {
              * The IRC channel name. Also potentially contains the channel passsword (if separated by a colon).
              * If multiple copies of the same channel with different keys are added to the server, the one that will be used is undefined.
              */
-            ircChannel?: string | null;
+            ircChannel: string | null;
             /**
              * The Discord channel ID
              */
-            discordChannelId?: null | number; // int64
+            discordChannelId: null | number; // int64
             /**
              * If the Tgstation.Server.Api.Models.ChatChannel is an admin channel
              */
-            isAdminChannel?: boolean;
+            isAdminChannel: boolean;
             /**
              * If the Tgstation.Server.Api.Models.ChatChannel is a watchdog channel
              */
-            isWatchdogChannel?: boolean;
+            isWatchdogChannel: boolean;
             /**
              * If the Tgstation.Server.Api.Models.ChatChannel is an updates channel
              */
-            isUpdatesChannel?: boolean;
+            isUpdatesChannel: boolean;
             /**
              * A custom tag users can define to group channels together
              */
-            tag?: string | null;
+            tag: string | null;
         }
         /**
          * Represents a chat service provider
          */
         export type ChatProvider = 0 | 1; // int32
         export interface CompileJob {
-            job?: Job;
-            revisionInformation?: RevisionInformation;
+            job: Job;
+            revisionInformation: RevisionInformation;
             /**
              * The Tgstation.Server.Api.Models.Byond.Version the Tgstation.Server.Api.Models.CompileJob was made with
              */
-            byondVersion?: string | null;
+            byondVersion: string | null;
             /**
              * The .dme file used for compilation
              */
-            dmeName?: string;
+            dmeName: string;
             /**
              * Textual output of DM
              */
-            output?: string;
+            output: string;
             /**
              * The Game folder the results were compiled into
              */
-            directoryName?: string; // uuid
-            minimumSecurityLevel?: DreamDaemonSecurity; // int32
+            directoryName: string; // uuid
+            minimumSecurityLevel: DreamDaemonSecurity; // int32
             /**
              * The DMAPI System.Version.
              */
-            dmApiVersion?: string | null;
+            dmApiVersion: string | null;
             /**
              * The ID of the entity.
              */
-            id?: number; // int64
+            id: number; // int64
         }
         /**
          * Represents a game configuration file. Create and delete actions uncerimonuously overwrite/delete files
@@ -166,23 +166,23 @@ declare namespace Components {
             /**
              * The path to the Tgstation.Server.Api.Models.ConfigurationFile file
              */
-            path?: string | null;
+            path: string | null;
             /**
              * If access to the Tgstation.Server.Api.Models.ConfigurationFile file was denied for the operation
              */
-            accessDenied?: boolean | null;
+            accessDenied: boolean | null;
             /**
              * If Tgstation.Server.Api.Models.ConfigurationFile.Path represents a directory
              */
-            isDirectory?: boolean | null;
+            isDirectory: boolean | null;
             /**
              * The MD5 hash of the file when last read by the user. If this doesn't match during update actions, the write will be denied with System.Net.HttpStatusCode.Conflict
              */
-            lastReadHash?: string | null;
+            lastReadHash: string | null;
             /**
              * The content of the Tgstation.Server.Api.Models.ConfigurationFile. Will be <see langword="null" /> if Tgstation.Server.Api.Models.ConfigurationFile.AccessDenied is <see langword="true" /> or during listing and write operations
              */
-            content?: string | null; // byte
+            content: string | null; // byte
         }
         /**
          * Rights for Tgstation.Server.Api.Models.ConfigurationFile
@@ -196,54 +196,54 @@ declare namespace Components {
          * Represents an instance of BYOND's DreamDaemon game server. Create action starts the server. Delete action shuts down the server
          */
         export interface DreamDaemon {
-            activeCompileJob?: CompileJob;
-            stagedCompileJob?: CompileJob;
+            activeCompileJob: CompileJob;
+            stagedCompileJob: CompileJob;
             /**
              * The current status of Tgstation.Server.Api.Models.DreamDaemon
              */
-            running?: boolean | null;
-            currentSecurity?: DreamDaemonSecurity; // int32
+            running: boolean | null;
+            currentSecurity: DreamDaemonSecurity; // int32
             /**
              * The port the running Tgstation.Server.Api.Models.DreamDaemon instance is set to
              */
-            currentPort?: null | number; // int32
+            currentPort: null | number; // int32
             /**
              * The webclient status the running Tgstation.Server.Api.Models.DreamDaemon instance is set to
              */
-            currentAllowWebclient?: boolean | null;
+            currentAllowWebclient: boolean | null;
             /**
              * If the server is undergoing a soft reset. This may be automatically set by changes to other fields
              */
-            softRestart?: boolean | null;
+            softRestart: boolean | null;
             /**
              * If the server is undergoing a soft shutdown
              */
-            softShutdown?: boolean | null;
+            softShutdown: boolean | null;
             /**
              * If Tgstation.Server.Api.Models.DreamDaemon starts when it's Tgstation.Server.Api.Models.Instance starts
              */
-            autoStart?: boolean;
+            autoStart: boolean;
             /**
              * If the BYOND web client can be used to connect to the game server
              */
-            allowWebClient?: boolean;
-            securityLevel?: DreamDaemonSecurity; // int32
+            allowWebClient: boolean;
+            securityLevel: DreamDaemonSecurity; // int32
             /**
              * The first port Tgstation.Server.Api.Models.DreamDaemon uses. This should be the publically advertised port
              */
-            primaryPort?: number; // int32
+            primaryPort: number; // int32
             /**
              * The second port Tgstation.Server.Api.Models.DreamDaemon uses
              */
-            secondaryPort?: number; // int32
+            secondaryPort: number; // int32
             /**
              * The DreamDaemon startup timeout in seconds
              */
-            startupTimeout?: number; // int32
+            startupTimeout: number; // int32
             /**
              * The number of seconds between each watchdog heartbeat. 0 disables.
              */
-            heartbeatSeconds?: number; // int32
+            heartbeatSeconds: number; // int32
         }
         /**
          * Rights for Tgstation.Server.Api.Models.DreamDaemon
@@ -274,12 +274,12 @@ declare namespace Components {
             /**
              * The .dme file Tgstation.Server.Api.Models.DreamMaker tries to compile with without the extension
              */
-            projectName?: string | null;
+            projectName: string | null;
             /**
              * The port used during compilation to validate the DMAPI
              */
-            apiValidationPort?: number; // int32
-            apiValidationSecurityLevel?: DreamDaemonSecurity; // int32
+            apiValidationPort: number; // int32
+            apiValidationSecurityLevel: DreamDaemonSecurity; // int32
         }
         /**
          * Rights for Tgstation.Server.Api.Models.DreamMaker
@@ -292,7 +292,7 @@ declare namespace Components {
             /**
              * The ID of the entity.
              */
-            id?: number; // int64
+            id: number; // int64
         }
         /**
          * Types of Tgstation.Server.Api.Models.ErrorMessages that the API may return.
@@ -390,16 +390,16 @@ declare namespace Components {
             /**
              * The version of the API the server is using
              */
-            serverApiVersion?: string;
+            serverApiVersion: string;
             /**
              * A human readable description of the error
              */
-            message?: string;
+            message: string;
             /**
              * Additional data associated with the error message.
              */
-            additionalData?: string | null;
-            errorCode?: ErrorCode; // int32
+            additionalData: string | null;
+            errorCode: ErrorCode; // int32
         }
         /**
          * Metadata about a server instance
@@ -408,29 +408,29 @@ declare namespace Components {
             /**
              * The name of the Tgstation.Server.Api.Models.Instance
              */
-            name?: string;
+            name: string;
             /**
              * The path to where the Tgstation.Server.Api.Models.Instance is located. Can only be changed while the Tgstation.Server.Api.Models.Instance is offline. Must not exist when the instance is created
              */
-            path?: string;
+            path: string;
             /**
              * If the Tgstation.Server.Api.Models.Instance is online
              */
-            online?: boolean;
-            configurationType?: ConfigurationType; // int32
+            online: boolean;
+            configurationType: ConfigurationType; // int32
             /**
              * The time interval in minutes the repository is automatically pulled and compiles. 0 disables
              */
-            autoUpdateInterval?: number; // int32
+            autoUpdateInterval: number; // int32
             /**
              * The maximum number of Tgstation.Server.Api.Models.ChatBots the Tgstation.Server.Api.Models.Instance may contain.
              */
-            chatBotLimit?: number; // int32
-            moveJob?: Job;
+            chatBotLimit: number; // int32
+            moveJob: Job;
             /**
              * The ID of the entity.
              */
-            id?: number; // int64
+            id: number; // int64
         }
         /**
          * Rights for managing Tgstation.Server.Api.Models.Instances
@@ -443,14 +443,14 @@ declare namespace Components {
             /**
              * The Tgstation.Server.Api.Models.Internal.User.Id of the Tgstation.Server.Api.Models.User the Tgstation.Server.Api.Models.InstanceUser belongs to
              */
-            userId?: number; // int64
-            instanceUserRights?: InstanceUserRights; // int64
-            byondRights?: ByondRights; // int64
-            dreamDaemonRights?: DreamDaemonRights; // int64
-            dreamMakerRights?: DreamMakerRights; // int64
-            repositoryRights?: RepositoryRights; // int64
-            chatBotRights?: ChatBotRights; // int64
-            configurationRights?: ConfigurationRights; // int64
+            userId: number; // int64
+            instanceUserRights: InstanceUserRights; // int64
+            byondRights: ByondRights; // int64
+            dreamDaemonRights: DreamDaemonRights; // int64
+            dreamMakerRights: DreamMakerRights; // int64
+            repositoryRights: RepositoryRights; // int64
+            chatBotRights: ChatBotRights; // int64
+            configurationRights: ConfigurationRights; // int64
         }
         /**
          * Rights for an Tgstation.Server.Api.Models.Instance
@@ -460,42 +460,42 @@ declare namespace Components {
          * Represents a long running job on the server. Model is read-only, updates attempt to cancel the job
          */
         export interface Job {
-            startedBy?: User;
-            cancelledBy?: User;
+            startedBy: User;
+            cancelledBy: User;
             /**
              * Optional progress between 0 and 100 inclusive
              */
-            progress?: null | number; // int32
+            progress: null | number; // int32
             /**
              * English description of the Tgstation.Server.Api.Models.Internal.Job
              */
-            description?: string;
-            errorCode?: ErrorCode; // int32
+            description: string;
+            errorCode: ErrorCode; // int32
             /**
              * Details of any exceptions caught during the Tgstation.Server.Api.Models.Internal.Job
              */
-            exceptionDetails?: string | null;
+            exceptionDetails: string | null;
             /**
              * When the Tgstation.Server.Api.Models.Internal.Job was started
              */
-            startedAt?: string; // date-time
+            startedAt: string; // date-time
             /**
              * When the Tgstation.Server.Api.Models.Internal.Job stopped
              */
-            stoppedAt?: string | null; // date-time
+            stoppedAt: string | null; // date-time
             /**
              * If the Tgstation.Server.Api.Models.Internal.Job was cancelled
              */
-            cancelled?: boolean;
-            cancelRightsType?: RightsType; // int64
+            cancelled: boolean;
+            cancelRightsType: RightsType; // int64
             /**
              * The N:Tgstation.Server.Api.Rights required to cancel the Tgstation.Server.Api.Models.Internal.Job
              */
-            cancelRight?: null | number; // int64
+            cancelRight: null | number; // int64
             /**
              * The ID of the entity.
              */
-            id?: number; // int64
+            id: number; // int64
         }
         /**
          * Represents a git repository
@@ -504,69 +504,69 @@ declare namespace Components {
             /**
              * The origin URL. If <see langword="null" />, the Tgstation.Server.Api.Models.Repository does not exist
              */
-            origin?: string | null;
+            origin: string | null;
             /**
              * The commit HEAD should point to. Not populated in responses, use Tgstation.Server.Api.Models.Repository.RevisionInformation instead for retrieval
              */
-            checkoutSha?: string | null;
-            revisionInformation?: RevisionInformation;
+            checkoutSha: string | null;
+            revisionInformation: RevisionInformation;
             /**
              * If the repository was cloned from GitHub.com this will be set with the owner of the repository
              */
-            gitHubOwner?: string | null;
+            gitHubOwner: string | null;
             /**
              * If the repository was cloned from GitHub.com this will be set with the name of the repository
              */
-            gitHubName?: string | null;
-            activeJob?: Job;
+            gitHubName: string | null;
+            activeJob: Job;
             /**
              * Do the equivalent of a git pull. Will attempt to merge unless Tgstation.Server.Api.Models.Repository.Reference is also specified in which case a hard reset will be performed after checking out
              */
-            updateFromOrigin?: boolean | null;
+            updateFromOrigin: boolean | null;
             /**
              * The branch or tag HEAD points to
              */
-            reference?: string | null;
+            reference: string | null;
             /**
              * Tgstation.Server.Api.Models.TestMergeParameters for new Tgstation.Server.Api.Models.TestMerges. Note that merges that conflict will not be performed
              */
-            newTestMerges?: TestMergeParameters[] | null;
+            newTestMerges: TestMergeParameters[] | null;
             /**
              * The name of the committer
              */
-            committerName?: string;
+            committerName: string;
             /**
              * The e-mail of the committer
              */
-            committerEmail?: string; // email
+            committerEmail: string; // email
             /**
              * The username to access the git repository with
              */
-            accessUser?: string | null;
+            accessUser: string | null;
             /**
              * The token/password to access the git repository with
              */
-            accessToken?: string | null;
+            accessToken: string | null;
             /**
              * If commits created from testmerges are pushed to the remote
              */
-            pushTestMergeCommits?: boolean;
+            pushTestMergeCommits: boolean;
             /**
              * If test merge commits are signed with the username of the person who merged it. Note this only affects future commits
              */
-            showTestMergeCommitters?: boolean;
+            showTestMergeCommitters: boolean;
             /**
              * If test merge commits should be kept when auto updating. May cause merge conflicts which will block the update
              */
-            autoUpdatesKeepTestMerges?: boolean;
+            autoUpdatesKeepTestMerges: boolean;
             /**
              * If synchronization should occur when auto updating
              */
-            autoUpdatesSynchronize?: boolean;
+            autoUpdatesSynchronize: boolean;
             /**
              * If test merging should create a comment
              */
-            postTestMergeComment?: boolean;
+            postTestMergeComment: boolean;
         }
         /**
          * Rights for a Tgstation.Server.Api.Models.Repository
@@ -587,23 +587,23 @@ declare namespace Components {
             | 2048
             | 4096; // int64
         export interface RevisionInformation {
-            primaryTestMerge?: TestMerge;
+            primaryTestMerge: TestMerge;
             /**
              * The Tgstation.Server.Api.Models.TestMerges active in the Tgstation.Server.Api.Models.RevisionInformation
              */
-            activeTestMerges?: TestMerge[] | null;
+            activeTestMerges: TestMerge[] | null;
             /**
              * The Tgstation.Server.Api.Models.CompileJobs made from the Tgstation.Server.Api.Models.RevisionInformation
              */
-            compileJobs?: EntityId[] | null;
+            compileJobs: EntityId[] | null;
             /**
              * The revision sha
              */
-            commitSha?: string;
+            commitSha: string;
             /**
              * The sha of the most recent remote commit
              */
-            originCommitSha?: string;
+            originCommitSha: string;
         }
         /**
          * The type of rights a model uses
@@ -616,31 +616,31 @@ declare namespace Components {
             /**
              * The version of the host
              */
-            version?: string | null;
+            version: string | null;
             /**
              * The N:Tgstation.Server.Api version of the host
              */
-            apiVersion?: string | null;
+            apiVersion: string | null;
             /**
              * The DMAPI version of the host.
              */
-            dmApiVersion?: string | null;
+            dmApiVersion: string | null;
             /**
              * Minimum length of database user passwords.
              */
-            minimumPasswordLength?: number; // int32
+            minimumPasswordLength: number; // int32
             /**
              * The maximum number of Tgstation.Server.Api.Models.Instances allowed.
              */
-            instanceLimit?: number; // int32
+            instanceLimit: number; // int32
             /**
              * The maximum number of Tgstation.Server.Api.Models.Users allowed.
              */
-            userLimit?: number; // int32
+            userLimit: number; // int32
             /**
              * Limits the locations instances may be created or attached from.
              */
-            validInstancePaths?: string[] | null;
+            validInstancePaths: string[] | null;
         }
         /**
          * Represents a server Tgstation.Server.Api.Models.Internal.User
@@ -649,64 +649,64 @@ declare namespace Components {
             /**
              * The ID of the Tgstation.Server.Api.Models.Internal.User
              */
-            id?: number; // int64
+            id: number; // int64
             /**
              * If the Tgstation.Server.Api.Models.Internal.User is enabled since users cannot be deleted. System users cannot be disabled
              */
-            enabled?: boolean;
+            enabled: boolean;
             /**
              * When the Tgstation.Server.Api.Models.Internal.User was created
              */
-            createdAt?: string; // date-time
+            createdAt: string; // date-time
             /**
              * The SID/UID of the Tgstation.Server.Api.Models.Internal.User on Windows/POSIX respectively
              */
-            systemIdentifier?: string | null;
+            systemIdentifier: string | null;
             /**
              * The name of the Tgstation.Server.Api.Models.Internal.User
              */
-            name?: string;
-            administrationRights?: AdministrationRights; // int64
-            instanceManagerRights?: InstanceManagerRights; // int64
+            name: string;
+            administrationRights: AdministrationRights; // int64
+            instanceManagerRights: InstanceManagerRights; // int64
         }
         export interface TestMerge {
-            mergedBy?: User;
+            mergedBy: User;
             /**
              * The ID of the Tgstation.Server.Api.Models.Internal.TestMerge
              */
-            id?: number; // int64
+            id: number; // int64
             /**
              * When the Tgstation.Server.Api.Models.Internal.TestMerge was created
              */
-            mergedAt?: string; // date-time
+            mergedAt: string; // date-time
             /**
              * The title of the pull request
              */
-            titleAtMerge?: string;
+            titleAtMerge: string;
             /**
              * The body of the pull request
              */
-            bodyAtMerge?: string;
+            bodyAtMerge: string;
             /**
              * The URL of the pull request
              */
-            url?: string;
+            url: string;
             /**
              * The author of the pull request
              */
-            author?: string;
+            author: string;
             /**
              * The number of the pull request
              */
-            number?: number; // int32
+            number: number; // int32
             /**
              * The sha of the pull request revision to merge. If not specified, the latest commit shall be used (semi-unsafe)
              */
-            pullRequestRevision?: string;
+            pullRequestRevision: string;
             /**
              * Optional comment about the test
              */
-            comment?: string | null;
+            comment: string | null;
         }
         /**
          * Parameters for creating a Tgstation.Server.Api.Models.TestMerge
@@ -715,15 +715,15 @@ declare namespace Components {
             /**
              * The number of the pull request
              */
-            number?: number; // int32
+            number: number; // int32
             /**
              * The sha of the pull request revision to merge. If not specified, the latest commit shall be used (semi-unsafe)
              */
-            pullRequestRevision?: string;
+            pullRequestRevision: string;
             /**
              * Optional comment about the test
              */
-            comment?: string | null;
+            comment: string | null;
         }
         /**
          * Represents a JWT returned by the API
@@ -732,36 +732,36 @@ declare namespace Components {
             /**
              * The value of the JWT
              */
-            bearer?: string | null;
+            bearer: string | null;
             /**
              * When the Tgstation.Server.Api.Models.Token expires
              */
-            expiresAt?: string; // date-time
+            expiresAt: string; // date-time
         }
         export interface User {
-            createdBy?: ShallowUser;
+            createdBy: ShallowUser;
             /**
              * The ID of the Tgstation.Server.Api.Models.Internal.User
              */
-            id?: number; // int64
+            id: number; // int64
             /**
              * If the Tgstation.Server.Api.Models.Internal.User is enabled since users cannot be deleted. System users cannot be disabled
              */
-            enabled?: boolean;
+            enabled: boolean;
             /**
              * When the Tgstation.Server.Api.Models.Internal.User was created
              */
-            createdAt?: string; // date-time
+            createdAt: string; // date-time
             /**
              * The SID/UID of the Tgstation.Server.Api.Models.Internal.User on Windows/POSIX respectively
              */
-            systemIdentifier?: string | null;
+            systemIdentifier: string | null;
             /**
              * The name of the Tgstation.Server.Api.Models.Internal.User
              */
-            name?: string;
-            administrationRights?: AdministrationRights; // int64
-            instanceManagerRights?: InstanceManagerRights; // int64
+            name: string;
+            administrationRights: AdministrationRights; // int64
+            instanceManagerRights: InstanceManagerRights; // int64
         }
         /**
          * For editing a given Tgstation.Server.Api.Models.User. Will never be returned by the API
@@ -770,30 +770,30 @@ declare namespace Components {
             /**
              * Cleartext password of the Tgstation.Server.Api.Models.User
              */
-            password?: string;
-            createdBy?: ShallowUser;
+            password: string;
+            createdBy: ShallowUser;
             /**
              * The ID of the Tgstation.Server.Api.Models.Internal.User
              */
-            id?: number; // int64
+            id: number; // int64
             /**
              * If the Tgstation.Server.Api.Models.Internal.User is enabled since users cannot be deleted. System users cannot be disabled
              */
-            enabled?: boolean;
+            enabled: boolean;
             /**
              * When the Tgstation.Server.Api.Models.Internal.User was created
              */
-            createdAt?: string; // date-time
+            createdAt: string; // date-time
             /**
              * The SID/UID of the Tgstation.Server.Api.Models.Internal.User on Windows/POSIX respectively
              */
-            systemIdentifier?: string | null;
+            systemIdentifier: string | null;
             /**
              * The name of the Tgstation.Server.Api.Models.Internal.User
              */
-            name?: string;
-            administrationRights?: AdministrationRights; // int64
-            instanceManagerRights?: InstanceManagerRights; // int64
+            name: string;
+            administrationRights: AdministrationRights; // int64
+            instanceManagerRights: InstanceManagerRights; // int64
         }
     }
 }
@@ -843,11 +843,11 @@ declare namespace Paths {
         }
     }
     namespace ByondControllerList {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $200 = Components.Schemas.Byond[];
@@ -861,11 +861,11 @@ declare namespace Paths {
         }
     }
     namespace ByondControllerRead {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $200 = Components.Schemas.Byond;
@@ -879,11 +879,11 @@ declare namespace Paths {
         }
     }
     namespace ByondControllerUpdate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.Byond;
         namespace Responses {
@@ -899,11 +899,11 @@ declare namespace Paths {
         }
     }
     namespace ChatControllerCreate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.ChatBot;
         namespace Responses {
@@ -918,6 +918,9 @@ declare namespace Paths {
         }
     }
     namespace ChatControllerDelete {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             /**
              * The Tgstation.Server.Api.Models.Internal.ChatBot.Id to delete.
@@ -940,6 +943,9 @@ declare namespace Paths {
         }
     }
     namespace ChatControllerGetId {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             /**
              * The Tgstation.Server.Api.Models.Internal.ChatBot.Id to retrieve.
@@ -963,11 +969,11 @@ declare namespace Paths {
         }
     }
     namespace ChatControllerList {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $200 = Components.Schemas.ChatBot[];
@@ -981,11 +987,11 @@ declare namespace Paths {
         }
     }
     namespace ChatControllerUpdate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.ChatBot;
         namespace Responses {
@@ -1002,11 +1008,11 @@ declare namespace Paths {
         }
     }
     namespace ConfigurationControllerCreate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.ConfigurationFile;
         namespace Responses {
@@ -1022,11 +1028,11 @@ declare namespace Paths {
         }
     }
     namespace ConfigurationControllerDelete {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.ConfigurationFile;
         namespace Responses {
@@ -1041,6 +1047,9 @@ declare namespace Paths {
         }
     }
     namespace ConfigurationControllerDirectory {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             /**
              * The path of the directory to get
@@ -1064,6 +1073,9 @@ declare namespace Paths {
         }
     }
     namespace ConfigurationControllerFile {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             /**
              * The path of the file to get
@@ -1087,11 +1099,11 @@ declare namespace Paths {
         }
     }
     namespace ConfigurationControllerList {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $200 = Components.Schemas.ConfigurationFile[];
@@ -1105,11 +1117,11 @@ declare namespace Paths {
         }
     }
     namespace ConfigurationControllerUpdate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.ConfigurationFile;
         namespace Responses {
@@ -1125,11 +1137,11 @@ declare namespace Paths {
         }
     }
     namespace DreamDaemonControllerCreate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $202 = Components.Schemas.Job;
@@ -1143,11 +1155,11 @@ declare namespace Paths {
         }
     }
     namespace DreamDaemonControllerDelete {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $204 = void;
@@ -1161,11 +1173,11 @@ declare namespace Paths {
         }
     }
     namespace DreamDaemonControllerRead {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $200 = Components.Schemas.DreamDaemon;
@@ -1180,11 +1192,11 @@ declare namespace Paths {
         }
     }
     namespace DreamDaemonControllerRestart {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $202 = Components.Schemas.Job;
@@ -1198,11 +1210,11 @@ declare namespace Paths {
         }
     }
     namespace DreamDaemonControllerUpdate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.DreamDaemon;
         namespace Responses {
@@ -1218,11 +1230,11 @@ declare namespace Paths {
         }
     }
     namespace DreamMakerControllerCreate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $202 = Components.Schemas.Job;
@@ -1236,6 +1248,9 @@ declare namespace Paths {
         }
     }
     namespace DreamMakerControllerGetId {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             /**
              * The Tgstation.Server.Api.Models.EntityId.Id.
@@ -1259,11 +1274,11 @@ declare namespace Paths {
         }
     }
     namespace DreamMakerControllerList {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $200 = Components.Schemas.EntityId[];
@@ -1277,11 +1292,11 @@ declare namespace Paths {
         }
     }
     namespace DreamMakerControllerRead {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $200 = Components.Schemas.DreamMaker;
@@ -1295,11 +1310,11 @@ declare namespace Paths {
         }
     }
     namespace DreamMakerControllerUpdate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.DreamMaker;
         namespace Responses {
@@ -1425,11 +1440,11 @@ declare namespace Paths {
         }
     }
     namespace InstanceUserControllerCreate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.InstanceUser;
         namespace Responses {
@@ -1444,6 +1459,9 @@ declare namespace Paths {
         }
     }
     namespace InstanceUserControllerDelete {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             /**
              * The Tgstation.Server.Api.Models.InstanceUser.UserId to delete.
@@ -1466,6 +1484,9 @@ declare namespace Paths {
         }
     }
     namespace InstanceUserControllerGetId {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             /**
              * The Tgstation.Server.Api.Models.InstanceUser.UserId.
@@ -1489,11 +1510,11 @@ declare namespace Paths {
         }
     }
     namespace InstanceUserControllerList {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $200 = Components.Schemas.InstanceUser[];
@@ -1519,11 +1540,11 @@ declare namespace Paths {
         }
     }
     namespace InstanceUserControllerUpdate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.InstanceUser;
         namespace Responses {
@@ -1608,11 +1629,11 @@ declare namespace Paths {
         }
     }
     namespace RepositoryControllerCreate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.Repository;
         namespace Responses {
@@ -1628,11 +1649,11 @@ declare namespace Paths {
         }
     }
     namespace RepositoryControllerDelete {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $202 = Components.Schemas.Repository;
@@ -1647,11 +1668,11 @@ declare namespace Paths {
         }
     }
     namespace RepositoryControllerRead {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         namespace Responses {
             export type $200 = Components.Schemas.Repository;
@@ -1667,11 +1688,11 @@ declare namespace Paths {
         }
     }
     namespace RepositoryControllerUpdate {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
         namespace Parameters {
             export type Instance = Components.Parameters.Instance;
-        }
-        export interface PathParameters {
-            instance: Parameters.Instance;
         }
         export type RequestBody = Components.Schemas.Repository;
         namespace Responses {
@@ -1826,7 +1847,7 @@ export interface OperationMethods {
      * ByondController_Read - Gets the active Tgstation.Server.Api.Models.Byond version.
      */
     ByondController_Read(
-        parameters?: Parameters<Paths.ByondControllerRead.PathParameters>,
+        parameters?: Parameters<Paths.ByondControllerRead.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -1843,7 +1864,7 @@ export interface OperationMethods {
      * ByondController_Update - Changes the active BYOND version to the one specified in a given model.
      */
     ByondController_Update(
-        parameters?: Parameters<Paths.ByondControllerUpdate.PathParameters>,
+        parameters?: Parameters<Paths.ByondControllerUpdate.HeaderParameters>,
         data?: Paths.ByondControllerUpdate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -1861,7 +1882,7 @@ export interface OperationMethods {
      * ByondController_List - Lists installed Tgstation.Server.Api.Models.Byond versions.
      */
     ByondController_List(
-        parameters?: Parameters<Paths.ByondControllerList.PathParameters>,
+        parameters?: Parameters<Paths.ByondControllerList.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -1878,7 +1899,7 @@ export interface OperationMethods {
      * ChatController_Create - Create a new chat bot model.
      */
     ChatController_Create(
-        parameters?: Parameters<Paths.ChatControllerCreate.PathParameters>,
+        parameters?: Parameters<Paths.ChatControllerCreate.HeaderParameters>,
         data?: Paths.ChatControllerCreate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -1895,7 +1916,7 @@ export interface OperationMethods {
      * ChatController_Update - Updates a chat bot model.
      */
     ChatController_Update(
-        parameters?: Parameters<Paths.ChatControllerUpdate.PathParameters>,
+        parameters?: Parameters<Paths.ChatControllerUpdate.HeaderParameters>,
         data?: Paths.ChatControllerUpdate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -1914,7 +1935,9 @@ export interface OperationMethods {
      * ChatController_GetId - Get a specific Tgstation.Server.Api.Models.ChatBot.
      */
     ChatController_GetId(
-        parameters?: Parameters<Paths.ChatControllerGetId.PathParameters>,
+        parameters?: Parameters<
+            Paths.ChatControllerGetId.PathParameters & Paths.ChatControllerGetId.HeaderParameters
+        >,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -1932,7 +1955,9 @@ export interface OperationMethods {
      * ChatController_Delete - Delete a Tgstation.Server.Api.Models.ChatBot.
      */
     ChatController_Delete(
-        parameters?: Parameters<Paths.ChatControllerDelete.PathParameters>,
+        parameters?: Parameters<
+            Paths.ChatControllerDelete.PathParameters & Paths.ChatControllerDelete.HeaderParameters
+        >,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -1949,7 +1974,7 @@ export interface OperationMethods {
      * ChatController_List - List Tgstation.Server.Api.Models.ChatBots.
      */
     ChatController_List(
-        parameters?: Parameters<Paths.ChatControllerList.PathParameters>,
+        parameters?: Parameters<Paths.ChatControllerList.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -1966,7 +1991,7 @@ export interface OperationMethods {
      * ConfigurationController_Create - Create a configuration directory.
      */
     ConfigurationController_Create(
-        parameters?: Parameters<Paths.ConfigurationControllerCreate.PathParameters>,
+        parameters?: Parameters<Paths.ConfigurationControllerCreate.HeaderParameters>,
         data?: Paths.ConfigurationControllerCreate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -1984,7 +2009,7 @@ export interface OperationMethods {
      * ConfigurationController_Update - Write to a configuration file.
      */
     ConfigurationController_Update(
-        parameters?: Parameters<Paths.ConfigurationControllerUpdate.PathParameters>,
+        parameters?: Parameters<Paths.ConfigurationControllerUpdate.HeaderParameters>,
         data?: Paths.ConfigurationControllerUpdate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2002,7 +2027,7 @@ export interface OperationMethods {
      * ConfigurationController_Delete - Deletes an empty directory
      */
     ConfigurationController_Delete(
-        parameters?: Parameters<Paths.ConfigurationControllerDelete.PathParameters>,
+        parameters?: Parameters<Paths.ConfigurationControllerDelete.HeaderParameters>,
         data?: Paths.ConfigurationControllerDelete.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2019,7 +2044,10 @@ export interface OperationMethods {
      * ConfigurationController_File - Get the contents of a file at a filePath
      */
     ConfigurationController_File(
-        parameters?: Parameters<Paths.ConfigurationControllerFile.PathParameters>,
+        parameters?: Parameters<
+            Paths.ConfigurationControllerFile.PathParameters &
+                Paths.ConfigurationControllerFile.HeaderParameters
+        >,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2037,7 +2065,10 @@ export interface OperationMethods {
      * ConfigurationController_Directory - Get the contents of a directory at a directoryPath
      */
     ConfigurationController_Directory(
-        parameters?: Parameters<Paths.ConfigurationControllerDirectory.PathParameters>,
+        parameters?: Parameters<
+            Paths.ConfigurationControllerDirectory.PathParameters &
+                Paths.ConfigurationControllerDirectory.HeaderParameters
+        >,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2055,7 +2086,7 @@ export interface OperationMethods {
      * ConfigurationController_List - Get the contents of the root configuration directory.
      */
     ConfigurationController_List(
-        parameters?: Parameters<Paths.ConfigurationControllerList.PathParameters>,
+        parameters?: Parameters<Paths.ConfigurationControllerList.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2072,7 +2103,7 @@ export interface OperationMethods {
      * DreamDaemonController_Read - Get the watchdog status.
      */
     DreamDaemonController_Read(
-        parameters?: Parameters<Paths.DreamDaemonControllerRead.PathParameters>,
+        parameters?: Parameters<Paths.DreamDaemonControllerRead.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2090,7 +2121,7 @@ export interface OperationMethods {
      * DreamDaemonController_Create - Launches the watchdog.
      */
     DreamDaemonController_Create(
-        parameters?: Parameters<Paths.DreamDaemonControllerCreate.PathParameters>,
+        parameters?: Parameters<Paths.DreamDaemonControllerCreate.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2107,7 +2138,7 @@ export interface OperationMethods {
      * DreamDaemonController_Update - Update watchdog settings to be applied at next server reboot.
      */
     DreamDaemonController_Update(
-        parameters?: Parameters<Paths.DreamDaemonControllerUpdate.PathParameters>,
+        parameters?: Parameters<Paths.DreamDaemonControllerUpdate.HeaderParameters>,
         data?: Paths.DreamDaemonControllerUpdate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2125,7 +2156,7 @@ export interface OperationMethods {
      * DreamDaemonController_Restart - Creates a Tgstation.Server.Api.Models.Job to restart the Watchdog. It will start if it wasn't already running.
      */
     DreamDaemonController_Restart(
-        parameters?: Parameters<Paths.DreamDaemonControllerRestart.PathParameters>,
+        parameters?: Parameters<Paths.DreamDaemonControllerRestart.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2142,7 +2173,7 @@ export interface OperationMethods {
      * DreamDaemonController_Delete - Stops the Watchdog if it's running.
      */
     DreamDaemonController_Delete(
-        parameters?: Parameters<Paths.DreamDaemonControllerDelete.PathParameters>,
+        parameters?: Parameters<Paths.DreamDaemonControllerDelete.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2159,7 +2190,7 @@ export interface OperationMethods {
      * DreamMakerController_Read - Read current Tgstation.Server.Api.Models.DreamMaker status.
      */
     DreamMakerController_Read(
-        parameters?: Parameters<Paths.DreamMakerControllerRead.PathParameters>,
+        parameters?: Parameters<Paths.DreamMakerControllerRead.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2176,7 +2207,7 @@ export interface OperationMethods {
      * DreamMakerController_Create - Begin deploying repository code.
      */
     DreamMakerController_Create(
-        parameters?: Parameters<Paths.DreamMakerControllerCreate.PathParameters>,
+        parameters?: Parameters<Paths.DreamMakerControllerCreate.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2193,7 +2224,7 @@ export interface OperationMethods {
      * DreamMakerController_Update - Update deployment settings.
      */
     DreamMakerController_Update(
-        parameters?: Parameters<Paths.DreamMakerControllerUpdate.PathParameters>,
+        parameters?: Parameters<Paths.DreamMakerControllerUpdate.HeaderParameters>,
         data?: Paths.DreamMakerControllerUpdate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2212,7 +2243,10 @@ export interface OperationMethods {
      * DreamMakerController_GetId - Get a Tgstation.Server.Api.Models.CompileJob specified by a given id.
      */
     DreamMakerController_GetId(
-        parameters?: Parameters<Paths.DreamMakerControllerGetId.PathParameters>,
+        parameters?: Parameters<
+            Paths.DreamMakerControllerGetId.PathParameters &
+                Paths.DreamMakerControllerGetId.HeaderParameters
+        >,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2230,7 +2264,7 @@ export interface OperationMethods {
      * DreamMakerController_List - List all Tgstation.Server.Api.Models.CompileJobTgstation.Server.Api.Models.EntityIds for the instance.
      */
     DreamMakerController_List(
-        parameters?: Parameters<Paths.DreamMakerControllerList.PathParameters>,
+        parameters?: Parameters<Paths.DreamMakerControllerList.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2388,7 +2422,7 @@ export interface OperationMethods {
      * InstanceUserController_Create - Create an Tgstation.Server.Api.Models.InstanceUser.
      */
     InstanceUserController_Create(
-        parameters?: Parameters<Paths.InstanceUserControllerCreate.PathParameters>,
+        parameters?: Parameters<Paths.InstanceUserControllerCreate.HeaderParameters>,
         data?: Paths.InstanceUserControllerCreate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2405,7 +2439,7 @@ export interface OperationMethods {
      * InstanceUserController_Update - Update the permissions for an Tgstation.Server.Api.Models.InstanceUser.
      */
     InstanceUserController_Update(
-        parameters?: Parameters<Paths.InstanceUserControllerUpdate.PathParameters>,
+        parameters?: Parameters<Paths.InstanceUserControllerUpdate.HeaderParameters>,
         data?: Paths.InstanceUserControllerUpdate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2423,7 +2457,7 @@ export interface OperationMethods {
      * InstanceUserController_List - Lists Tgstation.Server.Api.Models.InstanceUsers for the instance.
      */
     InstanceUserController_List(
-        parameters?: Parameters<Paths.InstanceUserControllerList.PathParameters>,
+        parameters?: Parameters<Paths.InstanceUserControllerList.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2440,7 +2474,10 @@ export interface OperationMethods {
      * InstanceUserController_GetId - Gets a specific Tgstation.Server.Api.Models.InstanceUser.
      */
     InstanceUserController_GetId(
-        parameters?: Parameters<Paths.InstanceUserControllerGetId.PathParameters>,
+        parameters?: Parameters<
+            Paths.InstanceUserControllerGetId.PathParameters &
+                Paths.InstanceUserControllerGetId.HeaderParameters
+        >,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2458,7 +2495,10 @@ export interface OperationMethods {
      * InstanceUserController_Delete - Delete an Tgstation.Server.Api.Models.InstanceUser.
      */
     InstanceUserController_Delete(
-        parameters?: Parameters<Paths.InstanceUserControllerDelete.PathParameters>,
+        parameters?: Parameters<
+            Paths.InstanceUserControllerDelete.PathParameters &
+                Paths.InstanceUserControllerDelete.HeaderParameters
+        >,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2546,7 +2586,7 @@ export interface OperationMethods {
      * RepositoryController_Read - Get Tgstation.Server.Api.Models.Repository status.
      */
     RepositoryController_Read(
-        parameters?: Parameters<Paths.RepositoryControllerRead.PathParameters>,
+        parameters?: Parameters<Paths.RepositoryControllerRead.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2565,7 +2605,7 @@ export interface OperationMethods {
      * RepositoryController_Create - Begin cloning the repository if it doesn't exist.
      */
     RepositoryController_Create(
-        parameters?: Parameters<Paths.RepositoryControllerCreate.PathParameters>,
+        parameters?: Parameters<Paths.RepositoryControllerCreate.HeaderParameters>,
         data?: Paths.RepositoryControllerCreate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2583,7 +2623,7 @@ export interface OperationMethods {
      * RepositoryController_Update - Perform updats to the Tgstation.Server.Api.Models.Repository.
      */
     RepositoryController_Update(
-        parameters?: Parameters<Paths.RepositoryControllerUpdate.PathParameters>,
+        parameters?: Parameters<Paths.RepositoryControllerUpdate.HeaderParameters>,
         data?: Paths.RepositoryControllerUpdate.RequestBody,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2602,7 +2642,7 @@ export interface OperationMethods {
      * RepositoryController_Delete - Delete the Tgstation.Server.Api.Models.Repository.
      */
     RepositoryController_Delete(
-        parameters?: Parameters<Paths.RepositoryControllerDelete.PathParameters>,
+        parameters?: Parameters<Paths.RepositoryControllerDelete.HeaderParameters>,
         data?: any,
         config?: AxiosRequestConfig
     ): OperationResponse<
@@ -2772,7 +2812,7 @@ export interface PathsDictionary {
          * ByondController_Read - Gets the active Tgstation.Server.Api.Models.Byond version.
          */
         get(
-            parameters?: Parameters<Paths.ByondControllerRead.PathParameters>,
+            parameters?: Parameters<Paths.ByondControllerRead.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2789,7 +2829,7 @@ export interface PathsDictionary {
          * ByondController_Update - Changes the active BYOND version to the one specified in a given model.
          */
         post(
-            parameters?: Parameters<Paths.ByondControllerUpdate.PathParameters>,
+            parameters?: Parameters<Paths.ByondControllerUpdate.HeaderParameters>,
             data?: Paths.ByondControllerUpdate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2809,7 +2849,7 @@ export interface PathsDictionary {
          * ByondController_List - Lists installed Tgstation.Server.Api.Models.Byond versions.
          */
         get(
-            parameters?: Parameters<Paths.ByondControllerList.PathParameters>,
+            parameters?: Parameters<Paths.ByondControllerList.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2828,7 +2868,7 @@ export interface PathsDictionary {
          * ChatController_Create - Create a new chat bot model.
          */
         put(
-            parameters?: Parameters<Paths.ChatControllerCreate.PathParameters>,
+            parameters?: Parameters<Paths.ChatControllerCreate.HeaderParameters>,
             data?: Paths.ChatControllerCreate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2845,7 +2885,7 @@ export interface PathsDictionary {
          * ChatController_Update - Updates a chat bot model.
          */
         post(
-            parameters?: Parameters<Paths.ChatControllerUpdate.PathParameters>,
+            parameters?: Parameters<Paths.ChatControllerUpdate.HeaderParameters>,
             data?: Paths.ChatControllerUpdate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2866,7 +2906,10 @@ export interface PathsDictionary {
          * ChatController_Delete - Delete a Tgstation.Server.Api.Models.ChatBot.
          */
         delete(
-            parameters?: Parameters<Paths.ChatControllerDelete.PathParameters>,
+            parameters?: Parameters<
+                Paths.ChatControllerDelete.PathParameters &
+                    Paths.ChatControllerDelete.HeaderParameters
+            >,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2883,7 +2926,10 @@ export interface PathsDictionary {
          * ChatController_GetId - Get a specific Tgstation.Server.Api.Models.ChatBot.
          */
         get(
-            parameters?: Parameters<Paths.ChatControllerGetId.PathParameters>,
+            parameters?: Parameters<
+                Paths.ChatControllerGetId.PathParameters &
+                    Paths.ChatControllerGetId.HeaderParameters
+            >,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2903,7 +2949,7 @@ export interface PathsDictionary {
          * ChatController_List - List Tgstation.Server.Api.Models.ChatBots.
          */
         get(
-            parameters?: Parameters<Paths.ChatControllerList.PathParameters>,
+            parameters?: Parameters<Paths.ChatControllerList.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2922,7 +2968,7 @@ export interface PathsDictionary {
          * ConfigurationController_Update - Write to a configuration file.
          */
         post(
-            parameters?: Parameters<Paths.ConfigurationControllerUpdate.PathParameters>,
+            parameters?: Parameters<Paths.ConfigurationControllerUpdate.HeaderParameters>,
             data?: Paths.ConfigurationControllerUpdate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2940,7 +2986,7 @@ export interface PathsDictionary {
          * ConfigurationController_Create - Create a configuration directory.
          */
         put(
-            parameters?: Parameters<Paths.ConfigurationControllerCreate.PathParameters>,
+            parameters?: Parameters<Paths.ConfigurationControllerCreate.HeaderParameters>,
             data?: Paths.ConfigurationControllerCreate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2958,7 +3004,7 @@ export interface PathsDictionary {
          * ConfigurationController_Delete - Deletes an empty directory
          */
         delete(
-            parameters?: Parameters<Paths.ConfigurationControllerDelete.PathParameters>,
+            parameters?: Parameters<Paths.ConfigurationControllerDelete.HeaderParameters>,
             data?: Paths.ConfigurationControllerDelete.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2977,7 +3023,10 @@ export interface PathsDictionary {
          * ConfigurationController_File - Get the contents of a file at a filePath
          */
         get(
-            parameters?: Parameters<Paths.ConfigurationControllerFile.PathParameters>,
+            parameters?: Parameters<
+                Paths.ConfigurationControllerFile.PathParameters &
+                    Paths.ConfigurationControllerFile.HeaderParameters
+            >,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -2997,7 +3046,10 @@ export interface PathsDictionary {
          * ConfigurationController_Directory - Get the contents of a directory at a directoryPath
          */
         get(
-            parameters?: Parameters<Paths.ConfigurationControllerDirectory.PathParameters>,
+            parameters?: Parameters<
+                Paths.ConfigurationControllerDirectory.PathParameters &
+                    Paths.ConfigurationControllerDirectory.HeaderParameters
+            >,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3017,7 +3069,7 @@ export interface PathsDictionary {
          * ConfigurationController_List - Get the contents of the root configuration directory.
          */
         get(
-            parameters?: Parameters<Paths.ConfigurationControllerList.PathParameters>,
+            parameters?: Parameters<Paths.ConfigurationControllerList.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3036,7 +3088,7 @@ export interface PathsDictionary {
          * DreamDaemonController_Create - Launches the watchdog.
          */
         put(
-            parameters?: Parameters<Paths.DreamDaemonControllerCreate.PathParameters>,
+            parameters?: Parameters<Paths.DreamDaemonControllerCreate.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3053,7 +3105,7 @@ export interface PathsDictionary {
          * DreamDaemonController_Read - Get the watchdog status.
          */
         get(
-            parameters?: Parameters<Paths.DreamDaemonControllerRead.PathParameters>,
+            parameters?: Parameters<Paths.DreamDaemonControllerRead.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3071,7 +3123,7 @@ export interface PathsDictionary {
          * DreamDaemonController_Delete - Stops the Watchdog if it's running.
          */
         delete(
-            parameters?: Parameters<Paths.DreamDaemonControllerDelete.PathParameters>,
+            parameters?: Parameters<Paths.DreamDaemonControllerDelete.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3088,7 +3140,7 @@ export interface PathsDictionary {
          * DreamDaemonController_Update - Update watchdog settings to be applied at next server reboot.
          */
         post(
-            parameters?: Parameters<Paths.DreamDaemonControllerUpdate.PathParameters>,
+            parameters?: Parameters<Paths.DreamDaemonControllerUpdate.HeaderParameters>,
             data?: Paths.DreamDaemonControllerUpdate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3106,7 +3158,7 @@ export interface PathsDictionary {
          * DreamDaemonController_Restart - Creates a Tgstation.Server.Api.Models.Job to restart the Watchdog. It will start if it wasn't already running.
          */
         patch(
-            parameters?: Parameters<Paths.DreamDaemonControllerRestart.PathParameters>,
+            parameters?: Parameters<Paths.DreamDaemonControllerRestart.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3125,7 +3177,7 @@ export interface PathsDictionary {
          * DreamMakerController_Read - Read current Tgstation.Server.Api.Models.DreamMaker status.
          */
         get(
-            parameters?: Parameters<Paths.DreamMakerControllerRead.PathParameters>,
+            parameters?: Parameters<Paths.DreamMakerControllerRead.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3142,7 +3194,7 @@ export interface PathsDictionary {
          * DreamMakerController_Create - Begin deploying repository code.
          */
         put(
-            parameters?: Parameters<Paths.DreamMakerControllerCreate.PathParameters>,
+            parameters?: Parameters<Paths.DreamMakerControllerCreate.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3159,7 +3211,7 @@ export interface PathsDictionary {
          * DreamMakerController_Update - Update deployment settings.
          */
         post(
-            parameters?: Parameters<Paths.DreamMakerControllerUpdate.PathParameters>,
+            parameters?: Parameters<Paths.DreamMakerControllerUpdate.HeaderParameters>,
             data?: Paths.DreamMakerControllerUpdate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3180,7 +3232,10 @@ export interface PathsDictionary {
          * DreamMakerController_GetId - Get a Tgstation.Server.Api.Models.CompileJob specified by a given id.
          */
         get(
-            parameters?: Parameters<Paths.DreamMakerControllerGetId.PathParameters>,
+            parameters?: Parameters<
+                Paths.DreamMakerControllerGetId.PathParameters &
+                    Paths.DreamMakerControllerGetId.HeaderParameters
+            >,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3200,7 +3255,7 @@ export interface PathsDictionary {
          * DreamMakerController_List - List all Tgstation.Server.Api.Models.CompileJobTgstation.Server.Api.Models.EntityIds for the instance.
          */
         get(
-            parameters?: Parameters<Paths.DreamMakerControllerList.PathParameters>,
+            parameters?: Parameters<Paths.DreamMakerControllerList.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3351,7 +3406,7 @@ export interface PathsDictionary {
          * InstanceUserController_Create - Create an Tgstation.Server.Api.Models.InstanceUser.
          */
         put(
-            parameters?: Parameters<Paths.InstanceUserControllerCreate.PathParameters>,
+            parameters?: Parameters<Paths.InstanceUserControllerCreate.HeaderParameters>,
             data?: Paths.InstanceUserControllerCreate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3368,7 +3423,7 @@ export interface PathsDictionary {
          * InstanceUserController_Update - Update the permissions for an Tgstation.Server.Api.Models.InstanceUser.
          */
         post(
-            parameters?: Parameters<Paths.InstanceUserControllerUpdate.PathParameters>,
+            parameters?: Parameters<Paths.InstanceUserControllerUpdate.HeaderParameters>,
             data?: Paths.InstanceUserControllerUpdate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3405,7 +3460,7 @@ export interface PathsDictionary {
          * InstanceUserController_List - Lists Tgstation.Server.Api.Models.InstanceUsers for the instance.
          */
         get(
-            parameters?: Parameters<Paths.InstanceUserControllerList.PathParameters>,
+            parameters?: Parameters<Paths.InstanceUserControllerList.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3424,7 +3479,10 @@ export interface PathsDictionary {
          * InstanceUserController_GetId - Gets a specific Tgstation.Server.Api.Models.InstanceUser.
          */
         get(
-            parameters?: Parameters<Paths.InstanceUserControllerGetId.PathParameters>,
+            parameters?: Parameters<
+                Paths.InstanceUserControllerGetId.PathParameters &
+                    Paths.InstanceUserControllerGetId.HeaderParameters
+            >,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3442,7 +3500,10 @@ export interface PathsDictionary {
          * InstanceUserController_Delete - Delete an Tgstation.Server.Api.Models.InstanceUser.
          */
         delete(
-            parameters?: Parameters<Paths.InstanceUserControllerDelete.PathParameters>,
+            parameters?: Parameters<
+                Paths.InstanceUserControllerDelete.PathParameters &
+                    Paths.InstanceUserControllerDelete.HeaderParameters
+            >,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3538,7 +3599,7 @@ export interface PathsDictionary {
          * RepositoryController_Create - Begin cloning the repository if it doesn't exist.
          */
         put(
-            parameters?: Parameters<Paths.RepositoryControllerCreate.PathParameters>,
+            parameters?: Parameters<Paths.RepositoryControllerCreate.HeaderParameters>,
             data?: Paths.RepositoryControllerCreate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3556,7 +3617,7 @@ export interface PathsDictionary {
          * RepositoryController_Delete - Delete the Tgstation.Server.Api.Models.Repository.
          */
         delete(
-            parameters?: Parameters<Paths.RepositoryControllerDelete.PathParameters>,
+            parameters?: Parameters<Paths.RepositoryControllerDelete.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3574,7 +3635,7 @@ export interface PathsDictionary {
          * RepositoryController_Read - Get Tgstation.Server.Api.Models.Repository status.
          */
         get(
-            parameters?: Parameters<Paths.RepositoryControllerRead.PathParameters>,
+            parameters?: Parameters<Paths.RepositoryControllerRead.HeaderParameters>,
             data?: any,
             config?: AxiosRequestConfig
         ): OperationResponse<
@@ -3593,7 +3654,7 @@ export interface PathsDictionary {
          * RepositoryController_Update - Perform updats to the Tgstation.Server.Api.Models.Repository.
          */
         post(
-            parameters?: Parameters<Paths.RepositoryControllerUpdate.PathParameters>,
+            parameters?: Parameters<Paths.RepositoryControllerUpdate.HeaderParameters>,
             data?: Paths.RepositoryControllerUpdate.RequestBody,
             config?: AxiosRequestConfig
         ): OperationResponse<

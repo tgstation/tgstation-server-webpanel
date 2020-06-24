@@ -17,7 +17,7 @@ declare interface argsOk<T> {
 
 declare type args<T, Codes extends ErrorCode> = argsErr<Codes> | argsOk<T>;
 
-export default class InternalStatus<T, Codes extends ErrorCode> {
+class InternalStatus<T, Codes extends ErrorCode> {
     public code: StatusCode;
     public payload?: T;
     public error?: InternalError<Codes>;
@@ -34,3 +34,5 @@ export default class InternalStatus<T, Codes extends ErrorCode> {
         }
     }
 }
+
+export default InternalStatus;

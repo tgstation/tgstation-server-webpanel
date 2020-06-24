@@ -196,14 +196,17 @@ class ServerClient extends TypedEmitter<IEvents> {
                             return Promise.reject(errorobj);
                         }
                         case 503: {
-                            const errorobj = new InternalError(
+                            return new Promise(resolve => {
+                                setTimeout(resolve, 5000);
+                            }).then(_ => this.api.client.request(error.config));
+                            /*const errorobj = new InternalError(
                                 ErrorCode.HTTP_SERVER_NOT_READY,
                                 {
                                     void: true
                                 },
                                 res
                             );
-                            return Promise.reject(errorobj);
+                            return Promise.reject(errorobj);*/
                         }
                         default: {
                             const errorobj = new InternalError(

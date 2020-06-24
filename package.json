@@ -91,7 +91,7 @@
         "terser-webpack-plugin": "^3.0.1",
         "tiny-typed-emitter": "^2.0.1",
         "ts-loader": "^7.0.4",
-        "typescript": "^3.9.3",
+        "typescript": "^3.9.5",
         "webpack": "^4.43.0",
         "webpack-cli": "^3.3.11",
         "webpack-dev-server": "^3.11.0",

@@ -3,6 +3,7 @@
     "routes.user_manager": "User Manager",
     "routes.instances": "Instances",
     "routes.login": "Log In",
+    "routes.admin": "Administration",
     "error_code_missing_message": "Message not present in error, refer to API documentation!",
     "fetch_api_error": "Failed to complete the web request! The server either didn't respond or the request timed out!",
     "home.instances": "Instances",
@@ -84,6 +85,6 @@
     "error.user.no_sys_ident": "This system user was not found",
     "error.user.not_found": "This TGS user was not found",
     "generic.details": "Details",
-    "generic.debugwarn": "Be careful when copying errors to censor out any credentials or tokens!",
+    "generic.debugwarn": "Be careful to censor out any credentials or tokens when copying errors!",
     "generic.close": "Close"
 }
