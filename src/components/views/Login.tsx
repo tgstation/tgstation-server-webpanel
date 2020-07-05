@@ -17,6 +17,7 @@ interface IState {
     validated: boolean;
     username: string;
     password: string;
+    save: boolean;
     error?: InternalError<LoginErrors>;
 }
 
@@ -24,14 +25,25 @@ export default withRouter(
     class Login extends React.Component<IProps, IState> {
         public constructor(props: IProps) {
             super(props);
+            this.submit = this.submit.bind(this);
+
+            let usr: string | null = null;
+            let pwd: string | null = null;
+            try {
+                //private browsing on safari can throw when using storage
+                usr = window.sessionStorage.getItem('username');
+                pwd = window.sessionStorage.getItem('password');
+            } catch (e) {
+                (() => {})(); //noop
+            }
+
             this.state = {
                 busy: false,
                 validated: false,
                 username: '',
-                password: ''
+                password: '',
+                save: !!(usr && pwd)
             };
-
-            this.submit = this.submit.bind(this);
         }
 
         public render(): ReactNode {
@@ -39,6 +51,8 @@ export default withRouter(
                 this.setState({ username: event.target.value });
             const handlePwdInput = (event: ChangeEvent<HTMLInputElement>) =>
                 this.setState({ password: event.target.value });
+            const handleSaveInput = (event: ChangeEvent<HTMLInputElement>) =>
+                this.setState({ save: event.target.checked });
 
             if (this.state.busy) {
                 return <Loading />;
@@ -72,6 +86,14 @@ export default withRouter(
                                 required
                             />
                         </Form.Group>
+                        <Form.Group controlId="save">
+                            <Form.Check
+                                type="checkbox"
+                                label="Save password"
+                                onChange={handleSaveInput}
+                                checked={this.state.save}
+                            />
+                        </Form.Group>
                         <Button type="submit">
                             <FormattedMessage id="login.submit" />
                         </Button>
@@ -85,10 +107,13 @@ export default withRouter(
             this.setState({
                 busy: true
             });
-            const response = await ServerClient.login({
-                userName: this.state.username,
-                password: this.state.password
-            });
+            const response = await ServerClient.login(
+                {
+                    userName: this.state.username,
+                    password: this.state.password
+                },
+                this.state.save
+            );
             if (response.code == StatusCode.ERROR) {
                 this.setState({
                     busy: false,

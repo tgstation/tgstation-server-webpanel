@@ -33,7 +33,10 @@ interface IState {
 
 const LoadSpin = <Loading />;
 
-const Home = loadable(() => import('./components/Home'), {
+const Home = loadable(() => import('./components/views/Home'), {
+    fallback: LoadSpin
+});
+const Administration = loadable(() => import('./components/views/Administration'), {
     fallback: LoadSpin
 });
 
@@ -52,8 +55,10 @@ class App extends React.Component<IAppProps, IState> {
     }
     public async componentDidMount(): Promise<void> {
         ServerClient.on('loginSuccess', () => {
+            console.log('Logging in');
             this.setState({
-                loggedIn: true
+                loggedIn: true,
+                loading: false
             });
         });
         ServerClient.on('logout', () => {
@@ -77,6 +82,9 @@ class App extends React.Component<IAppProps, IState> {
         if (usr && pwd) {
             const res = await ServerClient.login({ userName: usr, password: pwd });
             if (res.code == StatusCode.ERROR) {
+                this.setState({
+                    loading: false
+                });
                 if (
                     res.error?.code == ErrorCode.LOGIN_DISABLED ||
                     res.error?.code == ErrorCode.LOGIN_FAIL
@@ -89,17 +97,12 @@ class App extends React.Component<IAppProps, IState> {
                         (() => {})(); //noop
                     }
                 }
-            } else if (res.code == StatusCode.OK) {
-                this.setState({
-                    loggedIn: true,
-                    loading: false
-                });
-                return;
             }
+        } else {
+            this.setState({
+                loading: false
+            });
         }
-        this.setState({
-            loading: false
-        });
     }
 
     public render(): React.ReactNode {
@@ -123,6 +126,9 @@ class App extends React.Component<IAppProps, IState> {
                                         <Switch>
                                             <Route exact path={AppRoutes.home.route}>
                                                 <Home />
+                                            </Route>
+                                            <Route path={AppRoutes.admin.route}>
+                                                <Administration />
                                             </Route>
                                         </Switch>
                                     ) : (

@@ -1,7 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const path = require('path');
 
 module.exports = {
     context: __dirname,
@@ -15,7 +14,7 @@ module.exports = {
         splitChunks: {
             chunks: 'all',
             cacheGroups: {
-                /*packages: {
+                packages: {
                     maxInitialRequests: Infinity,
                     minSize: 5000,
                     priority: 3,
@@ -30,11 +29,11 @@ module.exports = {
                         // npm package names are URL-safe, but some servers don't like @ symbols
                         return `vendors/npm.${packageName.replace('@', '')}`;
                     }
-                },*/
+                } /*
                 packages: {
                     test: /[\\/]node_modules[\\/]/,
                     name: 'packages'
-                },
+                },*/,
                 api: {
                     priority: 1,
                     test: /[\\/]clients[\\/]/,

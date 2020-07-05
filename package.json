@@ -17,6 +17,7 @@
         "@babel/plugin-transform-runtime": "^7.9.6",
         "@babel/preset-env": "^7.9.6",
         "@fortawesome/fontawesome-svg-core": "^1.2.28",
+        "@fortawesome/free-brands-svg-icons": "^5.13.1",
         "@fortawesome/free-solid-svg-icons": "^5.13.0",
         "@fortawesome/react-fontawesome": "^0.1.9",
         "@hot-loader/react-dom": "^16.13.0",
@@ -37,15 +38,16 @@
         "react-router-dom": "^5.2.0"
     },
     "scripts": {
-        "generate_api": "npm run patch && npm run download_api && npx typegen src/clients/swagger.json > src/clients/_generated.d.ts",
+        "generate_api": "npm run patch && npm run download_api && npm run generate_enums && npx typegen src/clients/swagger.json > src/clients/_generated.d.ts",
         "start": "npm run patch && npx webpack-dev-server --config webpack.dev.js",
         "build": "npm run patch && npx webpack --config webpack.prod.js",
         "build-dev": "npm run patch && npx webpack --config webpack.dev.js",
         "print_version": "node -e \"fs.writeFileSync('./package_version.txt', process.env.npm_package_version);\"",
         "lint": "eslint ./src/**/*.{ts,tsx}",
         "lint-fix": "eslint --fix ./src/**/*.{ts,tsx}",
-        "patch": "node patcher/patch.js",
-        "download_api": "node api_download.js"
+        "patch": "node scripts/patcher/patch.js",
+        "download_api": "node scripts/api_download.js",
+        "generate_enums": "node scripts/generate_enums.js > src/clients/_enums.ts"
     },
     "devDependencies": {
         "@babel/plugin-proposal-class-properties": "^7.8.3",
@@ -114,5 +116,6 @@
             "last 5 opera version",
             "last 3 safari version"
         ]
-    }
+    },
+    "sideEffects": false
 }

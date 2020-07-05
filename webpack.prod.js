@@ -43,7 +43,7 @@ module.exports = smp.wrap(
             path: path.resolve(__dirname, 'dist')
         },
         plugins: [
-            //new ForkTsCheckerWebpackPlugin(),
+            new ForkTsCheckerWebpackPlugin(),
             /*new webpack.debug.ProfilingPlugin({
                 outputPath: 'profile.json'
             }),*/

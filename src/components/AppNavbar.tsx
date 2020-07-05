@@ -6,11 +6,12 @@ import Nav from 'react-bootstrap/Nav';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GlobalObjects } from '../utils/globalObjects';
 import { AppRoutes, NormalRoute } from '../utils/routes';
 import { Components } from '../clients/_generated';
 import ServerClient from '../clients/ServerClient';
 import UserClient from '../clients/UserClient';
+import RouteController from '../utils/RouteController';
+import LoginHooks from '../utils/LoginHooks';
 
 interface IProps {}
 
@@ -26,18 +27,20 @@ interface IState {
 export default class AppNavbar extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
+        this.logoutClick = this.logoutClick.bind(this);
+        this.loadServerInformation = this.loadServerInformation.bind(this);
+        this.loadUserInformation = this.loadUserInformation.bind(this);
+
         this.state = {
             loggedIn: false,
             routes: []
         };
-
-        this.logoutClick = this.logoutClick.bind(this);
     }
 
     public async componentDidMount(): Promise<void> {
+        LoginHooks.addHook(this.loadServerInformation);
+        LoginHooks.addHook(this.loadUserInformation);
         ServerClient.on('loginSuccess', () => {
-            this.loadServerInformation();
-            this.loadUserInformation();
             this.setState({
                 loggedIn: true
             });
@@ -47,38 +50,15 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                 loggedIn: false
             });
         });
-        this.refreshRoutes();
-    }
 
-    public componentDidUpdate(_: Readonly<IProps>, prevState: Readonly<IState>) {
-        if (this.state.loggedIn !== prevState.loggedIn) this.refreshRoutes();
-    }
+        this.setState({
+            routes: await RouteController.getVisibleRoutes()
+        });
 
-    // noinspection DuplicatedCode
-    private refreshRoutes() {
-        this.setState({ routes: [] });
-        Object.values(AppRoutes).forEach(val => {
-            if (val.isAuthorized) {
-                val.isAuthorized().then(auth => {
-                    if (val.hidden) return;
-
-                    // noinspection DuplicatedCode
-                    if (auth) {
-                        this.setState(prevState => {
-                            const newArr = Array.from(prevState.routes);
-                            newArr[val.display] = val;
-                            return {
-                                serverInfoError: prevState.serverInfoError,
-                                serverInformation: prevState.serverInformation,
-                                userNameError: prevState.userNameError,
-                                loggedIn: prevState.loggedIn,
-                                currentUser: prevState.currentUser,
-                                routes: newArr
-                            };
-                        });
-                    }
-                });
-            }
+        RouteController.on('refreshVisible', routes => {
+            this.setState({
+                routes
+            });
         });
     }
 
@@ -87,7 +67,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
             <Navbar
                 expand="md"
                 collapseOnSelect
-                variant={GlobalObjects.darkMode ? 'dark' : 'light'}
+                variant="dark"
                 bg={this.state.userNameError || this.state.serverInfoError ? 'danger' : 'primary'}>
                 <Navbar.Toggle className="mr-2" aria-controls="responsive-navbar-nav" />
                 <Navbar.Brand className="mr-auto">{this.renderVersion()}</Navbar.Brand>

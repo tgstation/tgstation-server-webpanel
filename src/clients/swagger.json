@@ -254,6 +254,147 @@
         ]
       }
     },
+    "/Administration/Logs": {
+      "get": {
+        "tags": [
+          "Administration"
+        ],
+        "summary": "List Tgstation.Server.Api.Models.LogFiles present.",
+        "operationId": "AdministrationController.ListLogs",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/api"
+          },
+          {
+            "$ref": "#/components/parameters/User-Agent"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listed logs successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LogFile"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "An IO error occurred while listing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          }
+        },
+        "security": [
+          {
+            "Token_Authorization_Scheme": [ ]
+          }
+        ]
+      }
+    },
+    "/Administration/Logs/{path}": {
+      "get": {
+        "tags": [
+          "Administration"
+        ],
+        "summary": "Download a Tgstation.Server.Api.Models.LogFile.",
+        "operationId": "AdministrationController.GetLog",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "description": "The path to download.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The path to download.",
+              "nullable": true
+            }
+          },
+          {
+            "$ref": "#/components/parameters/api"
+          },
+          {
+            "$ref": "#/components/parameters/User-Agent"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Downloaded Tgstation.Server.Api.Models.LogFile successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LogFile"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "An IO error occurred while downloading.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          }
+        },
+        "security": [
+          {
+            "Token_Authorization_Scheme": [ ]
+          }
+        ]
+      }
+    },
     "/Byond": {
       "get": {
         "tags": [
@@ -1641,6 +1782,64 @@
         ]
       }
     },
+    "/DreamDaemon/Diagnostics": {
+      "patch": {
+        "tags": [
+          "DreamDaemon"
+        ],
+        "summary": "Creates a Tgstation.Server.Api.Models.Job to generate a DreamDaemon process dump.",
+        "operationId": "DreamDaemonController.CreateDump",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/instance"
+          },
+          {
+            "$ref": "#/components/parameters/api"
+          },
+          {
+            "$ref": "#/components/parameters/User-Agent"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Dump Tgstation.Server.Api.Models.Job started successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          }
+        },
+        "security": [
+          {
+            "Token_Authorization_Scheme": [ ]
+          }
+        ]
+      }
+    },
     "/DreamMaker": {
       "get": {
         "tags": [
@@ -2398,6 +2597,63 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          }
+        },
+        "security": [
+          {
+            "Token_Authorization_Scheme": [ ]
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Instance"
+        ],
+        "summary": "Gives the current user full permissions on a given instance id.",
+        "operationId": "InstanceController.GrantPermissions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The instance Tgstation.Server.Api.Models.EntityId.Id to give permissions on.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "The instance Tgstation.Server.Api.Models.EntityId.Id to give permissions on.",
+              "format": "int64"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/api"
+          },
+          {
+            "$ref": "#/components/parameters/User-Agent"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Granted permissions successfully."
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -3992,7 +4248,11 @@
           81,
           82,
           83,
-          84
+          84,
+          85,
+          86,
+          87,
+          88
         ],
         "type": "integer",
         "description": "Types of Tgstation.Server.Api.Models.ErrorMessages that the API may return.",
@@ -4082,7 +4342,11 @@
           "ResourceNotPresent",
           "ResourceNeverPresent",
           "GitHubApiRateLimit",
-          "JobStopped"
+          "JobStopped",
+          "MissingGCore",
+          "GCoreFailure",
+          "RepoTestMergeInvalidRemote",
+          "ByondNonExistentCustomVersion"
         ]
       },
       "ErrorMessage": {
@@ -4108,6 +4372,29 @@
         "additionalProperties": false,
         "description": "Represents an error message returned by the server"
       },
+      "LogFile": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the log file.",
+            "nullable": true
+          },
+          "lastModified": {
+            "type": "string",
+            "description": "The System.DateTimeOffset of when the log file was modified.",
+            "format": "date-time"
+          },
+          "content": {
+            "type": "string",
+            "description": "The bytes of the Tgstation.Server.Api.Models.Internal.RawData.",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a server log file."
+      },
       "AdministrationRights": {
         "enum": [
           0,
@@ -4115,7 +4402,8 @@
           2,
           4,
           8,
-          16
+          16,
+          32
         ],
         "type": "integer",
         "description": "Rights for Tgstation.Server.Api.Models.Administration",
@@ -4126,7 +4414,8 @@
           "RestartHost",
           "ChangeVersion",
           "EditOwnPassword",
-          "ReadUsers"
+          "ReadUsers",
+          "DownloadLogs"
         ]
       },
       "InstanceManagerRights": {
@@ -4141,7 +4430,8 @@
           64,
           128,
           256,
-          512
+          512,
+          1024
         ],
         "type": "integer",
         "description": "Rights for managing Tgstation.Server.Api.Models.Instances",
@@ -4157,7 +4447,8 @@
           "List",
           "SetConfiguration",
           "SetAutoUpdate",
-          "SetChatBotLimit"
+          "SetChatBotLimit",
+          "GrantPermissions"
         ]
       },
       "ShallowUser": {
@@ -4335,10 +4626,16 @@
           },
           "installJob": {
             "$ref": "#/components/schemas/Job"
+          },
+          "content": {
+            "type": "string",
+            "description": "The bytes of the Tgstation.Server.Api.Models.Internal.RawData.",
+            "format": "byte",
+            "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Represents a BYOND installation"
+        "description": "Represents a BYOND installation. Tgstation.Server.Api.Models.Internal.RawData.Content is used to upload custom BYOND version zip files, though Tgstation.Server.Api.Models.Byond.Version must still be set."
       },
       "ChatChannel": {
         "type": "object",
@@ -4470,7 +4767,7 @@
           },
           "content": {
             "type": "string",
-            "description": "The content of the Tgstation.Server.Api.Models.ConfigurationFile. Will be <see langword=\"null\" /> if Tgstation.Server.Api.Models.ConfigurationFile.AccessDenied is <see langword=\"true\" /> or during listing and write operations",
+            "description": "The bytes of the Tgstation.Server.Api.Models.Internal.RawData.",
             "format": "byte",
             "nullable": true
           }
@@ -4638,6 +4935,23 @@
         },
         "additionalProperties": false
       },
+      "WatchdogStatus": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "description": "The current status of the watchdog.",
+        "format": "int32",
+        "x-enum-varnames": [
+          "Offline",
+          "Restoring",
+          "Online",
+          "DelayedRestart"
+        ]
+      },
       "DreamDaemon": {
         "type": "object",
         "properties": {
@@ -4647,10 +4961,8 @@
           "stagedCompileJob": {
             "$ref": "#/components/schemas/CompileJob"
           },
-          "running": {
-            "type": "boolean",
-            "description": "The current status of Tgstation.Server.Api.Models.DreamDaemon",
-            "nullable": true
+          "status": {
+            "$ref": "#/components/schemas/WatchdogStatus"
           },
           "currentSecurity": {
             "$ref": "#/components/schemas/DreamDaemonSecurity"
@@ -4674,6 +4986,11 @@
           "softShutdown": {
             "type": "boolean",
             "description": "If the server is undergoing a soft shutdown",
+            "nullable": true
+          },
+          "createDump": {
+            "type": "boolean",
+            "description": "If a dump of the active DreamDaemon executable should be created.",
             "nullable": true
           },
           "autoStart": {
@@ -4702,6 +5019,8 @@
             "format": "int32"
           },
           "startupTimeout": {
+            "maximum": 4294967295,
+            "minimum": 1,
             "type": "integer",
             "description": "The DreamDaemon startup timeout in seconds",
             "format": "int32"
@@ -4709,6 +5028,13 @@
           "heartbeatSeconds": {
             "type": "integer",
             "description": "The number of seconds between each watchdog heartbeat. 0 disables.",
+            "format": "int32"
+          },
+          "topicRequestTimeout": {
+            "maximum": 4294967295,
+            "minimum": 1,
+            "type": "integer",
+            "description": "The timeout for sending and receiving BYOND topics in milliseconds.",
             "format": "int32"
           }
         },
@@ -4909,7 +5235,9 @@
           512,
           1024,
           2048,
-          4096
+          4096,
+          8192,
+          16384
         ],
         "type": "integer",
         "description": "Rights for Tgstation.Server.Api.Models.DreamDaemon",
@@ -4928,7 +5256,9 @@
           "Shutdown",
           "Start",
           "SetStartupTimeout",
-          "SetHeartbeatInterval"
+          "SetHeartbeatInterval",
+          "CreateDump",
+          "SetTopicTimeout"
         ]
       },
       "DreamMakerRights": {
@@ -5111,7 +5441,14 @@
             "description": "The origin URL. If <see langword=\"null\" />, the Tgstation.Server.Api.Models.Repository does not exist",
             "nullable": true
           },
+          "recurseSubmodules": {
+            "type": "boolean",
+            "description": "If submodules should be recursively cloned.",
+            "nullable": true
+          },
           "checkoutSha": {
+            "maxLength": 40,
+            "minLength": 0,
             "type": "string",
             "description": "The commit HEAD should point to. Not populated in responses, use Tgstation.Server.Api.Models.Repository.RevisionInformation instead for retrieval",
             "nullable": true
@@ -5138,6 +5475,8 @@
             "nullable": true
           },
           "reference": {
+            "maxLength": 10000,
+            "minLength": 0,
             "type": "string",
             "description": "The branch or tag HEAD points to",
             "nullable": true

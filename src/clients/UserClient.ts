@@ -3,6 +3,7 @@ import ServerClient from './ServerClient';
 import { Components } from './_generated';
 import InternalStatus, { StatusCode } from '../models/InternalComms/InternalStatus';
 import InternalError, { ErrorCode, GenericErrors } from '../models/InternalComms/InternalError';
+import LoginHooks from '../utils/LoginHooks';
 
 interface IEvents {
     loadUserInfo: (user: InternalStatus<Components.Schemas.User, GenericErrors>) => void;
@@ -17,10 +18,9 @@ class UserClient extends TypedEmitter<IEvents> {
 
     public constructor() {
         super();
-        ServerClient.on('loginSuccess', () => {
-            // noinspection JSIgnoredPromiseFromCall
-            this.getCurrentUser();
-        });
+        this.getCurrentUser = this.getCurrentUser.bind(this);
+
+        LoginHooks.addHook(this.getCurrentUser);
         ServerClient.on('logout', () => {
             this._cachedUser = undefined;
         });
@@ -101,7 +101,7 @@ class UserClient extends TypedEmitter<IEvents> {
                 const errorMessage = response.data as Components.Schemas.ErrorMessage;
                 return new InternalStatus<Components.Schemas.User, ErrorCode.USER_NOT_FOUND>({
                     code: StatusCode.ERROR,
-                    error: new InternalError(ErrorCode.USER_NOT_FOUND, { void: true }, response)
+                    error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage }, response)
                 });
             }
             default: {

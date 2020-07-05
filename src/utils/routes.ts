@@ -2,27 +2,25 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import ServerClient from '../clients/ServerClient';
 import UserClient from '../clients/UserClient';
 import { StatusCode } from '../models/InternalComms/InternalStatus';
-import { Components } from '../clients/_generated';
-import { AdministrationRights } from './enums';
+import { AdministrationRights } from '../clients/_enums';
 
-export type NormalRoute = {
+export interface BaseRoute {
     route: string;
     name: string;
+    exact?: boolean;
+    isAuthorized: () => Promise<boolean>;
+    cachedAuth?: boolean; //only RouteController should use this
+}
+
+export interface NormalRoute extends BaseRoute {
     icon: IconProp;
-    exact?: boolean;
     hidden?: false;
-    isAuthorized?: () => Promise<boolean>;
-    display: number;
-};
+}
 
-export type HiddenRoute = {
-    route: string;
-    name: string;
+export interface HiddenRoute extends BaseRoute {
     icon: undefined;
-    exact?: boolean;
     hidden: true;
-    isAuthorized?: () => Promise<boolean>;
-};
+}
 
 export type AppRoute = NormalRoute | HiddenRoute;
 
@@ -34,22 +32,19 @@ export const AppRoutes: {
         name: 'routes.home',
         exact: true,
         icon: 'home',
-        isAuthorized: async () => true,
-        display: 0
+        isAuthorized: async () => true
     },
     instances: {
         route: '/Instance/',
         name: 'routes.instances',
         icon: 'hdd',
-        isAuthorized: async () => true,
-        display: 1
+        isAuthorized: async () => false
     },
     userManager: {
         route: '/Users/',
         name: 'routes.user_manager',
         icon: 'user',
-        isAuthorized: async () => true,
-        display: 2
+        isAuthorized: async () => false
     },
     admin: {
         route: '/Administration/',
@@ -66,7 +61,6 @@ export const AppRoutes: {
                 );
             }
             return false;
-        },
-        display: 3
+        }
     }
 };

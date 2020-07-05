@@ -8,7 +8,7 @@
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
-    "ignorePatterns": ["node_modules/", "src/clients/_generated.d.ts", "webpack*.js", "patcher/", "api_download.js"],
+    "ignorePatterns": ["node_modules/", "src/clients/_generated.d.ts", "webpack*.js", "scripts/patcher/", "scripts/api_download.js", "scripts/generate_enums.js"],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {

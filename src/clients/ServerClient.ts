@@ -5,14 +5,20 @@ import { TypedEmitter } from 'tiny-typed-emitter/lib';
 import InternalError, { ErrorCode, GenericErrors } from '../models/InternalComms/InternalError';
 import InternalStatus, { StatusCode } from '../models/InternalComms/InternalStatus';
 import { Document } from 'openapi-client-axios/types/client';
+import LoginHooks from '../utils/LoginHooks';
 
 interface IEvents {
+    //tasks once the user is fully logged in
     loginSuccess: (token: Components.Schemas.Token) => void;
+    //self explainatory
     logout: () => void;
+    //fired whenever something is denied access, shouldnt really be used
     accessDenied: () => void;
+    //fired when the server info is first loaded
     loadServerInfo: (
         serverInfo: InternalStatus<Components.Schemas.ServerInformation, GenericErrors>
     ) => void;
+    //fired when the api is loaded from the json file and loaded
     initialized: () => void;
 }
 
@@ -24,7 +30,7 @@ export type LoginErrors =
 export type ServerInfoErrors = GenericErrors;
 
 class ServerClient extends TypedEmitter<IEvents> {
-    private static readonly globalHandledCodes = [400, 401, 403, 409, 500, 501, 503];
+    private static readonly globalHandledCodes = [400, 401, 403, 406, 409, 426, 500, 501, 503];
 
     //api
     // @ts-ignore  //this will be undefined at the start but there shouldnt be any requests before the api is initialized, same as below
@@ -116,7 +122,7 @@ class ServerClient extends TypedEmitter<IEvents> {
                                 request.method === 'post'
                             ) {
                                 this.logout();
-                                const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                                console.log('Failed to login');
                                 const errorobj = new InternalError(
                                     ErrorCode.LOGIN_FAIL,
                                     {
@@ -142,8 +148,7 @@ class ServerClient extends TypedEmitter<IEvents> {
                                 request.method === 'post'
                             ) {
                                 this.logout();
-                                const errorMessage = error.response
-                                    .data as Components.Schemas.ErrorMessage;
+                                console.log('Account disabled');
                                 const errorobj = new InternalError(
                                     ErrorCode.LOGIN_DISABLED,
                                     {
@@ -164,6 +169,16 @@ class ServerClient extends TypedEmitter<IEvents> {
                                 return Promise.reject(errorobj);
                             }
                         }
+                        case 406: {
+                            const errorobj = new InternalError(
+                                ErrorCode.HTTP_NOT_ACCEPTABLE,
+                                {
+                                    void: true
+                                },
+                                res
+                            );
+                            return Promise.reject(errorobj);
+                        }
                         case 409: {
                             const errorMessage = res.data as Components.Schemas.ErrorMessage;
                             const errorobj = new InternalError(
@@ -171,6 +186,15 @@ class ServerClient extends TypedEmitter<IEvents> {
                                 {
                                     errorMessage
                                 },
+                                res
+                            );
+                            return Promise.reject(errorobj);
+                        }
+                        case 426: {
+                            const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                            const errorobj = new InternalError(
+                                ErrorCode.HTTP_API_MISMATCH,
+                                { errorMessage },
                                 res
                             );
                             return Promise.reject(errorobj);
@@ -267,9 +291,11 @@ class ServerClient extends TypedEmitter<IEvents> {
     }
 
     public async login(
-        newCreds?: ICredentials
+        newCreds?: ICredentials,
+        savePassword = false
     ): Promise<InternalStatus<Components.Schemas.Token, LoginErrors>> {
         await this.wait4Init();
+        console.log('Attempting login');
         if (newCreds) {
             this.logout();
             this.credentials = newCreds;
@@ -297,6 +323,7 @@ class ServerClient extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 200: {
+                console.log('Login success');
                 const token = response.data as Components.Schemas.Token;
                 this._token = token;
                 /*if (token.expiresAt) {
@@ -305,14 +332,19 @@ class ServerClient extends TypedEmitter<IEvents> {
                     const delta = refreshtime.getTime() - new Date().getTime(); //god damn, dates are hot garbage, get the ms until the refresh time
                     setInterval(() => this.login(), delta); //this is an arrow function so that "this" remains set
                 }*/
-                try {
-                    window.sessionStorage.setItem('username', this.credentials.userName);
-                    window.sessionStorage.setItem('password', this.credentials.password);
-                } catch (_) {
-                    (() => {})(); //noop
+                if (savePassword) {
+                    try {
+                        window.sessionStorage.setItem('username', this.credentials.userName);
+                        window.sessionStorage.setItem('password', this.credentials.password);
+                    } catch (_) {
+                        (() => {})(); //noop
+                    }
                 }
                 this.getServerInfo().then(() => {
-                    this.emit('loginSuccess', token);
+                    LoginHooks.runHooks(token).then(() => {
+                        console.log('Running post login event');
+                        this.emit('loginSuccess', token);
+                    });
                 });
                 return new InternalStatus<Components.Schemas.Token, ErrorCode.OK>({
                     code: StatusCode.OK,

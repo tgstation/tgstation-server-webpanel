@@ -7,13 +7,8 @@ import Locales from './translations/Locales';
 import './utils/icolibrary';
 import './index.css';
 import './definitions/globals.d';
-import { GlobalObjects } from './utils/globalObjects';
 
-if (GlobalObjects.darkMode) {
-    import('./styles/dark.scss');
-} else {
-    import('./styles/light.scss');
-}
+import('./styles/dark.scss');
 
 const apiUrl = process.env.TGSCP_API || 'http://localhost:5000';
 

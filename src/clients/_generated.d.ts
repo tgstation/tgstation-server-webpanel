@@ -46,9 +46,9 @@ declare namespace Components {
         /**
          * Rights for Tgstation.Server.Api.Models.Administration
          */
-        export type AdministrationRights = 0 | 1 | 2 | 4 | 8 | 16; // int64
+        export type AdministrationRights = 0 | 1 | 2 | 4 | 8 | 16 | 32; // int64
         /**
-         * Represents a BYOND installation
+         * Represents a BYOND installation. Tgstation.Server.Api.Models.Internal.RawData.Content is used to upload custom BYOND version zip files, though Tgstation.Server.Api.Models.Byond.Version must still be set.
          */
         export interface Byond {
             /**
@@ -56,6 +56,10 @@ declare namespace Components {
              */
             version: string | null;
             installJob: Job;
+            /**
+             * The bytes of the Tgstation.Server.Api.Models.Internal.RawData.
+             */
+            content: string | null; // byte
         }
         /**
          * Rights for Tgstation.Server.Api.Models.Byond
@@ -180,7 +184,7 @@ declare namespace Components {
              */
             lastReadHash: string | null;
             /**
-             * The content of the Tgstation.Server.Api.Models.ConfigurationFile. Will be <see langword="null" /> if Tgstation.Server.Api.Models.ConfigurationFile.AccessDenied is <see langword="true" /> or during listing and write operations
+             * The bytes of the Tgstation.Server.Api.Models.Internal.RawData.
              */
             content: string | null; // byte
         }
@@ -198,10 +202,7 @@ declare namespace Components {
         export interface DreamDaemon {
             activeCompileJob: CompileJob;
             stagedCompileJob: CompileJob;
-            /**
-             * The current status of Tgstation.Server.Api.Models.DreamDaemon
-             */
-            running: boolean | null;
+            status: WatchdogStatus; // int32
             currentSecurity: DreamDaemonSecurity; // int32
             /**
              * The port the running Tgstation.Server.Api.Models.DreamDaemon instance is set to
@@ -219,6 +220,10 @@ declare namespace Components {
              * If the server is undergoing a soft shutdown
              */
             softShutdown: boolean | null;
+            /**
+             * If a dump of the active DreamDaemon executable should be created.
+             */
+            createDump: boolean | null;
             /**
              * If Tgstation.Server.Api.Models.DreamDaemon starts when it's Tgstation.Server.Api.Models.Instance starts
              */
@@ -244,6 +249,10 @@ declare namespace Components {
              * The number of seconds between each watchdog heartbeat. 0 disables.
              */
             heartbeatSeconds: number; // int32
+            /**
+             * The timeout for sending and receiving BYOND topics in milliseconds.
+             */
+            topicRequestTimeout: number; // int32
         }
         /**
          * Rights for Tgstation.Server.Api.Models.DreamDaemon
@@ -262,7 +271,9 @@ declare namespace Components {
             | 512
             | 1024
             | 2048
-            | 4096; // int64
+            | 4096
+            | 8192
+            | 16384; // int64
         /**
          * DreamDaemon's security level
          */
@@ -382,7 +393,11 @@ declare namespace Components {
             | 81
             | 82
             | 83
-            | 84; // int32
+            | 84
+            | 85
+            | 86
+            | 87
+            | 88; // int32
         /**
          * Represents an error message returned by the server
          */
@@ -435,7 +450,19 @@ declare namespace Components {
         /**
          * Rights for managing Tgstation.Server.Api.Models.Instances
          */
-        export type InstanceManagerRights = 0 | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512; // int64
+        export type InstanceManagerRights =
+            | 0
+            | 1
+            | 2
+            | 4
+            | 8
+            | 16
+            | 32
+            | 64
+            | 128
+            | 256
+            | 512
+            | 1024; // int64
         /**
          * Represents a Tgstation.Server.Api.Models.Users permissions in an Tgstation.Server.Api.Models.Instance
          */
@@ -498,6 +525,23 @@ declare namespace Components {
             id: number; // int64
         }
         /**
+         * Represents a server log file.
+         */
+        export interface LogFile {
+            /**
+             * The name of the log file.
+             */
+            name: string | null;
+            /**
+             * The System.DateTimeOffset of when the log file was modified.
+             */
+            lastModified: string; // date-time
+            /**
+             * The bytes of the Tgstation.Server.Api.Models.Internal.RawData.
+             */
+            content: string | null; // byte
+        }
+        /**
          * Represents a git repository
          */
         export interface Repository {
@@ -505,6 +549,10 @@ declare namespace Components {
              * The origin URL. If <see langword="null" />, the Tgstation.Server.Api.Models.Repository does not exist
              */
             origin: string | null;
+            /**
+             * If submodules should be recursively cloned.
+             */
+            recurseSubmodules: boolean | null;
             /**
              * The commit HEAD should point to. Not populated in responses, use Tgstation.Server.Api.Models.Repository.RevisionInformation instead for retrieval
              */
@@ -795,6 +843,10 @@ declare namespace Components {
             administrationRights: AdministrationRights; // int64
             instanceManagerRights: InstanceManagerRights; // int64
         }
+        /**
+         * The current status of the watchdog.
+         */
+        export type WatchdogStatus = 0 | 1 | 2 | 3; // int32
     }
 }
 declare namespace Paths {
@@ -806,6 +858,39 @@ declare namespace Paths {
             export type $403 = Components.Responses.$403;
             export type $409 = Components.Responses.$409;
             export type $422 = Components.Schemas.ErrorMessage;
+            export type $500 = Components.Responses.$500;
+            export type $501 = Components.Responses.$501;
+            export type $503 = Components.Responses.$503;
+        }
+    }
+    namespace AdministrationControllerGetLog {
+        namespace Parameters {
+            /**
+             * The path to download.
+             */
+            export type Path = string | null;
+        }
+        export interface PathParameters {
+            path: Parameters.Path;
+        }
+        namespace Responses {
+            export type $200 = Components.Schemas.LogFile[];
+            export type $400 = Components.Responses.$400;
+            export type $401 = Components.Responses.$401;
+            export type $403 = Components.Responses.$403;
+            export type $409 = Components.Schemas.ErrorMessage;
+            export type $500 = Components.Responses.$500;
+            export type $501 = Components.Responses.$501;
+            export type $503 = Components.Responses.$503;
+        }
+    }
+    namespace AdministrationControllerListLogs {
+        namespace Responses {
+            export type $200 = Components.Schemas.LogFile[];
+            export type $400 = Components.Responses.$400;
+            export type $401 = Components.Responses.$401;
+            export type $403 = Components.Responses.$403;
+            export type $409 = Components.Schemas.ErrorMessage;
             export type $500 = Components.Responses.$500;
             export type $501 = Components.Responses.$501;
             export type $503 = Components.Responses.$503;
@@ -1154,6 +1239,24 @@ declare namespace Paths {
             export type $503 = Components.Responses.$503;
         }
     }
+    namespace DreamDaemonControllerCreateDump {
+        export interface HeaderParameters {
+            instance: Parameters.Instance;
+        }
+        namespace Parameters {
+            export type Instance = Components.Parameters.Instance;
+        }
+        namespace Responses {
+            export type $202 = Components.Schemas.Job;
+            export type $400 = Components.Responses.$400;
+            export type $401 = Components.Responses.$401;
+            export type $403 = Components.Responses.$403;
+            export type $409 = Components.Responses.$409;
+            export type $500 = Components.Responses.$500;
+            export type $501 = Components.Responses.$501;
+            export type $503 = Components.Responses.$503;
+        }
+    }
     namespace DreamDaemonControllerDelete {
         export interface HeaderParameters {
             instance: Parameters.Instance;
@@ -1407,6 +1510,27 @@ declare namespace Paths {
             export type $403 = Components.Responses.$403;
             export type $409 = Components.Responses.$409;
             export type $410 = Components.Schemas.ErrorMessage;
+            export type $500 = Components.Responses.$500;
+            export type $501 = Components.Responses.$501;
+            export type $503 = Components.Responses.$503;
+        }
+    }
+    namespace InstanceControllerGrantPermissions {
+        namespace Parameters {
+            /**
+             * The instance Tgstation.Server.Api.Models.EntityId.Id to give permissions on.
+             */
+            export type Id = number; // int64
+        }
+        export interface PathParameters {
+            id: Parameters.Id; // int64
+        }
+        namespace Responses {
+            export type $204 = void;
+            export type $400 = Components.Responses.$400;
+            export type $401 = Components.Responses.$401;
+            export type $403 = Components.Responses.$403;
+            export type $409 = Components.Responses.$409;
             export type $500 = Components.Responses.$500;
             export type $501 = Components.Responses.$501;
             export type $503 = Components.Responses.$503;
@@ -1844,6 +1968,40 @@ export interface OperationMethods {
         | Paths.AdministrationControllerDelete.Responses.$503
     >;
     /**
+     * AdministrationController_ListLogs - List Tgstation.Server.Api.Models.LogFiles present.
+     */
+    AdministrationController_ListLogs(
+        parameters?: Parameters<UnknownParamsObject>,
+        data?: any,
+        config?: AxiosRequestConfig
+    ): OperationResponse<
+        | Paths.AdministrationControllerListLogs.Responses.$200
+        | Paths.AdministrationControllerListLogs.Responses.$400
+        | Paths.AdministrationControllerListLogs.Responses.$401
+        | Paths.AdministrationControllerListLogs.Responses.$403
+        | Paths.AdministrationControllerListLogs.Responses.$409
+        | Paths.AdministrationControllerListLogs.Responses.$500
+        | Paths.AdministrationControllerListLogs.Responses.$501
+        | Paths.AdministrationControllerListLogs.Responses.$503
+    >;
+    /**
+     * AdministrationController_GetLog - Download a Tgstation.Server.Api.Models.LogFile.
+     */
+    AdministrationController_GetLog(
+        parameters?: Parameters<Paths.AdministrationControllerGetLog.PathParameters>,
+        data?: any,
+        config?: AxiosRequestConfig
+    ): OperationResponse<
+        | Paths.AdministrationControllerGetLog.Responses.$200
+        | Paths.AdministrationControllerGetLog.Responses.$400
+        | Paths.AdministrationControllerGetLog.Responses.$401
+        | Paths.AdministrationControllerGetLog.Responses.$403
+        | Paths.AdministrationControllerGetLog.Responses.$409
+        | Paths.AdministrationControllerGetLog.Responses.$500
+        | Paths.AdministrationControllerGetLog.Responses.$501
+        | Paths.AdministrationControllerGetLog.Responses.$503
+    >;
+    /**
      * ByondController_Read - Gets the active Tgstation.Server.Api.Models.Byond version.
      */
     ByondController_Read(
@@ -2187,6 +2345,23 @@ export interface OperationMethods {
         | Paths.DreamDaemonControllerDelete.Responses.$503
     >;
     /**
+     * DreamDaemonController_CreateDump - Creates a Tgstation.Server.Api.Models.Job to generate a DreamDaemon process dump.
+     */
+    DreamDaemonController_CreateDump(
+        parameters?: Parameters<Paths.DreamDaemonControllerCreateDump.HeaderParameters>,
+        data?: any,
+        config?: AxiosRequestConfig
+    ): OperationResponse<
+        | Paths.DreamDaemonControllerCreateDump.Responses.$202
+        | Paths.DreamDaemonControllerCreateDump.Responses.$400
+        | Paths.DreamDaemonControllerCreateDump.Responses.$401
+        | Paths.DreamDaemonControllerCreateDump.Responses.$403
+        | Paths.DreamDaemonControllerCreateDump.Responses.$409
+        | Paths.DreamDaemonControllerCreateDump.Responses.$500
+        | Paths.DreamDaemonControllerCreateDump.Responses.$501
+        | Paths.DreamDaemonControllerCreateDump.Responses.$503
+    >;
+    /**
      * DreamMakerController_Read - Read current Tgstation.Server.Api.Models.DreamMaker status.
      */
     DreamMakerController_Read(
@@ -2365,6 +2540,23 @@ export interface OperationMethods {
         | Paths.InstanceControllerGetId.Responses.$500
         | Paths.InstanceControllerGetId.Responses.$501
         | Paths.InstanceControllerGetId.Responses.$503
+    >;
+    /**
+     * InstanceController_GrantPermissions - Gives the current user full permissions on a given instance id.
+     */
+    InstanceController_GrantPermissions(
+        parameters?: Parameters<Paths.InstanceControllerGrantPermissions.PathParameters>,
+        data?: any,
+        config?: AxiosRequestConfig
+    ): OperationResponse<
+        | Paths.InstanceControllerGrantPermissions.Responses.$204
+        | Paths.InstanceControllerGrantPermissions.Responses.$400
+        | Paths.InstanceControllerGrantPermissions.Responses.$401
+        | Paths.InstanceControllerGrantPermissions.Responses.$403
+        | Paths.InstanceControllerGrantPermissions.Responses.$409
+        | Paths.InstanceControllerGrantPermissions.Responses.$500
+        | Paths.InstanceControllerGrantPermissions.Responses.$501
+        | Paths.InstanceControllerGrantPermissions.Responses.$503
     >;
     /**
      * InstanceController_Delete - Detach an Tgstation.Server.Api.Models.Instance with the given id.
@@ -2807,6 +2999,44 @@ export interface PathsDictionary {
             | Paths.AdministrationControllerDelete.Responses.$503
         >;
     };
+    ['/Administration/Logs']: {
+        /**
+         * AdministrationController_ListLogs - List Tgstation.Server.Api.Models.LogFiles present.
+         */
+        get(
+            parameters?: Parameters<UnknownParamsObject>,
+            data?: any,
+            config?: AxiosRequestConfig
+        ): OperationResponse<
+            | Paths.AdministrationControllerListLogs.Responses.$200
+            | Paths.AdministrationControllerListLogs.Responses.$400
+            | Paths.AdministrationControllerListLogs.Responses.$401
+            | Paths.AdministrationControllerListLogs.Responses.$403
+            | Paths.AdministrationControllerListLogs.Responses.$409
+            | Paths.AdministrationControllerListLogs.Responses.$500
+            | Paths.AdministrationControllerListLogs.Responses.$501
+            | Paths.AdministrationControllerListLogs.Responses.$503
+        >;
+    };
+    ['/Administration/Logs/{path}']: {
+        /**
+         * AdministrationController_GetLog - Download a Tgstation.Server.Api.Models.LogFile.
+         */
+        get(
+            parameters?: Parameters<Paths.AdministrationControllerGetLog.PathParameters>,
+            data?: any,
+            config?: AxiosRequestConfig
+        ): OperationResponse<
+            | Paths.AdministrationControllerGetLog.Responses.$200
+            | Paths.AdministrationControllerGetLog.Responses.$400
+            | Paths.AdministrationControllerGetLog.Responses.$401
+            | Paths.AdministrationControllerGetLog.Responses.$403
+            | Paths.AdministrationControllerGetLog.Responses.$409
+            | Paths.AdministrationControllerGetLog.Responses.$500
+            | Paths.AdministrationControllerGetLog.Responses.$501
+            | Paths.AdministrationControllerGetLog.Responses.$503
+        >;
+    };
     ['/Byond']: {
         /**
          * ByondController_Read - Gets the active Tgstation.Server.Api.Models.Byond version.
@@ -3172,6 +3402,25 @@ export interface PathsDictionary {
             | Paths.DreamDaemonControllerRestart.Responses.$503
         >;
     };
+    ['/DreamDaemon/Diagnostics']: {
+        /**
+         * DreamDaemonController_CreateDump - Creates a Tgstation.Server.Api.Models.Job to generate a DreamDaemon process dump.
+         */
+        patch(
+            parameters?: Parameters<Paths.DreamDaemonControllerCreateDump.HeaderParameters>,
+            data?: any,
+            config?: AxiosRequestConfig
+        ): OperationResponse<
+            | Paths.DreamDaemonControllerCreateDump.Responses.$202
+            | Paths.DreamDaemonControllerCreateDump.Responses.$400
+            | Paths.DreamDaemonControllerCreateDump.Responses.$401
+            | Paths.DreamDaemonControllerCreateDump.Responses.$403
+            | Paths.DreamDaemonControllerCreateDump.Responses.$409
+            | Paths.DreamDaemonControllerCreateDump.Responses.$500
+            | Paths.DreamDaemonControllerCreateDump.Responses.$501
+            | Paths.DreamDaemonControllerCreateDump.Responses.$503
+        >;
+    };
     ['/DreamMaker']: {
         /**
          * DreamMakerController_Read - Read current Tgstation.Server.Api.Models.DreamMaker status.
@@ -3380,6 +3629,23 @@ export interface PathsDictionary {
             | Paths.InstanceControllerGetId.Responses.$500
             | Paths.InstanceControllerGetId.Responses.$501
             | Paths.InstanceControllerGetId.Responses.$503
+        >;
+        /**
+         * InstanceController_GrantPermissions - Gives the current user full permissions on a given instance id.
+         */
+        patch(
+            parameters?: Parameters<Paths.InstanceControllerGrantPermissions.PathParameters>,
+            data?: any,
+            config?: AxiosRequestConfig
+        ): OperationResponse<
+            | Paths.InstanceControllerGrantPermissions.Responses.$204
+            | Paths.InstanceControllerGrantPermissions.Responses.$400
+            | Paths.InstanceControllerGrantPermissions.Responses.$401
+            | Paths.InstanceControllerGrantPermissions.Responses.$403
+            | Paths.InstanceControllerGrantPermissions.Responses.$409
+            | Paths.InstanceControllerGrantPermissions.Responses.$500
+            | Paths.InstanceControllerGrantPermissions.Responses.$501
+            | Paths.InstanceControllerGrantPermissions.Responses.$503
         >;
     };
     ['/Instance/List']: {
