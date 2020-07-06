@@ -1,9 +1,8 @@
-import InternalStatus, { StatusCode } from '../models/InternalComms/InternalStatus';
+import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
 import { Components } from './_generated';
-import InternalError, { ErrorCode, GenericErrors } from '../models/InternalComms/InternalError';
+import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
 import { TypedEmitter } from 'tiny-typed-emitter/lib';
 import ServerClient from './ServerClient';
-
 interface IEvents {
     loadAdminInfo: (
         user: InternalStatus<Components.Schemas.Administration, AdminInfoErrors>
@@ -15,12 +14,19 @@ export type AdminInfoErrors =
     | ErrorCode.ADMIN_GITHUB_RATE
     | ErrorCode.ADMIN_GITHUB_ERROR;
 
-class UserClient extends TypedEmitter<IEvents> {
+export default new (class AdminClient extends TypedEmitter<IEvents> {
     private _cachedAdminInfo?: InternalStatus<Components.Schemas.Administration, ErrorCode.OK>;
     public get cachedAdminInfo() {
         return this._cachedAdminInfo;
     }
     private loadingAdminInfo = false;
+
+    public constructor() {
+        super();
+        ServerClient.on('purgeCache', () => {
+            this._cachedAdminInfo = undefined;
+        });
+    }
 
     public async getAdminInfo(): Promise<
         InternalStatus<Components.Schemas.Administration, AdminInfoErrors>
@@ -116,6 +122,4 @@ class UserClient extends TypedEmitter<IEvents> {
             }
         }
     }
-}
-
-export default new UserClient();
+})();

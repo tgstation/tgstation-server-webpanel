@@ -1,8 +1,8 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import ServerClient from '../clients/ServerClient';
-import UserClient from '../clients/UserClient';
-import { StatusCode } from '../models/InternalComms/InternalStatus';
-import { AdministrationRights } from '../clients/_enums';
+import { StatusCode } from '../ApiClient/models/InternalComms/InternalStatus';
+import { AdministrationRights } from '../ApiClient/_enums';
+import UserClient from '../ApiClient/UserClient';
+import ServerClient from '../ApiClient/ServerClient';
 
 export interface BaseRoute {
     route: string;

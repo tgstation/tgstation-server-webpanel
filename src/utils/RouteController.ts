@@ -1,7 +1,6 @@
-import ServerClient from '../clients/ServerClient';
 import { AppRoute, AppRoutes, NormalRoute } from './routes';
 import { TypedEmitter } from 'tiny-typed-emitter/lib';
-import LoginHooks from './LoginHooks';
+import LoginHooks from '../ApiClient/util/LoginHooks';
 
 interface IEvents {
     refresh: (routes: Array<AppRoute>) => void; //hidden+visible auth
@@ -18,14 +17,16 @@ class RouteController extends TypedEmitter<IEvents> {
         super();
         this.refreshRoutes = this.refreshRoutes.bind(this);
 
-        ServerClient.on('logout', () => this.refreshRoutes());
         LoginHooks.addHook(this.refreshRoutes);
         // noinspection JSIgnoredPromiseFromCall
         this.refreshRoutes();
     }
 
     public async refreshRoutes() {
-        if (this.refreshing) return; //no need to refresh twice
+        if (this.refreshing) {
+            console.log('Already refreshing');
+            return;
+        } //no need to refresh twice
 
         this.refreshing = true;
 
@@ -53,6 +54,8 @@ class RouteController extends TypedEmitter<IEvents> {
             (await this.getRoutes(false, false, false)) as Array<NormalRoute>
         );
         this.refreshing = false;
+
+        console.log('Routes refreshed', await this.getRoutes(true, true, false));
         return await this.getRoutes();
     }
 

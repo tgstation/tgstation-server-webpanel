@@ -1,4 +1,7 @@
-import InternalError, { DescType, ErrorCode } from '../../models/InternalComms/InternalError';
+import InternalError, {
+    DescType,
+    ErrorCode
+} from '../../ApiClient/models/InternalComms/InternalError';
 import React, { Component, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Alert from 'react-bootstrap/Alert';

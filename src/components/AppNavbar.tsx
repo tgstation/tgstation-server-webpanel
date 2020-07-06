@@ -7,11 +7,11 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AppRoutes, NormalRoute } from '../utils/routes';
-import { Components } from '../clients/_generated';
-import ServerClient from '../clients/ServerClient';
-import UserClient from '../clients/UserClient';
+import { Components } from '../ApiClient/_generated';
 import RouteController from '../utils/RouteController';
-import LoginHooks from '../utils/LoginHooks';
+import LoginHooks from '../ApiClient/util/LoginHooks';
+import UserClient from '../ApiClient/UserClient';
+import ServerClient from '../ApiClient/ServerClient';
 
 interface IProps {}
 
@@ -37,9 +37,23 @@ export default class AppNavbar extends React.Component<IProps, IState> {
         };
     }
 
+    //mamamia, memory leaks go brrrrrrrrrrrr dont they?
+    //well you see, this component never gets normally unloaded so i dont give a fuck!
     public async componentDidMount(): Promise<void> {
         LoginHooks.addHook(this.loadServerInformation);
+        ServerClient.on('loadServerInfo', serverInfo => {
+            this.setState({
+                serverInformation: serverInfo.payload
+            });
+        });
+
         LoginHooks.addHook(this.loadUserInformation);
+        UserClient.on('loadUserInfo', user => {
+            this.setState({
+                currentUser: user.payload
+            });
+        });
+
         ServerClient.on('loginSuccess', () => {
             this.setState({
                 loggedIn: true
@@ -162,6 +176,13 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                     )}
                 </Dropdown.Toggle>
                 <Dropdown.Menu alignRight>
+                    <Dropdown.Item
+                        className="text-right"
+                        onClick={() => {
+                            ServerClient.emit('purgeCache');
+                        }}>
+                        <FormattedMessage id="navbar.refresh" />
+                    </Dropdown.Item>
                     <Dropdown.Item className="text-right" onClick={this.logoutClick}>
                         <FormattedMessage id="navbar.logout" />
                     </Dropdown.Item>

@@ -6,8 +6,6 @@ import Container from 'react-bootstrap/Container';
 
 import IAppProps from './IAppProps';
 
-import ServerClient from './clients/ServerClient';
-
 import ITranslation from './translations/ITranslation';
 import ITranslationFactory from './translations/ITranslationFactory';
 import TranslationFactory from './translations/TranslationFactory';
@@ -21,9 +19,9 @@ import { AppRoutes } from './utils/routes';
 import ErrorBoundary from './components/utils/ErrorBoundary';
 import Loading from './components/utils/Loading';
 import Reload from './components/utils/Reload';
-import { StatusCode } from './models/InternalComms/InternalStatus';
-import { ErrorCode } from './models/InternalComms/InternalError';
-
+import { StatusCode } from './ApiClient/models/InternalComms/InternalStatus';
+import { ErrorCode } from './ApiClient/models/InternalComms/InternalError';
+import ServerClient from './ApiClient/ServerClient';
 interface IState {
     translation?: ITranslation;
     translationError?: string;

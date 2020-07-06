@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';

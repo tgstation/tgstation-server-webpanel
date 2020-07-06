@@ -1,17 +1,16 @@
 import React from 'react';
 import AccessDenied from '../utils/AccessDenied';
 import { AppRoutes } from '../../utils/routes';
-import InternalError from '../../models/InternalComms/InternalError';
-import AdminClient, { AdminInfoErrors } from '../../clients/AdminClient';
-import { StatusCode } from '../../models/InternalComms/InternalStatus';
+import InternalError from '../../ApiClient/models/InternalComms/InternalError';
+import { StatusCode } from '../../ApiClient/models/InternalComms/InternalStatus';
 import Loading from '../utils/Loading';
 import ErrorAlert from '../utils/ErrorAlert';
-import { Components } from '../../clients/_generated';
+import { Components } from '../../ApiClient/_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ServerClient from '../../clients/ServerClient';
 import { faWindows } from '@fortawesome/free-brands-svg-icons/faWindows';
 import { faLinux } from '@fortawesome/free-brands-svg-icons/faLinux';
-
+import AdminClient, { AdminInfoErrors } from '../../ApiClient/AdminClient';
+import ServerClient from '../../ApiClient/ServerClient';
 interface IProps {}
 interface IState {
     adminInfo?: Components.Schemas.Administration;

@@ -6,10 +6,10 @@ import { FormattedMessage } from 'react-intl';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import Loading from '../utils/Loading';
-import ServerClient, { LoginErrors } from '../../clients/ServerClient';
-import { StatusCode } from '../../models/InternalComms/InternalStatus';
-import InternalError from '../../models/InternalComms/InternalError';
+import { StatusCode } from '../../ApiClient/models/InternalComms/InternalStatus';
+import InternalError from '../../ApiClient/models/InternalComms/InternalError';
 import ErrorAlert from '../utils/ErrorAlert';
+import ServerClient, { LoginErrors } from '../../ApiClient/ServerClient';
 
 interface IProps extends RouteComponentProps {}
 interface IState {

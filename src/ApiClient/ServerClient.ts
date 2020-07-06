@@ -1,11 +1,12 @@
 import { Client, Components } from './_generated';
 import { AxiosError, AxiosResponse, OpenAPIClientAxios } from 'openapi-client-axios';
-import { ICredentials } from '../models/ICredentials';
+import { ICredentials } from './models/ICredentials';
 import { TypedEmitter } from 'tiny-typed-emitter/lib';
-import InternalError, { ErrorCode, GenericErrors } from '../models/InternalComms/InternalError';
-import InternalStatus, { StatusCode } from '../models/InternalComms/InternalStatus';
+import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
+import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
 import { Document } from 'openapi-client-axios/types/client';
-import LoginHooks from '../utils/LoginHooks';
+import LoginHooks from './util/LoginHooks';
+import RouteController from '../utils/RouteController';
 
 interface IEvents {
     //tasks once the user is fully logged in
@@ -20,6 +21,8 @@ interface IEvents {
     ) => void;
     //fired when the api is loaded from the json file and loaded
     initialized: () => void;
+    //purge all caches
+    purgeCache: () => void;
 }
 
 export type LoginErrors =
@@ -29,7 +32,7 @@ export type LoginErrors =
     | ErrorCode.LOGIN_NOCREDS;
 export type ServerInfoErrors = GenericErrors;
 
-class ServerClient extends TypedEmitter<IEvents> {
+export default new (class ServerClient extends TypedEmitter<IEvents> {
     private static readonly globalHandledCodes = [400, 401, 403, 406, 409, 426, 500, 501, 503];
 
     //api
@@ -58,6 +61,14 @@ class ServerClient extends TypedEmitter<IEvents> {
 
     public constructor() {
         super();
+        this.getServerInfo = this.getServerInfo.bind(this);
+
+        LoginHooks.addHook(this.getServerInfo);
+        this.on('purgeCache', () => {
+            // noinspection JSIgnoredPromiseFromCall
+            RouteController.refreshRoutes(); //i.... i cant put this in the other file for reasons...
+            this._serverInfo = undefined;
+        });
         // noinspection JSIgnoredPromiseFromCall
         this.initApi();
     }
@@ -326,6 +337,7 @@ class ServerClient extends TypedEmitter<IEvents> {
                 console.log('Login success');
                 const token = response.data as Components.Schemas.Token;
                 this._token = token;
+
                 /*if (token.expiresAt) {
                     const expiry = new Date(token.expiresAt);
                     const refreshtime = new Date(expiry.getTime() - 60000); //1 minute before expiry
@@ -368,6 +380,7 @@ class ServerClient extends TypedEmitter<IEvents> {
         if (!this.isTokenValid()) {
             return;
         }
+        console.log('Logging out');
         this.credentials = undefined;
         try {
             window.sessionStorage.removeItem('username');
@@ -377,6 +390,7 @@ class ServerClient extends TypedEmitter<IEvents> {
         }
         this._token = undefined;
         if (this.refreshTokenTimer) clearTimeout(this.refreshTokenTimer);
+        this.emit('purgeCache');
         this.emit('logout');
     }
 
@@ -447,6 +461,4 @@ class ServerClient extends TypedEmitter<IEvents> {
             }
         }
     }
-}
-
-export default new ServerClient();
+})();

@@ -1,15 +1,14 @@
 import { TypedEmitter } from 'tiny-typed-emitter/lib';
-import ServerClient from './ServerClient';
 import { Components } from './_generated';
-import InternalStatus, { StatusCode } from '../models/InternalComms/InternalStatus';
-import InternalError, { ErrorCode, GenericErrors } from '../models/InternalComms/InternalError';
-import LoginHooks from '../utils/LoginHooks';
-
+import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
+import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
+import LoginHooks from './util/LoginHooks';
+import ServerClient from './ServerClient';
 interface IEvents {
     loadUserInfo: (user: InternalStatus<Components.Schemas.User, GenericErrors>) => void;
 }
 
-class UserClient extends TypedEmitter<IEvents> {
+export default new (class UserClient extends TypedEmitter<IEvents> {
     private _cachedUser?: InternalStatus<Components.Schemas.User, ErrorCode.OK>;
     public get cachedUser() {
         return this._cachedUser;
@@ -21,7 +20,7 @@ class UserClient extends TypedEmitter<IEvents> {
         this.getCurrentUser = this.getCurrentUser.bind(this);
 
         LoginHooks.addHook(this.getCurrentUser);
-        ServerClient.on('logout', () => {
+        ServerClient.on('purgeCache', () => {
             this._cachedUser = undefined;
         });
     }
@@ -176,6 +175,4 @@ class UserClient extends TypedEmitter<IEvents> {
         }
     }
     //TODO: implement all user endpoints
-}
-
-export default new UserClient();
+})();

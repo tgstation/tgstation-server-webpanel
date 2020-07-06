@@ -24,6 +24,7 @@
     "navbar.user_error": "Error loading current user",
     "navbar.server_error": "Error loading server information",
     "navbar.home": "Home",
+    "navbar.refresh": "Purge local cache (Refresh)",
     "navbar.logout": "Logout",
     "navbar.user_prefix": "Logged in as",
     "server_client.logout": "Logged out successfully",

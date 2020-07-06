@@ -1,6 +1,6 @@
-import { Components } from '../../clients/_generated';
+import { Components } from '../../_generated';
 import { AxiosResponse } from 'axios';
-import ServerClient from '../../clients/ServerClient';
+import ServerClient from '../../ServerClient';
 
 export type GenericErrors =
     | ErrorCode.HTTP_BAD_REQUEST
