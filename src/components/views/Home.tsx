@@ -42,7 +42,7 @@ export default class Home extends React.Component<IProps, IState> {
 
     public render(): React.ReactNode {
         return (
-            <Row xs={1} md={3} lg={4} className="justify-content-center">
+            <Row xs={1} sm={2} md={3} lg={4} className="justify-content-center">
                 {this.state.routes.map(val => {
                     if (val === AppRoutes.home) return;
                     return (
@@ -51,7 +51,9 @@ export default class Home extends React.Component<IProps, IState> {
                                 as={val.cachedAuth ? Link : 'div'}
                                 to={val.route}
                                 className={`text-decoration-none m-1 h-75 ${
-                                    val.cachedAuth ? 'text-secondary' : 'text-danger'
+                                    val.cachedAuth
+                                        ? 'text-secondary'
+                                        : 'text-danger d-sm-flex d-none'
                                 }`}>
                                 <Card.Body>
                                     <FontAwesomeIcon

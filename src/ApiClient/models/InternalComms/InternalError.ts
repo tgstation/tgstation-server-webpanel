@@ -1,6 +1,6 @@
-import { Components } from '../../_generated';
+import { Components } from '../../generatedcode/_generated';
 import { AxiosResponse } from 'axios';
-import ServerClient from '../../ServerClient';
+import CredentialsProvider from '../../util/CredentialsProvider';
 
 export type GenericErrors =
     | ErrorCode.HTTP_BAD_REQUEST
@@ -106,10 +106,10 @@ export default class InternalError<T extends ErrorCode> {
             /{"username":".+?","password":".+?"}/g,
             '{"username":"*******","password":"*******"}'
         );
-        if (ServerClient.isTokenValid()) {
+        if (CredentialsProvider.isTokenValid()) {
             //@ts-ignore //slander, replaceAll() exists >:(
             debuginfo = debuginfo.replaceAll(
-                ServerClient.token?.bearer as string,
+                CredentialsProvider.token?.bearer as string,
                 '**************'
             );
         }

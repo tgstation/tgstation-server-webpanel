@@ -5,7 +5,7 @@ import InternalError from '../../ApiClient/models/InternalComms/InternalError';
 import { StatusCode } from '../../ApiClient/models/InternalComms/InternalStatus';
 import Loading from '../utils/Loading';
 import ErrorAlert from '../utils/ErrorAlert';
-import { Components } from '../../ApiClient/_generated';
+import { Components } from '../../ApiClient/generatedcode/_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindows } from '@fortawesome/free-brands-svg-icons/faWindows';
 import { faLinux } from '@fortawesome/free-brands-svg-icons/faLinux';

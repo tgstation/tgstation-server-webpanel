@@ -7,7 +7,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AppRoutes, NormalRoute } from '../utils/routes';
-import { Components } from '../ApiClient/_generated';
+import { Components } from '../ApiClient/generatedcode/_generated';
 import RouteController from '../utils/RouteController';
 import LoginHooks from '../ApiClient/util/LoginHooks';
 import UserClient from '../ApiClient/UserClient';
@@ -83,9 +83,9 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                 collapseOnSelect
                 variant="dark"
                 bg={this.state.userNameError || this.state.serverInfoError ? 'danger' : 'primary'}>
-                <Navbar.Toggle className="mr-2" aria-controls="responsive-navbar-nav" />
                 <Navbar.Brand className="mr-auto">{this.renderVersion()}</Navbar.Brand>
-                <Navbar.Collapse>
+                <Navbar.Toggle className="mr-2" aria-controls="responsive-navbar-nav" />
+                <Navbar.Collapse className="text-right mr-2">
                     <Nav className="mr-auto">
                         {!this.state.loggedIn ? (
                             <Nav.Item>
@@ -114,7 +114,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                         )}
                     </Nav>
                 </Navbar.Collapse>
-                <Nav.Item>{this.renderUser()}</Nav.Item>
+                <Nav.Item className="ml-auto">{this.renderUser()}</Nav.Item>
             </Navbar>
         );
     }

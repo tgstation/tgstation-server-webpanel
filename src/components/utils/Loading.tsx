@@ -16,10 +16,10 @@ interface IState {}
 export default class Loading extends React.Component<IProps, IState> {
     public static defaultProps = {
         animation: 'border',
-        width: '500',
-        widthUnit: 'px',
-        height: '500',
-        heightUnit: 'px',
+        width: '50',
+        widthUnit: 'vmin',
+        height: '50',
+        heightUnit: 'vmin',
         center: true
     };
     public constructor(props: IProps) {

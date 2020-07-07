@@ -1,4 +1,4 @@
-import { Components } from '../_generated';
+import { Components } from '../generatedcode/_generated';
 
 class LoginHooks {
     private promiseHooks: Set<(token: Components.Schemas.Token) => Promise<unknown>> = new Set();

@@ -1,4 +1,4 @@
-const swagger = require('../src/ApiClient/swagger.json');
+const swagger = require('../src/ApiClient/generatedcode/swagger.json');
 
 for (const [name, schema] of Object.entries(swagger.components.schemas)) {
     if (!('enum' in schema)) continue; //skip if true

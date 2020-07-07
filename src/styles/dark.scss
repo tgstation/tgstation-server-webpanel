@@ -1,4 +1,13 @@
-@import './common';
+.navbar {
+    font-weight: 600;
+}
+$enable-shadows: true;
+$enable-gradients: true;
+
+.vmin-50 {
+    width: 50vmin !important;
+    height: 50vmin !important;
+}
 
 $theme-colors: ( //02549a
     'primary': #02549a,

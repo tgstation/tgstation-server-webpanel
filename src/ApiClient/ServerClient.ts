@@ -1,12 +1,13 @@
-import { Client, Components } from './_generated';
 import { AxiosError, AxiosResponse, OpenAPIClientAxios } from 'openapi-client-axios';
-import { ICredentials } from './models/ICredentials';
+import { Document } from 'openapi-client-axios/types/client';
 import { TypedEmitter } from 'tiny-typed-emitter/lib';
+
+import { Client, Components } from './generatedcode/_generated';
+import { ICredentials } from './models/ICredentials';
 import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
 import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
-import { Document } from 'openapi-client-axios/types/client';
 import LoginHooks from './util/LoginHooks';
-import RouteController from '../utils/RouteController';
+import CredentialsProvider from './util/CredentialsProvider';
 
 interface IEvents {
     //tasks once the user is fully logged in
@@ -36,27 +37,11 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     private static readonly globalHandledCodes = [400, 401, 403, 406, 409, 426, 500, 501, 503];
 
     //api
-    // @ts-ignore  //this will be undefined at the start but there shouldnt be any requests before the api is initialized, same as below
-    private api: OpenAPIClientAxios; //api object, handles sending requests and configuring things
     // @ts-ignore
     public apiClient: Client; //client to interface with the api
+    // @ts-ignore  //this will be undefined at the start but there shouldnt be any requests before the api is initialized, same as below
+    private api: OpenAPIClientAxios; //api object, handles sending requests and configuring things
     private initialized = false;
-
-    //token
-    private _token?: Components.Schemas.Token;
-    public get token() {
-        return this._token;
-    }
-    private refreshTokenTimer?: number;
-
-    //credentials
-    private credentials?: ICredentials;
-
-    //serverInfo
-    private _serverInfo?: InternalStatus<Components.Schemas.ServerInformation, ErrorCode.OK>;
-    public get serverInfo() {
-        return this._serverInfo;
-    }
     private loadingServerInfo = false;
 
     public constructor() {
@@ -66,16 +51,22 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         LoginHooks.addHook(this.getServerInfo);
         this.on('purgeCache', () => {
             // noinspection JSIgnoredPromiseFromCall
-            RouteController.refreshRoutes(); //i.... i cant put this in the other file for reasons...
             this._serverInfo = undefined;
         });
         // noinspection JSIgnoredPromiseFromCall
         this.initApi();
     }
 
+    //serverInfo
+    private _serverInfo?: InternalStatus<Components.Schemas.ServerInformation, ErrorCode.OK>;
+
+    public get serverInfo() {
+        return this._serverInfo;
+    }
+
     public async initApi() {
         console.log('Initializing API client');
-        const defObj = (await import('./swagger.json')).default as Document;
+        const defObj = (await import('./generatedcode/swagger.json')).default as Document;
         this.api = new OpenAPIClientAxios({
             definition: defObj,
             validate: false,
@@ -143,10 +134,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                                 );
                                 return Promise.reject(errorobj);
                             } else {
-                                this._token = undefined; //our token is invalid, might as well clear it
-                                if (!this.credentials) {
-                                    this.logout();
-                                }
+                                CredentialsProvider.token = undefined; //our token is invalid, might as well clear it
                                 return this.login().then(_ => {
                                     return this.api.client.request(error.config);
                                 });
@@ -281,24 +269,14 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
     public wait4Token() {
         return new Promise<Components.Schemas.Token>(resolve => {
-            if (this.isTokenValid()) {
-                resolve(this.token);
+            if (CredentialsProvider.isTokenValid()) {
+                resolve(CredentialsProvider.token);
                 return;
             }
             this.on('loginSuccess', token => {
                 resolve(token);
             });
         });
-    }
-
-    public isTokenValid() {
-        return (
-            this.credentials &&
-            this.token &&
-            this.token
-                .bearer /* &&
-            (!this.token.expiresAt || new Date(this.token.expiresAt) > new Date(Date.now()))*/
-        );
     }
 
     public async login(
@@ -309,9 +287,9 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         console.log('Attempting login');
         if (newCreds) {
             this.logout();
-            this.credentials = newCreds;
+            CredentialsProvider.credentials = newCreds;
         }
-        if (!this.credentials)
+        if (!CredentialsProvider.credentials)
             return new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_NOCREDS>({
                 code: StatusCode.ERROR,
                 error: new InternalError(ErrorCode.LOGIN_NOCREDS, { void: true })
@@ -321,8 +299,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         try {
             response = await this.apiClient.HomeController_CreateToken({}, null, {
                 auth: {
-                    username: this.credentials.userName,
-                    password: this.credentials.password
+                    username: CredentialsProvider.credentials.userName,
+                    password: CredentialsProvider.credentials.password
                 }
             });
         } catch (stat) {
@@ -336,7 +314,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             case 200: {
                 console.log('Login success');
                 const token = response.data as Components.Schemas.Token;
-                this._token = token;
+                CredentialsProvider.token = token;
 
                 /*if (token.expiresAt) {
                     const expiry = new Date(token.expiresAt);
@@ -346,8 +324,14 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 }*/
                 if (savePassword) {
                     try {
-                        window.sessionStorage.setItem('username', this.credentials.userName);
-                        window.sessionStorage.setItem('password', this.credentials.password);
+                        window.sessionStorage.setItem(
+                            'username',
+                            CredentialsProvider.credentials.userName
+                        );
+                        window.sessionStorage.setItem(
+                            'password',
+                            CredentialsProvider.credentials.password
+                        );
                     } catch (_) {
                         (() => {})(); //noop
                     }
@@ -377,19 +361,18 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     }
 
     public logout() {
-        if (!this.isTokenValid()) {
+        if (!CredentialsProvider.isTokenValid()) {
             return;
         }
         console.log('Logging out');
-        this.credentials = undefined;
+        CredentialsProvider.credentials = undefined;
         try {
             window.sessionStorage.removeItem('username');
             window.sessionStorage.removeItem('password');
         } catch (e) {
             (() => {})();
         }
-        this._token = undefined;
-        if (this.refreshTokenTimer) clearTimeout(this.refreshTokenTimer);
+        CredentialsProvider.token = undefined;
         this.emit('purgeCache');
         this.emit('logout');
     }

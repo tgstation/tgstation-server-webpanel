@@ -1,5 +1,5 @@
 import { TypedEmitter } from 'tiny-typed-emitter/lib';
-import { Components } from './_generated';
+import { Components } from './generatedcode/_generated';
 import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
 import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
 import LoginHooks from './util/LoginHooks';

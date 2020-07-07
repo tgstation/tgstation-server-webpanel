@@ -3,12 +3,26 @@
         "browser": true,
         "es6": true
     },
-    "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/eslint-recommended", "plugin:import/errors", "plugin:import/warnings", "plugin:import/typescript", "plugin:import/react"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:import/errors",
+        "plugin:import/warnings",
+        "plugin:import/typescript",
+        "plugin:import/react"],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
-    "ignorePatterns": ["node_modules/", "src/clients/_generated.d.ts", "webpack*.js", "scripts/patcher/", "scripts/api_download.js", "scripts/generate_enums.js"],
+    "ignorePatterns": [
+        "node_modules/",
+        "src/clients/_generated.d.ts",
+        "webpack*.js",
+        "scripts/patcher/",
+        "scripts/api_download.js",
+        "scripts/generate_enums.js"
+    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
@@ -27,7 +41,8 @@
         ],
         "linebreak-style": "off",
         "no-unused-vars": "off",
-        "prettier/prettier": "error"
+        "prettier/prettier": "error",
+        "import/no-cycle": "error"
     },
     "settings": {
         "react": {

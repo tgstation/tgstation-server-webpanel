@@ -1,5 +1,5 @@
 import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
-import { Components } from './_generated';
+import { Components } from './generatedcode/_generated';
 import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
 import { TypedEmitter } from 'tiny-typed-emitter/lib';
 import ServerClient from './ServerClient';

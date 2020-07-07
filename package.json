@@ -38,7 +38,7 @@
         "react-router-dom": "^5.2.0"
     },
     "scripts": {
-        "generate_api": "npm run patch && npm run download_api && npm run generate_enums && npx typegen src/ApiClient/swagger.json > src/ApiClient/_generated.d.ts",
+        "generate_api": "npm run patch && npm run download_api && npm run generate_enums && npx typegen src/ApiClient/generatedcode/swagger.json > src/ApiClient/generatedcode/_generated.d.ts",
         "start": "npm run patch && npx webpack-dev-server --config webpack.dev.js",
         "build": "npm run patch && npx webpack --config webpack.prod.js",
         "build-dev": "npm run patch && npx webpack --config webpack.dev.js",
@@ -47,7 +47,7 @@
         "lint-fix": "eslint --fix ./src/**/*.{ts,tsx}",
         "patch": "node scripts/patcher/patch.js",
         "download_api": "node scripts/api_download.js",
-        "generate_enums": "node scripts/generate_enums.js > src/ApiClient/_enums.ts"
+        "generate_enums": "node scripts/generate_enums.js > src/ApiClient/generatedcode/_enums.ts"
     },
     "devDependencies": {
         "@babel/plugin-proposal-class-properties": "^7.8.3",

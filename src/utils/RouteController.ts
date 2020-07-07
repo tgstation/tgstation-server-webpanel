@@ -1,6 +1,7 @@
 import { AppRoute, AppRoutes, NormalRoute } from './routes';
 import { TypedEmitter } from 'tiny-typed-emitter/lib';
 import LoginHooks from '../ApiClient/util/LoginHooks';
+import ServerClient from '../ApiClient/ServerClient';
 
 interface IEvents {
     refresh: (routes: Array<AppRoute>) => void; //hidden+visible auth
@@ -17,6 +18,7 @@ class RouteController extends TypedEmitter<IEvents> {
         super();
         this.refreshRoutes = this.refreshRoutes.bind(this);
 
+        ServerClient.on('purgeCache', this.refreshRoutes);
         LoginHooks.addHook(this.refreshRoutes);
         // noinspection JSIgnoredPromiseFromCall
         this.refreshRoutes();

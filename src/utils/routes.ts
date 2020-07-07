@@ -1,8 +1,8 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { StatusCode } from '../ApiClient/models/InternalComms/InternalStatus';
-import { AdministrationRights } from '../ApiClient/_enums';
+import { AdministrationRights } from '../ApiClient/generatedcode/_enums';
 import UserClient from '../ApiClient/UserClient';
-import ServerClient from '../ApiClient/ServerClient';
+import CredentialsProvider from '../ApiClient/util/CredentialsProvider';
 
 export interface BaseRoute {
     route: string;
@@ -51,7 +51,7 @@ export const AppRoutes: {
         name: 'routes.admin',
         icon: 'tools',
         isAuthorized: async () => {
-            if (!ServerClient.isTokenValid()) return false;
+            if (!CredentialsProvider.isTokenValid()) return false;
             const response = await UserClient.getCurrentUser();
 
             if (response.code == StatusCode.OK) {
