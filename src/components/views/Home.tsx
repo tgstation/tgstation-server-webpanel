@@ -62,7 +62,10 @@ export default class Home extends React.Component<IProps, IState> {
                                         className="d-block w-100 h-100 m-auto"
                                     />
                                 </Card.Body>
-                                <Card.Footer className="text-center font-weight-bold">
+                                <Card.Footer
+                                    className={`text-center font-weight-bold ${
+                                        val.cachedAuth ? '' : 'text-danger font-italic'
+                                    }`}>
                                     <FormattedMessage id={val.name} />
                                 </Card.Footer>
                             </Card>

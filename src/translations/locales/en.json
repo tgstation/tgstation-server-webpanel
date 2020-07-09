@@ -89,9 +89,13 @@
     "error.user.not_found": "This TGS user was not found",
     "error.admin.rate": "The server has exceeded github's rate limiting. Please try again later.",
     "error.admin.error": "The server has ran into an error while using github's API.",
+    "error.admin.reboot.avail": "Restart operations are unavailable due to the launch configuration of TGS.",
     "generic.details": "Details",
     "generic.debugwarn": "Be careful to censor out any credentials or tokens when copying errors!",
     "generic.close": "Close",
     "generic.goback": "Go Back",
-    "generic.accessdenied": "This user does not have access to this page. It will not function properly."
+    "generic.accessdenied": "This user does not have access to this page. It will not function properly.",
+    "view.admin.reboot.button": "Restart TGS",
+    "view.admin.reboot.modal.title": "Confirmation",
+    "view.admin.reboot.modal.body": "Are you sure you wish to restart TGS?"
 }

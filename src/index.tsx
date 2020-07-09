@@ -10,12 +10,10 @@ import './definitions/globals.d';
 
 import('./styles/dark.scss');
 
-const apiUrl = 'http://localhost:5000';
-
 const rootNode = document.getElementById('root') as HTMLElement;
 const appTsx = (
     <React.StrictMode>
-        <App serverAddress={apiUrl} locale={Locales.en} />
+        <App locale={Locales.en} />
     </React.StrictMode>
 );
 

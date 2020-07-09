@@ -79,11 +79,14 @@ export default class AppNavbar extends React.Component<IProps, IState> {
     public render(): React.ReactNode {
         return (
             <Navbar
+                className="shadow-lg"
                 expand="md"
                 collapseOnSelect
                 variant="dark"
                 bg={this.state.userNameError || this.state.serverInfoError ? 'danger' : 'primary'}>
-                <Navbar.Brand className="mr-auto">{this.renderVersion()}</Navbar.Brand>
+                <Navbar.Brand as={NavLink} to={AppRoutes.home.route} className="mr-auto">
+                    {this.renderVersion()}
+                </Navbar.Brand>
                 <Navbar.Toggle className="mr-2" aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse className="text-right mr-2">
                     <Nav className="mr-auto">
@@ -113,8 +116,8 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                             })
                         )}
                     </Nav>
+                    {this.renderUser()}
                 </Navbar.Collapse>
-                <Nav.Item className="ml-auto">{this.renderUser()}</Nav.Item>
             </Navbar>
         );
     }
@@ -146,48 +149,50 @@ export default class AppNavbar extends React.Component<IProps, IState> {
         if (!this.state.loggedIn) return;
 
         return (
-            <Dropdown>
-                <Dropdown.Toggle
-                    id="user-dropdown"
-                    type="button"
-                    variant={
-                        this.state.serverInfoError || this.state.userNameError
-                            ? 'danger'
-                            : 'primary'
-                    }
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false">
-                    {this.state.userNameError ? (
-                        <div>
-                            <div className="align-top d-inline-block px-1">
-                                <FontAwesomeIcon icon="exclamation-circle" />
+            <Nav.Item className="ml-auto">
+                <Dropdown>
+                    <Dropdown.Toggle
+                        id="user-dropdown"
+                        type="button"
+                        variant={
+                            this.state.serverInfoError || this.state.userNameError
+                                ? 'danger'
+                                : 'primary'
+                        }
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                        {this.state.userNameError ? (
+                            <div>
+                                <div className="align-top d-inline-block px-1">
+                                    <FontAwesomeIcon icon="exclamation-circle" />
+                                </div>
+                                <div className="d-inline-block">
+                                    <FormattedMessage id="navbar.user_error" />
+                                    {': '}
+                                    <FormattedMessage id={this.state.userNameError} />
+                                </div>
                             </div>
-                            <div className="d-inline-block">
-                                <FormattedMessage id="navbar.user_error" />
-                                {': '}
-                                <FormattedMessage id={this.state.userNameError} />
-                            </div>
-                        </div>
-                    ) : this.state.currentUser ? (
-                        this.state.currentUser.name
-                    ) : (
-                        'loading' //TODO: add spinner
-                    )}
-                </Dropdown.Toggle>
-                <Dropdown.Menu alignRight>
-                    <Dropdown.Item
-                        className="text-right"
-                        onClick={() => {
-                            ServerClient.emit('purgeCache');
-                        }}>
-                        <FormattedMessage id="navbar.refresh" />
-                    </Dropdown.Item>
-                    <Dropdown.Item className="text-right" onClick={this.logoutClick}>
-                        <FormattedMessage id="navbar.logout" />
-                    </Dropdown.Item>
-                </Dropdown.Menu>
-            </Dropdown>
+                        ) : this.state.currentUser ? (
+                            this.state.currentUser.name
+                        ) : (
+                            'loading' //TODO: add spinner
+                        )}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu alignRight>
+                        <Dropdown.Item
+                            className="text-right"
+                            onClick={() => {
+                                ServerClient.emit('purgeCache');
+                            }}>
+                            <FormattedMessage id="navbar.refresh" />
+                        </Dropdown.Item>
+                        <Dropdown.Item className="text-right" onClick={this.logoutClick}>
+                            <FormattedMessage id="navbar.logout" />
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </Nav.Item>
         );
     }
 

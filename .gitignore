@@ -27,9 +27,3 @@ yarn-error.log*
 *.tgz
 
 /tgstation-server-control-panel-.*\.tgz
-
-/src/ApiClient/generated
-
-#IntelliJ project files
-/.idea
-

@@ -3,6 +3,7 @@ import { Components } from './generatedcode/_generated';
 import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
 import { TypedEmitter } from 'tiny-typed-emitter/lib';
 import ServerClient from './ServerClient';
+
 interface IEvents {
     loadAdminInfo: (
         user: InternalStatus<Components.Schemas.Administration, AdminInfoErrors>
@@ -13,6 +14,8 @@ export type AdminInfoErrors =
     | GenericErrors
     | ErrorCode.ADMIN_GITHUB_RATE
     | ErrorCode.ADMIN_GITHUB_ERROR;
+
+export type RestartErrors = GenericErrors | ErrorCode.ADMIN_REBOOT_UNAVAIL;
 
 export default new (class AdminClient extends TypedEmitter<IEvents> {
     private _cachedAdminInfo?: InternalStatus<Components.Schemas.Administration, ErrorCode.OK>;
@@ -119,6 +122,48 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 this.emit('loadAdminInfo', res);
                 this.loadingAdminInfo = false;
                 return res;
+            }
+        }
+    }
+
+    public async restartServer(): Promise<InternalStatus<null, RestartErrors>> {
+        let response;
+        try {
+            response = await ServerClient.apiClient.AdministrationController_Delete();
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<RestartErrors>
+            });
+        }
+
+        switch (response.status) {
+            case 204: {
+                //reloads the window since the bundled tgs app may have changed since, and our locally cached info may be bullshit
+                window.location.reload();
+                //this doesnt really fire but typescript gets angry otherwise
+                return new InternalStatus({ code: StatusCode.OK, payload: null });
+            }
+            case 422: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_REBOOT_UNAVAIL,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
+            default: {
+                return new InternalStatus<null, ErrorCode.UNHANDLED_RESPONSE>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
             }
         }
     }

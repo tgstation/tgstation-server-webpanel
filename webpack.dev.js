@@ -51,6 +51,7 @@ module.exports = smp.wrap(
             compress: true,
             hot: true,
             overlay: true,
+            host: '0.0.0.0', //technically insecure? don't put nudes in your app, helps to test with mobile
             port: 8080,
             historyApiFallback: true
         },
@@ -80,7 +81,7 @@ module.exports = smp.wrap(
                 VERSION: JSON.stringify(require('./package.json').version),
                 MODE: JSON.stringify('DEV'),
                 BASEPATH: JSON.stringify('/'),
-                APIPATH: JSON.stringify('http://localhost.fiddler:5000/')
+                APIPATH: JSON.stringify('http://192.168.0.187:5000/')
             })
         ]
     })

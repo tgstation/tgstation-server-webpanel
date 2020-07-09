@@ -51,7 +51,7 @@ export const AppRoutes: {
         name: 'routes.admin',
         icon: 'tools',
         isAuthorized: async () => {
-            if (!CredentialsProvider.isTokenValid()) return false;
+            /*if (!CredentialsProvider.isTokenValid()) return false;
             const response = await UserClient.getCurrentUser();
 
             if (response.code == StatusCode.OK) {
@@ -60,7 +60,9 @@ export const AppRoutes: {
                     (AdministrationRights.ChangeVersion | AdministrationRights.RestartHost)
                 );
             }
-            return false;
+            return false;*/
+            //i realized everyone can GET /Administration so this is pretty useless
+            return true;
         }
     }
 };

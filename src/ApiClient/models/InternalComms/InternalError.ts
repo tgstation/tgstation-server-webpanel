@@ -41,7 +41,8 @@ export enum ErrorCode {
 
     //Administration errors
     ADMIN_GITHUB_RATE = 'error.admin.rate', //errmessage
-    ADMIN_GITHUB_ERROR = 'error.admin.rate' //errmessage
+    ADMIN_GITHUB_ERROR = 'error.admin.error', //errmessage
+    ADMIN_REBOOT_UNAVAIL = 'error.admin.reboot.avail' //errmessage
 }
 
 type errorMessage = {
