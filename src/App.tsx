@@ -37,6 +37,9 @@ const Home = loadable(() => import('./components/views/Home'), {
 const Administration = loadable(() => import('./components/views/Administration'), {
     fallback: LoadSpin
 });
+const NotFound = loadable(() => import('./components/views/NotFound'), {
+    fallback: LoadSpin
+});
 
 class App extends React.Component<IAppProps, IState> {
     private readonly translationFactory: ITranslationFactory;
@@ -127,6 +130,9 @@ class App extends React.Component<IAppProps, IState> {
                                             </Route>
                                             <Route path={AppRoutes.admin.route}>
                                                 <Administration />
+                                            </Route>
+                                            <Route>
+                                                <NotFound />
                                             </Route>
                                         </Switch>
                                     ) : (

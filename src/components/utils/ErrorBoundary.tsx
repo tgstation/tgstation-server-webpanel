@@ -1,6 +1,7 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
 import { withRouter, RouteComponentProps } from 'react-router';
+import { FormattedMessage } from 'react-intl';
 
 interface IProps extends RouteComponentProps {}
 interface IState {
@@ -34,16 +35,18 @@ class ErrorBoundary extends React.Component<IProps, IState> {
         if (this.state.error) {
             return (
                 <Card className="bg-transparent" border="danger">
-                    <Card.Header className="bg-danger">Uh oh.... Something went wrong!</Card.Header>
+                    <Card.Header className="bg-danger">
+                        <FormattedMessage id="error.somethingwentwrong" />
+                    </Card.Header>
                     <Card.Body>
                         <Card.Title>
                             {this.state.error.name}: {this.state.error.message}
                         </Card.Title>
                         <Card.Text as={'pre'} className="bg-transparent text-danger">
                             <code>
-                                {this.state.errorInfo
-                                    ? `Control Panel Version: ${VERSION}\nControl Panel Mode: ${MODE}\nStack trace: ${this.state.errorInfo.componentStack}`
-                                    : 'This error seems to come straight from hell. God help whoever has to debug this'}
+                                Control Panel Version: {VERSION}
+                                Control Panel Mode: {MODE}
+                                Stack trace: {this.state.errorInfo?.componentStack}
                             </code>
                         </Card.Text>
                     </Card.Body>

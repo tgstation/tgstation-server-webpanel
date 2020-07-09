@@ -90,6 +90,8 @@
     "error.admin.rate": "The server has exceeded github's rate limiting. Please try again later.",
     "error.admin.error": "The server has ran into an error while using github's API.",
     "error.admin.reboot.avail": "Restart operations are unavailable due to the launch configuration of TGS.",
+    "error.somethingwentwrong": "Uh oh.... Something went wrong!",
+    "error.notfound": "This page has not been found!",
     "generic.details": "Details",
     "generic.debugwarn": "Be careful to censor out any credentials or tokens when copying errors!",
     "generic.close": "Close",
