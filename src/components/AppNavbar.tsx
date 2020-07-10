@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -179,15 +179,17 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                             'loading' //TODO: add spinner
                         )}
                     </Dropdown.Toggle>
-                    <Dropdown.Menu alignRight>
+                    <Dropdown.Menu alignRight className="text-right">
+                        <Dropdown.Item as={Link} to={AppRoutes.config.route}>
+                            <FormattedMessage id="routes.config" />
+                        </Dropdown.Item>
                         <Dropdown.Item
-                            className="text-right"
                             onClick={() => {
                                 ServerClient.emit('purgeCache');
                             }}>
                             <FormattedMessage id="navbar.refresh" />
                         </Dropdown.Item>
-                        <Dropdown.Item className="text-right" onClick={this.logoutClick}>
+                        <Dropdown.Item onClick={this.logoutClick}>
                             <FormattedMessage id="navbar.logout" />
                         </Dropdown.Item>
                     </Dropdown.Menu>

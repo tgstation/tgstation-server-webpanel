@@ -37,6 +37,9 @@ const Home = loadable(() => import('./components/views/Home'), {
 const Administration = loadable(() => import('./components/views/Administration'), {
     fallback: LoadSpin
 });
+const Configuration = loadable(() => import('./components/views/Configuration'), {
+    fallback: LoadSpin
+});
 const NotFound = loadable(() => import('./components/views/NotFound'), {
     fallback: LoadSpin
 });
@@ -74,8 +77,12 @@ class App extends React.Component<IAppProps, IState> {
         let pwd: string | null = null;
         try {
             //private browsing on safari can throw when using storage
-            usr = window.sessionStorage.getItem('username');
-            pwd = window.sessionStorage.getItem('password');
+            usr =
+                window.sessionStorage.getItem('username') ||
+                window.localStorage.getItem('username');
+            pwd =
+                window.sessionStorage.getItem('password') ||
+                window.localStorage.getItem('password');
         } catch (e) {
             (() => {})(); //noop
         }
@@ -91,7 +98,8 @@ class App extends React.Component<IAppProps, IState> {
                     res.error?.code == ErrorCode.LOGIN_FAIL
                 ) {
                     try {
-                        //private browsing on safari can throw when using storage
+                        window.localStorage.removeItem('username');
+                        window.localStorage.removeItem('password');
                         window.sessionStorage.removeItem('username');
                         window.sessionStorage.removeItem('password');
                     } catch (e) {
@@ -130,6 +138,9 @@ class App extends React.Component<IAppProps, IState> {
                                             </Route>
                                             <Route path={AppRoutes.admin.route}>
                                                 <Administration />
+                                            </Route>
+                                            <Route path={AppRoutes.config.route}>
+                                                <Configuration />
                                             </Route>
                                             <Route>
                                                 <NotFound />

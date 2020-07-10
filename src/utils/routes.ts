@@ -18,7 +18,6 @@ export interface NormalRoute extends BaseRoute {
 }
 
 export interface HiddenRoute extends BaseRoute {
-    icon: undefined;
     hidden: true;
 }
 
@@ -64,5 +63,11 @@ export const AppRoutes: {
             //i realized everyone can GET /Administration so this is pretty useless
             return true;
         }
+    },
+    config: {
+        route: '/Configuration/',
+        name: 'routes.config',
+        hidden: true,
+        isAuthorized: async () => true
     }
 };

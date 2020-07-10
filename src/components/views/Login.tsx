@@ -31,8 +31,12 @@ export default withRouter(
             let pwd: string | null = null;
             try {
                 //private browsing on safari can throw when using storage
-                usr = window.sessionStorage.getItem('username');
-                pwd = window.sessionStorage.getItem('password');
+                usr =
+                    window.sessionStorage.getItem('username') ||
+                    window.localStorage.getItem('username');
+                pwd =
+                    window.sessionStorage.getItem('password') ||
+                    window.localStorage.getItem('password');
             } catch (e) {
                 (() => {})(); //noop
             }

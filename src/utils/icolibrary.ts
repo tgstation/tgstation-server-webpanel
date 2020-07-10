@@ -10,6 +10,9 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion';
 import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
 import { faTools } from '@fortawesome/free-solid-svg-icons/faTools';
+import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs';
+import { faUndo } from '@fortawesome/free-solid-svg-icons/faUndo';
+import { faInfo } from '@fortawesome/free-solid-svg-icons/faInfo';
 
 library.add(
     faCheck,
@@ -22,5 +25,8 @@ library.add(
     faPlus,
     faQuestion,
     faHome,
-    faTools
+    faTools,
+    faCogs,
+    faUndo,
+    faInfo
 );

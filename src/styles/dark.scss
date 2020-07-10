@@ -9,12 +9,18 @@ $enable-gradients: true;
     height: 50vmin !important;
 }
 
+
+
 $theme-colors: ( //02549a
     'primary': #02549a,
     'secondary': #2576bc,
     'transparent': transparent,
     'background': #212529,
     'darker': darken(#212529, 5%)
+);
+
+$sizes: (
+    40: 40%
 );
 
 @import "~bootstrap/scss/functions";
@@ -146,7 +152,7 @@ $modal-content-bg: $dark;
 @import "~bootstrap/scss/transitions";
 @import "~bootstrap/scss/dropdown";
 //@import "~bootstrap/scss/button-group";
-//@import "~bootstrap/scss/input-group";
+@import "~bootstrap/scss/input-group";
 @import "~bootstrap/scss/custom-forms";
 @import "~bootstrap/scss/nav";
 @import "~bootstrap/scss/navbar";
@@ -162,7 +168,7 @@ $modal-content-bg: $dark;
 @import "~bootstrap/scss/close";
 //@import "~bootstrap/scss/toasts";
 @import "~bootstrap/scss/modal";
-//@import "~bootstrap/scss/tooltip";
+@import "~bootstrap/scss/tooltip";
 //@import "~bootstrap/scss/popover";
 //@import "~bootstrap/scss/carousel";
 @import "~bootstrap/scss/spinners";
@@ -179,4 +185,18 @@ $modal-content-bg: $dark;
 
 .pre-wrap {
     white-space: pre-wrap;
+}
+
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $prop, $abbrev in (width: w, height: h) {
+      @each $size, $length in $sizes {
+        .#{$abbrev}#{$infix}-#{$size} { #{$prop}: $length !important; }
+      }
+    }
+
+  }
 }

@@ -1,14 +1,21 @@
+//external imports
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import './definitions/scss.d';
 
+//local imports
 import App from './App';
 import Locales from './translations/Locales';
-import './utils/icolibrary';
-import './index.css';
+
+//definition files
+import './definitions/scss.d';
 import './definitions/globals.d';
 
-import('./styles/dark.scss');
+//init script
+import './utils/icolibrary';
+import './utils/ConfigController';
+
+//css
+import './styles/dark.scss';
 
 const rootNode = document.getElementById('root') as HTMLElement;
 const appTsx = (

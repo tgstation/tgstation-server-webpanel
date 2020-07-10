@@ -8,6 +8,7 @@ import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/
 import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
 import LoginHooks from './util/LoginHooks';
 import CredentialsProvider from './util/CredentialsProvider';
+import configOptions from '../utils/config';
 
 interface IEvents {
     //tasks once the user is fully logged in
@@ -324,6 +325,17 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 }*/
                 if (savePassword) {
                     try {
+                        if (configOptions.localstoragecreds.value) {
+                            window.localStorage.setItem(
+                                'username',
+                                CredentialsProvider.credentials.userName
+                            );
+                            window.localStorage.setItem(
+                                'password',
+                                CredentialsProvider.credentials.password
+                            );
+                        }
+                        //we save it in both places just in case
                         window.sessionStorage.setItem(
                             'username',
                             CredentialsProvider.credentials.userName
@@ -367,6 +379,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         console.log('Logging out');
         CredentialsProvider.credentials = undefined;
         try {
+            window.localStorage.removeItem('username');
+            window.localStorage.removeItem('password');
             window.sessionStorage.removeItem('username');
             window.sessionStorage.removeItem('password');
         } catch (e) {

@@ -4,6 +4,7 @@
     "routes.instances": "Instances",
     "routes.login": "Log In",
     "routes.admin": "Administration",
+    "routes.config": "Configuration",
     "error_code_missing_message": "Message not present in error, refer to API documentation!",
     "fetch_api_error": "Failed to complete the web request! The server either didn't respond or the request timed out!",
     "home.instances": "Instances",
@@ -92,12 +93,18 @@
     "error.admin.reboot.avail": "Restart operations are unavailable due to the launch configuration of TGS.",
     "error.somethingwentwrong": "Uh oh.... Something went wrong!",
     "error.notfound": "This page has not been found!",
+    "generic.save": "Save",
     "generic.details": "Details",
     "generic.debugwarn": "Be careful to censor out any credentials or tokens when copying errors!",
     "generic.close": "Close",
     "generic.goback": "Go Back",
     "generic.accessdenied": "This user does not have access to this page. It will not function properly.",
+    "generic.persist": "Persist",
     "view.admin.reboot.button": "Restart TGS",
     "view.admin.reboot.modal.title": "Confirmation",
-    "view.admin.reboot.modal.body": "Are you sure you wish to restart TGS?"
+    "view.admin.reboot.modal.body": "Are you sure you wish to restart TGS?",
+    "config.githubtoken": "Github token",
+    "config.githubtoken.desc": "You can supply a private authorization token for github to bypass some rate limiting on the github API.",
+    "config.localstoragecreds": "Save password to localstorage",
+    "config.localstoragecreds.desc": "Your password will be preserved across browser restarts. Applies on next login."
 }
