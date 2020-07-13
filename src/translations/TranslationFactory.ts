@@ -1,13 +1,13 @@
-import ITranslation from './ITranslation';
-import ITranslationFactory from './ITranslationFactory';
-import Locales from './Locales';
-import Translation from './Translation';
+import ITranslation from "./ITranslation";
+import ITranslationFactory from "./ITranslationFactory";
+import Locales from "./Locales";
+import Translation from "./Translation";
 
 class TranslationFactory implements ITranslationFactory {
     private static readonly fallbackLocale: string = Locales.en;
 
     private static getShortHandedLocale(locale: string): string {
-        return locale.split('-')[0];
+        return locale.split("-")[0];
     }
 
     public async loadTranslation(locale: string): Promise<ITranslation> {
@@ -17,7 +17,7 @@ class TranslationFactory implements ITranslationFactory {
             let shortHandedLocale = TranslationFactory.getShortHandedLocale(locale);
             if (shortHandedLocale === locale) {
                 if (shortHandedLocale === TranslationFactory.fallbackLocale)
-                    throw new Error('Invalid locale: ' + locale);
+                    throw new Error("Invalid locale: " + locale);
                 shortHandedLocale = TranslationFactory.fallbackLocale;
             }
             return await this.loadTranslation(shortHandedLocale);

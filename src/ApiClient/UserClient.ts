@@ -1,9 +1,9 @@
-import { TypedEmitter } from 'tiny-typed-emitter/lib';
-import { Components } from './generatedcode/_generated';
-import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
-import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
-import LoginHooks from './util/LoginHooks';
-import ServerClient from './ServerClient';
+import { TypedEmitter } from "tiny-typed-emitter/lib";
+import { Components } from "./generatedcode/_generated";
+import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
+import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
+import LoginHooks from "./util/LoginHooks";
+import ServerClient from "./ServerClient";
 interface IEvents {
     loadUserInfo: (user: InternalStatus<Components.Schemas.User, GenericErrors>) => void;
 }
@@ -20,7 +20,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         this.getCurrentUser = this.getCurrentUser.bind(this);
 
         LoginHooks.addHook(this.getCurrentUser);
-        ServerClient.on('purgeCache', () => {
+        ServerClient.on("purgeCache", () => {
             this._cachedUser = undefined;
         });
     }
@@ -32,7 +32,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         if (this.loadingUserInfo) {
             return await new Promise(resolve => {
-                this.on('loadUserInfo', user => {
+                this.on("loadUserInfo", user => {
                     resolve(user);
                 });
             });
@@ -48,7 +48,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
-            this.emit('loadUserInfo', res);
+            this.emit("loadUserInfo", res);
             this.loadingUserInfo = false;
             return res;
         }
@@ -61,7 +61,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
                 });
 
                 this._cachedUser = thing;
-                this.emit('loadUserInfo', thing);
+                this.emit("loadUserInfo", thing);
                 this.loadingUserInfo = false;
                 return thing;
             }
@@ -77,7 +77,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
-                this.emit('loadUserInfo', res);
+                this.emit("loadUserInfo", res);
                 this.loadingUserInfo = false;
                 return res;
             }

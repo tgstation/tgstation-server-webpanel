@@ -1,5 +1,5 @@
-import { Components } from '../generatedcode/_generated';
-import { ICredentials } from '../models/ICredentials';
+import { Components } from "../generatedcode/_generated";
+import { ICredentials } from "../models/ICredentials";
 
 export default new (class CredentialsProvider {
     //token

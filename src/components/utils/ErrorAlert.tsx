@@ -1,13 +1,13 @@
 import InternalError, {
     DescType,
     ErrorCode
-} from '../../ApiClient/models/InternalComms/InternalError';
-import React, { Component, ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import ClickToSelect from '@mapbox/react-click-to-select';
+} from "../../ApiClient/models/InternalComms/InternalError";
+import React, { Component, ReactNode } from "react";
+import { FormattedMessage } from "react-intl";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import ClickToSelect from "@mapbox/react-click-to-select";
 
 interface IProps {
     error: InternalError<ErrorCode> | undefined;
@@ -27,7 +27,7 @@ export default class ErrorAlert extends Component<IProps, IState> {
     }
     public render(): ReactNode {
         if (!this.props.error) {
-            return '';
+            return "";
         }
 
         const handleClose = () => this.setState({ popup: false });
@@ -59,7 +59,7 @@ export default class ErrorAlert extends Component<IProps, IState> {
                         ) : this.props.error.desc?.desc ? (
                             this.props.error.desc.desc
                         ) : (
-                            ''
+                            ""
                         )}
                         <hr />
                         <ClickToSelect>
@@ -69,7 +69,7 @@ Control Panel Mode: ${MODE}
 API Version: ${API_VERSION}
 
 Error Code: ${this.props.error.code}
-Error Description: ${this.props.error.desc ? this.props.error.desc.desc : 'No description'}
+Error Description: ${this.props.error.desc ? this.props.error.desc.desc : "No description"}
 
 Additional Information: 
 ${this.props.error.extendedInfo}`}

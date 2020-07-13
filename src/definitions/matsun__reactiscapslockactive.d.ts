@@ -1,4 +1,4 @@
-declare module '@matsun/reactiscapslockactive' {
+declare module "@matsun/reactiscapslockactive" {
     export default ReactIsCapsLockActive;
 }
 

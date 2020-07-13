@@ -1,14 +1,14 @@
-import { AxiosError, AxiosResponse, OpenAPIClientAxios } from 'openapi-client-axios';
-import { Document } from 'openapi-client-axios/types/client';
-import { TypedEmitter } from 'tiny-typed-emitter/lib';
+import { AxiosError, AxiosResponse, OpenAPIClientAxios } from "openapi-client-axios";
+import { Document } from "openapi-client-axios/types/client";
+import { TypedEmitter } from "tiny-typed-emitter/lib";
 
-import { Client, Components } from './generatedcode/_generated';
-import { ICredentials } from './models/ICredentials';
-import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
-import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
-import LoginHooks from './util/LoginHooks';
-import CredentialsProvider from './util/CredentialsProvider';
-import configOptions from '../utils/config';
+import { Client, Components } from "./generatedcode/_generated";
+import { ICredentials } from "./models/ICredentials";
+import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
+import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
+import LoginHooks from "./util/LoginHooks";
+import CredentialsProvider from "./util/CredentialsProvider";
+import configOptions from "../utils/config";
 
 interface IEvents {
     //tasks once the user is fully logged in
@@ -50,7 +50,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         this.getServerInfo = this.getServerInfo.bind(this);
 
         LoginHooks.addHook(this.getServerInfo);
-        this.on('purgeCache', () => {
+        this.on("purgeCache", () => {
             // noinspection JSIgnoredPromiseFromCall
             this._serverInfo = undefined;
         });
@@ -66,8 +66,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     }
 
     public async initApi() {
-        console.log('Initializing API client');
-        const defObj = (await import('./generatedcode/swagger.json')).default as Document;
+        console.log("Initializing API client");
+        const defObj = (await import("./generatedcode/swagger.json")).default as Document;
         this.api = new OpenAPIClientAxios({
             definition: defObj,
             validate: false,
@@ -75,9 +75,9 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 baseURL: APIPATH,
                 withCredentials: false,
                 headers: {
-                    Accept: 'application/json',
+                    Accept: "application/json",
                     api: `Tgstation.Server.Api/` + API_VERSION,
-                    'User-Agent': 'tgstation-server-control-panel/' + VERSION
+                    "User-Agent": "tgstation-server-control-panel/" + VERSION
                 },
                 validateStatus: status => {
                     return !ServerClient.globalHandledCodes.includes(status);
@@ -87,9 +87,9 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         this.apiClient = await this.api.init<Client>();
         this.apiClient.interceptors.request.use(
             async value => {
-                if (!((value.url === '/' || value.url === '') && value.method === 'post')) {
+                if (!((value.url === "/" || value.url === "") && value.method === "post")) {
                     const tok = await this.wait4Token();
-                    value.headers['Authorization'] = 'Bearer ' + tok.bearer;
+                    value.headers["Authorization"] = "Bearer " + tok.bearer;
                 }
                 return value;
             },
@@ -121,11 +121,11 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         case 401: {
                             const request = error.config;
                             if (
-                                (request.url === '/' || request.url === '') &&
-                                request.method === 'post'
+                                (request.url === "/" || request.url === "") &&
+                                request.method === "post"
                             ) {
                                 this.logout();
-                                console.log('Failed to login');
+                                console.log("Failed to login");
                                 const errorobj = new InternalError(
                                     ErrorCode.LOGIN_FAIL,
                                     {
@@ -144,11 +144,11 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         case 403: {
                             const request = error.config;
                             if (
-                                (request.url === '/' || request.url === '') &&
-                                request.method === 'post'
+                                (request.url === "/" || request.url === "") &&
+                                request.method === "post"
                             ) {
                                 this.logout();
-                                console.log('Account disabled');
+                                console.log("Account disabled");
                                 const errorobj = new InternalError(
                                     ErrorCode.LOGIN_DISABLED,
                                     {
@@ -158,7 +158,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                                 );
                                 return Promise.reject(errorobj);
                             } else {
-                                this.emit('accessDenied');
+                                this.emit("accessDenied");
                                 const errorobj = new InternalError(
                                     ErrorCode.HTTP_ACCESS_DENIED,
                                     {
@@ -255,7 +255,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             }
         );
         this.initialized = true;
-        this.emit('initialized');
+        this.emit("initialized");
     }
 
     public wait4Init(): Promise<void> {
@@ -264,7 +264,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 resolve();
                 return;
             }
-            this.on('initialized', () => resolve());
+            this.on("initialized", () => resolve());
         });
     }
 
@@ -274,7 +274,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 resolve(CredentialsProvider.token);
                 return;
             }
-            this.on('loginSuccess', token => {
+            this.on("loginSuccess", token => {
                 resolve(token);
             });
         });
@@ -285,7 +285,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         savePassword = false
     ): Promise<InternalStatus<Components.Schemas.Token, LoginErrors>> {
         await this.wait4Init();
-        console.log('Attempting login');
+        console.log("Attempting login");
         if (newCreds) {
             this.logout();
             CredentialsProvider.credentials = newCreds;
@@ -313,7 +313,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 200: {
-                console.log('Login success');
+                console.log("Login success");
                 const token = response.data as Components.Schemas.Token;
                 CredentialsProvider.token = token;
 
@@ -327,21 +327,21 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                     try {
                         if (configOptions.localstoragecreds.value) {
                             window.localStorage.setItem(
-                                'username',
+                                "username",
                                 CredentialsProvider.credentials.userName
                             );
                             window.localStorage.setItem(
-                                'password',
+                                "password",
                                 CredentialsProvider.credentials.password
                             );
                         }
                         //we save it in both places just in case
                         window.sessionStorage.setItem(
-                            'username',
+                            "username",
                             CredentialsProvider.credentials.userName
                         );
                         window.sessionStorage.setItem(
-                            'password',
+                            "password",
                             CredentialsProvider.credentials.password
                         );
                     } catch (_) {
@@ -350,8 +350,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 }
                 this.getServerInfo().then(() => {
                     LoginHooks.runHooks(token).then(() => {
-                        console.log('Running post login event');
-                        this.emit('loginSuccess', token);
+                        console.log("Running post login event");
+                        this.emit("loginSuccess", token);
                     });
                 });
                 return new InternalStatus<Components.Schemas.Token, ErrorCode.OK>({
@@ -376,19 +376,19 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         if (!CredentialsProvider.isTokenValid()) {
             return;
         }
-        console.log('Logging out');
+        console.log("Logging out");
         CredentialsProvider.credentials = undefined;
         try {
-            window.localStorage.removeItem('username');
-            window.localStorage.removeItem('password');
-            window.sessionStorage.removeItem('username');
-            window.sessionStorage.removeItem('password');
+            window.localStorage.removeItem("username");
+            window.localStorage.removeItem("password");
+            window.sessionStorage.removeItem("username");
+            window.sessionStorage.removeItem("password");
         } catch (e) {
             (() => {})();
         }
         CredentialsProvider.token = undefined;
-        this.emit('purgeCache');
-        this.emit('logout');
+        this.emit("purgeCache");
+        this.emit("logout");
     }
 
     public async getServerInfo(): Promise<
@@ -405,7 +405,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                     resolve(this._serverInfo);
                     return;
                 }
-                this.on('loadServerInfo', info => {
+                this.on("loadServerInfo", info => {
                     resolve(info);
                 });
             });
@@ -421,7 +421,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
-            this.emit('loadServerInfo', res);
+            this.emit("loadServerInfo", res);
             this.loadingServerInfo = false;
             return res;
         }
@@ -435,7 +435,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                     code: StatusCode.OK,
                     payload: info
                 });
-                this.emit('loadServerInfo', cache);
+                this.emit("loadServerInfo", cache);
                 this._serverInfo = cache;
                 this.loadingServerInfo = false;
                 return cache;
@@ -452,7 +452,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
-                this.emit('loadServerInfo', res);
+                this.emit("loadServerInfo", res);
                 this.loadingServerInfo = false;
                 return res;
             }

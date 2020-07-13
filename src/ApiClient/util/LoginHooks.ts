@@ -1,16 +1,16 @@
-import { Components } from '../generatedcode/_generated';
+import { Components } from "../generatedcode/_generated";
 
 class LoginHooks {
     private promiseHooks: Set<(token: Components.Schemas.Token) => Promise<unknown>> = new Set();
 
     public async runHooks(token: Components.Schemas.Token) {
-        console.log('Running login hooks');
+        console.log("Running login hooks");
         const work: Promise<unknown>[] = [];
         for (const hook of this.promiseHooks) {
             work.push(hook(token));
         }
         await Promise.all(work);
-        console.log('Done running login hooks');
+        console.log("Done running login hooks");
     }
 
     public addHook(hook: (token: Components.Schemas.Token) => Promise<unknown>): void {

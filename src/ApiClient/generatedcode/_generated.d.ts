@@ -4,7 +4,7 @@ import {
     UnknownParamsObject,
     OperationResponse,
     AxiosRequestConfig
-} from 'openapi-client-axios';
+} from "openapi-client-axios";
 
 declare namespace Components {
     namespace Parameters {
@@ -2939,7 +2939,7 @@ export interface OperationMethods {
 }
 
 export interface PathsDictionary {
-    ['/Administration']: {
+    ["/Administration"]: {
         /**
          * AdministrationController_Read - Get Tgstation.Server.Api.Models.Administration server information.
          */
@@ -2999,7 +2999,7 @@ export interface PathsDictionary {
             | Paths.AdministrationControllerDelete.Responses.$503
         >;
     };
-    ['/Administration/Logs']: {
+    ["/Administration/Logs"]: {
         /**
          * AdministrationController_ListLogs - List Tgstation.Server.Api.Models.LogFiles present.
          */
@@ -3018,7 +3018,7 @@ export interface PathsDictionary {
             | Paths.AdministrationControllerListLogs.Responses.$503
         >;
     };
-    ['/Administration/Logs/{path}']: {
+    ["/Administration/Logs/{path}"]: {
         /**
          * AdministrationController_GetLog - Download a Tgstation.Server.Api.Models.LogFile.
          */
@@ -3037,7 +3037,7 @@ export interface PathsDictionary {
             | Paths.AdministrationControllerGetLog.Responses.$503
         >;
     };
-    ['/Byond']: {
+    ["/Byond"]: {
         /**
          * ByondController_Read - Gets the active Tgstation.Server.Api.Models.Byond version.
          */
@@ -3074,7 +3074,7 @@ export interface PathsDictionary {
             | Paths.ByondControllerUpdate.Responses.$503
         >;
     };
-    ['/Byond/List']: {
+    ["/Byond/List"]: {
         /**
          * ByondController_List - Lists installed Tgstation.Server.Api.Models.Byond versions.
          */
@@ -3093,7 +3093,7 @@ export interface PathsDictionary {
             | Paths.ByondControllerList.Responses.$503
         >;
     };
-    ['/Chat']: {
+    ["/Chat"]: {
         /**
          * ChatController_Create - Create a new chat bot model.
          */
@@ -3131,7 +3131,7 @@ export interface PathsDictionary {
             | Paths.ChatControllerUpdate.Responses.$503
         >;
     };
-    ['/Chat/{id}']: {
+    ["/Chat/{id}"]: {
         /**
          * ChatController_Delete - Delete a Tgstation.Server.Api.Models.ChatBot.
          */
@@ -3174,7 +3174,7 @@ export interface PathsDictionary {
             | Paths.ChatControllerGetId.Responses.$503
         >;
     };
-    ['/Chat/List']: {
+    ["/Chat/List"]: {
         /**
          * ChatController_List - List Tgstation.Server.Api.Models.ChatBots.
          */
@@ -3193,7 +3193,7 @@ export interface PathsDictionary {
             | Paths.ChatControllerList.Responses.$503
         >;
     };
-    ['/Config']: {
+    ["/Config"]: {
         /**
          * ConfigurationController_Update - Write to a configuration file.
          */
@@ -3248,7 +3248,7 @@ export interface PathsDictionary {
             | Paths.ConfigurationControllerDelete.Responses.$503
         >;
     };
-    ['/Config/File/{filePath}']: {
+    ["/Config/File/{filePath}"]: {
         /**
          * ConfigurationController_File - Get the contents of a file at a filePath
          */
@@ -3271,7 +3271,7 @@ export interface PathsDictionary {
             | Paths.ConfigurationControllerFile.Responses.$503
         >;
     };
-    ['/Config/List/{directoryPath}']: {
+    ["/Config/List/{directoryPath}"]: {
         /**
          * ConfigurationController_Directory - Get the contents of a directory at a directoryPath
          */
@@ -3294,7 +3294,7 @@ export interface PathsDictionary {
             | Paths.ConfigurationControllerDirectory.Responses.$503
         >;
     };
-    ['/Config/List']: {
+    ["/Config/List"]: {
         /**
          * ConfigurationController_List - Get the contents of the root configuration directory.
          */
@@ -3313,7 +3313,7 @@ export interface PathsDictionary {
             | Paths.ConfigurationControllerList.Responses.$503
         >;
     };
-    ['/DreamDaemon']: {
+    ["/DreamDaemon"]: {
         /**
          * DreamDaemonController_Create - Launches the watchdog.
          */
@@ -3402,7 +3402,7 @@ export interface PathsDictionary {
             | Paths.DreamDaemonControllerRestart.Responses.$503
         >;
     };
-    ['/DreamDaemon/Diagnostics']: {
+    ["/DreamDaemon/Diagnostics"]: {
         /**
          * DreamDaemonController_CreateDump - Creates a Tgstation.Server.Api.Models.Job to generate a DreamDaemon process dump.
          */
@@ -3421,7 +3421,7 @@ export interface PathsDictionary {
             | Paths.DreamDaemonControllerCreateDump.Responses.$503
         >;
     };
-    ['/DreamMaker']: {
+    ["/DreamMaker"]: {
         /**
          * DreamMakerController_Read - Read current Tgstation.Server.Api.Models.DreamMaker status.
          */
@@ -3476,7 +3476,7 @@ export interface PathsDictionary {
             | Paths.DreamMakerControllerUpdate.Responses.$503
         >;
     };
-    ['/DreamMaker/{id}']: {
+    ["/DreamMaker/{id}"]: {
         /**
          * DreamMakerController_GetId - Get a Tgstation.Server.Api.Models.CompileJob specified by a given id.
          */
@@ -3499,7 +3499,7 @@ export interface PathsDictionary {
             | Paths.DreamMakerControllerGetId.Responses.$503
         >;
     };
-    ['/DreamMaker/List']: {
+    ["/DreamMaker/List"]: {
         /**
          * DreamMakerController_List - List all Tgstation.Server.Api.Models.CompileJobTgstation.Server.Api.Models.EntityIds for the instance.
          */
@@ -3518,7 +3518,7 @@ export interface PathsDictionary {
             | Paths.DreamMakerControllerList.Responses.$503
         >;
     };
-    ['/']: {
+    ["/"]: {
         /**
          * HomeController_Home - Main page of the Tgstation.Server.Host.Core.Application
          */
@@ -3554,7 +3554,7 @@ export interface PathsDictionary {
             | Paths.HomeControllerCreateToken.Responses.$503
         >;
     };
-    ['/Instance']: {
+    ["/Instance"]: {
         /**
          * InstanceController_Create - Create or attach an Tgstation.Server.Api.Models.Instance.
          */
@@ -3593,7 +3593,7 @@ export interface PathsDictionary {
             | Paths.InstanceControllerUpdate.Responses.$503
         >;
     };
-    ['/Instance/{id}']: {
+    ["/Instance/{id}"]: {
         /**
          * InstanceController_Delete - Detach an Tgstation.Server.Api.Models.Instance with the given id.
          */
@@ -3648,7 +3648,7 @@ export interface PathsDictionary {
             | Paths.InstanceControllerGrantPermissions.Responses.$503
         >;
     };
-    ['/Instance/List']: {
+    ["/Instance/List"]: {
         /**
          * InstanceController_List - List Tgstation.Server.Api.Models.Instances.
          */
@@ -3667,7 +3667,7 @@ export interface PathsDictionary {
             | Paths.InstanceControllerList.Responses.$503
         >;
     };
-    ['/InstanceUser']: {
+    ["/InstanceUser"]: {
         /**
          * InstanceUserController_Create - Create an Tgstation.Server.Api.Models.InstanceUser.
          */
@@ -3721,7 +3721,7 @@ export interface PathsDictionary {
             | Paths.InstanceUserControllerRead.Responses.$503
         >;
     };
-    ['/InstanceUser/List']: {
+    ["/InstanceUser/List"]: {
         /**
          * InstanceUserController_List - Lists Tgstation.Server.Api.Models.InstanceUsers for the instance.
          */
@@ -3740,7 +3740,7 @@ export interface PathsDictionary {
             | Paths.InstanceUserControllerList.Responses.$503
         >;
     };
-    ['/InstanceUser/{id}']: {
+    ["/InstanceUser/{id}"]: {
         /**
          * InstanceUserController_GetId - Gets a specific Tgstation.Server.Api.Models.InstanceUser.
          */
@@ -3783,7 +3783,7 @@ export interface PathsDictionary {
             | Paths.InstanceUserControllerDelete.Responses.$503
         >;
     };
-    ['/Job']: {
+    ["/Job"]: {
         /**
          * JobController_Read - Get active Tgstation.Server.Api.Models.Jobs for the instance.
          */
@@ -3802,7 +3802,7 @@ export interface PathsDictionary {
             | Paths.JobControllerRead.Responses.$503
         >;
     };
-    ['/Job/List']: {
+    ["/Job/List"]: {
         /**
          * JobController_List - List all Tgstation.Server.Api.Models.JobTgstation.Server.Api.Models.EntityIds for the instance in reverse creation order.
          */
@@ -3821,7 +3821,7 @@ export interface PathsDictionary {
             | Paths.JobControllerList.Responses.$503
         >;
     };
-    ['/Job/{id}']: {
+    ["/Job/{id}"]: {
         /**
          * JobController_Delete - Cancel a running Tgstation.Server.Api.Models.Job.
          */
@@ -3860,7 +3860,7 @@ export interface PathsDictionary {
             | Paths.JobControllerGetId.Responses.$503
         >;
     };
-    ['/Repository']: {
+    ["/Repository"]: {
         /**
          * RepositoryController_Create - Begin cloning the repository if it doesn't exist.
          */
@@ -3936,7 +3936,7 @@ export interface PathsDictionary {
             | Paths.RepositoryControllerUpdate.Responses.$503
         >;
     };
-    ['/User']: {
+    ["/User"]: {
         /**
          * UserController_Create - Create a Tgstation.Server.Api.Models.User.
          */
@@ -3991,7 +3991,7 @@ export interface PathsDictionary {
             | Paths.UserControllerRead.Responses.$503
         >;
     };
-    ['/User/List']: {
+    ["/User/List"]: {
         /**
          * UserController_List - List all Tgstation.Server.Api.Models.Users in the server.
          */
@@ -4010,7 +4010,7 @@ export interface PathsDictionary {
             | Paths.UserControllerList.Responses.$503
         >;
     };
-    ['/User/{id}']: {
+    ["/User/{id}"]: {
         /**
          * UserController_GetId - Get a specific Tgstation.Server.Api.Models.User.
          */

@@ -9,14 +9,13 @@ $enable-gradients: true;
     height: 50vmin !important;
 }
 
-
-
-$theme-colors: ( //02549a
-    'primary': #02549a,
-    'secondary': #2576bc,
-    'transparent': transparent,
-    'background': #212529,
-    'darker': darken(#212529, 5%)
+$theme-colors: (
+    //02549a
+        "primary": #02549a,
+    "secondary": #2576bc,
+    "transparent": transparent,
+    "background": #212529,
+    "darker": darken(#212529, 5%)
 );
 
 $sizes: (
@@ -25,7 +24,7 @@ $sizes: (
 
 @import "~bootstrap/scss/functions";
 
-$white:    #fff !default;
+$white: #fff !default;
 $gray-100: #f8f9fa !default;
 $gray-200: #e9ecef !default;
 $gray-300: #dee2e6 !default;
@@ -35,80 +34,80 @@ $gray-600: #6c757d !default;
 $gray-700: #495057 !default;
 $gray-800: #343a40 !default;
 $gray-900: #212529 !default;
-$black:    #000 !default;
+$black: #000 !default;
 
 $grays: () !default;
 // stylelint-disable-next-line scss/dollar-variable-default
 $grays: map-merge(
-  (
-    "100": $gray-100,
-    "200": $gray-200,
-    "300": $gray-300,
-    "400": $gray-400,
-    "500": $gray-500,
-    "600": $gray-600,
-    "700": $gray-700,
-    "800": $gray-800,
-    "900": $gray-900
-  ),
-  $grays
+    (
+        "100": $gray-100,
+        "200": $gray-200,
+        "300": $gray-300,
+        "400": $gray-400,
+        "500": $gray-500,
+        "600": $gray-600,
+        "700": $gray-700,
+        "800": $gray-800,
+        "900": $gray-900
+    ),
+    $grays
 );
 
-$blue:    #007bff !default;
-$indigo:  #6610f2 !default;
-$purple:  #6f42c1 !default;
-$pink:    #e83e8c !default;
-$red:     #dc3545 !default;
-$orange:  #fd7e14 !default;
-$yellow:  #ffc107 !default;
-$green:   #28a745 !default;
-$teal:    #20c997 !default;
-$cyan:    #17a2b8 !default;
+$blue: #007bff !default;
+$indigo: #6610f2 !default;
+$purple: #6f42c1 !default;
+$pink: #e83e8c !default;
+$red: #dc3545 !default;
+$orange: #fd7e14 !default;
+$yellow: #ffc107 !default;
+$green: #28a745 !default;
+$teal: #20c997 !default;
+$cyan: #17a2b8 !default;
 
 $colors: () !default;
 // stylelint-disable-next-line scss/dollar-variable-default
 $colors: map-merge(
-  (
-    "blue":       $blue,
-    "indigo":     $indigo,
-    "purple":     $purple,
-    "pink":       $pink,
-    "red":        $red,
-    "orange":     $orange,
-    "yellow":     $yellow,
-    "green":      $green,
-    "teal":       $teal,
-    "cyan":       $cyan,
-    "white":      $white,
-    "gray":       $gray-600,
-    "gray-dark":  $gray-800
-  ),
-  $colors
+    (
+        "blue": $blue,
+        "indigo": $indigo,
+        "purple": $purple,
+        "pink": $pink,
+        "red": $red,
+        "orange": $orange,
+        "yellow": $yellow,
+        "green": $green,
+        "teal": $teal,
+        "cyan": $cyan,
+        "white": $white,
+        "gray": $gray-600,
+        "gray-dark": $gray-800
+    ),
+    $colors
 );
 
-$primary:       $blue !default;
-$secondary:     $gray-600 !default;
-$success:       $green !default;
-$info:          $cyan !default;
-$warning:       $yellow !default;
-$danger:        $red !default;
-$light:         $gray-100 !default;
-$dark:          $gray-800 !default;
+$primary: $blue !default;
+$secondary: $gray-600 !default;
+$success: $green !default;
+$info: $cyan !default;
+$warning: $yellow !default;
+$danger: $red !default;
+$light: $gray-100 !default;
+$dark: $gray-800 !default;
 
 $theme-colors: () !default;
 // stylelint-disable-next-line scss/dollar-variable-default
 $theme-colors: map-merge(
-  (
-    "primary":    $primary,
-    "secondary":  $secondary,
-    "success":    $success,
-    "info":       $info,
-    "warning":    $warning,
-    "danger":     $danger,
-    "light":      $light,
-    "dark":       $dark
-  ),
-  $theme-colors
+    (
+        "primary": $primary,
+        "secondary": $secondary,
+        "success": $success,
+        "info": $info,
+        "warning": $warning,
+        "danger": $danger,
+        "light": $light,
+        "dark": $dark
+    ),
+    $theme-colors
 );
 
 $border-color: $gray-800;
@@ -128,15 +127,11 @@ $dropdown-link-color: $black;
 $dropdown-link-hover-color: $black;
 $dropdown-link-hover-bg: darken($dropdown-bg, 5%);
 
-$hr-border-color:  rgba($white, .2);
+$hr-border-color: rgba($white, 0.2);
 
 $modal-content-bg: $dark;
 
-
 @import "~bootstrap/scss/variables";
-
-
-
 
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/root";
@@ -187,16 +182,16 @@ $modal-content-bg: $dark;
     white-space: pre-wrap;
 }
 
-
 @each $breakpoint in map-keys($grid-breakpoints) {
-  @include media-breakpoint-up($breakpoint) {
-    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+    @include media-breakpoint-up($breakpoint) {
+        $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
 
-    @each $prop, $abbrev in (width: w, height: h) {
-      @each $size, $length in $sizes {
-        .#{$abbrev}#{$infix}-#{$size} { #{$prop}: $length !important; }
-      }
+        @each $prop, $abbrev in (width: w, height: h) {
+            @each $size, $length in $sizes {
+                .#{$abbrev}#{$infix}-#{$size} {
+                    #{$prop}: $length !important;
+                }
+            }
+        }
     }
-
-  }
 }

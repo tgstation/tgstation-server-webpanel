@@ -1,8 +1,8 @@
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { StatusCode } from '../ApiClient/models/InternalComms/InternalStatus';
-import { AdministrationRights } from '../ApiClient/generatedcode/_enums';
-import UserClient from '../ApiClient/UserClient';
-import CredentialsProvider from '../ApiClient/util/CredentialsProvider';
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
+import { AdministrationRights } from "../ApiClient/generatedcode/_enums";
+import UserClient from "../ApiClient/UserClient";
+import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 
 export interface BaseRoute {
     route: string;
@@ -27,28 +27,28 @@ export const AppRoutes: {
     [id: string]: AppRoute;
 } = {
     home: {
-        route: '/',
-        name: 'routes.home',
+        route: "/",
+        name: "routes.home",
         exact: true,
-        icon: 'home',
+        icon: "home",
         isAuthorized: async () => true
     },
     instances: {
-        route: '/Instance/',
-        name: 'routes.instances',
-        icon: 'hdd',
+        route: "/Instance/",
+        name: "routes.instances",
+        icon: "hdd",
         isAuthorized: async () => false
     },
     userManager: {
-        route: '/Users/',
-        name: 'routes.user_manager',
-        icon: 'user',
+        route: "/Users/",
+        name: "routes.user_manager",
+        icon: "user",
         isAuthorized: async () => false
     },
     admin: {
-        route: '/Administration/',
-        name: 'routes.admin',
-        icon: 'tools',
+        route: "/Administration/",
+        name: "routes.admin",
+        icon: "tools",
         isAuthorized: async () => {
             /*if (!CredentialsProvider.isTokenValid()) return false;
             const response = await UserClient.getCurrentUser();
@@ -65,8 +65,8 @@ export const AppRoutes: {
         }
     },
     config: {
-        route: '/Configuration/',
-        name: 'routes.config',
+        route: "/Configuration/",
+        name: "routes.config",
         hidden: true,
         isAuthorized: async () => true
     }

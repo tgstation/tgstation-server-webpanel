@@ -1,21 +1,21 @@
-import React from 'react';
-import AccessDenied from '../utils/AccessDenied';
-import { AppRoutes } from '../../utils/routes';
-import InternalError, { ErrorCode } from '../../ApiClient/models/InternalComms/InternalError';
-import { StatusCode } from '../../ApiClient/models/InternalComms/InternalStatus';
-import Loading from '../utils/Loading';
-import ErrorAlert from '../utils/ErrorAlert';
-import { Components } from '../../ApiClient/generatedcode/_generated';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWindows } from '@fortawesome/free-brands-svg-icons/faWindows';
-import { faLinux } from '@fortawesome/free-brands-svg-icons/faLinux';
-import AdminClient from '../../ApiClient/AdminClient';
-import ServerClient from '../../ApiClient/ServerClient';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import UserClient from '../../ApiClient/UserClient';
-import { AdministrationRights } from '../../ApiClient/generatedcode/_enums';
-import { FormattedMessage } from 'react-intl';
+import React from "react";
+import AccessDenied from "../utils/AccessDenied";
+import { AppRoutes } from "../../utils/routes";
+import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
+import Loading from "../utils/Loading";
+import ErrorAlert from "../utils/ErrorAlert";
+import { Components } from "../../ApiClient/generatedcode/_generated";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWindows } from "@fortawesome/free-brands-svg-icons/faWindows";
+import { faLinux } from "@fortawesome/free-brands-svg-icons/faLinux";
+import AdminClient from "../../ApiClient/AdminClient";
+import ServerClient from "../../ApiClient/ServerClient";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import UserClient from "../../ApiClient/UserClient";
+import { AdministrationRights } from "../../ApiClient/generatedcode/_enums";
+import { FormattedMessage } from "react-intl";
 
 interface IProps {}
 interface IState {
@@ -44,20 +44,20 @@ export default class Administration extends React.Component<IProps, IState> {
         });
         const tasks = [];
 
-        console.time('DataLoad');
+        console.time("DataLoad");
         tasks.push(this.loadAdminInfo());
         tasks.push(this.loadServerInfo());
         tasks.push(this.checkRebootRights());
 
         await Promise.all(tasks);
-        console.timeEnd('DataLoad');
+        console.timeEnd("DataLoad");
         this.setState({
             busy: false
         });
     }
 
     private async loadServerInfo() {
-        console.time('ServerLoad');
+        console.time("ServerLoad");
         const response = await ServerClient.getServerInfo();
         switch (response.code) {
             case StatusCode.ERROR: {
@@ -73,11 +73,11 @@ export default class Administration extends React.Component<IProps, IState> {
                 break;
             }
         }
-        console.timeEnd('ServerLoad');
+        console.timeEnd("ServerLoad");
     }
 
     private async loadAdminInfo() {
-        console.time('AdminLoad');
+        console.time("AdminLoad");
         const response = await AdminClient.getAdminInfo();
         switch (response.code) {
             case StatusCode.ERROR: {
@@ -93,7 +93,7 @@ export default class Administration extends React.Component<IProps, IState> {
                 break;
             }
         }
-        console.timeEnd('AdminLoad');
+        console.timeEnd("AdminLoad");
     }
 
     private async checkRebootRights() {
@@ -113,7 +113,7 @@ export default class Administration extends React.Component<IProps, IState> {
             showRebootModal: false,
             busy: true
         });
-        console.time('Reboot');
+        console.time("Reboot");
         const response = await AdminClient.restartServer();
         switch (response.code) {
             case StatusCode.ERROR: {
@@ -129,7 +129,7 @@ export default class Administration extends React.Component<IProps, IState> {
         this.setState({
             busy: false
         });
-        console.timeEnd('Reboot');
+        console.timeEnd("Reboot");
     }
 
     public render() {
@@ -150,7 +150,7 @@ export default class Administration extends React.Component<IProps, IState> {
                 {this.state.adminInfo && this.state.serverInfo ? (
                     <div className="text-center">
                         <h3 className=" text-secondary">
-                            Host Machine OS:{' '}
+                            Host Machine OS:{" "}
                             <FontAwesomeIcon
                                 fixedWidth
                                 //@ts-ignore //it works on my machine, idk, typescript hates this for some reason
@@ -158,31 +158,31 @@ export default class Administration extends React.Component<IProps, IState> {
                             />
                         </h3>
                         <h5 className="text-secondary">
-                            Remote repository:{' '}
+                            Remote repository:{" "}
                             <a href={this.state.adminInfo.trackedRepositoryUrl!}>
                                 {this.state.adminInfo.trackedRepositoryUrl!}
                             </a>
                         </h5>
                         <h3 className="text-secondary">
-                            Current version:{' '}
+                            Current version:{" "}
                             <span
                                 className={
                                     this.state.serverInfo.version! <
                                     this.state.adminInfo.latestVersion!
-                                        ? 'text-danger'
-                                        : ''
+                                        ? "text-danger"
+                                        : ""
                                 }>
                                 {this.state.serverInfo.version!}
                             </span>
                         </h3>
                         <h3 className="text-secondary">
-                            Latest version:{' '}
+                            Latest version:{" "}
                             <span
                                 className={
                                     this.state.serverInfo.version! <
                                     this.state.adminInfo.latestVersion!
-                                        ? 'text-danger'
-                                        : ''
+                                        ? "text-danger"
+                                        : ""
                                 }>
                                 {this.state.adminInfo.latestVersion!}
                             </span>
@@ -218,7 +218,7 @@ export default class Administration extends React.Component<IProps, IState> {
                         </Modal>
                     </div>
                 ) : (
-                    ''
+                    ""
                 )}
             </React.Fragment>
         );

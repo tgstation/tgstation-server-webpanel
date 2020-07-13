@@ -1,5 +1,5 @@
-import { RouteComponentProps, withRouter } from 'react-router';
-import { Component, ReactNode } from 'react';
+import { RouteComponentProps, withRouter } from "react-router";
+import { Component, ReactNode } from "react";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
@@ -31,7 +31,7 @@ class Reload extends Component<IProps, IState> {
     }
 
     public render(): ReactNode {
-        return this.state.clear ? '' : this.props.children;
+        return this.state.clear ? "" : this.props.children;
     }
 }
 

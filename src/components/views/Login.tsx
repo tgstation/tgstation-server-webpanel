@@ -1,15 +1,15 @@
-import React, { ChangeEvent, FormEvent, ReactNode } from 'react';
-import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import { FormattedMessage } from 'react-intl';
-import { RouteComponentProps } from 'react-router';
-import { withRouter } from 'react-router-dom';
-import Loading from '../utils/Loading';
-import { StatusCode } from '../../ApiClient/models/InternalComms/InternalStatus';
-import InternalError from '../../ApiClient/models/InternalComms/InternalError';
-import ErrorAlert from '../utils/ErrorAlert';
-import ServerClient, { LoginErrors } from '../../ApiClient/ServerClient';
+import React, { ChangeEvent, FormEvent, ReactNode } from "react";
+import Form from "react-bootstrap/Form";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import { FormattedMessage } from "react-intl";
+import { RouteComponentProps } from "react-router";
+import { withRouter } from "react-router-dom";
+import Loading from "../utils/Loading";
+import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
+import InternalError from "../../ApiClient/models/InternalComms/InternalError";
+import ErrorAlert from "../utils/ErrorAlert";
+import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
@@ -32,11 +32,11 @@ export default withRouter(
             try {
                 //private browsing on safari can throw when using storage
                 usr =
-                    window.sessionStorage.getItem('username') ||
-                    window.localStorage.getItem('username');
+                    window.sessionStorage.getItem("username") ||
+                    window.localStorage.getItem("username");
                 pwd =
-                    window.sessionStorage.getItem('password') ||
-                    window.localStorage.getItem('password');
+                    window.sessionStorage.getItem("password") ||
+                    window.localStorage.getItem("password");
             } catch (e) {
                 (() => {})(); //noop
             }
@@ -44,8 +44,8 @@ export default withRouter(
             this.state = {
                 busy: false,
                 validated: false,
-                username: '',
-                password: '',
+                username: "",
+                password: "",
                 save: !!(usr && pwd)
             };
         }

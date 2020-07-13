@@ -1,4 +1,4 @@
-import ITranslationFactory from './translations/ITranslationFactory';
+import ITranslationFactory from "./translations/ITranslationFactory";
 
 interface IAppProps {
     readonly locale: string;

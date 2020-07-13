@@ -1,17 +1,17 @@
-import * as React from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import Dropdown from 'react-bootstrap/Dropdown';
+import * as React from "react";
+import { NavLink, Link } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
+import Navbar from "react-bootstrap/Navbar";
+import Nav from "react-bootstrap/Nav";
+import Dropdown from "react-bootstrap/Dropdown";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AppRoutes, NormalRoute } from '../utils/routes';
-import { Components } from '../ApiClient/generatedcode/_generated';
-import RouteController from '../utils/RouteController';
-import LoginHooks from '../ApiClient/util/LoginHooks';
-import UserClient from '../ApiClient/UserClient';
-import ServerClient from '../ApiClient/ServerClient';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AppRoutes, NormalRoute } from "../utils/routes";
+import { Components } from "../ApiClient/generatedcode/_generated";
+import RouteController from "../utils/RouteController";
+import LoginHooks from "../ApiClient/util/LoginHooks";
+import UserClient from "../ApiClient/UserClient";
+import ServerClient from "../ApiClient/ServerClient";
 
 interface IProps {}
 
@@ -41,25 +41,25 @@ export default class AppNavbar extends React.Component<IProps, IState> {
     //well you see, this component never gets normally unloaded so i dont give a fuck!
     public async componentDidMount(): Promise<void> {
         LoginHooks.addHook(this.loadServerInformation);
-        ServerClient.on('loadServerInfo', serverInfo => {
+        ServerClient.on("loadServerInfo", serverInfo => {
             this.setState({
                 serverInformation: serverInfo.payload
             });
         });
 
         LoginHooks.addHook(this.loadUserInformation);
-        UserClient.on('loadUserInfo', user => {
+        UserClient.on("loadUserInfo", user => {
             this.setState({
                 currentUser: user.payload
             });
         });
 
-        ServerClient.on('loginSuccess', () => {
+        ServerClient.on("loginSuccess", () => {
             this.setState({
                 loggedIn: true
             });
         });
-        ServerClient.on('logout', () => {
+        ServerClient.on("logout", () => {
             this.setState({
                 loggedIn: false
             });
@@ -69,7 +69,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
             routes: await RouteController.getVisibleRoutes()
         });
 
-        RouteController.on('refreshVisible', routes => {
+        RouteController.on("refreshVisible", routes => {
             this.setState({
                 routes
             });
@@ -83,7 +83,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                 expand="md"
                 collapseOnSelect
                 variant="dark"
-                bg={this.state.userNameError || this.state.serverInfoError ? 'danger' : 'primary'}>
+                bg={this.state.userNameError || this.state.serverInfoError ? "danger" : "primary"}>
                 <Navbar.Brand as={NavLink} to={AppRoutes.home.route} className="mr-auto">
                     {this.renderVersion()}
                 </Navbar.Brand>
@@ -134,7 +134,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                     </div>
                     <div className="d-inline-block">
                         <FormattedMessage id="navbar.server_error" />
-                        {': '}
+                        {": "}
                         <FormattedMessage id={this.state.serverInfoError} />
                     </div>
                 </div>
@@ -142,7 +142,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
         if (this.state.serverInformation)
             return `tgstation-server v${this.state.serverInformation.version}`;
 
-        return 'loading'; //TODO: add a spinner;
+        return "loading"; //TODO: add a spinner;
     }
 
     private renderUser(): React.ReactNode {
@@ -156,8 +156,8 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                         type="button"
                         variant={
                             this.state.serverInfoError || this.state.userNameError
-                                ? 'danger'
-                                : 'primary'
+                                ? "danger"
+                                : "primary"
                         }
                         data-toggle="dropdown"
                         aria-haspopup="true"
@@ -169,14 +169,14 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                                 </div>
                                 <div className="d-inline-block">
                                     <FormattedMessage id="navbar.user_error" />
-                                    {': '}
+                                    {": "}
                                     <FormattedMessage id={this.state.userNameError} />
                                 </div>
                             </div>
                         ) : this.state.currentUser ? (
                             this.state.currentUser.name
                         ) : (
-                            'loading' //TODO: add spinner
+                            "loading" //TODO: add spinner
                         )}
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight className="text-right">
@@ -185,7 +185,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                         </Dropdown.Item>
                         <Dropdown.Item
                             onClick={() => {
-                                ServerClient.emit('purgeCache');
+                                ServerClient.emit("purgeCache");
                             }}>
                             <FormattedMessage id="navbar.refresh" />
                         </Dropdown.Item>

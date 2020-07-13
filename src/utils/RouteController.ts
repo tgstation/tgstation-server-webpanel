@@ -1,7 +1,7 @@
-import { AppRoute, AppRoutes, NormalRoute } from './routes';
-import { TypedEmitter } from 'tiny-typed-emitter/lib';
-import LoginHooks from '../ApiClient/util/LoginHooks';
-import ServerClient from '../ApiClient/ServerClient';
+import { AppRoute, AppRoutes, NormalRoute } from "./routes";
+import { TypedEmitter } from "tiny-typed-emitter/lib";
+import LoginHooks from "../ApiClient/util/LoginHooks";
+import ServerClient from "../ApiClient/ServerClient";
 
 interface IEvents {
     refresh: (routes: Array<AppRoute>) => void; //hidden+visible auth
@@ -18,7 +18,7 @@ class RouteController extends TypedEmitter<IEvents> {
         super();
         this.refreshRoutes = this.refreshRoutes.bind(this);
 
-        ServerClient.on('purgeCache', this.refreshRoutes);
+        ServerClient.on("purgeCache", this.refreshRoutes);
         LoginHooks.addHook(this.refreshRoutes);
         // noinspection JSIgnoredPromiseFromCall
         this.refreshRoutes();
@@ -26,7 +26,7 @@ class RouteController extends TypedEmitter<IEvents> {
 
     public async refreshRoutes() {
         if (this.refreshing) {
-            console.log('Already refreshing');
+            console.log("Already refreshing");
             return;
         } //no need to refresh twice
 
@@ -48,16 +48,16 @@ class RouteController extends TypedEmitter<IEvents> {
 
         await Promise.all(work); //wait for all the authorized calls to complete
 
-        this.emit('refresh', await this.getRoutes(true, false));
-        this.emit('refreshVisible', (await this.getRoutes(false, false)) as Array<NormalRoute>);
-        this.emit('refreshAll', await this.getRoutes(true, false, false));
+        this.emit("refresh", await this.getRoutes(true, false));
+        this.emit("refreshVisible", (await this.getRoutes(false, false)) as Array<NormalRoute>);
+        this.emit("refreshAll", await this.getRoutes(true, false, false));
         this.emit(
-            'refreshAllVisible',
+            "refreshAllVisible",
             (await this.getRoutes(false, false, false)) as Array<NormalRoute>
         );
         this.refreshing = false;
 
-        console.log('Routes refreshed', await this.getRoutes(true, true, false));
+        console.log("Routes refreshed", await this.getRoutes(true, true, false));
         return await this.getRoutes();
     }
 
@@ -67,7 +67,7 @@ class RouteController extends TypedEmitter<IEvents> {
                 resolve();
                 return;
             }
-            this.on('refresh', () => {
+            this.on("refresh", () => {
                 resolve();
             });
         });

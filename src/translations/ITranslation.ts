@@ -1,4 +1,4 @@
-import ILocalization from './ILocalization';
+import ILocalization from "./ILocalization";
 
 interface ITranslation {
     readonly locale: string;

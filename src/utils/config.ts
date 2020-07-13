@@ -2,7 +2,7 @@ export type ConfigValue = number | string | boolean | undefined;
 
 export interface ConfigOption {
     id: string;
-    type: 'num' | 'str' | 'bool';
+    type: "num" | "str" | "bool";
     value: ConfigValue;
     //persist?: boolean;
 }
@@ -13,13 +13,13 @@ export type ConfigMap = {
 
 const configOptions: ConfigMap = {
     githubtoken: {
-        id: 'config.githubtoken',
-        type: 'str',
-        value: ''
+        id: "config.githubtoken",
+        type: "str",
+        value: ""
     },
     localstoragecreds: {
-        id: 'config.localstoragecreds',
-        type: 'bool',
+        id: "config.localstoragecreds",
+        type: "bool",
         value: false
     }
 };

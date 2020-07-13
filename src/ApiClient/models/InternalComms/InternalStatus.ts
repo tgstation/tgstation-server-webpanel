@@ -1,4 +1,4 @@
-import InternalError, { ErrorCode } from './InternalError';
+import InternalError, { ErrorCode } from "./InternalError";
 
 export enum StatusCode {
     OK,

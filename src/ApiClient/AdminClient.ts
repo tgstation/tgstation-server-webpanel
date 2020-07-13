@@ -1,8 +1,8 @@
-import InternalStatus, { StatusCode } from './models/InternalComms/InternalStatus';
-import { Components } from './generatedcode/_generated';
-import InternalError, { ErrorCode, GenericErrors } from './models/InternalComms/InternalError';
-import { TypedEmitter } from 'tiny-typed-emitter/lib';
-import ServerClient from './ServerClient';
+import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
+import { Components } from "./generatedcode/_generated";
+import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
+import { TypedEmitter } from "tiny-typed-emitter/lib";
+import ServerClient from "./ServerClient";
 
 interface IEvents {
     loadAdminInfo: (
@@ -26,7 +26,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
 
     public constructor() {
         super();
-        ServerClient.on('purgeCache', () => {
+        ServerClient.on("purgeCache", () => {
             this._cachedAdminInfo = undefined;
         });
     }
@@ -40,7 +40,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
 
         if (this.loadingAdminInfo) {
             return await new Promise(resolve => {
-                this.on('loadAdminInfo', info => {
+                this.on("loadAdminInfo", info => {
                     resolve(info);
                 });
             });
@@ -56,7 +56,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 code: StatusCode.ERROR,
                 error: stat as InternalError<AdminInfoErrors>
             });
-            this.emit('loadAdminInfo', res);
+            this.emit("loadAdminInfo", res);
             this.loadingAdminInfo = false;
             return res;
         }
@@ -69,7 +69,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 });
 
                 this._cachedAdminInfo = thing;
-                this.emit('loadAdminInfo', thing);
+                this.emit("loadAdminInfo", thing);
                 this.loadingAdminInfo = false;
                 return thing;
             }
@@ -86,7 +86,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
-                this.emit('loadAdminInfo', thing);
+                this.emit("loadAdminInfo", thing);
                 this.loadingAdminInfo = false;
                 return thing;
             }
@@ -103,7 +103,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
-                this.emit('loadAdminInfo', thing);
+                this.emit("loadAdminInfo", thing);
                 this.loadingAdminInfo = false;
                 return thing;
             }
@@ -119,7 +119,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
-                this.emit('loadAdminInfo', res);
+                this.emit("loadAdminInfo", res);
                 this.loadingAdminInfo = false;
                 return res;
             }

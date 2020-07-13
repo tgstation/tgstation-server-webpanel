@@ -1,7 +1,7 @@
-import React from 'react';
-import Card from 'react-bootstrap/Card';
-import { withRouter, RouteComponentProps } from 'react-router';
-import { FormattedMessage } from 'react-intl';
+import React from "react";
+import Card from "react-bootstrap/Card";
+import { withRouter, RouteComponentProps } from "react-router";
+import { FormattedMessage } from "react-intl";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
@@ -42,7 +42,7 @@ class ErrorBoundary extends React.Component<IProps, IState> {
                         <Card.Title>
                             {this.state.error.name}: {this.state.error.message}
                         </Card.Title>
-                        <Card.Text as={'pre'} className="bg-transparent text-danger">
+                        <Card.Text as={"pre"} className="bg-transparent text-danger">
                             <code>
                                 {`Control Panel Version: ${VERSION}\nControl Panel Mode: ${MODE}\nStack trace: ${this.state.errorInfo?.componentStack}`}
                             </code>

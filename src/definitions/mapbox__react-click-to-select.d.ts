@@ -1,1 +1,1 @@
-declare module '@mapbox/react-click-to-select';
+declare module "@mapbox/react-click-to-select";

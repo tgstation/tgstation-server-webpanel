@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { injectIntl, InjectedIntlProps } from 'react-intl';
+import * as React from "react";
+import { injectIntl, InjectedIntlProps } from "react-intl";
 
-import ReactIsCapsLockActive from '@matsun/reactiscapslockactive';
-import ColouredField, { ColourMode } from './ColouredField';
+import ReactIsCapsLockActive from "@matsun/reactiscapslockactive";
+import ColouredField, { ColourMode } from "./ColouredField";
 
 interface IOwnProps {
     value: string;
@@ -39,7 +39,7 @@ class PasswordField extends React.Component<IProps, IState> {
                     let placeholder = this.props.placeholder;
                     if (capsLockWarning)
                         placeholder = `${placeholder} (${this.props.intl.formatMessage({
-                            id: 'password.capslock'
+                            id: "password.capslock"
                         })})`;
 
                     const mode =

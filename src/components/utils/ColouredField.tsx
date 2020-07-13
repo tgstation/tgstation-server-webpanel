@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 
-import './ColouredField.css';
+import "./ColouredField.css";
 
 export enum ColourMode {
     Normal,
@@ -27,10 +27,10 @@ export default class ColouredField extends React.Component<IProps> {
         let colourModeClass: string | null = null;
         switch (this.props.mode) {
             case ColourMode.Red:
-                colourModeClass = 'red';
+                colourModeClass = "red";
                 break;
             case ColourMode.Yellow:
-                colourModeClass = 'yellow';
+                colourModeClass = "yellow";
                 break;
         }
         return (
@@ -39,7 +39,7 @@ export default class ColouredField extends React.Component<IProps> {
                 className={
                     this.props.mode !== ColourMode.Normal
                         ? `form-control ColouredField-${colourModeClass}`
-                        : 'form-control'
+                        : "form-control"
                 }
                 name={this.props.name}
                 onChange={this.props.onChange}

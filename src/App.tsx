@@ -1,27 +1,27 @@
-import { hot } from 'react-hot-loader/root';
-import * as React from 'react';
-import { IntlProvider } from 'react-intl';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
+import { hot } from "react-hot-loader/root";
+import * as React from "react";
+import { IntlProvider } from "react-intl";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import Container from "react-bootstrap/Container";
 
-import IAppProps from './IAppProps';
+import IAppProps from "./IAppProps";
 
-import ITranslation from './translations/ITranslation';
-import ITranslationFactory from './translations/ITranslationFactory';
-import TranslationFactory from './translations/TranslationFactory';
+import ITranslation from "./translations/ITranslation";
+import ITranslationFactory from "./translations/ITranslationFactory";
+import TranslationFactory from "./translations/TranslationFactory";
 
-import Login from './components/views/Login';
-import AppNavbar from './components/AppNavbar';
+import Login from "./components/views/Login";
+import AppNavbar from "./components/AppNavbar";
 
-import './App.css';
-import loadable from '@loadable/component';
-import { AppRoutes } from './utils/routes';
-import ErrorBoundary from './components/utils/ErrorBoundary';
-import Loading from './components/utils/Loading';
-import Reload from './components/utils/Reload';
-import { StatusCode } from './ApiClient/models/InternalComms/InternalStatus';
-import { ErrorCode } from './ApiClient/models/InternalComms/InternalError';
-import ServerClient from './ApiClient/ServerClient';
+import "./App.css";
+import loadable from "@loadable/component";
+import { AppRoutes } from "./utils/routes";
+import ErrorBoundary from "./components/utils/ErrorBoundary";
+import Loading from "./components/utils/Loading";
+import Reload from "./components/utils/Reload";
+import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
+import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
+import ServerClient from "./ApiClient/ServerClient";
 interface IState {
     translation?: ITranslation;
     translationError?: string;
@@ -31,16 +31,16 @@ interface IState {
 
 const LoadSpin = <Loading />;
 
-const Home = loadable(() => import('./components/views/Home'), {
+const Home = loadable(() => import("./components/views/Home"), {
     fallback: LoadSpin
 });
-const Administration = loadable(() => import('./components/views/Administration'), {
+const Administration = loadable(() => import("./components/views/Administration"), {
     fallback: LoadSpin
 });
-const Configuration = loadable(() => import('./components/views/Configuration'), {
+const Configuration = loadable(() => import("./components/views/Configuration"), {
     fallback: LoadSpin
 });
-const NotFound = loadable(() => import('./components/views/NotFound'), {
+const NotFound = loadable(() => import("./components/views/NotFound"), {
     fallback: LoadSpin
 });
 
@@ -58,14 +58,14 @@ class App extends React.Component<IAppProps, IState> {
         };
     }
     public async componentDidMount(): Promise<void> {
-        ServerClient.on('loginSuccess', () => {
-            console.log('Logging in');
+        ServerClient.on("loginSuccess", () => {
+            console.log("Logging in");
             this.setState({
                 loggedIn: true,
                 loading: false
             });
         });
-        ServerClient.on('logout', () => {
+        ServerClient.on("logout", () => {
             this.setState({
                 loggedIn: false
             });
@@ -78,11 +78,11 @@ class App extends React.Component<IAppProps, IState> {
         try {
             //private browsing on safari can throw when using storage
             usr =
-                window.sessionStorage.getItem('username') ||
-                window.localStorage.getItem('username');
+                window.sessionStorage.getItem("username") ||
+                window.localStorage.getItem("username");
             pwd =
-                window.sessionStorage.getItem('password') ||
-                window.localStorage.getItem('password');
+                window.sessionStorage.getItem("password") ||
+                window.localStorage.getItem("password");
         } catch (e) {
             (() => {})(); //noop
         }
@@ -98,10 +98,10 @@ class App extends React.Component<IAppProps, IState> {
                     res.error?.code == ErrorCode.LOGIN_FAIL
                 ) {
                     try {
-                        window.localStorage.removeItem('username');
-                        window.localStorage.removeItem('password');
-                        window.sessionStorage.removeItem('username');
-                        window.sessionStorage.removeItem('password');
+                        window.localStorage.removeItem("username");
+                        window.localStorage.removeItem("password");
+                        window.sessionStorage.removeItem("username");
+                        window.sessionStorage.removeItem("password");
                     } catch (e) {
                         (() => {})(); //noop
                     }
@@ -166,7 +166,7 @@ class App extends React.Component<IAppProps, IState> {
             });
         } catch (error) {
             this.setState({
-                translationError: error || 'An unknown error occurred'
+                translationError: error || "An unknown error occurred"
             });
 
             return;

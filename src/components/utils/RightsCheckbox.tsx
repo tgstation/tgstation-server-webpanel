@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
+import * as React from "react";
+import { FormattedMessage } from "react-intl";
 
 interface IProps<TRight> {
     descriptionId: string;

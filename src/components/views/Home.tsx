@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-import Card from 'react-bootstrap/Card';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import { AppRoutes, NormalRoute } from '../../utils/routes';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FormattedMessage } from 'react-intl';
-import RouteController from '../../utils/RouteController';
+import * as React from "react";
+import { Link } from "react-router-dom";
+import Card from "react-bootstrap/Card";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import { AppRoutes, NormalRoute } from "../../utils/routes";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FormattedMessage } from "react-intl";
+import RouteController from "../../utils/RouteController";
 
 interface IProps {}
 interface IState {
@@ -14,7 +14,7 @@ interface IState {
 }
 
 export default class Home extends React.Component<IProps, IState> {
-    public static readonly Route: string = '/';
+    public static readonly Route: string = "/";
 
     public constructor(props: IProps) {
         super(props);
@@ -33,11 +33,11 @@ export default class Home extends React.Component<IProps, IState> {
         this.setState({
             routes: await RouteController.getVisibleRoutes(true, false)
         });
-        RouteController.on('refreshAllVisible', this.setRoutes);
+        RouteController.on("refreshAllVisible", this.setRoutes);
     }
 
     public componentWillUnmount() {
-        RouteController.removeListener('refreshAllVisible', this.setRoutes);
+        RouteController.removeListener("refreshAllVisible", this.setRoutes);
     }
 
     public render(): React.ReactNode {
@@ -48,12 +48,12 @@ export default class Home extends React.Component<IProps, IState> {
                     return (
                         <Col key={val.route} className="mb-1">
                             <Card
-                                as={val.cachedAuth ? Link : 'div'}
+                                as={val.cachedAuth ? Link : "div"}
                                 to={val.route}
                                 className={`text-decoration-none m-1 h-75 ${
                                     val.cachedAuth
-                                        ? 'text-secondary'
-                                        : 'text-danger d-sm-flex d-none'
+                                        ? "text-secondary"
+                                        : "text-danger d-sm-flex d-none"
                                 }`}>
                                 <Card.Body>
                                     <FontAwesomeIcon
@@ -64,7 +64,7 @@ export default class Home extends React.Component<IProps, IState> {
                                 </Card.Body>
                                 <Card.Footer
                                     className={`text-center font-weight-bold ${
-                                        val.cachedAuth ? '' : 'text-danger font-italic'
+                                        val.cachedAuth ? "" : "text-danger font-italic"
                                     }`}>
                                     <FormattedMessage id={val.name} />
                                 </Card.Footer>

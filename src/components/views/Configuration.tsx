@@ -1,15 +1,15 @@
-import React from 'react';
-import InputGroup from 'react-bootstrap/InputGroup';
-import FormControl from 'react-bootstrap/FormControl';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { FormattedMessage } from 'react-intl';
-import configOptions, { ConfigMap, ConfigOption } from '../../utils/config';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import ConfigController from '../../utils/ConfigController';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { OverlayInjectedProps } from 'react-bootstrap/Overlay';
+import React from "react";
+import InputGroup from "react-bootstrap/InputGroup";
+import FormControl from "react-bootstrap/FormControl";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import { FormattedMessage } from "react-intl";
+import configOptions, { ConfigMap, ConfigOption } from "../../utils/config";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+import ConfigController from "../../utils/ConfigController";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { OverlayInjectedProps } from "react-bootstrap/Overlay";
 
 interface IProps {}
 interface IState {
@@ -63,7 +63,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                         };
                         //obj.persist = persistRef.current!.checked;
                         obj.value =
-                            value.type === 'bool'
+                            value.type === "bool"
                                 ? valueRef.current!.checked
                                 : valueRef.current!.value;
                         this.setState(prevstate => {
@@ -77,16 +77,16 @@ export default class Configuration extends React.Component<IProps, IState> {
                     };
                     let type;
                     switch (value.type) {
-                        case 'num': {
-                            type = 'number';
+                        case "num": {
+                            type = "number";
                             break;
                         }
-                        case 'str': {
-                            type = 'input';
+                        case "str": {
+                            type = "input";
                             break;
                         }
-                        case 'bool': {
-                            type = 'switch';
+                        case "bool": {
+                            type = "switch";
                         }
                     }
 
@@ -121,10 +121,10 @@ export default class Configuration extends React.Component<IProps, IState> {
                                         value={''}
                                     />
                                 </InputGroup.Text>*/}
-                                <OverlayTrigger overlay={tooltip(value.id + '.desc')}>
+                                <OverlayTrigger overlay={tooltip(value.id + ".desc")}>
                                     <InputGroup.Text
                                         className={`flex-fill ${
-                                            this.state.values[key] ? 'font-weight-bold' : ''
+                                            this.state.values[key] ? "font-weight-bold" : ""
                                         }`}>
                                         <FormattedMessage id={value.id} />
                                         <div className="ml-auto">
@@ -134,7 +134,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                                 </OverlayTrigger>
                             </InputGroup.Prepend>
                             <div className="flex-grow-1 w-100 w-xl-auto d-flex">
-                                {type === 'switch' ? (
+                                {type === "switch" ? (
                                     <label
                                         htmlFor={random}
                                         className="d-flex justify-content-center align-content-center flex-grow-1 w-100 w-xl-auto">
@@ -155,7 +155,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                                         custom
                                         type={type}
                                         className={`flex-fill ${
-                                            this.state.values[key] ? 'font-weight-bold' : ''
+                                            this.state.values[key] ? "font-weight-bold" : ""
                                         }`}
                                         ref={valueRef}
                                         onChange={updateValue}
@@ -173,7 +173,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                                         </InputGroup.Text>
                                     </InputGroup.Append>
                                 ) : (
-                                    ''
+                                    ""
                                 )}
                             </div>
                         </InputGroup>

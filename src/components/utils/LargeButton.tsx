@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
+import * as React from "react";
+import { FormattedMessage } from "react-intl";
 
-import './LargeButton.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import "./LargeButton.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 interface IProps {
     fontSize: string;
@@ -23,7 +23,7 @@ export default class LargeButton extends React.Component<IProps> {
                     </div>
                     <div
                         className="LargeButton-text"
-                        style={{ fontSize: this.props.textSize || '30px' }}>
+                        style={{ fontSize: this.props.textSize || "30px" }}>
                         {this.renderMessage()}
                     </div>
                 </div>

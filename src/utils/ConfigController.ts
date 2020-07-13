@@ -1,4 +1,4 @@
-import configOptions, { ConfigOption, ConfigValue } from './config';
+import configOptions, { ConfigOption, ConfigValue } from "./config";
 
 export default new (class ConfigController {
     public constructor() {
@@ -9,14 +9,14 @@ export default new (class ConfigController {
         for (const val of Object.values(configOptions)) {
             this.getconfig(val);
         }
-        console.log('Configuration loaded', configOptions);
+        console.log("Configuration loaded", configOptions);
     }
 
     public saveconfig(newconfig: { [key: string]: ConfigOption }) {
         for (const [key, val] of Object.entries(newconfig)) {
             this.setconfig(key, val);
         }
-        console.log('Configuration saved', configOptions);
+        console.log("Configuration saved", configOptions);
     }
 
     private setconfig(key: string, option: ConfigOption) {
@@ -24,17 +24,17 @@ export default new (class ConfigController {
 
         //safeties
         switch (option.type) {
-            case 'bool':
-                if (typeof option.value !== 'boolean') return;
+            case "bool":
+                if (typeof option.value !== "boolean") return;
                 break;
-            case 'num':
+            case "num":
                 //this parses strings and numbers alike to numbers and refuses non numbers
                 //@ts-ignore //parseInt can take numbers
                 option.value = parseInt(option.value);
                 if (Number.isNaN(option.value)) return;
                 break;
-            case 'str':
-                if (typeof option.value !== 'string') return;
+            case "str":
+                if (typeof option.value !== "string") return;
                 break;
         }
 

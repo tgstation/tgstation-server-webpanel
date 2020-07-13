@@ -1,10 +1,10 @@
-import React, { ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import { RouteComponentProps, withRouter } from 'react-router';
-import { AppRoute } from '../../utils/routes';
-import RouteController from '../../utils/RouteController';
+import React, { ReactNode } from "react";
+import { FormattedMessage } from "react-intl";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import { RouteComponentProps, withRouter } from "react-router";
+import { AppRoute } from "../../utils/routes";
+import RouteController from "../../utils/RouteController";
 
 interface IProps extends RouteComponentProps {
     currentRoute: AppRoute;
@@ -25,12 +25,12 @@ class AccessDenied extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        RouteController.on('refresh', this.updateState);
+        RouteController.on("refresh", this.updateState);
         this.updateState();
     }
 
     public componentWillUnmount() {
-        RouteController.removeListener('refresh', this.updateState);
+        RouteController.removeListener("refresh", this.updateState);
     }
 
     public updateState(): void {
@@ -44,7 +44,7 @@ class AccessDenied extends React.Component<IProps, IState> {
     }
 
     public render(): ReactNode {
-        if (this.state.auth) return '';
+        if (this.state.auth) return "";
 
         const goBack = () => {
             this.props.history.goBack();
