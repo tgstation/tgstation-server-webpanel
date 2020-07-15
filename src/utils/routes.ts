@@ -1,12 +1,9 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
-import { AdministrationRights } from "../ApiClient/generatedcode/_enums";
-import UserClient from "../ApiClient/UserClient";
-import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 
 export interface BaseRoute {
     route: string;
     name: string;
+    file: string;
     exact?: boolean;
     isAuthorized: () => Promise<boolean>;
     cachedAuth?: boolean; //only RouteController should use this
@@ -29,10 +26,12 @@ export const AppRoutes: {
     home: {
         route: "/",
         name: "routes.home",
+        file: "Home",
         exact: true,
         icon: "home",
-        isAuthorized: async () => true
+        isAuthorized: () => Promise.resolve(true)
     },
+    /*
     instances: {
         route: "/Instance/",
         name: "routes.instances",
@@ -45,11 +44,13 @@ export const AppRoutes: {
         icon: "user",
         isAuthorized: async () => false
     },
+    */
     admin: {
         route: "/Administration/",
         name: "routes.admin",
+        file: "Administration",
         icon: "tools",
-        isAuthorized: async () => {
+        isAuthorized: () => {
             /*if (!CredentialsProvider.isTokenValid()) return false;
             const response = await UserClient.getCurrentUser();
 
@@ -61,13 +62,14 @@ export const AppRoutes: {
             }
             return false;*/
             //i realized everyone can GET /Administration so this is pretty useless
-            return true;
+            return Promise.resolve(true);
         }
     },
     config: {
         route: "/Configuration/",
         name: "routes.config",
+        file: "Configuration",
         hidden: true,
-        isAuthorized: async () => true
+        isAuthorized: () => Promise.resolve(true)
     }
 };

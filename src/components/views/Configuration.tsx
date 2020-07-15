@@ -9,7 +9,6 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import ConfigController from "../../utils/ConfigController";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { OverlayInjectedProps } from "react-bootstrap/Overlay";
 
 interface IProps {}
 interface IState {

@@ -47,7 +47,7 @@ export default class Loading extends React.Component<IProps, IState> {
                 <Spinner
                     variant={variant ? variant : "secondary"}
                     className={center ? "d-block mx-auto " + className : className}
-                    style={styles as React.CSSProperties}
+                    style={styles}
                     animation={animation ? animation : "border"}
                     {...otherprops}
                 />
