@@ -14,8 +14,7 @@ import Login from "./components/views/Login";
 import AppNavbar from "./components/AppNavbar";
 
 import "./App.css";
-import loadable, { LoadableComponent } from "@loadable/component";
-import { AppRoutes } from "./utils/routes";
+import loadable from "@loadable/component";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import Loading from "./components/utils/Loading";
 import Reload from "./components/utils/Reload";
@@ -33,30 +32,29 @@ interface IState {
 
 const LoadSpin = <Loading />;
 
-const Home = loadable(() => import("./components/views/Home"), {
-    fallback: LoadSpin
-});
-const Administration = loadable(() => import("./components/views/Administration"), {
-    fallback: LoadSpin
-});
-const Configuration = loadable(() => import("./components/views/Configuration"), {
-    fallback: LoadSpin
-});
 const NotFound = loadable(() => import("./components/views/NotFound"), {
     fallback: LoadSpin
 });
 
 class App extends React.Component<IAppProps, IState> {
     private readonly translationFactory: ITranslationFactory;
-    private readonly components: Map<string, LoadableComponent<unknown>>;
+    private readonly components: Map<string, React.ReactNode>;
 
     public constructor(props: IAppProps) {
         super(props);
 
         this.translationFactory = this.props.translationFactory || new TranslationFactory();
-        this.components = new Map<string, LoadableComponent<unknown>>();
+        this.components = new Map<string, React.ReactNode>();
 
-        RouteController.getImmediateRoutes(true, false);
+        const routes = RouteController.getImmediateRoutes(true, false);
+        routes.forEach(route => {
+            this.components.set(
+                route.name,
+                //*should* always be a react component
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                loadable(() => import(`./components/views/${route.file}`), { fallback: LoadSpin })
+            );
+        });
 
         this.state = {
             loggedIn: false,
@@ -128,15 +126,23 @@ class App extends React.Component<IAppProps, IState> {
                                 <Reload>
                                     {this.state.loggedIn ? (
                                         <Switch>
-                                            <Route exact path={AppRoutes.home.route}>
-                                                <Home />
-                                            </Route>
-                                            <Route path={AppRoutes.admin.route}>
-                                                <Administration />
-                                            </Route>
-                                            <Route path={AppRoutes.config.route}>
-                                                <Configuration />
-                                            </Route>
+                                            {RouteController.getImmediateRoutes(true, false).map(
+                                                route => {
+                                                    return (
+                                                        <Route
+                                                            key={route.name}
+                                                            exact={route.exact}
+                                                            path={route.route}
+                                                            render={() => {
+                                                                const RouteComponent = this.components.get(
+                                                                    route.name
+                                                                );
+                                                                return <RouteComponent />;
+                                                            }}
+                                                        />
+                                                    );
+                                                }
+                                            )}
                                             <Route>
                                                 <NotFound />
                                             </Route>

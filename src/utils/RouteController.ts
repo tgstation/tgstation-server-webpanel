@@ -75,7 +75,7 @@ class RouteController extends TypedEmitter<IEvents> {
         return this.getImmediateRoutes(hidden, auth);
     }
 
-    public getImmediateRoutes(hidden = true, auth = false) {
+    public getImmediateRoutes(hidden = true, auth = true) {
         const results: Array<AppRoute> = [];
 
         const propNames = Object.getOwnPropertyNames(AppRoutes);

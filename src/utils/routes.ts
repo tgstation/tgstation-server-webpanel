@@ -1,12 +1,12 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 export interface BaseRoute {
-    route: string;
+    route: string; //must be unique
     name: string;
     file: string;
     exact?: boolean;
     isAuthorized: () => Promise<boolean>;
-    cachedAuth?: boolean; //only RouteController should use this
+    cachedAuth?: boolean; //only RouteController should set this
 }
 
 export interface NormalRoute extends BaseRoute {
