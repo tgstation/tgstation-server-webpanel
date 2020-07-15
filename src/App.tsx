@@ -14,7 +14,7 @@ import Login from "./components/views/Login";
 import AppNavbar from "./components/AppNavbar";
 
 import "./App.css";
-import loadable from "@loadable/component";
+import loadable, { LoadableComponent } from "@loadable/component";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import Loading from "./components/utils/Loading";
 import Reload from "./components/utils/Reload";
@@ -38,13 +38,13 @@ const NotFound = loadable(() => import("./components/views/NotFound"), {
 
 class App extends React.Component<IAppProps, IState> {
     private readonly translationFactory: ITranslationFactory;
-    private readonly components: Map<string, React.ReactNode>;
+    private readonly components: Map<string, LoadableComponent<unknown>>;
 
     public constructor(props: IAppProps) {
         super(props);
 
         this.translationFactory = this.props.translationFactory || new TranslationFactory();
-        this.components = new Map<string, React.ReactNode>();
+        this.components = new Map<string, LoadableComponent<unknown>>();
 
         const routes = RouteController.getImmediateRoutes(true, false);
         routes.forEach(route => {
@@ -134,10 +134,9 @@ class App extends React.Component<IAppProps, IState> {
                                                             exact={route.exact}
                                                             path={route.route}
                                                             render={() => {
-                                                                const RouteComponent = this.components.get(
-                                                                    route.name
+                                                                return React.createElement(
+                                                                    this.components.get(route.name)!
                                                                 );
-                                                                return <RouteComponent />;
                                                             }}
                                                         />
                                                     );
