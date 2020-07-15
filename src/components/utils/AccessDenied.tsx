@@ -50,10 +50,7 @@ class AccessDenied extends React.Component<IProps, IState> {
             this.props.history.goBack();
         };
         return (
-            <Alert
-                className="clearfix"
-                // @ts-ignore // the error is a special variant just for this
-                variant="error">
+            <Alert className="clearfix" variant="error">
                 <FormattedMessage id="generic.accessdenied" />
                 <hr />
 

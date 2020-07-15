@@ -1,4 +1,5 @@
 declare module "@matsun/reactiscapslockactive" {
+    // noinspection JSDuplicatedDeclaration
     export default ReactIsCapsLockActive;
 }
 

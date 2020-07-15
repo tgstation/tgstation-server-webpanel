@@ -23,7 +23,6 @@ interface IState {
     loggedIn: boolean;
     routes: Array<NormalRoute>;
 }
-
 export default class AppNavbar extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
@@ -140,7 +139,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                 </div>
             );
         if (this.state.serverInformation)
-            return `tgstation-server v${this.state.serverInformation.version}`;
+            return `tgstation-server v${this.state.serverInformation.version!}`;
 
         return "loading"; //TODO: add a spinner;
     }

@@ -29,14 +29,14 @@ export default class Home extends React.Component<IProps, IState> {
         this.setState({ routes });
     }
 
-    public async componentDidMount() {
+    public async componentDidMount(): Promise<void> {
         this.setState({
             routes: await RouteController.getVisibleRoutes(false)
         });
         RouteController.on("refreshAllVisible", this.setRoutes);
     }
 
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         RouteController.removeListener("refreshAllVisible", this.setRoutes);
     }
 
@@ -45,11 +45,19 @@ export default class Home extends React.Component<IProps, IState> {
             <Row xs={1} sm={2} md={3} lg={4} className="justify-content-center">
                 {this.state.routes.map(val => {
                     if (val === AppRoutes.home) return;
+
+                    const element = () => {
+                        if (val.cachedAuth) {
+                            return <Link to={val.route} />;
+                        } else {
+                            return <div />;
+                        }
+                    };
+
                     return (
                         <Col key={val.route} className="mb-1">
                             <Card
-                                as={val.cachedAuth ? Link : "div"}
-                                to={val.route}
+                                as={element}
                                 className={`text-decoration-none m-1 h-75 ${
                                     val.cachedAuth
                                         ? "text-secondary"

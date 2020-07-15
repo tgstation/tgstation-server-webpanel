@@ -36,7 +36,6 @@ export default class ErrorAlert extends Component<IProps, IState> {
         return (
             <Alert
                 className="clearfix"
-                // @ts-ignore // the error is a special variant just for this
                 variant="error"
                 dismissible
                 onClose={() => this.setState(this.props.onClose)}>

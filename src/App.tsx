@@ -14,7 +14,7 @@ import Login from "./components/views/Login";
 import AppNavbar from "./components/AppNavbar";
 
 import "./App.css";
-import loadable from "@loadable/component";
+import loadable, { LoadableComponent } from "@loadable/component";
 import { AppRoutes } from "./utils/routes";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import Loading from "./components/utils/Loading";
@@ -22,6 +22,8 @@ import Reload from "./components/utils/Reload";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import ServerClient from "./ApiClient/ServerClient";
+import RouteController from "./utils/RouteController";
+import { getSavedCreds } from "./utils/misc";
 interface IState {
     translation?: ITranslation;
     translationError?: string;
@@ -46,11 +48,15 @@ const NotFound = loadable(() => import("./components/views/NotFound"), {
 
 class App extends React.Component<IAppProps, IState> {
     private readonly translationFactory: ITranslationFactory;
+    private readonly components: Map<string, LoadableComponent<unknown>>;
 
     public constructor(props: IAppProps) {
         super(props);
 
         this.translationFactory = this.props.translationFactory || new TranslationFactory();
+        this.components = new Map<string, LoadableComponent<unknown>>();
+
+        RouteController.getImmediateRoutes(true, false);
 
         this.state = {
             loggedIn: false,
@@ -73,19 +79,7 @@ class App extends React.Component<IAppProps, IState> {
 
         await Promise.all([this.loadTranslation(), ServerClient.wait4Init()]);
 
-        let usr: string | null = null;
-        let pwd: string | null = null;
-        try {
-            //private browsing on safari can throw when using storage
-            usr =
-                window.sessionStorage.getItem("username") ||
-                window.localStorage.getItem("username");
-            pwd =
-                window.sessionStorage.getItem("password") ||
-                window.localStorage.getItem("password");
-        } catch (e) {
-            (() => {})(); //noop
-        }
+        const [usr, pwd] = getSavedCreds() || [undefined, undefined];
 
         if (usr && pwd) {
             const res = await ServerClient.login({ userName: usr, password: pwd });
@@ -103,6 +97,7 @@ class App extends React.Component<IAppProps, IState> {
                         window.sessionStorage.removeItem("username");
                         window.sessionStorage.removeItem("password");
                     } catch (e) {
+                        // eslint-disable-next-line @typescript-eslint/no-empty-function
                         (() => {})(); //noop
                     }
                 }
@@ -166,7 +161,7 @@ class App extends React.Component<IAppProps, IState> {
             });
         } catch (error) {
             this.setState({
-                translationError: error || "An unknown error occurred"
+                translationError: JSON.stringify(error) || "An unknown error occurred"
             });
 
             return;

@@ -97,22 +97,25 @@ export default class InternalError<T extends ErrorCode> {
             };
         }
         let debuginfo = JSON.stringify({ addon, origin });
-        //@ts-ignore //slander, replaceAll() exists >:(
+        //@ts-expect-error //slander, replaceAll() exists >:(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         debuginfo = debuginfo.replaceAll(
             /Basic (?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?/g,
             "Basic **************"
-        );
-        //@ts-ignore //slander, replaceAll() exists >:(
+        ) as string;
+        //@ts-expect-error //slander, replaceAll() exists >:(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         debuginfo = debuginfo.replaceAll(
             /{"username":".+?","password":".+?"}/g,
             '{"username":"*******","password":"*******"}'
-        );
+        ) as string;
         if (CredentialsProvider.isTokenValid()) {
-            //@ts-ignore //slander, replaceAll() exists >:(
+            //@ts-expect-error //slander, replaceAll() exists >:(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             debuginfo = debuginfo.replaceAll(
                 CredentialsProvider.token?.bearer as string,
                 "**************"
-            );
+            ) as string;
         }
         this.extendedInfo = debuginfo;
     }

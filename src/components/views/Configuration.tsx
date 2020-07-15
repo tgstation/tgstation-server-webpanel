@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Form from "react-bootstrap/Form";
@@ -33,7 +33,7 @@ export default class Configuration extends React.Component<IProps, IState> {
         });
     }
 
-    public render() {
+    public render(): ReactNode {
         const config = Object.entries(configOptions);
 
         return (
@@ -90,13 +90,11 @@ export default class Configuration extends React.Component<IProps, IState> {
                     }
 
                     const tooltip = (innerid: string) => {
-                        return (props: any): React.ReactNode => {
-                            return (
-                                <Tooltip {...props}>
-                                    <FormattedMessage id={innerid} />
-                                </Tooltip>
-                            );
-                        };
+                        return (
+                            <Tooltip id={innerid}>
+                                <FormattedMessage id={innerid} />
+                            </Tooltip>
+                        );
                     };
 
                     const random = Math.random().toString();

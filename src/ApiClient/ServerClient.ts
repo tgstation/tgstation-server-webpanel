@@ -38,10 +38,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     private static readonly globalHandledCodes = [400, 401, 403, 406, 409, 426, 500, 501, 503];
 
     //api
-    // @ts-ignore
-    public apiClient: Client; //client to interface with the api
-    // @ts-ignore  //this will be undefined at the start but there shouldnt be any requests before the api is initialized, same as below
-    private api: OpenAPIClientAxios; //api object, handles sending requests and configuring things
+    public apiClient?: Client; //client to interface with the api
+    private api?: OpenAPIClientAxios; //api object, handles sending requests and configuring things
     private initialized = false;
     private loadingServerInfo = false;
 
@@ -51,11 +49,9 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         LoginHooks.addHook(this.getServerInfo);
         this.on("purgeCache", () => {
-            // noinspection JSIgnoredPromiseFromCall
             this._serverInfo = undefined;
         });
-        // noinspection JSIgnoredPromiseFromCall
-        this.initApi();
+        this.initApi().catch(console.error);
     }
 
     //serverInfo
@@ -89,7 +85,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             async value => {
                 if (!((value.url === "/" || value.url === "") && value.method === "post")) {
                     const tok = await this.wait4Token();
-                    value.headers["Authorization"] = "Bearer " + tok.bearer;
+                    (value.headers as { [key: string]: string })["Authorization"] =
+                        "Bearer " + tok.bearer!;
                 }
                 return value;
             },
@@ -136,8 +133,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                                 return Promise.reject(errorobj);
                             } else {
                                 CredentialsProvider.token = undefined; //our token is invalid, might as well clear it
-                                return this.login().then(_ => {
-                                    return this.api.client.request(error.config);
+                                return this.login().then(() => {
+                                    return this.api!.client.request(error.config);
                                 });
                             }
                         }
@@ -222,7 +219,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         case 503: {
                             return new Promise(resolve => {
                                 setTimeout(resolve, 5000);
-                            }).then(_ => this.api.client.request(error.config));
+                            }).then(() => this.api!.client.request(error.config));
                             /*const errorobj = new InternalError(
                                 ErrorCode.HTTP_SERVER_NOT_READY,
                                 {
@@ -298,7 +295,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await this.apiClient.HomeController_CreateToken({}, null, {
+            response = await this.apiClient!.HomeController_CreateToken({}, null, {
                 auth: {
                     username: CredentialsProvider.credentials.userName,
                     password: CredentialsProvider.credentials.password
@@ -345,15 +342,14 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                             CredentialsProvider.credentials.password
                         );
                     } catch (_) {
+                        // eslint-disable-next-line @typescript-eslint/no-empty-function
                         (() => {})(); //noop
                     }
                 }
-                this.getServerInfo().then(() => {
-                    LoginHooks.runHooks(token).then(() => {
-                        console.log("Running post login event");
-                        this.emit("loginSuccess", token);
-                    });
-                });
+                await this.getServerInfo();
+                await LoginHooks.runHooks(token);
+                console.log("Running post login event");
+                this.emit("loginSuccess", token);
                 return new InternalStatus<Components.Schemas.Token, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: token
@@ -384,6 +380,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             window.sessionStorage.removeItem("username");
             window.sessionStorage.removeItem("password");
         } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})();
         }
         CredentialsProvider.token = undefined;
@@ -394,6 +391,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     public async getServerInfo(): Promise<
         InternalStatus<Components.Schemas.ServerInformation, ServerInfoErrors>
     > {
+        await this.wait4Init();
+
         if (this._serverInfo) {
             return this._serverInfo;
         }
@@ -415,7 +414,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await this.apiClient.HomeController_Home();
+            response = await this.apiClient!.HomeController_Home();
         } catch (stat) {
             const res = new InternalStatus<Components.Schemas.ServerInformation, GenericErrors>({
                 code: StatusCode.ERROR,

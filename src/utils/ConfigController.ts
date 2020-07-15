@@ -29,7 +29,7 @@ export default new (class ConfigController {
                 break;
             case "num":
                 //this parses strings and numbers alike to numbers and refuses non numbers
-                //@ts-ignore //parseInt can take numbers
+                //@ts-expect-error //parseInt can take numbers
                 option.value = parseInt(option.value);
                 if (Number.isNaN(option.value)) return;
                 break;
@@ -47,6 +47,7 @@ export default new (class ConfigController {
             localStorage.setItem(option.id, JSON.stringify(option.value));
             //option.persist = true;
         } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})(); //noop
         }
     }
@@ -59,6 +60,7 @@ export default new (class ConfigController {
                 //option.persist = true;
             }
         } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})(); //noop
         }
         return;
@@ -70,6 +72,7 @@ export default new (class ConfigController {
             localStorage.removeItem(option.id);
             //option.persist = false;
         } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})(); //noop
         }
     }

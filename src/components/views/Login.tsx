@@ -10,6 +10,7 @@ import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus"
 import InternalError from "../../ApiClient/models/InternalComms/InternalError";
 import ErrorAlert from "../utils/ErrorAlert";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
+import { getSavedCreds } from "../../utils/misc";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
@@ -27,19 +28,7 @@ export default withRouter(
             super(props);
             this.submit = this.submit.bind(this);
 
-            let usr: string | null = null;
-            let pwd: string | null = null;
-            try {
-                //private browsing on safari can throw when using storage
-                usr =
-                    window.sessionStorage.getItem("username") ||
-                    window.localStorage.getItem("username");
-                pwd =
-                    window.sessionStorage.getItem("password") ||
-                    window.localStorage.getItem("password");
-            } catch (e) {
-                (() => {})(); //noop
-            }
+            const [usr, pwd] = getSavedCreds() || [undefined, undefined];
 
             this.state = {
                 busy: false,

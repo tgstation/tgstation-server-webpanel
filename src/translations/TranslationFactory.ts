@@ -11,7 +11,10 @@ class TranslationFactory implements ITranslationFactory {
     }
 
     public async loadTranslation(locale: string): Promise<ITranslation> {
-        const localization = await import(`./locales/${locale}.json`);
+        //fancy type annotations but its just load the json file in this variable as a map of strings to strings
+        const localization: { [key: string]: string } = (await import(
+            `./locales/${locale}.json`
+        )) as { [key: string]: string };
 
         if (!localization) {
             let shortHandedLocale = TranslationFactory.getShortHandedLocale(locale);
@@ -27,7 +30,7 @@ class TranslationFactory implements ITranslationFactory {
         try {
             model = new Translation(locale, localization);
         } catch (e) {
-            throw Error(`Error loading localization for locale '${locale}': ${e.toString()}`);
+            throw Error(`Error loading localization for locale '${locale}': ${JSON.stringify(e)}`);
         }
 
         return model;

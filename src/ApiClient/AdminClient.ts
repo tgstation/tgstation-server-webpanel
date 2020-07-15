@@ -34,6 +34,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
     public async getAdminInfo(): Promise<
         InternalStatus<Components.Schemas.Administration, AdminInfoErrors>
     > {
+        await ServerClient.wait4Init();
         if (this._cachedAdminInfo) {
             return this._cachedAdminInfo;
         }
@@ -50,7 +51,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient.AdministrationController_Read();
+            response = await ServerClient.apiClient!.AdministrationController_Read();
         } catch (stat) {
             const res = new InternalStatus<Components.Schemas.Administration, AdminInfoErrors>({
                 code: StatusCode.ERROR,
@@ -127,9 +128,11 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
     }
 
     public async restartServer(): Promise<InternalStatus<null, RestartErrors>> {
+        await ServerClient.wait4Init();
+
         let response;
         try {
-            response = await ServerClient.apiClient.AdministrationController_Delete();
+            response = await ServerClient.apiClient!.AdministrationController_Delete();
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

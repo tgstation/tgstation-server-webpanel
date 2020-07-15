@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import AccessDenied from "../utils/AccessDenied";
 import { AppRoutes } from "../../utils/routes";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
@@ -38,7 +38,7 @@ export default class Administration extends React.Component<IProps, IState> {
         };
     }
 
-    public async componentDidMount() {
+    public async componentDidMount(): Promise<void> {
         this.setState({
             busy: true
         });
@@ -132,7 +132,7 @@ export default class Administration extends React.Component<IProps, IState> {
         console.timeEnd("Reboot");
     }
 
-    public render() {
+    public render(): ReactNode {
         if (this.state.busy) {
             return <Loading />;
         }
@@ -153,7 +153,6 @@ export default class Administration extends React.Component<IProps, IState> {
                             Host Machine OS:{" "}
                             <FontAwesomeIcon
                                 fixedWidth
-                                //@ts-ignore //it works on my machine, idk, typescript hates this for some reason
                                 icon={this.state.adminInfo.windowsHost ? faWindows : faLinux}
                             />
                         </h3>

@@ -26,6 +26,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
     }
 
     public async getCurrentUser(): Promise<InternalStatus<Components.Schemas.User, GenericErrors>> {
+        await ServerClient.wait4Init();
         if (this._cachedUser) {
             return this._cachedUser;
         }
@@ -42,7 +43,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient.UserController_Read();
+            response = await ServerClient.apiClient!.UserController_Read();
         } catch (stat) {
             const res = new InternalStatus<Components.Schemas.User, GenericErrors>({
                 code: StatusCode.ERROR,

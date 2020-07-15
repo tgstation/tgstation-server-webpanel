@@ -20,8 +20,7 @@ class RouteController extends TypedEmitter<IEvents> {
 
         ServerClient.on("purgeCache", () => this.refreshRoutes);
         LoginHooks.addHook(this.refreshRoutes);
-        // noinspection JSIgnoredPromiseFromCall
-        this.refreshRoutes();
+        this.refreshRoutes().catch(console.error);
     }
 
     public async refreshRoutes() {

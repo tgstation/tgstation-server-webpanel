@@ -29,7 +29,7 @@ export const AppRoutes: {
         file: "Home",
         exact: true,
         icon: "home",
-        isAuthorized: () => Promise.resolve(true)
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true)
     },
     /*
     instances: {
@@ -50,7 +50,7 @@ export const AppRoutes: {
         name: "routes.admin",
         file: "Administration",
         icon: "tools",
-        isAuthorized: () => {
+        isAuthorized: (): Promise<boolean> => {
             /*if (!CredentialsProvider.isTokenValid()) return false;
             const response = await UserClient.getCurrentUser();
 
@@ -70,6 +70,6 @@ export const AppRoutes: {
         name: "routes.config",
         file: "Configuration",
         hidden: true,
-        isAuthorized: () => Promise.resolve(true)
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true)
     }
 };
