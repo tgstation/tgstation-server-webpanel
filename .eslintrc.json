@@ -6,7 +6,8 @@
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:import/errors",
         "plugin:import/warnings",
         "plugin:import/typescript",
@@ -17,7 +18,7 @@
     },
     "ignorePatterns": [
         "node_modules/",
-        "src/clients/_generated.d.ts",
+        "src/ApiClient/generatedcode/",
         "webpack*.js",
         "scripts/patcher/",
         "scripts/api_download.js",
@@ -29,7 +30,9 @@
             "jsx": true
         },
         "ecmaVersion": 2018,
-        "sourceType": "module"
+        "sourceType": "module",
+        "tsconfigRootDir": ".",
+        "project": ["./tsconfig.json"]
     },
     "plugins": ["react", "@typescript-eslint", "prettier"],
     "rules": {
@@ -42,7 +45,16 @@
         "linebreak-style": "off",
         "no-unused-vars": "off",
         "prettier/prettier": "error",
-        "import/no-cycle": "error"
+        "import/no-cycle": "error",
+        "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/ban-ts-comment": [
+            "warn",
+            {
+                "ts-expect-error": "allow-with-description"
+            }
+        ],
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-empty-interface": "off"
     },
     "settings": {
         "react": {
