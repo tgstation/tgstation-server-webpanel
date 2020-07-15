@@ -21,7 +21,7 @@ module.exports = {
                 },*/
                 api: {
                     priority: 1,
-                    test: /[\\/]clients[\\/]/,
+                    test: /[\\/]ApiClient[\\/]/,
                     enforce: true
                 }
             }
