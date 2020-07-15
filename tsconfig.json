@@ -30,9 +30,8 @@
   "exclude": [
     "node_modules",
     "build",
-    "src/index.tsx",
-    "**/*.test.tsx",
-    "**/*.test.ts"
+    "dist",
+    "src/ApiClient/generatedcode"
   ],
   "include": [
     "src"
