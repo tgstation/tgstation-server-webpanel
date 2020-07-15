@@ -35,7 +35,28 @@ module.exports = smp.wrap(
                 new TerserPlugin({
                     test: /\.[jt]sx?$/
                 })
-            ]
+            ],
+            splitChunks: {
+                cacheGroups: {
+                    chunks: "all",
+                    packages: {
+                        maxInitialRequests: Infinity,
+                        minSize: 5000,
+                        priority: 3,
+                        test: new RegExp("[\\/]node_modules[\\/]"),
+                        name(module) {
+                            // get the name. E.g. node_modules/packageName/not/this/part.js
+                            // or node_modules/packageName
+                            const packageName = module.context.match(
+                                /[\\/]node_modules[\\/](.*?)([\\/]|$)/
+                            )[1];
+
+                            // npm package names are URL-safe, but some servers don't like @ symbols
+                            return `vendors/npm.${packageName.replace("@", "")}`;
+                        }
+                    }
+                }
+            }
         },
         output: {
             publicPath: appPath,
