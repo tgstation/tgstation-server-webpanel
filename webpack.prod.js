@@ -1,14 +1,14 @@
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const webpack = require('webpack');
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const webpack = require("webpack");
 
-const merge = require('webpack-merge');
-const common = require('./webpack.common.js');
-const path = require('path');
+const { merge } = require("webpack-merge");
+const common = require("./webpack.common.js");
+const path = require("path");
 
-const appPath = '/ctlpaneltest/';
-const apiPath = 'http://localhost:5000/';
-const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+const appPath = "/ctlpaneltest/";
+const apiPath = "http://localhost:5000/";
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 
 const profile = false;
 
@@ -28,7 +28,7 @@ if (profile) {
 
 module.exports = smp.wrap(
     merge(common, {
-        mode: 'production',
+        mode: "production",
         optimization: {
             minimize: true,
             minimizer: [
@@ -39,8 +39,8 @@ module.exports = smp.wrap(
         },
         output: {
             publicPath: appPath,
-            filename: '[name].[contenthash].js',
-            path: path.resolve(__dirname, 'dist')
+            filename: "[name].[contenthash].js",
+            path: path.resolve(__dirname, "dist")
         },
         plugins: [
             new ForkTsCheckerWebpackPlugin(),
@@ -48,9 +48,9 @@ module.exports = smp.wrap(
                 outputPath: 'profile.json'
             }),*/
             new webpack.DefinePlugin({
-                API_VERSION: JSON.stringify(require('./package.json').tgs_api_version),
-                VERSION: JSON.stringify(require('./package.json').version),
-                MODE: JSON.stringify('PROD'),
+                API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
+                VERSION: JSON.stringify(require("./package.json").version),
+                MODE: JSON.stringify("PROD"),
                 BASEPATH: JSON.stringify(appPath),
                 APIPATH: JSON.stringify(apiPath)
             })

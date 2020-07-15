@@ -1,9 +1,9 @@
-const webpack = require('webpack');
+const webpack = require("webpack");
 
-const merge = require('webpack-merge');
-const common = require('./webpack.common.js');
-const path = require('path');
-const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+const { merge } = require("webpack-merge");
+const common = require("./webpack.common.js");
+const path = require("path");
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 
 const profile = false;
 
@@ -23,42 +23,42 @@ if (profile) {
 
 module.exports = smp.wrap(
     merge(common, {
-        mode: 'development',
-        devtool: 'source-map',
+        mode: "development",
+        devtool: "source-map",
 
         output: {
-            publicPath: '/',
-            filename: '[name].js',
-            path: path.resolve(__dirname, 'dist')
+            publicPath: "/",
+            filename: "[name].js",
+            path: path.resolve(__dirname, "dist")
         },
 
         optimization: {
             removeAvailableModules: false,
             removeEmptyChunks: false,
             splitChunks: {
-                chunks: 'all',
+                chunks: "all",
                 cacheGroups: {
                     packages: {
                         test: /[\\/]node_modules[\\/]/,
-                        name: 'packages'
+                        name: "packages"
                     }
                 }
             }
         },
 
         devServer: {
-            contentBase: path.join(__dirname, 'dist'),
+            contentBase: path.join(__dirname, "dist"),
             compress: true,
             hot: true,
             overlay: true,
-            host: '0.0.0.0', //technically insecure? don't put nudes in your app, helps to test with mobile
+            host: "0.0.0.0", //technically insecure? don't put nudes in your app, helps to test with mobile
             port: 8080,
             historyApiFallback: true
         },
 
         resolve: {
             alias: {
-                'react-dom': '@hot-loader/react-dom'
+                "react-dom": "@hot-loader/react-dom"
             }
         },
 
@@ -66,10 +66,10 @@ module.exports = smp.wrap(
             rules: [
                 // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
                 {
-                    enforce: 'pre',
+                    enforce: "pre",
                     exclude: /node_modules/,
                     test: /\.js$/,
-                    loader: 'source-map-loader'
+                    loader: "source-map-loader"
                 }
             ]
         },
@@ -77,11 +77,11 @@ module.exports = smp.wrap(
         plugins: [
             new webpack.HotModuleReplacementPlugin({}),
             new webpack.DefinePlugin({
-                API_VERSION: JSON.stringify(require('./package.json').tgs_api_version),
-                VERSION: JSON.stringify(require('./package.json').version),
-                MODE: JSON.stringify('DEV'),
-                BASEPATH: JSON.stringify('/'),
-                APIPATH: JSON.stringify('http://192.168.0.187:5000/')
+                API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
+                VERSION: JSON.stringify(require("./package.json").version),
+                MODE: JSON.stringify("DEV"),
+                BASEPATH: JSON.stringify("/"),
+                APIPATH: JSON.stringify("http://192.168.0.187:5000/")
             })
         ]
     })
