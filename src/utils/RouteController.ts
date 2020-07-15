@@ -18,7 +18,7 @@ class RouteController extends TypedEmitter<IEvents> {
         super();
         this.refreshRoutes = this.refreshRoutes.bind(this);
 
-        ServerClient.on("purgeCache", this.refreshRoutes);
+        ServerClient.on("purgeCache", () => this.refreshRoutes);
         LoginHooks.addHook(this.refreshRoutes);
         // noinspection JSIgnoredPromiseFromCall
         this.refreshRoutes();
@@ -33,7 +33,7 @@ class RouteController extends TypedEmitter<IEvents> {
         this.refreshing = true;
 
         const work = []; //    we get all hidden routes no matter the authentification without waiting for the refresh
-        const routes = await this.getRoutes(true, false, false);
+        const routes = this.getImmediateRoutes(true, false);
 
         for (const route of routes) {
             route.cachedAuth = undefined;
@@ -48,16 +48,13 @@ class RouteController extends TypedEmitter<IEvents> {
 
         await Promise.all(work); //wait for all the authorized calls to complete
 
-        this.emit("refresh", await this.getRoutes(true, false));
-        this.emit("refreshVisible", (await this.getRoutes(false, false)) as Array<NormalRoute>);
-        this.emit("refreshAll", await this.getRoutes(true, false, false));
-        this.emit(
-            "refreshAllVisible",
-            (await this.getRoutes(false, false, false)) as Array<NormalRoute>
-        );
+        this.emit("refresh", this.getImmediateRoutes(true));
+        this.emit("refreshVisible", this.getImmediateRoutes(false) as Array<NormalRoute>);
+        this.emit("refreshAll", this.getImmediateRoutes(true, false));
+        this.emit("refreshAllVisible", this.getImmediateRoutes(false, false) as Array<NormalRoute>);
         this.refreshing = false;
 
-        console.log("Routes refreshed", await this.getRoutes(true, true, false));
+        console.log("Routes refreshed", await this.getRoutes(true, false));
         return await this.getRoutes();
     }
 
@@ -73,9 +70,13 @@ class RouteController extends TypedEmitter<IEvents> {
         });
     }
 
-    public async getRoutes(hidden = true, wait = true, auth = true): Promise<AppRoute[]> {
-        if (wait) await this.wait4refresh();
+    public async getRoutes(hidden = true, auth = true): Promise<AppRoute[]> {
+        await this.wait4refresh();
 
+        return this.getImmediateRoutes(hidden, auth);
+    }
+
+    public getImmediateRoutes(hidden = true, auth = false) {
         const results: Array<AppRoute> = [];
 
         const propNames = Object.getOwnPropertyNames(AppRoutes);
@@ -94,8 +95,8 @@ class RouteController extends TypedEmitter<IEvents> {
     }
 
     //bullshit wrapper because of types
-    public async getVisibleRoutes(wait = true, auth = true) {
-        return (await this.getRoutes(false, wait, auth)) as Array<NormalRoute>;
+    public async getVisibleRoutes(auth = true) {
+        return (await this.getRoutes(false, auth)) as Array<NormalRoute>;
     }
 }
 

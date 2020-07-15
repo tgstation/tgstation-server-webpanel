@@ -31,7 +31,7 @@ export default class Home extends React.Component<IProps, IState> {
 
     public async componentDidMount() {
         this.setState({
-            routes: await RouteController.getVisibleRoutes(true, false)
+            routes: await RouteController.getVisibleRoutes(false)
         });
         RouteController.on("refreshAllVisible", this.setRoutes);
     }
