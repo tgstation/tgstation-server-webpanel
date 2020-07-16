@@ -4,6 +4,7 @@ import { FormattedMessage } from "react-intl";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Dropdown from "react-bootstrap/Dropdown";
+import Button from "react-bootstrap/Button";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AppRoutes, NormalRoute } from "../utils/routes";
@@ -145,7 +146,19 @@ export default class AppNavbar extends React.Component<IProps, IState> {
     }
 
     private renderUser(): React.ReactNode {
-        if (!this.state.loggedIn) return;
+        if (!this.state.loggedIn)
+            return (
+                <Button
+                    as={Link}
+                    to={AppRoutes.config.route}
+                    variant={
+                        this.state.serverInfoError || this.state.userNameError
+                            ? "danger"
+                            : "primary"
+                    }>
+                    <FontAwesomeIcon icon="cogs" />
+                </Button>
+            );
 
         return (
             <Nav.Item className="ml-auto">
