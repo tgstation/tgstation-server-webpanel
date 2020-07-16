@@ -4,7 +4,7 @@ export interface BaseRoute {
     route: string; //must be unique
     name: string;
     file: string;
-    exact?: boolean;
+    loose?: boolean;
     isAuthorized: () => Promise<boolean>;
     cachedAuth?: boolean; //only RouteController should set this
     loginless?: boolean; //if we can route to it even on the login page
@@ -28,7 +28,6 @@ export const AppRoutes: {
         route: "/",
         name: "routes.home",
         file: "Home",
-        exact: true,
         icon: "home",
         isAuthorized: (): Promise<boolean> => Promise.resolve(true)
     },

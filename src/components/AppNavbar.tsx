@@ -108,7 +108,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
                                             as={NavLink}
                                             to={val.route}
                                             activeClassName="active"
-                                            exact={val.exact}>
+                                            exact={!val.loose}>
                                             <FormattedMessage id={val.name} />
                                         </Nav.Link>
                                     </Nav.Item>

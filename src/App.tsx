@@ -133,7 +133,7 @@ class App extends React.Component<IAppProps, IState> {
                                                 return (
                                                     <Route
                                                         key={route.name}
-                                                        exact={route.exact}
+                                                        exact={!route.loose}
                                                         path={route.route}
                                                         render={() => {
                                                             return React.createElement(
