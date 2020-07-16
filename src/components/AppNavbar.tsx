@@ -80,7 +80,7 @@ export default class AppNavbar extends React.Component<IProps, IState> {
         return (
             <Navbar
                 className="shadow-lg"
-                expand="md"
+                expand={this.state.loggedIn ? "md" : undefined}
                 collapseOnSelect
                 variant="dark"
                 bg={this.state.userNameError || this.state.serverInfoError ? "danger" : "primary"}>
