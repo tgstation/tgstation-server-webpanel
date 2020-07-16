@@ -46,7 +46,7 @@ export const AppRoutes: {
     },
     */
     admin: {
-        route: "/Administration/",
+        route: "/admin/",
         name: "routes.admin",
         file: "Administration",
         icon: "tools",
@@ -66,7 +66,7 @@ export const AppRoutes: {
         }
     },
     config: {
-        route: "/Configuration/",
+        route: "/config/",
         name: "routes.config",
         file: "Configuration",
         hidden: true,
