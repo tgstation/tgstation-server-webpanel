@@ -7,6 +7,7 @@ export interface BaseRoute {
     exact?: boolean;
     isAuthorized: () => Promise<boolean>;
     cachedAuth?: boolean; //only RouteController should set this
+    loginless?: boolean; //if we can route to it even on the login page
 }
 
 export interface NormalRoute extends BaseRoute {
@@ -70,6 +71,7 @@ export const AppRoutes: {
         name: "routes.config",
         file: "Configuration",
         hidden: true,
+        loginless: true,
         isAuthorized: (): Promise<boolean> => Promise.resolve(true)
     }
 };

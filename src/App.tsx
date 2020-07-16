@@ -124,31 +124,30 @@ class App extends React.Component<IAppProps, IState> {
                         ) : (
                             <ErrorBoundary>
                                 <Reload>
-                                    {this.state.loggedIn ? (
-                                        <Switch>
-                                            {RouteController.getImmediateRoutes(true, false).map(
-                                                route => {
-                                                    return (
-                                                        <Route
-                                                            key={route.name}
-                                                            exact={route.exact}
-                                                            path={route.route}
-                                                            render={() => {
-                                                                return React.createElement(
-                                                                    this.components.get(route.name)!
-                                                                );
-                                                            }}
-                                                        />
-                                                    );
-                                                }
-                                            )}
-                                            <Route>
-                                                <NotFound />
-                                            </Route>
-                                        </Switch>
-                                    ) : (
-                                        <Login />
-                                    )}
+                                    <Switch>
+                                        {RouteController.getImmediateRoutes(true, false).map(
+                                            route => {
+                                                if (!route.loginless && !this.state.loggedIn)
+                                                    return;
+
+                                                return (
+                                                    <Route
+                                                        key={route.name}
+                                                        exact={route.exact}
+                                                        path={route.route}
+                                                        render={() => {
+                                                            return React.createElement(
+                                                                this.components.get(route.name)!
+                                                            );
+                                                        }}
+                                                    />
+                                                );
+                                            }
+                                        )}
+                                        <Route>
+                                            {this.state.loggedIn ? <NotFound /> : <Login />}
+                                        </Route>
+                                    </Switch>
                                 </Reload>
                             </ErrorBoundary>
                         )}
