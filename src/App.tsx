@@ -113,7 +113,7 @@ class App extends React.Component<IAppProps, IState> {
             autoLogin: autoLogin
         });
         if (autoLogin) {
-            const res = await ServerClient.login({ userName: usr, password: pwd });
+            const res = await ServerClient.login({ userName: usr!, password: pwd! });
             if (res.code == StatusCode.ERROR) {
                 this.setState({
                     autoLogin: false
