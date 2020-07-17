@@ -23,11 +23,14 @@ import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import ServerClient from "./ApiClient/ServerClient";
 import RouteController from "./utils/RouteController";
 import { getSavedCreds } from "./utils/misc";
+import { AppRoute } from "./utils/routes";
+import AccessDenied from "./components/utils/AccessDenied";
 interface IState {
     translation?: ITranslation;
     translationError?: string;
     loggedIn: boolean;
     loading: boolean;
+    routes: Array<AppRoute>;
 }
 
 const LoadSpin = <Loading />;
@@ -58,7 +61,8 @@ class App extends React.Component<IAppProps, IState> {
 
         this.state = {
             loggedIn: false,
-            loading: true
+            loading: true,
+            routes: []
         };
     }
     public async componentDidMount(): Promise<void> {
@@ -72,6 +76,15 @@ class App extends React.Component<IAppProps, IState> {
         ServerClient.on("logout", () => {
             this.setState({
                 loggedIn: false
+            });
+        });
+        this.setState({
+            routes: await RouteController.getRoutes(true, false)
+        });
+
+        RouteController.on("refreshAll", routes => {
+            this.setState({
+                routes
             });
         });
 
@@ -125,25 +138,29 @@ class App extends React.Component<IAppProps, IState> {
                             <ErrorBoundary>
                                 <Reload>
                                     <Switch>
-                                        {RouteController.getImmediateRoutes(true, false).map(
-                                            route => {
-                                                if (!route.loginless && !this.state.loggedIn)
-                                                    return;
+                                        {this.state.routes.map(route => {
+                                            if (!route.loginless && !this.state.loggedIn) return;
 
-                                                return (
-                                                    <Route
-                                                        key={route.name}
-                                                        exact={!route.loose}
-                                                        path={route.route}
-                                                        render={() => {
-                                                            return React.createElement(
-                                                                this.components.get(route.name)!
-                                                            );
-                                                        }}
-                                                    />
-                                                );
-                                            }
-                                        )}
+                                            return (
+                                                <Route
+                                                    key={route.name}
+                                                    exact={!route.loose}
+                                                    path={route.route}
+                                                    render={props => {
+                                                        let Comp;
+
+                                                        if (!route.cachedAuth) {
+                                                            Comp = AccessDenied;
+                                                        } else {
+                                                            Comp = this.components.get(route.name)!;
+                                                        }
+
+                                                        //@ts-expect-error //i cant for the life of me make this shit work so it has to stay like this.
+                                                        return <Comp {...props} />;
+                                                    }}
+                                                />
+                                            );
+                                        })}
                                         <Route>
                                             {this.state.loggedIn ? <NotFound /> : <Login />}
                                         </Route>

@@ -142,7 +142,6 @@ export default class Administration extends React.Component<IProps, IState> {
 
         return (
             <React.Fragment>
-                <AccessDenied currentRoute={AppRoutes.admin} />
                 <ErrorAlert
                     error={this.state.error}
                     onClose={() => this.setState({ error: undefined })}
