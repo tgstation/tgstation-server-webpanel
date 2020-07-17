@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import Spinner, { SpinnerProps } from "react-bootstrap/Spinner";
+import { FormattedMessage } from "react-intl";
 
 type IProps = SpinnerProps & {
     animation: "border" | "grow";
@@ -9,6 +10,7 @@ type IProps = SpinnerProps & {
     height: number;
     heightUnit: string;
     className?: string;
+    text?: string;
 };
 
 interface IState {}
@@ -36,6 +38,8 @@ export default class Loading extends React.Component<IProps, IState> {
             widthUnit,
             height,
             heightUnit,
+            text,
+            children,
             ...otherprops
         } = this.props;
         const styles: React.CSSProperties = {
@@ -51,6 +55,8 @@ export default class Loading extends React.Component<IProps, IState> {
                     animation={animation ? animation : "border"}
                     {...otherprops}
                 />
+                {text ? <FormattedMessage id={text} /> : ""}
+                {children}
             </div>
         );
     }

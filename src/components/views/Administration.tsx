@@ -1,6 +1,4 @@
 import React, { ReactNode } from "react";
-import AccessDenied from "../utils/AccessDenied";
-import { AppRoutes } from "../../utils/routes";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import Loading from "../utils/Loading";
@@ -134,7 +132,7 @@ export default class Administration extends React.Component<IProps, IState> {
 
     public render(): ReactNode {
         if (this.state.busy) {
-            return <Loading />;
+            return <Loading text="loading.admin" />;
         }
 
         const handleClose = () => this.setState({ showRebootModal: false });

@@ -51,7 +51,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         this.on("purgeCache", () => {
             this._serverInfo = undefined;
         });
-        this.initApi().catch(console.error);
     }
 
     //serverInfo
@@ -63,6 +62,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
     public async initApi() {
         console.log("Initializing API client");
+        console.time("APIInit");
         const defObj = (await import("./generatedcode/swagger.json")).default as Document;
         this.api = new OpenAPIClientAxios({
             definition: defObj,
@@ -251,6 +251,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 }
             }
         );
+        console.timeEnd("APIInit");
         this.initialized = true;
         this.emit("initialized");
     }

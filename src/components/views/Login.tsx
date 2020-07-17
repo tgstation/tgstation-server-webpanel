@@ -48,7 +48,7 @@ export default withRouter(
                 this.setState({ save: event.target.checked });
 
             if (this.state.busy) {
-                return <Loading />;
+                return <Loading text="loading.login" />;
             }
             return (
                 <Form validated={this.state.validated} onSubmit={this.submit}>

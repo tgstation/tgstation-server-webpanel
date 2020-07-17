@@ -1,6 +1,6 @@
 import { hot } from "react-hot-loader/root";
 import * as React from "react";
-import { IntlProvider } from "react-intl";
+import { FormattedMessage, IntlProvider } from "react-intl";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 
@@ -25,18 +25,24 @@ import RouteController from "./utils/RouteController";
 import { getSavedCreds } from "./utils/misc";
 import { AppRoute } from "./utils/routes";
 import AccessDenied from "./components/utils/AccessDenied";
+import UserClient from "./ApiClient/UserClient";
 interface IState {
     translation?: ITranslation;
     translationError?: string;
     loggedIn: boolean;
     loading: boolean;
+    autoLogin: boolean;
     routes: Array<AppRoute>;
 }
 
-const LoadSpin = <Loading />;
+const LoadSpin = (page: string) => (
+    <Loading text={"loading.page"}>
+        <FormattedMessage id={page} />
+    </Loading>
+);
 
 const NotFound = loadable(() => import("./components/views/NotFound"), {
-    fallback: LoadSpin
+    fallback: LoadSpin("loading.page.notfound")
 });
 
 class App extends React.Component<IAppProps, IState> {
@@ -55,22 +61,28 @@ class App extends React.Component<IAppProps, IState> {
                 route.name,
                 //*should* always be a react component
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                loadable(() => import(`./components/views/${route.file}`), { fallback: LoadSpin })
+                loadable(() => import(`./components/views/${route.file}`), {
+                    fallback: LoadSpin(route.name)
+                })
             );
         });
 
         this.state = {
             loggedIn: false,
             loading: true,
+            autoLogin: false,
             routes: []
         };
     }
     public async componentDidMount(): Promise<void> {
         ServerClient.on("loginSuccess", () => {
             console.log("Logging in");
+
+            void UserClient.getCurrentUser(); //preload the user, we dont particularly care about the content, just that its preloaded
             this.setState({
                 loggedIn: true,
-                loading: false
+                loading: false,
+                autoLogin: false
             });
         });
         ServerClient.on("logout", () => {
@@ -88,15 +100,23 @@ class App extends React.Component<IAppProps, IState> {
             });
         });
 
-        await Promise.all([this.loadTranslation(), ServerClient.wait4Init()]);
+        await this.loadTranslation();
+        await ServerClient.initApi();
 
         const [usr, pwd] = getSavedCreds() || [undefined, undefined];
 
-        if (usr && pwd) {
+        const autoLogin = !!(usr && pwd);
+        if (autoLogin) console.log("Logging in with saved credentials");
+
+        this.setState({
+            loading: false,
+            autoLogin: autoLogin
+        });
+        if (autoLogin) {
             const res = await ServerClient.login({ userName: usr, password: pwd });
             if (res.code == StatusCode.ERROR) {
                 this.setState({
-                    loading: false
+                    autoLogin: false
                 });
                 if (
                     res.error?.code == ErrorCode.LOGIN_DISABLED ||
@@ -113,10 +133,6 @@ class App extends React.Component<IAppProps, IState> {
                     }
                 }
             }
-        } else {
-            this.setState({
-                loading: false
-            });
         }
     }
 
@@ -124,7 +140,7 @@ class App extends React.Component<IAppProps, IState> {
         if (this.state.translationError != null)
             return <p className="App-error">{this.state.translationError}</p>;
 
-        if (this.state.translation == null) return <Loading />;
+        if (this.state.translation == null) return <Loading>Loading translations...</Loading>;
         return (
             <IntlProvider
                 locale={this.state.translation.locale}
@@ -133,7 +149,9 @@ class App extends React.Component<IAppProps, IState> {
                     <AppNavbar />
                     <Container className="mt-5 mb-5">
                         {this.state.loading ? (
-                            <Loading />
+                            <Loading text="loading.app" />
+                        ) : this.state.autoLogin && !this.state.loggedIn ? (
+                            <Loading text="loading.app" />
                         ) : (
                             <ErrorBoundary>
                                 <Reload>
@@ -175,6 +193,7 @@ class App extends React.Component<IAppProps, IState> {
     }
 
     private async loadTranslation(): Promise<void> {
+        console.time("LoadTranslations");
         try {
             const translation = await this.translationFactory.loadTranslation(this.props.locale);
             this.setState({
@@ -187,6 +206,7 @@ class App extends React.Component<IAppProps, IState> {
 
             return;
         }
+        console.timeEnd("LoadTranslations");
     }
 }
 
