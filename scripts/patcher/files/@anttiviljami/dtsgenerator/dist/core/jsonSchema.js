@@ -190,11 +190,11 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
                     work.push(item);
                 } else if ("$ref" in item) {
                     var result = /\/([^\/]*)$/.exec(item.$ref)[1];
-                    if (item.$ref.includes("api") || item.$ref.includes("User-Agent")) {
+                    if (item.$ref.includes("Api") || item.$ref.includes("User-Agent")) {
                         return;
                     }
                     setSubId(item, keys.concat(result));
-                    if (item.$ref.includes("instance")) {
+                    if (item.$ref.includes("Instance")) {
                         var work = refs.get("header");
 
                         if (work == null) {
