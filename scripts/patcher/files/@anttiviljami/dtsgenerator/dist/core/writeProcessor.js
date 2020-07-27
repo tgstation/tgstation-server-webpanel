@@ -1,22 +1,22 @@
-'use strict';
-Object.defineProperty(exports, '__esModule', { value: true });
-var tslib_1 = require('tslib');
-var typeNameConvertor_1 = require('./typeNameConvertor');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = require("tslib");
+var typeNameConvertor_1 = require("./typeNameConvertor");
 var defaultOptions = {
-    indentChar: ' ',
+    indentChar: " ",
     indentSize: 4,
     normalizeTypeName: typeNameConvertor_1.normalizeTypeName
 };
 var WriteProcessor = (function () {
     function WriteProcessor(options) {
         this.indent = 0;
-        this.results = '';
+        this.results = "";
         this.alreadyIndentThisLine = false;
         this.options = tslib_1.__assign(tslib_1.__assign({}, defaultOptions), options);
     }
     WriteProcessor.prototype.clear = function () {
         this.indent = 0;
-        this.results = '';
+        this.results = "";
         this.alreadyIndentThisLine = false;
     };
     WriteProcessor.prototype.output = function (str) {
@@ -42,7 +42,7 @@ var WriteProcessor = (function () {
             this.output(name);
         }
         if (optional) {
-            this.output('');
+            this.output("");
         }
         return this;
     };
@@ -51,12 +51,12 @@ var WriteProcessor = (function () {
         if (str) {
             this.output(str);
         }
-        this.output('\n');
+        this.output("\n");
         this.alreadyIndentThisLine = false;
         return this;
     };
     WriteProcessor.prototype.protectComment = function (str) {
-        return str.replace(/\*\//g, '*\u200B/');
+        return str.replace(/\*\//g, "*\u200B/");
     };
     WriteProcessor.prototype.outputJSDoc = function () {
         var e_1, _a;
@@ -71,14 +71,14 @@ var WriteProcessor = (function () {
                 return comment != null;
             })
             .map(function (comment) {
-                if (typeof comment === 'string') {
+                if (typeof comment === "string") {
                     return comment;
                 } else {
                     return JSON.stringify(comment, null, 2);
                 }
             })
             .map(function (comment) {
-                return comment.split('\n').map(function (line) {
+                return comment.split("\n").map(function (line) {
                     return _this.protectComment(line);
                 });
             })
@@ -86,7 +86,7 @@ var WriteProcessor = (function () {
                 lines = lines.concat(ls);
             });
         if (lines.length > 0) {
-            this.outputLine('/**');
+            this.outputLine("/**");
             try {
                 for (
                     var lines_1 = tslib_1.__values(lines), lines_1_1 = lines_1.next();
@@ -94,7 +94,7 @@ var WriteProcessor = (function () {
                     lines_1_1 = lines_1.next()
                 ) {
                     var line = lines_1_1.value;
-                    this.output(' * ').outputLine(line);
+                    this.output(" * ").outputLine(line);
                 }
             } catch (e_1_1) {
                 e_1 = { error: e_1_1 };
@@ -105,7 +105,7 @@ var WriteProcessor = (function () {
                     if (e_1) throw e_1.error;
                 }
             }
-            this.outputLine(' */');
+            this.outputLine(" */");
         }
         return this;
     };
@@ -117,7 +117,7 @@ var WriteProcessor = (function () {
         }
         return this;
     };
-    Object.defineProperty(WriteProcessor.prototype, 'indentLevel', {
+    Object.defineProperty(WriteProcessor.prototype, "indentLevel", {
         get: function () {
             return this.indent;
         },
@@ -136,7 +136,7 @@ var WriteProcessor = (function () {
         return this.repeatString(this.indent * this.options.indentSize, this.options.indentChar);
     };
     WriteProcessor.prototype.repeatString = function (n, s) {
-        var result = '';
+        var result = "";
         for (var i = 0; i < n; i++) {
             result += s;
         }

@@ -1,5 +1,5 @@
-import ReferenceResolver from './referenceResolver';
-import SchemaConvertor from './schemaConvertor';
+import ReferenceResolver from "./referenceResolver";
+import SchemaConvertor from "./schemaConvertor";
 export default class DtsGenerator {
     private resolver;
     private convertor;

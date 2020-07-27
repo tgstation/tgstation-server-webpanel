@@ -1,9 +1,9 @@
-import SchemaId from './schemaId';
+import SchemaId from "./schemaId";
 export declare type JsonSchema = JsonSchemaOrg.Draft04.Schema | JsonSchemaOrg.Draft07.Schema;
 export declare type JsonSchemaObject =
     | JsonSchemaOrg.Draft04.Schema
     | JsonSchemaOrg.Draft07.SchemaObject;
-export declare type SchemaType = 'Draft04' | 'Draft07';
+export declare type SchemaType = "Draft04" | "Draft07";
 export interface Schema {
     type: SchemaType;
     openApiVersion?: 2 | 3;

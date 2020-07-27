@@ -1,11 +1,11 @@
-'use strict';
-Object.defineProperty(exports, '__esModule', { value: true });
-var tslib_1 = require('tslib');
-var debug_1 = tslib_1.__importDefault(require('debug'));
-var jsonPointer_1 = require('../jsonPointer');
-var jsonSchema_1 = require('./jsonSchema');
-var utils = tslib_1.__importStar(require('./utils'));
-var debug = debug_1.default('dtsgen');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = require("tslib");
+var debug_1 = tslib_1.__importDefault(require("debug"));
+var jsonPointer_1 = require("../jsonPointer");
+var jsonSchema_1 = require("./jsonSchema");
+var utils = tslib_1.__importStar(require("./utils"));
+var debug = debug_1.default("dtsgen");
 var typeMarker = Symbol();
 var DtsGenerator = (function () {
     function DtsGenerator(resolver, convertor) {
@@ -18,7 +18,7 @@ var DtsGenerator = (function () {
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        debug('generate type definition files.');
+                        debug("generate type definition files.");
                         return [4, this.resolver.resolve()];
                     case 1:
                         _a.sent();
@@ -48,12 +48,12 @@ var DtsGenerator = (function () {
                 if (value.hasOwnProperty(typeMarker)) {
                     var schema = value[typeMarker];
                     debug(
-                        '  walk doProcess: key=' + key + ' schemaId=' + schema.id.getAbsoluteId()
+                        "  walk doProcess: key=" + key + " schemaId=" + schema.id.getAbsoluteId()
                     );
                     this.walkSchema(schema);
                     delete value[typeMarker];
                 }
-                if (typeof value === 'object' && Object.keys(value).length > 0) {
+                if (typeof value === "object" && Object.keys(value).length > 0) {
                     this.convertor.startNest(key);
                     this.walk(value);
                     this.convertor.endNest();
@@ -75,11 +75,11 @@ var DtsGenerator = (function () {
         this.convertor.outputComments(normalized);
         var type = normalized.content.type;
         switch (type) {
-            case 'any':
+            case "any":
                 return this.generateAnyTypeModel(normalized);
-            case 'array':
+            case "array":
                 return this.generateTypeCollection(normalized);
-            case 'object':
+            case "object":
             default:
                 return this.generateDeclareType(normalized);
         }
@@ -93,7 +93,7 @@ var DtsGenerator = (function () {
     };
     DtsGenerator.prototype.normalizeSchemaContent = function (content) {
         var e_2, _a;
-        if (typeof content === 'boolean') {
+        if (typeof content === "boolean") {
             content = content ? {} : { not: {} };
         } else {
             if (content.allOf) {
@@ -105,11 +105,11 @@ var DtsGenerator = (function () {
                         _c = _b.next()
                     ) {
                         var sub = _c.value;
-                        if (typeof sub === 'object' && sub.$ref) {
+                        if (typeof sub === "object" && sub.$ref) {
                             var ref = this.resolver.dereference(sub.$ref);
                             var normalized = this.normalizeContent(ref).content;
                             utils.mergeSchema(work, normalized);
-                        } else if (typeof sub === 'object') {
+                        } else if (typeof sub === "object") {
                             var normalized = this.normalizeSchemaContent(sub);
                             utils.mergeSchema(work, normalized);
                         } else {
@@ -132,16 +132,16 @@ var DtsGenerator = (function () {
                 content.type === undefined &&
                 (content.properties || content.additionalProperties)
             ) {
-                content.type = 'object';
+                content.type = "object";
             }
             if (content.nullable) {
                 var type = content.type;
                 if (type == null) {
-                    content.type = 'null';
+                    content.type = "null";
                 } else if (!Array.isArray(type)) {
-                    content.type = [type, 'null'];
+                    content.type = [type, "null"];
                 } else {
-                    type.push('null');
+                    type.push("null");
                 }
             }
             var types = content.type;
@@ -159,8 +159,8 @@ var DtsGenerator = (function () {
             content.oneOf ||
             content.anyOf ||
             content.enum ||
-            'const' in content ||
-            content.type !== 'object'
+            "const" in content ||
+            content.type !== "object"
         ) {
             this.convertor.outputExportType(schema.id);
             this.generateTypeProperty(schema, true);
@@ -172,7 +172,7 @@ var DtsGenerator = (function () {
     };
     DtsGenerator.prototype.generateAnyTypeModel = function (schema) {
         this.convertor.startInterfaceNest(schema.id);
-        this.convertor.outputRawValue('[name: string]: any; // any', true);
+        this.convertor.outputRawValue("[name: string]: any; // any", true);
         this.convertor.endInterfaceNest();
     };
     DtsGenerator.prototype.generateTypeCollection = function (schema) {
@@ -183,10 +183,10 @@ var DtsGenerator = (function () {
         var e_3, _a;
         var content = baseSchema.content;
         if (content.additionalProperties) {
-            this.convertor.outputRawValue('[name: string]: ');
-            var schema = this.normalizeContent(baseSchema, '/additionalProperties');
+            this.convertor.outputRawValue("[name: string]: ");
+            var schema = this.normalizeContent(baseSchema, "/additionalProperties");
             if (content.additionalProperties === true) {
-                this.convertor.outputStringTypeName(schema, 'any', true);
+                this.convertor.outputStringTypeName(schema, "any", true);
             } else {
                 this.generateTypeProperty(schema, true);
             }
@@ -201,7 +201,7 @@ var DtsGenerator = (function () {
                     var propertyName = _c.value;
                     var schema = this.normalizeContent(
                         baseSchema,
-                        '/properties/' + jsonPointer_1.tilde(propertyName)
+                        "/properties/" + jsonPointer_1.tilde(propertyName)
                     );
                     this.convertor.outputComments(schema);
                     this.convertor.outputPropertyAttribute(schema);
@@ -232,14 +232,14 @@ var DtsGenerator = (function () {
         if (content.$ref) {
             var ref = this.resolver.dereference(content.$ref);
             if (ref.id == null) {
-                throw new Error('target referenced id is nothing: ' + content.$ref);
+                throw new Error("target referenced id is nothing: " + content.$ref);
             }
             var refSchema = this.normalizeContent(ref);
             return this.convertor.outputTypeIdName(refSchema, this.currentSchema, terminate);
         }
         if (content.anyOf || content.oneOf) {
-            this.generateArrayedType(schema, content.anyOf, '/anyOf/', terminate);
-            this.generateArrayedType(schema, content.oneOf, '/oneOf/', terminate);
+            this.generateArrayedType(schema, content.anyOf, "/anyOf/", terminate);
+            this.generateArrayedType(schema, content.oneOf, "/oneOf/", terminate);
             return;
         }
         if (content.enum) {
@@ -247,18 +247,18 @@ var DtsGenerator = (function () {
                 schema,
                 content.enum,
                 function (value) {
-                    if (content.type === 'integer' || content.type === 'number') {
-                        _this.convertor.outputRawValue('' + value);
+                    if (content.type === "integer" || content.type === "number") {
+                        _this.convertor.outputRawValue("" + value);
                     } else {
                         _this.convertor.outputRawValue('"' + value + '"');
                     }
                 },
                 terminate
             );
-        } else if ('const' in content) {
+        } else if ("const" in content) {
             var value = content.const;
-            if (content.type === 'integer' || content.type === 'number') {
-                this.convertor.outputStringTypeName(schema, '' + value, terminate);
+            if (content.type === "integer" || content.type === "number") {
+                this.convertor.outputStringTypeName(schema, "" + value, terminate);
             } else {
                 this.convertor.outputStringTypeName(schema, '"' + value + '"', terminate);
             }
@@ -292,46 +292,46 @@ var DtsGenerator = (function () {
         var minItems = schema.content.minItems;
         var maxItems = schema.content.maxItems;
         if (items == null) {
-            this.convertor.outputStringTypeName(schema, 'any[]', terminate);
+            this.convertor.outputStringTypeName(schema, "any[]", terminate);
         } else if (!Array.isArray(items)) {
-            this.generateTypeProperty(this.normalizeContent(schema, '/items'), false);
-            this.convertor.outputStringTypeName(schema, '[]', terminate);
+            this.generateTypeProperty(this.normalizeContent(schema, "/items"), false);
+            this.convertor.outputStringTypeName(schema, "[]", terminate);
         } else if (items.length === 0 && minItems === undefined && maxItems === undefined) {
-            this.convertor.outputStringTypeName(schema, 'any[]', terminate);
+            this.convertor.outputStringTypeName(schema, "any[]", terminate);
         } else if (minItems != null && maxItems != null && maxItems < minItems) {
-            this.convertor.outputStringTypeName(schema, 'never', terminate);
+            this.convertor.outputStringTypeName(schema, "never", terminate);
         } else {
-            this.convertor.outputRawValue('[');
+            this.convertor.outputRawValue("[");
             var itemCount = Math.max(minItems || 0, maxItems || 0, items.length);
             if (maxItems != null) {
                 itemCount = Math.min(itemCount, maxItems);
             }
             for (var i = 0; i < itemCount; i++) {
                 if (i > 0) {
-                    this.convertor.outputRawValue(', ');
+                    this.convertor.outputRawValue(", ");
                 }
                 if (i < items.length) {
-                    var type = this.normalizeContent(schema, '/items/' + i);
+                    var type = this.normalizeContent(schema, "/items/" + i);
                     if (type.id.isEmpty()) {
                         this.generateTypeProperty(type, false);
                     } else {
                         this.convertor.outputTypeIdName(type, this.currentSchema, false);
                     }
                 } else {
-                    this.convertor.outputStringTypeName(schema, 'any', false, false);
+                    this.convertor.outputStringTypeName(schema, "any", false, false);
                 }
                 if (minItems == null || i >= minItems) {
-                    this.convertor.outputRawValue('?');
+                    this.convertor.outputRawValue("?");
                 }
             }
             if (maxItems == null) {
                 if (itemCount > 0) {
-                    this.convertor.outputRawValue(', ');
+                    this.convertor.outputRawValue(", ");
                 }
-                this.convertor.outputStringTypeName(schema, '...any[]', false, false);
+                this.convertor.outputStringTypeName(schema, "...any[]", false, false);
             }
-            this.convertor.outputRawValue(']');
-            this.convertor.outputStringTypeName(schema, '', terminate);
+            this.convertor.outputRawValue("]");
+            this.convertor.outputStringTypeName(schema, "", terminate);
         }
     };
     DtsGenerator.prototype.generateType = function (schema, terminate, outputOptional) {
@@ -341,8 +341,8 @@ var DtsGenerator = (function () {
         }
         var type = schema.content.type;
         if (type == null) {
-            this.convertor.outputPrimitiveTypeName(schema, 'void', terminate, outputOptional);
-        } else if (typeof type === 'string') {
+            this.convertor.outputPrimitiveTypeName(schema, "void", terminate, outputOptional);
+        } else if (typeof type === "string") {
             this.generateTypeName(schema, type, terminate, outputOptional);
         } else {
             var types = utils.reduceTypes(type);
@@ -368,14 +368,14 @@ var DtsGenerator = (function () {
         var tsType = utils.toTSType(type, schema.content);
         if (tsType) {
             this.convertor.outputPrimitiveTypeName(schema, tsType, terminate, outputOptional);
-        } else if (type === 'object') {
+        } else if (type === "object") {
             this.convertor.startTypeNest();
             this.generateProperties(schema);
             this.convertor.endTypeNest(terminate);
-        } else if (type === 'array') {
+        } else if (type === "array") {
             this.generateArrayTypeProperty(schema, terminate);
         } else {
-            throw new Error('unknown type: ' + type);
+            throw new Error("unknown type: " + type);
         }
     };
     return DtsGenerator;

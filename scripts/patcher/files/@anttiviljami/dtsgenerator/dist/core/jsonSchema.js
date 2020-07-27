@@ -1,9 +1,9 @@
-'use strict';
-Object.defineProperty(exports, '__esModule', { value: true });
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchAllSubSchema = exports.getId = exports.getSubSchema = exports.parseSchema = void 0;
-var tslib_1 = require('tslib');
-var JsonPointer = tslib_1.__importStar(require('../jsonPointer'));
-var schemaId_1 = tslib_1.__importDefault(require('./schemaId'));
+var tslib_1 = require("tslib");
+var JsonPointer = tslib_1.__importStar(require("../jsonPointer"));
+var schemaId_1 = tslib_1.__importDefault(require("./schemaId"));
 function parseSchema(content, url) {
     var _a = selectSchemaType(content),
         type = _a.type,
@@ -59,10 +59,10 @@ function setId(type, content, id) {
 }
 function getIdPropertyName(type) {
     switch (type) {
-        case 'Draft04':
-            return 'id';
-        case 'Draft07':
-            return '$id';
+        case "Draft04":
+            return "id";
+        case "Draft07":
+            return "$id";
     }
 }
 function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
@@ -93,11 +93,11 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
         }
     };
     var walk = function (s, paths, parentIds) {
-        if (s == null || typeof s !== 'object') {
+        if (s == null || typeof s !== "object") {
             return;
         }
         var id = getId(schema.type, s);
-        if (id && typeof id === 'string') {
+        if (id && typeof id === "string") {
             var schemaId = new schemaId_1.default(id, parentIds);
             var subSchema = {
                 type: schema.type,
@@ -108,45 +108,45 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             onFoundSchema(subSchema);
             parentIds = parentIds.concat([schemaId.getAbsoluteId()]);
         }
-        if (typeof s.$ref === 'string') {
+        if (typeof s.$ref === "string") {
             var schemaId = new schemaId_1.default(s.$ref, parentIds);
             s.$ref = schemaId.getAbsoluteId();
             onFoundReference(schemaId);
         }
-        walkArray(s.allOf, paths.concat('allOf'), parentIds);
-        walkArray(s.anyOf, paths.concat('anyOf'), parentIds);
-        walkArray(s.oneOf, paths.concat('oneOf'), parentIds);
-        walk(s.not, paths.concat('not'), parentIds);
-        walkMaybeArray(s.items, paths.concat('items'), parentIds);
-        walk(s.additionalItems, paths.concat('additionalItems'), parentIds);
-        walk(s.additionalProperties, paths.concat('additionalProperties'), parentIds);
-        walkObject(s.definitions, paths.concat('definitions'), parentIds);
-        walkObject(s.properties, paths.concat('properties'), parentIds);
-        walkObject(s.patternProperties, paths.concat('patternProperties'), parentIds);
-        walkMaybeArray(s.dependencies, paths.concat('dependencies'), parentIds);
-        if (schema.type === 'Draft07') {
-            if ('propertyNames' in s) {
-                walk(s.propertyNames, paths.concat('propertyNames'), parentIds);
-                walk(s.contains, paths.concat('contains'), parentIds);
-                walk(s.if, paths.concat('if'), parentIds);
-                walk(s.then, paths.concat('then'), parentIds);
-                walk(s.else, paths.concat('else'), parentIds);
+        walkArray(s.allOf, paths.concat("allOf"), parentIds);
+        walkArray(s.anyOf, paths.concat("anyOf"), parentIds);
+        walkArray(s.oneOf, paths.concat("oneOf"), parentIds);
+        walk(s.not, paths.concat("not"), parentIds);
+        walkMaybeArray(s.items, paths.concat("items"), parentIds);
+        walk(s.additionalItems, paths.concat("additionalItems"), parentIds);
+        walk(s.additionalProperties, paths.concat("additionalProperties"), parentIds);
+        walkObject(s.definitions, paths.concat("definitions"), parentIds);
+        walkObject(s.properties, paths.concat("properties"), parentIds);
+        walkObject(s.patternProperties, paths.concat("patternProperties"), parentIds);
+        walkMaybeArray(s.dependencies, paths.concat("dependencies"), parentIds);
+        if (schema.type === "Draft07") {
+            if ("propertyNames" in s) {
+                walk(s.propertyNames, paths.concat("propertyNames"), parentIds);
+                walk(s.contains, paths.concat("contains"), parentIds);
+                walk(s.if, paths.concat("if"), parentIds);
+                walk(s.then, paths.concat("then"), parentIds);
+                walk(s.else, paths.concat("else"), parentIds);
             }
         }
     };
     function searchOpenApiSubSchema(openApi) {
         function createId(paths) {
-            return '#/' + paths.map(convertKeyToTypeName).join('/');
+            return "#/" + paths.map(convertKeyToTypeName).join("/");
         }
         function convertKeyToTypeName(key) {
             key = key.replace(/\/(.)/g, function (_match, p1) {
                 return p1.toUpperCase();
             });
             return key
-                .replace(/}/g, '')
-                .replace(/{/g, '$')
-                .replace(/^\//, '')
-                .replace(/[^0-9A-Za-z_$]+/g, '_');
+                .replace(/}/g, "")
+                .replace(/{/g, "$")
+                .replace(/^\//, "")
+                .replace(/[^0-9A-Za-z_$]+/g, "_");
         }
         function setSubIdToAnyObject(f, obj, keys) {
             if (obj == null) {
@@ -161,7 +161,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             return setSubIdToAnyObject(setSubIdToParameter, obj, keys);
         };
         function setSubIdToParameter(param, keys) {
-            if ('schema' in param) {
+            if ("schema" in param) {
                 setSubId(param.schema, keys.concat(param.name));
             }
         }
@@ -169,7 +169,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             return setSubIdToAnyObject(setSubIdToParameterNoName, obj, keys);
         };
         function setSubIdToParameterNoName(param, keys) {
-            if ('schema' in param) {
+            if ("schema" in param) {
                 setSubId(param.schema, keys);
             }
         }
@@ -180,7 +180,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             var params = new Map();
             var refs = new Map();
             array.forEach(function (item) {
-                if ('schema' in item) {
+                if ("schema" in item) {
                     setSubIdToParameter(item, keys);
                     var work = params.get(item.in);
                     if (work == null) {
@@ -188,25 +188,25 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
                         params.set(item.in, work);
                     }
                     work.push(item);
-                } else if ('$ref' in item) {
+                } else if ("$ref" in item) {
                     var result = /\/([^\/]*)$/.exec(item.$ref)[1];
-                    if (item.$ref.includes('api') || item.$ref.includes('User-Agent')) {
+                    if (item.$ref.includes("api") || item.$ref.includes("User-Agent")) {
                         return;
                     }
                     setSubId(item, keys.concat(result));
-                    if (item.$ref.includes('instance')) {
-                        var work = refs.get('header');
+                    if (item.$ref.includes("instance")) {
+                        var work = refs.get("header");
 
                         if (work == null) {
                             work = [];
-                            refs.set('header', work);
+                            refs.set("header", work);
                         }
                     } else {
-                        var work = refs.get('path');
+                        var work = refs.get("path");
 
                         if (work == null) {
                             work = [];
-                            refs.set('path', work);
+                            refs.set("path", work);
                         }
                     }
                     work.push(item);
@@ -264,7 +264,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             }
         }
         function buildParameterSchema(inType, params, keys) {
-            var paths = keys.slice(0, keys.length - 1).concat(inType + 'Parameters');
+            var paths = keys.slice(0, keys.length - 1).concat(inType + "Parameters");
             var properties = {};
             params.forEach(function (item) {
                 properties[item.name] = {
@@ -275,7 +275,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
                 paths,
                 {
                     id: createId(paths),
-                    type: 'object',
+                    type: "object",
                     properties: properties,
                     required: params
                         .filter(function (item) {
@@ -288,7 +288,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             ];
         }
         function buildParameterSchemaRefs(inType, refs, keys) {
-            var paths = keys.slice(0, keys.length - 1).concat(inType + 'Parameters');
+            var paths = keys.slice(0, keys.length - 1).concat(inType + "Parameters");
             var properties = {};
             refs.forEach(function (item) {
                 if (item.$ref != null) {
@@ -302,7 +302,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
                 paths,
                 {
                     id: createId(paths),
-                    type: 'object',
+                    type: "object",
                     properties: properties,
                     required: refs.map(function (item) {
                         return /\/([^\/]*)$/.exec(item.$ref)[1];
@@ -317,9 +317,9 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             if (response == null) {
                 return;
             }
-            if ('schema' in response) {
+            if ("schema" in response) {
                 var s = response.schema;
-                if (s != null && s.type === 'file') {
+                if (s != null && s.type === "file") {
                     return;
                 }
                 setSubId(s, keys);
@@ -333,21 +333,21 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             if (operationId) {
                 keys = [keys[0], convertKeyToTypeName(operationId)];
             }
-            setSubIdToParameters(ops.parameters, keys.concat('parameters'));
-            setSubIdToResponsesV2(ops.responses, keys.concat('responses'));
+            setSubIdToParameters(ops.parameters, keys.concat("parameters"));
+            setSubIdToResponsesV2(ops.responses, keys.concat("responses"));
         }
         var setSubIdToPathsV2 = function (paths, keys) {
             return setSubIdToAnyObject(setSubIdToPathItemV2, paths, keys);
         };
         function setSubIdToPathItemV2(pathItem, keys) {
-            setSubIdToParameters(pathItem.parameters, keys.concat('parameters'));
-            setSubIdToOperationV2(pathItem.get, keys.concat('get'));
-            setSubIdToOperationV2(pathItem.put, keys.concat('put'));
-            setSubIdToOperationV2(pathItem.post, keys.concat('post'));
-            setSubIdToOperationV2(pathItem.delete, keys.concat('delete'));
-            setSubIdToOperationV2(pathItem.options, keys.concat('options'));
-            setSubIdToOperationV2(pathItem.head, keys.concat('head'));
-            setSubIdToOperationV2(pathItem.patch, keys.concat('patch'));
+            setSubIdToParameters(pathItem.parameters, keys.concat("parameters"));
+            setSubIdToOperationV2(pathItem.get, keys.concat("get"));
+            setSubIdToOperationV2(pathItem.put, keys.concat("put"));
+            setSubIdToOperationV2(pathItem.post, keys.concat("post"));
+            setSubIdToOperationV2(pathItem.delete, keys.concat("delete"));
+            setSubIdToOperationV2(pathItem.options, keys.concat("options"));
+            setSubIdToOperationV2(pathItem.head, keys.concat("head"));
+            setSubIdToOperationV2(pathItem.patch, keys.concat("patch"));
         }
         function setSubIdToMediaTypes(types, keys) {
             var e_3, _a;
@@ -387,9 +387,9 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             if (body == null) {
                 return;
             }
-            if ('content' in body) {
+            if ("content" in body) {
                 setSubIdToMediaTypes(body.content, keys);
-            } else if ('$ref' in body) {
+            } else if ("$ref" in body) {
                 setSubId(body, keys);
             } else {
                 setSubId({}, keys);
@@ -402,9 +402,9 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             if (response == null) {
                 return;
             }
-            if ('content' in response) {
+            if ("content" in response) {
                 setSubIdToMediaTypes(response.content, keys);
-            } else if ('$ref' in response) {
+            } else if ("$ref" in response) {
                 setSubId(response, keys);
             } else {
                 setSubId({}, keys);
@@ -418,23 +418,23 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             if (operationId) {
                 keys = [keys[0], convertKeyToTypeName(operationId)];
             }
-            setSubIdToParameters(ops.parameters, keys.concat('parameters'));
-            setSubIdToRequestBody(ops.requestBody, keys.concat('requestBody'));
-            setSubIdToResponsesV3(ops.responses, keys.concat('responses'));
+            setSubIdToParameters(ops.parameters, keys.concat("parameters"));
+            setSubIdToRequestBody(ops.requestBody, keys.concat("requestBody"));
+            setSubIdToResponsesV3(ops.responses, keys.concat("responses"));
         }
         var setSubIdToPathsV3 = function (paths, keys) {
             return setSubIdToAnyObject(setSubIdToPathItemV3, paths, keys);
         };
         function setSubIdToPathItemV3(pathItem, keys) {
-            setSubIdToParameters(pathItem.parameters, keys.concat('parameters'));
-            setSubIdToOperationV3(pathItem.get, keys.concat('get'));
-            setSubIdToOperationV3(pathItem.put, keys.concat('put'));
-            setSubIdToOperationV3(pathItem.post, keys.concat('post'));
-            setSubIdToOperationV3(pathItem.delete, keys.concat('delete'));
-            setSubIdToOperationV3(pathItem.options, keys.concat('options'));
-            setSubIdToOperationV3(pathItem.head, keys.concat('head'));
-            setSubIdToOperationV3(pathItem.patch, keys.concat('patch'));
-            setSubIdToOperationV3(pathItem.trace, keys.concat('trace'));
+            setSubIdToParameters(pathItem.parameters, keys.concat("parameters"));
+            setSubIdToOperationV3(pathItem.get, keys.concat("get"));
+            setSubIdToOperationV3(pathItem.put, keys.concat("put"));
+            setSubIdToOperationV3(pathItem.post, keys.concat("post"));
+            setSubIdToOperationV3(pathItem.delete, keys.concat("delete"));
+            setSubIdToOperationV3(pathItem.options, keys.concat("options"));
+            setSubIdToOperationV3(pathItem.head, keys.concat("head"));
+            setSubIdToOperationV3(pathItem.patch, keys.concat("patch"));
+            setSubIdToOperationV3(pathItem.trace, keys.concat("trace"));
         }
         function setSubIdToObject(obj, paths) {
             if (obj == null) {
@@ -446,11 +446,11 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             });
         }
         function setSubId(s, paths) {
-            if (typeof s !== 'object') {
+            if (typeof s !== "object") {
                 return;
             }
-            if (typeof s.$ref === 'string') {
-                var thing = '#' + s.$ref.slice(1).split('/').map(convertKeyToTypeName).join('/');
+            if (typeof s.$ref === "string") {
+                var thing = "#" + s.$ref.slice(1).split("/").map(convertKeyToTypeName).join("/");
                 var schemaId = new schemaId_1.default(thing);
                 s.$ref = schemaId.getAbsoluteId();
                 onFoundReference(schemaId);
@@ -459,24 +459,24 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             setId(schema.type, s, id);
             walk(s, paths, []);
         }
-        if ('swagger' in openApi) {
-            setSubIdToObject(openApi.definitions, ['definitions']);
-            setSubIdToParameterObject(openApi.parameters, ['parameters']);
-            setSubIdToResponsesV2(openApi.responses, ['responses']);
-            setSubIdToPathsV2(openApi.paths, ['paths']);
+        if ("swagger" in openApi) {
+            setSubIdToObject(openApi.definitions, ["definitions"]);
+            setSubIdToParameterObject(openApi.parameters, ["parameters"]);
+            setSubIdToResponsesV2(openApi.responses, ["responses"]);
+            setSubIdToPathsV2(openApi.paths, ["paths"]);
         } else {
             if (openApi.components) {
                 var components = openApi.components;
-                setSubIdToObject(components.schemas, ['components', 'schemas']);
-                setSubIdToResponsesV3(components.responses, ['components', 'responses']);
+                setSubIdToObject(components.schemas, ["components", "schemas"]);
+                setSubIdToResponsesV3(components.responses, ["components", "responses"]);
                 setSubIdToParameterObjectNoName(components.parameters, [
-                    'components',
-                    'parameters'
+                    "components",
+                    "parameters"
                 ]);
-                setSubIdToRequestBodies(components.requestBodies, ['components', 'requestBodies']);
+                setSubIdToRequestBodies(components.requestBodies, ["components", "requestBodies"]);
             }
             if (openApi.paths) {
-                setSubIdToPathsV3(openApi.paths, ['paths']);
+                setSubIdToPathsV3(openApi.paths, ["paths"]);
             }
         }
     }
@@ -485,7 +485,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
         searchOpenApiSubSchema(obj);
         return;
     }
-    walk(schema.content, ['#'], []);
+    walk(schema.content, ["#"], []);
 }
 exports.searchAllSubSchema = searchAllSubSchema;
 function selectSchemaType(content) {
@@ -495,15 +495,15 @@ function selectSchemaType(content) {
         if (match) {
             var version = Number(match[1]);
             if (version <= 4) {
-                return { type: 'Draft04' };
+                return { type: "Draft04" };
             } else {
-                return { type: 'Draft07' };
+                return { type: "Draft07" };
             }
         }
     }
-    if (content.swagger === '2.0') {
+    if (content.swagger === "2.0") {
         return {
-            type: 'Draft04',
+            type: "Draft04",
             openApiVersion: 2
         };
     }
@@ -511,11 +511,11 @@ function selectSchemaType(content) {
         var openapi = content.openapi;
         if (/^3\.\d+\.\d+$/.test(openapi)) {
             return {
-                type: 'Draft07',
+                type: "Draft07",
                 openApiVersion: 3
             };
         }
     }
-    return { type: 'Draft04' };
+    return { type: "Draft04" };
 }
 //# sourceMappingURL=jsonSchema.js.map
