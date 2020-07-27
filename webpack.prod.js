@@ -6,8 +6,8 @@ const { merge } = require("webpack-merge");
 const common = require("./webpack.common.js");
 const path = require("path");
 
-const appPath = "/ctlpaneltest/";
-const apiPath = "http://localhost:5000/";
+const appPath = "/";
+const apiPath = "/";
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 
 const profile = false;
