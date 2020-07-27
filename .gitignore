@@ -27,3 +27,6 @@ yarn-error.log*
 *.tgz
 
 /tgstation-server-control-panel-.*\.tgz
+
+#generated code
+src/ApiClient/generatedcode
