@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var __awaiter =
     (this && this.__awaiter) ||
     function (thisArg, _arguments, P, generator) {
@@ -12,7 +12,7 @@ var __awaiter =
             }
             function rejected(value) {
                 try {
-                    step(generator['throw'](value));
+                    step(generator["throw"](value));
                 } catch (e) {
                     reject(e);
                 }
@@ -24,9 +24,7 @@ var __awaiter =
                           resolve(result.value);
                       }).then(fulfilled, rejected);
             }
-            step(
-                (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
 var __generator =
@@ -47,7 +45,7 @@ var __generator =
             g;
         return (
             (g = { next: verb(0), throw: verb(1), return: verb(2) }),
-            typeof Symbol === 'function' &&
+            typeof Symbol === "function" &&
                 (g[Symbol.iterator] = function () {
                     return this;
                 }),
@@ -59,7 +57,7 @@ var __generator =
             };
         }
         function step(op) {
-            if (f) throw new TypeError('Generator is already executing.');
+            if (f) throw new TypeError("Generator is already executing.");
             while (_)
                 try {
                     if (
@@ -67,10 +65,9 @@ var __generator =
                         y &&
                             (t =
                                 op[0] & 2
-                                    ? y['return']
+                                    ? y["return"]
                                     : op[0]
-                                    ? y['throw'] ||
-                                      ((t = y['return']) && t.call(y), 0)
+                                    ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
                                     : y.next) &&
                             !(t = t.call(y, op[1])).done)
                     )
@@ -95,17 +92,13 @@ var __generator =
                             continue;
                         default:
                             if (
-                                !((t = _.trys),
-                                (t = t.length > 0 && t[t.length - 1])) &&
+                                !((t = _.trys), (t = t.length > 0 && t[t.length - 1])) &&
                                 (op[0] === 6 || op[0] === 2)
                             ) {
                                 _ = 0;
                                 continue;
                             }
-                            if (
-                                op[0] === 3 &&
-                                (!t || (op[1] > t[0] && op[1] < t[3]))
-                            ) {
+                            if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) {
                                 _.label = op[1];
                                 break;
                             }
@@ -145,32 +138,29 @@ var __importStar =
         if (mod && mod.__esModule) return mod;
         var result = {};
         if (mod != null)
-            for (var k in mod)
-                if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-        result['default'] = mod;
+            for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+        result["default"] = mod;
         return result;
     };
-Object.defineProperty(exports, '__esModule', { value: true });
-var lodash_1 = __importDefault(require('lodash'));
-var yargs_1 = __importDefault(require('yargs'));
-var indent_string_1 = __importDefault(require('indent-string'));
-var __1 = __importStar(require('openapi-client-axios'));
-var dtsGenerator_1 = __importDefault(
-    require('@anttiviljami/dtsgenerator/dist/core/dtsGenerator')
-);
-var jsonSchema_1 = require('@anttiviljami/dtsgenerator/dist/core/jsonSchema');
+Object.defineProperty(exports, "__esModule", { value: true });
+var lodash_1 = __importDefault(require("lodash"));
+var yargs_1 = __importDefault(require("yargs"));
+var indent_string_1 = __importDefault(require("indent-string"));
+var __1 = __importStar(require("openapi-client-axios"));
+var dtsGenerator_1 = __importDefault(require("@anttiviljami/dtsgenerator/dist/core/dtsGenerator"));
+var jsonSchema_1 = require("@anttiviljami/dtsgenerator/dist/core/jsonSchema");
 var referenceResolver_1 = __importDefault(
-    require('@anttiviljami/dtsgenerator/dist/core/referenceResolver')
+    require("@anttiviljami/dtsgenerator/dist/core/referenceResolver")
 );
 var schemaConvertor_1 = __importDefault(
-    require('@anttiviljami/dtsgenerator/dist/core/schemaConvertor')
+    require("@anttiviljami/dtsgenerator/dist/core/schemaConvertor")
 );
 var writeProcessor_1 = __importDefault(
-    require('@anttiviljami/dtsgenerator/dist/core/writeProcessor')
+    require("@anttiviljami/dtsgenerator/dist/core/writeProcessor")
 );
-var typeNameConvertor_1 = require('@anttiviljami/dtsgenerator/dist/core/typeNameConvertor');
+var typeNameConvertor_1 = require("@anttiviljami/dtsgenerator/dist/core/typeNameConvertor");
 
-var swagger_parser_1 = __importDefault(require('swagger-parser'));
+var swagger_parser_1 = __importDefault(require("swagger-parser"));
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var argv, _a, imports, schemaTypes, operationTypings;
@@ -178,10 +168,10 @@ function main() {
             switch (_b.label) {
                 case 0:
                     argv = yargs_1.default
-                        .usage('Usage: $0 [file]')
+                        .usage("Usage: $0 [file]")
                         .example(
-                            '$0 ./openapi.yml > client.d.ts',
-                            '- generate a type definition file'
+                            "$0 ./openapi.yml > client.d.ts",
+                            "- generate a type definition file"
                         )
                         .demandCommand(1).argv;
                     return [4 /*yield*/, generateTypesForDocument(argv._[0])];
@@ -190,7 +180,7 @@ function main() {
                         (imports = _a[0]),
                         (schemaTypes = _a[1]),
                         (operationTypings = _a[2]);
-                    console.log(imports, '\n');
+                    console.log(imports, "\n");
                     console.log(schemaTypes);
                     console.log(operationTypings);
                     return [2 /*return*/];
@@ -220,179 +210,147 @@ function generateTypesForDocument(definition) {
                     _a.sent();
                     processor = new writeProcessor_1.default({
                         indentSize: 2,
-                        indentChar: ' '
+                        indentChar: " "
                     });
                     resolver = new referenceResolver_1.default();
                     convertor = new schemaConvertor_1.default(processor);
-                    return [
-                        4 /*yield*/,
-                        swagger_parser_1.default.bundle(definition)
-                    ];
+                    return [4 /*yield*/, swagger_parser_1.default.bundle(definition)];
                 case 2:
                     rootSchema = _a.sent();
-                    resolver.registerSchema(
-                        jsonSchema_1.parseSchema(rootSchema)
-                    );
+                    resolver.registerSchema(jsonSchema_1.parseSchema(rootSchema));
                     generator = new dtsGenerator_1.default(resolver, convertor);
                     return [4 /*yield*/, generator.generate()];
                 case 3:
                     schemaTypes = _a.sent();
                     exportedTypes = convertor.getExports();
-                    operationTypings = generateOperationMethodTypings(
-                        api,
-                        exportedTypes
-                    );
+                    operationTypings = generateOperationMethodTypings(api, exportedTypes);
                     imports = [
-                        'import {',
-                        '  OpenAPIClient,',
-                        '  Parameters,',
-                        '  UnknownParamsObject,',
-                        '  OperationResponse,',
-                        '  AxiosRequestConfig,',
+                        "import {",
+                        "  OpenAPIClient,",
+                        "  Parameters,",
+                        "  UnknownParamsObject,",
+                        "  OperationResponse,",
+                        "  AxiosRequestConfig,",
                         "} from 'openapi-client-axios';"
-                    ].join('\n');
-                    return [
-                        2 /*return*/,
-                        [imports, schemaTypes, operationTypings]
-                    ];
+                    ].join("\n");
+                    return [2 /*return*/, [imports, schemaTypes, operationTypings]];
             }
         });
     });
 }
 exports.generateTypesForDocument = generateTypesForDocument;
 function generateMethodForOperation(methodName, operation, exportTypes) {
-    var operationId = typeNameConvertor_1.normalizeTypeName(
-            operation.operationId
-        ),
+    var operationId = typeNameConvertor_1.normalizeTypeName(operation.operationId),
         summary = operation.summary,
         description = operation.description;
     // parameters arg
     var parameterTypePaths = lodash_1.default
         .chain([
             lodash_1.default.find(exportTypes, {
-                schemaRef: '#/paths/' + operationId + '/pathParameters'
+                schemaRef: "#/paths/" + operationId + "/pathParameters"
             }),
             lodash_1.default.find(exportTypes, {
-                schemaRef: '#/paths/' + operationId + '/queryParameters'
+                schemaRef: "#/paths/" + operationId + "/queryParameters"
             }),
             lodash_1.default.find(exportTypes, {
-                schemaRef: '#/paths/' + operationId + '/headerParameters'
+                schemaRef: "#/paths/" + operationId + "/headerParameters"
             }),
             lodash_1.default.find(exportTypes, {
-                schemaRef: '#/paths/' + operationId + '/cookieParameters'
+                schemaRef: "#/paths/" + operationId + "/cookieParameters"
             })
         ])
         .filter()
-        .map('path')
+        .map("path")
         .value();
     var parametersType = !lodash_1.default.isEmpty(parameterTypePaths)
-        ? parameterTypePaths.join(' & ')
-        : 'UnknownParamsObject';
-    var parametersArg = 'parameters?: Parameters<' + parametersType + '>';
+        ? parameterTypePaths.join(" & ")
+        : "UnknownParamsObject";
+    var parametersArg = !lodash_1.default.isEmpty(parameterTypePaths)
+        ? "parameters: Parameters<" + parametersType + ">"
+        : "parameters?: null";
     // payload arg
     var requestBodyType = lodash_1.default.find(exportTypes, {
-        schemaRef: '#/paths/' + operationId + '/requestBody'
+        schemaRef: "#/paths/" + operationId + "/requestBody"
     });
-    var dataArg = 'data?: ' + (requestBodyType ? requestBodyType.path : 'any');
+    var dataArg = requestBodyType ? "data: " + requestBodyType.path : "data?: null";
     // return type
     var responseTypePaths = lodash_1.default
         .chain(exportTypes)
         .filter(function (_a) {
             var schemaRef = _a.schemaRef;
-            return schemaRef.startsWith(
-                '#/paths/' + operationId + '/responses'
-            );
+            return schemaRef.startsWith("#/paths/" + operationId + "/responses");
         })
-        .map('path')
+        .map("path")
         .map(function (arg) {
-            return arg.replace(/\.(?=\d)/, '.$');
+            return arg.replace(/\.(?=\d)/, ".$");
         })
         .value();
     var responseType = !lodash_1.default.isEmpty(responseTypePaths)
-        ? responseTypePaths.join(' | ')
-        : 'any';
-    var returnType = 'OperationResponse<' + responseType + '>';
-    var operationArgs = [parametersArg, dataArg, 'config?: AxiosRequestConfig'];
+        ? responseTypePaths.join(" | ")
+        : "any";
+    var returnType = "OperationResponse<" + responseType + ">";
+    var operationArgs = [parametersArg, dataArg, "config?: AxiosRequestConfig"];
     var operationMethod =
         typeNameConvertor_1.normalizeTypeName(methodName) +
-        '(\n' +
+        "(\n" +
         operationArgs
             .map(function (arg) {
                 return indent_string_1.default(arg, 2);
             })
-            .join(',\n') +
-        '  \n): ' +
+            .join(",\n") +
+        "  \n): " +
         returnType;
     // comment for type
-    var content = lodash_1.default.filter([summary, description]).join('\n\n');
+    var content = lodash_1.default.filter([summary, description]).join("\n\n");
     var comment =
-        '/**\n' +
-        indent_string_1.default(
-            content === '' ? operationId : operationId + ' - ' + content,
-            1,
-            {
-                indent: ' * ',
-                includeEmptyLines: true
-            }
-        ) +
-        '\n */';
-    return [comment, operationMethod].join('\n');
+        "/**\n" +
+        indent_string_1.default(content === "" ? operationId : operationId + " - " + content, 1, {
+            indent: " * ",
+            includeEmptyLines: true
+        }) +
+        "\n */";
+    return [comment, operationMethod].join("\n");
 }
 function generateOperationMethodTypings(api, exportTypes) {
     var operations = api.getOperations();
     var operationTypings = operations.map(function (op) {
         return generateMethodForOperation(op.operationId, op, exportTypes);
     });
-    var pathOperationTypes = lodash_1.default
-        .entries(api.definition.paths)
-        .map(function (_a) {
-            var path = _a[0],
-                pathItem = _a[1];
-            var methodTypings = [];
-            for (var m in pathItem) {
-                if (
-                    pathItem[m] &&
-                    lodash_1.default.includes(Object.values(__1.HttpMethod), m)
-                ) {
-                    var method = m;
-                    var operation = lodash_1.default.find(operations, {
-                        path: path,
-                        method: method
-                    });
-                    methodTypings.push(
-                        generateMethodForOperation(
-                            method,
-                            operation,
-                            exportTypes
-                        )
-                    );
-                }
+    var pathOperationTypes = lodash_1.default.entries(api.definition.paths).map(function (_a) {
+        var path = _a[0],
+            pathItem = _a[1];
+        var methodTypings = [];
+        for (var m in pathItem) {
+            if (pathItem[m] && lodash_1.default.includes(Object.values(__1.HttpMethod), m)) {
+                var method = m;
+                var operation = lodash_1.default.find(operations, {
+                    path: path,
+                    method: method
+                });
+                methodTypings.push(generateMethodForOperation(method, operation, exportTypes));
             }
-            return ["['" + path + "']: {"]
-                .concat(
-                    methodTypings.map(function (m) {
-                        return indent_string_1.default(m, 2);
-                    }),
-                    ['}']
-                )
-                .join('\n');
-        });
-    return ['export interface OperationMethods {']
+        }
+        return ["['" + path + "']: {"]
+            .concat(
+                methodTypings.map(function (m) {
+                    return indent_string_1.default(m, 2);
+                }),
+                ["}"]
+            )
+            .join("\n");
+    });
+    return ["export interface OperationMethods {"]
         .concat(
             operationTypings.map(function (op) {
                 return indent_string_1.default(op, 2);
             }),
-            ['}', '', 'export interface PathsDictionary {'],
+            ["}", "", "export interface PathsDictionary {"],
             pathOperationTypes.map(function (p) {
                 return indent_string_1.default(p, 2);
             }),
-            [
-                '}',
-                '',
-                'export type Client = OpenAPIClient<OperationMethods, PathsDictionary>'
-            ]
+            ["}", "", "export type Client = OpenAPIClient<OperationMethods, PathsDictionary>"]
         )
-        .join('\n');
+        .join("\n");
 }
 exports.generateOperationMethodTypings = generateOperationMethodTypings;
 if (require.main === module) {

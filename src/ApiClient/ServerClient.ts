@@ -296,7 +296,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await this.apiClient!.HomeController_CreateToken({}, null, {
+            response = await this.apiClient!.HomeController_CreateToken(null, null, {
                 auth: {
                     username: CredentialsProvider.credentials.userName,
                     password: CredentialsProvider.credentials.password
