@@ -14,8 +14,6 @@ import { FormattedMessage } from "react-intl";
 import ReactMarkdown from "react-markdown";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import { Redirect } from "react-router-dom";
-import { AppRoutes } from "../../../utils/routes";
 
 interface IProps {}
 interface IState {
