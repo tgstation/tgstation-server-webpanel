@@ -25,6 +25,8 @@ interface IEvents {
     initialized: () => void;
     //purge all caches
     purgeCache: () => void;
+    //internal event, queues logins
+    loadLoginInfo: (loginInfo: InternalStatus<Components.Schemas.Token, LoginErrors>) => void;
 }
 
 export type LoginErrors =
@@ -61,6 +63,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     }
 
     public autoLogin = true;
+    private loggingIn = false;
 
     public async initApi() {
         console.log("Initializing API client");
@@ -325,6 +328,13 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 error: new InternalError(ErrorCode.LOGIN_NOCREDS, { void: true })
             });
 
+        if (this.loggingIn) {
+            return await new Promise(resolve => {
+                this.on("loadLoginInfo", loginInfo => resolve(loginInfo));
+            });
+        }
+        this.loggingIn = true;
+
         let response;
         try {
             response = await this.apiClient!.HomeController_CreateToken(null, null, {
@@ -333,12 +343,15 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                     password: CredentialsProvider.credentials.password
                 }
             });
+            this.loggingIn = false;
         } catch (stat) {
             return new InternalStatus<Components.Schemas.Token, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
         }
+
+        this.loggingIn = false;
 
         switch (response.status) {
             case 200: {
