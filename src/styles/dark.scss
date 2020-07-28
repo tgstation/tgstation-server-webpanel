@@ -11,7 +11,7 @@ $enable-gradients: true;
 
 $theme-colors: (
     //02549a
-        "primary": #02549a,
+    "primary": #02549a,
     "secondary": #2576bc,
     "transparent": transparent,
     "background": #212529,
@@ -130,6 +130,8 @@ $dropdown-link-hover-bg: darken($dropdown-bg, 5%);
 $hr-border-color: rgba($white, 0.2);
 
 $modal-content-bg: $dark;
+
+$link-color: theme-color("secondary");
 
 @import "~bootstrap/scss/variables";
 
