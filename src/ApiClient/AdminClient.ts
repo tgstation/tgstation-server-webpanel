@@ -15,7 +15,14 @@ export type AdminInfoErrors =
     | ErrorCode.ADMIN_GITHUB_RATE
     | ErrorCode.ADMIN_GITHUB_ERROR;
 
-export type RestartErrors = GenericErrors | ErrorCode.ADMIN_REBOOT_UNAVAIL;
+export type RestartErrors = GenericErrors | ErrorCode.ADMIN_WATCHDOG_UNAVAIL;
+
+export type UpdateErrors =
+    | GenericErrors
+    | ErrorCode.ADMIN_WATCHDOG_UNAVAIL
+    | ErrorCode.ADMIN_VERSION_NOT_FOUND
+    | ErrorCode.ADMIN_GITHUB_RATE
+    | ErrorCode.ADMIN_GITHUB_ERROR;
 
 export default new (class AdminClient extends TypedEmitter<IEvents> {
     private _cachedAdminInfo?: InternalStatus<Components.Schemas.Administration, ErrorCode.OK>;
@@ -142,9 +149,6 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 204: {
-                //reloads the window since the bundled tgs app may have changed since, and our locally cached info may be bullshit
-                window.location.reload();
-                //this doesnt really fire but typescript gets angry otherwise
                 return new InternalStatus({ code: StatusCode.OK, payload: null });
             }
             case 422: {
@@ -152,7 +156,90 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
-                        ErrorCode.ADMIN_REBOOT_UNAVAIL,
+                        ErrorCode.ADMIN_WATCHDOG_UNAVAIL,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
+            default: {
+                return new InternalStatus<null, ErrorCode.UNHANDLED_RESPONSE>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async updateServer({
+        newVersion
+    }: {
+        newVersion: string;
+    }): Promise<InternalStatus<null, UpdateErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.AdministrationController_Update(null, {
+                windowsHost: true,
+                newVersion,
+                latestVersion: null,
+                trackedRepositoryUrl: null
+            });
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<UpdateErrors>
+            });
+        }
+
+        switch (response.status) {
+            case 202: {
+                return new InternalStatus({ code: StatusCode.OK, payload: null });
+            }
+            case 410: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_VERSION_NOT_FOUND,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
+            case 422: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_WATCHDOG_UNAVAIL,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
+            case 424: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_RATE>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_GITHUB_RATE,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
+            case 429: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_ERROR>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_GITHUB_ERROR,
                         { errorMessage },
                         response
                     )

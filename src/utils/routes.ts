@@ -71,6 +71,23 @@ export const AppRoutes: {
             return Promise.resolve(true);
         }
     },
+    admin_update: {
+        route: "/admin/update",
+        name: "routes.admin.update",
+        file: "Admin/Update",
+        hidden: true,
+        isAuthorized: async (): Promise<boolean> => {
+            if (!CredentialsProvider.isTokenValid()) return false;
+            const response = await UserClient.getCurrentUser();
+
+            if (response.code == StatusCode.OK) {
+                return !!(
+                    response.payload!.administrationRights & AdministrationRights.ChangeVersion
+                );
+            }
+            return false;
+        }
+    },
     config: {
         route: "/config/",
         name: "routes.config",

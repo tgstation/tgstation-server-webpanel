@@ -30,6 +30,10 @@ export enum ErrorCode {
     UNHANDLED_GLOBAL_RESPONSE = "error.unhandled_global_response", //axiosresponse
     AXIOS = "error.axios", //jserror
 
+    //Generic errors
+    GITHUB_FAIL = "error.github", //jserror
+    APP_FAIL = "error.app", //jserror
+
     //Login errors
     LOGIN_FAIL = "error.login.bad_user_pass", //void
     LOGIN_NOCREDS = "error.login.no_creds", //void
@@ -42,7 +46,8 @@ export enum ErrorCode {
     //Administration errors
     ADMIN_GITHUB_RATE = "error.admin.rate", //errmessage
     ADMIN_GITHUB_ERROR = "error.admin.error", //errmessage
-    ADMIN_REBOOT_UNAVAIL = "error.admin.reboot.avail" //errmessage
+    ADMIN_WATCHDOG_UNAVAIL = "error.admin.watchdog.avail", //errmessage
+    ADMIN_VERSION_NOT_FOUND = "error.admin.update.notfound" //errmessage
 }
 
 type errorMessage = {

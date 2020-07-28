@@ -14,6 +14,8 @@ import Modal from "react-bootstrap/Modal";
 import UserClient from "../../ApiClient/UserClient";
 import { AdministrationRights } from "../../ApiClient/generatedcode/_enums";
 import { FormattedMessage } from "react-intl";
+import { Link } from "react-router-dom";
+import { AppRoutes } from "../../utils/routes";
 
 interface IProps {}
 interface IState {
@@ -22,6 +24,7 @@ interface IState {
     error?: InternalError<ErrorCode>;
     busy: boolean;
     canReboot: boolean;
+    canUpdate: boolean;
     showRebootModal?: boolean;
 }
 
@@ -32,7 +35,8 @@ export default class Administration extends React.Component<IProps, IState> {
 
         this.state = {
             busy: false,
-            canReboot: false
+            canReboot: false,
+            canUpdate: false
         };
     }
 
@@ -46,6 +50,7 @@ export default class Administration extends React.Component<IProps, IState> {
         tasks.push(this.loadAdminInfo());
         tasks.push(this.loadServerInfo());
         tasks.push(this.checkRebootRights());
+        tasks.push(this.checkUpdateRights());
 
         await Promise.all(tasks);
         console.timeEnd("DataLoad");
@@ -106,6 +111,18 @@ export default class Administration extends React.Component<IProps, IState> {
         }
     }
 
+    private async checkUpdateRights() {
+        const response = await UserClient.getCurrentUser();
+
+        if (response.code === StatusCode.OK) {
+            this.setState({
+                canReboot: !!(
+                    response.payload!.administrationRights & AdministrationRights.ChangeVersion
+                )
+            });
+        }
+    }
+
     private async restart() {
         this.setState({
             showRebootModal: false,
@@ -121,7 +138,7 @@ export default class Administration extends React.Component<IProps, IState> {
                 break;
             }
             case StatusCode.OK: {
-                //doesnt happen, the page reloads first
+                window.location.reload();
             }
         }
         this.setState({
@@ -186,9 +203,25 @@ export default class Administration extends React.Component<IProps, IState> {
                         <hr />
                         <Button
                             variant="danger"
-                            disabled={!this.state.canReboot}
+                            disabled={
+                                !(
+                                    this.state.canReboot &&
+                                    this.state.serverInfo.version! <
+                                        this.state.adminInfo.latestVersion!
+                                )
+                            }
                             onClick={handleOpen}>
                             <FormattedMessage id="view.admin.reboot.button" />
+                        </Button>{" "}
+                        <Button
+                            variant="primary"
+                            disabled={
+                                !this.state.canUpdate &&
+                                this.state.serverInfo.version! < this.state.adminInfo.latestVersion!
+                            }
+                            as={Link}
+                            to={AppRoutes.admin_update.route}>
+                            <FormattedMessage id="view.admin.update.button" />
                         </Button>
                         <Modal
                             show={this.state.showRebootModal}

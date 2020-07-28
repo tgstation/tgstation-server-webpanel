@@ -119,21 +119,20 @@ export default class Configuration extends React.Component<IProps, IState> {
                                     />
                                 </InputGroup.Text>*/}
                                 <OverlayTrigger overlay={tooltip(value.id + ".desc")}>
-                                    {
-                                        //@ts-expect-error //this is a new feature, it seems the types arent updated yet
-                                        ({ ref, ...triggerHandler }) => (
-                                            <InputGroup.Text
-                                                className={`flex-fill ${
-                                                    this.state.values[key] ? "font-weight-bold" : ""
-                                                }`}
-                                                {...triggerHandler}>
-                                                <FormattedMessage id={value.id} />
-                                                <div className="ml-auto" ref={ref}>
-                                                    <FontAwesomeIcon fixedWidth icon="info" />
-                                                </div>
-                                            </InputGroup.Text>
-                                        )
-                                    }
+                                    {({ ref, ...triggerHandler }) => (
+                                        <InputGroup.Text
+                                            className={`flex-fill ${
+                                                this.state.values[key] ? "font-weight-bold" : ""
+                                            }`}
+                                            {...triggerHandler}>
+                                            <FormattedMessage id={value.id} />
+                                            <div
+                                                className="ml-auto"
+                                                ref={ref as React.Ref<HTMLDivElement>}>
+                                                <FontAwesomeIcon fixedWidth icon="info" />
+                                            </div>
+                                        </InputGroup.Text>
+                                    )}
                                 </OverlayTrigger>
                             </InputGroup.Prepend>
                             <div className="flex-grow-1 w-100 w-xl-auto d-flex">
