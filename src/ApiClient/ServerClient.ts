@@ -60,6 +60,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         return this._serverInfo;
     }
 
+    public autoLogin = true;
+
     public async initApi() {
         console.log("Initializing API client");
         console.time("APIInit");
@@ -132,10 +134,38 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                                 );
                                 return Promise.reject(errorobj);
                             } else {
-                                CredentialsProvider.token = undefined; //our token is invalid, might as well clear it
-                                return this.login().then(() => {
-                                    return this.api!.client.request(error.config);
-                                });
+                                if (this.autoLogin) {
+                                    return this.login().then(status => {
+                                        switch (status.code) {
+                                            case StatusCode.OK: {
+                                                return this.api!.client.request(error.config);
+                                            }
+                                            case StatusCode.ERROR: {
+                                                this.emit("accessDenied");
+                                                //time to kick out the user
+                                                this.logout();
+                                                const errorobj = new InternalError(
+                                                    ErrorCode.HTTP_ACCESS_DENIED,
+                                                    {
+                                                        void: true
+                                                    },
+                                                    res
+                                                );
+                                                return Promise.reject(errorobj);
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    this.emit("accessDenied");
+                                    const errorobj = new InternalError(
+                                        ErrorCode.HTTP_ACCESS_DENIED,
+                                        {
+                                            void: true
+                                        },
+                                        res
+                                    );
+                                    return Promise.reject(errorobj);
+                                }
                             }
                         }
                         case 403: {
@@ -217,6 +247,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                             return Promise.reject(errorobj);
                         }
                         case 503: {
+                            console.log("Server not ready, delaying request", error.config);
                             return new Promise(resolve => {
                                 setTimeout(resolve, 5000);
                             }).then(() => this.api!.client.request(error.config));
@@ -389,12 +420,13 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         this.emit("logout");
     }
 
-    public async getServerInfo(): Promise<
-        InternalStatus<Components.Schemas.ServerInformation, ServerInfoErrors>
-    > {
+    public async getServerInfo(
+        _token?: Components.Schemas.Token,
+        bypassCache = false
+    ): Promise<InternalStatus<Components.Schemas.ServerInformation, ServerInfoErrors>> {
         await this.wait4Init();
 
-        if (this._serverInfo) {
+        if (this._serverInfo && !bypassCache) {
             return this._serverInfo;
         }
 
