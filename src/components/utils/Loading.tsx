@@ -1,6 +1,8 @@
 import React, { ReactNode } from "react";
 import Spinner, { SpinnerProps } from "react-bootstrap/Spinner";
 import { FormattedMessage } from "react-intl";
+import CSSTransition from "react-transition-group/CSSTransition";
+import TransitionGroup from "react-transition-group/TransitionGroup";
 
 type IProps = SpinnerProps & {
     animation: "border" | "grow";
@@ -47,17 +49,26 @@ export default class Loading extends React.Component<IProps, IState> {
             height: `${height}${heightUnit}`
         } as React.CSSProperties;
         return (
-            <div className={center ? "text-center" : ""}>
-                <Spinner
-                    variant={variant ? variant : "secondary"}
-                    className={center ? `d-block mx-auto ${className || ""}` : className}
-                    style={styles}
-                    animation={animation ? animation : "border"}
-                    {...otherprops}
-                />
-                {text ? <FormattedMessage id={text} /> : ""}
-                {children}
-            </div>
+            <TransitionGroup>
+                <CSSTransition
+                    appear
+                    classNames="fade"
+                    addEndListener={(node, done) => {
+                        node.addEventListener("transitionend", done, false);
+                    }}>
+                    <div className={center ? "text-center" : ""}>
+                        <Spinner
+                            variant={variant ? variant : "secondary"}
+                            className={center ? `d-block mx-auto ${className || ""}` : className}
+                            style={styles}
+                            animation={animation ? animation : "border"}
+                            {...otherprops}
+                        />
+                        {text ? <FormattedMessage id={text} /> : ""}
+                        {children}
+                    </div>
+                </CSSTransition>
+            </TransitionGroup>
         );
     }
 }

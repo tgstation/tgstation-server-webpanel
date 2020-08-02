@@ -197,3 +197,21 @@ $link-color: theme-color("secondary");
         }
     }
 }
+
+.fade-appear {
+    opacity: 0;
+}
+.fade-appear-active {
+    opacity: 1;
+}
+
+.fade-exit {
+    opacity: 1;
+}
+.fade-exit-active {
+    opacity: 0;
+}
+
+.fade-appear-active, .fade-exit-active {
+    transition: opacity 600ms;
+}
