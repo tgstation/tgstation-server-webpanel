@@ -68,7 +68,6 @@ export default class Update extends React.Component<IProps, IState> {
             const errors = Array.from(prevState.errors);
             errors.push(error);
             return {
-                ...prevState,
                 errors
             };
         });
@@ -148,16 +147,14 @@ export default class Update extends React.Component<IProps, IState> {
                     if (prevState.secondsLeft === 1) {
                         window.clearInterval(prevState.timer!);
                         return {
-                            ...prevState,
                             timer: null,
                             secondsLeft: null
-                        };
+                        } as IState;
                     }
 
                     return {
-                        ...prevState,
                         secondsLeft: prevState.secondsLeft - 1
-                    };
+                    } as IState;
                 });
             }, 1000);
 
@@ -234,7 +231,6 @@ export default class Update extends React.Component<IProps, IState> {
                                         const newarr = Array.from(prev.errors);
                                         newarr[index] = undefined;
                                         return {
-                                            ...prev,
                                             errors: newarr
                                         };
                                     })
