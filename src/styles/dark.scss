@@ -198,20 +198,43 @@ $link-color: theme-color("secondary");
     }
 }
 
-.fade-appear {
+.anim-fade-appear {
     opacity: 0;
 }
-.fade-appear-active {
+.anim-fade-appear-active {
     opacity: 1;
 }
 
-.fade-exit {
+.anim-fade-exit {
     opacity: 1;
 }
-.fade-exit-active {
+.anim-fade-exit-active {
     opacity: 0;
 }
 
-.fade-appear-active, .fade-exit-active {
+.anim-fade-appear-active, .anim-fade-exit-active {
     transition: opacity 600ms;
+}
+
+.anim-collapse-enter {
+    flex: 1;
+}
+.anim-collapse-enter-active {
+    flex: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+.anim-collapse-enter-done {
+    display: none;
+}
+.anim-collapse-exit {
+    flex: 0;
+}
+.anim-collapse-exit-active {
+    flex: 1;
+    overflow: hidden;
+}
+
+.anim-collapse-enter-active, .anim-collapse-exit-active {
+    transition: flex 500ms;
 }

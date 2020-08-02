@@ -52,7 +52,7 @@ export default class Loading extends React.Component<IProps, IState> {
             <TransitionGroup>
                 <CSSTransition
                     appear
-                    classNames="fade"
+                    classNames="anim-fade"
                     addEndListener={(node, done) => {
                         node.addEventListener("transitionend", done, false);
                     }}>
