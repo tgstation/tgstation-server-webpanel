@@ -87,7 +87,7 @@
     "loading.page": "Loading ",
     "loading.page.notfound": "Loading NotFound",
     "loading.app": "Loading app...",
-    "loading.admin": "Loading rights...",
+    "loading.admin": "Loading admin info...",
     "loading.version": "Loading versions...",
     "loading.updating": "Updating server..."
 }
