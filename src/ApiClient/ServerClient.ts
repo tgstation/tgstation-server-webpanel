@@ -343,15 +343,14 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                     password: CredentialsProvider.credentials.password
                 }
             });
-            this.loggingIn = false;
         } catch (stat) {
             return new InternalStatus<Components.Schemas.Token, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
+        } finally {
+            this.loggingIn = false;
         }
-
-        this.loggingIn = false;
 
         switch (response.status) {
             case 200: {
