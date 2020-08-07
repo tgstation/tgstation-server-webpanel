@@ -131,6 +131,11 @@ $hr-border-color: rgba($white, 0.2);
 
 $modal-content-bg: $dark;
 
+$navbar-dark-color: rgba($white, 0.75);
+.navbar-dark > .navbar-nav > .nav-link.active {
+    font-weight: bold;
+}
+
 $link-color: theme-color("secondary");
 
 @import "~bootstrap/scss/variables";
@@ -171,6 +176,10 @@ $link-color: theme-color("secondary");
 @import "~bootstrap/scss/spinners";
 @import "~bootstrap/scss/utilities";
 //@import "~bootstrap/scss/print";
+
+.text-secondary {
+    color: #3b93de !important;
+}
 
 .alert-error {
     @include alert-variant($dark, $danger, $white);
