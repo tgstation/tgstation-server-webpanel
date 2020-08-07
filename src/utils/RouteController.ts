@@ -1,13 +1,11 @@
-import { AppRoute, AppRoutes, NormalRoute } from "./routes";
+import { AppRoute, AppRoutes } from "./routes";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import ServerClient from "../ApiClient/ServerClient";
 
 interface IEvents {
-    refresh: (routes: Array<AppRoute>) => void; //hidden+visible auth
-    refreshVisible: (routes: Array<NormalRoute>) => void; //visible auth
-    refreshAll: (routes: Array<AppRoute>) => void; //hidden+visible noauth+auth
-    refreshAllVisible: (routes: Array<NormalRoute>) => void; //visible noauth+auth
+    refresh: (routes: Array<AppRoute>) => void; //auth
+    refreshAll: (routes: Array<AppRoute>) => void; //noauth+auth
 }
 
 //helper class to process AppRoutes
@@ -32,7 +30,7 @@ class RouteController extends TypedEmitter<IEvents> {
         this.refreshing = true;
 
         const work = []; //    we get all hidden routes no matter the authentification without waiting for the refresh
-        const routes = this.getImmediateRoutes(true, false);
+        const routes = this.getImmediateRoutes(false);
 
         for (const route of routes) {
             route.cachedAuth = undefined;
@@ -48,12 +46,11 @@ class RouteController extends TypedEmitter<IEvents> {
         await Promise.all(work); //wait for all the authorized calls to complete
 
         this.emit("refresh", this.getImmediateRoutes(true));
-        this.emit("refreshVisible", this.getImmediateRoutes(false) as Array<NormalRoute>);
-        this.emit("refreshAll", this.getImmediateRoutes(true, false));
-        this.emit("refreshAllVisible", this.getImmediateRoutes(false, false) as Array<NormalRoute>);
+        const routesNoAuth = this.getImmediateRoutes(false);
+        this.emit("refreshAll", routesNoAuth);
         this.refreshing = false;
 
-        console.log("Routes refreshed", await this.getRoutes(true, false));
+        console.log("Routes refreshed", routesNoAuth);
         return await this.getRoutes();
     }
 
@@ -69,13 +66,13 @@ class RouteController extends TypedEmitter<IEvents> {
         });
     }
 
-    public async getRoutes(hidden = true, auth = true): Promise<AppRoute[]> {
+    public async getRoutes(auth = true): Promise<AppRoute[]> {
         await this.wait4refresh();
 
-        return this.getImmediateRoutes(hidden, auth);
+        return this.getImmediateRoutes(auth);
     }
 
-    public getImmediateRoutes(hidden = true, auth = true) {
+    public getImmediateRoutes(auth = true) {
         const results: Array<AppRoute> = [];
 
         const propNames = Object.getOwnPropertyNames(AppRoutes);
@@ -85,17 +82,11 @@ class RouteController extends TypedEmitter<IEvents> {
 
             //we check for isauthorized here without calling because routes that lack the function are public
             if (val.isAuthorized && !val.cachedAuth && auth) continue; //if not authorized and we only show authorized routes
-            if (val.hidden && !hidden) continue; //if its hidden and we dont show hidden routes
 
             results.push(val);
         }
 
         return results;
-    }
-
-    //bullshit wrapper because of types
-    public async getVisibleRoutes(auth = true) {
-        return (await this.getRoutes(false, auth)) as Array<NormalRoute>;
     }
 }
 

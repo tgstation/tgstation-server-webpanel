@@ -7,7 +7,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AppRoutes, NormalRoute } from "../utils/routes";
+import { AppRoutes, AppRoute } from "../utils/routes";
 import { Components } from "../ApiClient/generatedcode/_generated";
 import RouteController from "../utils/RouteController";
 import { withRouter, RouteComponentProps } from "react-router";
@@ -23,7 +23,7 @@ interface IState {
     userNameError?: string;
     serverInfoError?: string;
     loggedIn: boolean;
-    routes: Array<NormalRoute>;
+    routes: Array<AppRoute>;
 }
 export default withRouter(
     class AppNavbar extends React.Component<IProps, IState> {
@@ -68,10 +68,10 @@ export default withRouter(
             });
 
             this.setState({
-                routes: await RouteController.getVisibleRoutes()
+                routes: await RouteController.getRoutes()
             });
 
-            RouteController.on("refreshVisible", routes => {
+            RouteController.on("refresh", routes => {
                 this.setState({
                     routes
                 });
@@ -108,13 +108,15 @@ export default withRouter(
                             ) : (
                                 this.state.routes.map(val => {
                                     if (!val) return;
+                                    if (!val.visibleNavbar) return;
+
                                     return (
                                         <Nav.Item key={val.route}>
                                             <Nav.Link
                                                 as={NavLink}
                                                 to={val.route}
                                                 activeClassName="active"
-                                                exact={!(val.navbarLoose || val.loose)}>
+                                                exact={!val.navbarLoose}>
                                                 <FormattedMessage id={val.name} />
                                             </Nav.Link>
                                         </Nav.Item>

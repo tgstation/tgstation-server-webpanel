@@ -81,7 +81,7 @@ module.exports = smp.wrap(
                 VERSION: JSON.stringify(require("./package.json").version),
                 MODE: JSON.stringify("DEV"),
                 BASEPATH: JSON.stringify("/"),
-                APIPATH: JSON.stringify("http://192.168.0.187:5000/")
+                APIPATH: JSON.stringify("http://192.168.0.144:5000/")
             })
         ]
     })
