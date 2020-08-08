@@ -5,23 +5,39 @@ import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import { AdministrationRights } from "../ApiClient/generatedcode/_enums";
 
 export interface AppRoute {
-    //Base parameters
-    name: string; //must be unique, also is the id of the route name message
-    route: string; //must be unique, url to access
-    file: string; //filename in components/view that the route should display
+    ///Base parameters
+    //must be unique, also is the id of the route name message
+    name: string;
+    //must be unique, url to access
+    route: string;
+    //filename in components/view that the route should display
+    file: string;
 
-    //Path parameters
-    loose: boolean; //If subpaths should route here
-    navbarLoose: boolean; //If subpaths should light up the navbar button
+    ///Path parameters
+    //If subpaths should route here
+    loose: boolean;
+    //If subpaths should light up the navbar button
+    navbarLoose: boolean;
 
-    //Authentication
-    loginless?: boolean; //if we can route to it even on the login page
-    isAuthorized: () => Promise<boolean>; //function to tell if we are authorized
-    cachedAuth?: boolean; //result of isAuthorized() after RouteController runs it, can be used by components but only set by RouteController
+    ///Authentication
+    //if we can route to it even on the login page
+    loginless?: boolean;
+    //function to tell if we are authorized
+    isAuthorized: () => Promise<boolean>;
+    //result of isAuthorized() after RouteController runs it, can be used by components but only set by RouteController
+    cachedAuth?: boolean;
 
-    //Visibility
-    visibleNavbar: boolean; //if this shows up on the navbar
-    homeIcon?: IconProp; //serves two purposes, first one is to give it an icon, the second one is to not display it if the icon is undefined
+    ///Visibility
+    //if this shows up on the navbar
+    visibleNavbar: boolean;
+    //serves two purposes, first one is to give it an icon, the second one is to not display it if the icon is undefined
+    homeIcon?: IconProp;
+
+    ///Categories
+    //name of the category it belongs to
+    category?: string;
+    //if this is the main button in the category
+    catleader?: boolean;
 }
 
 export const AppRoutes: {
@@ -38,7 +54,10 @@ export const AppRoutes: {
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
 
         visibleNavbar: true,
-        homeIcon: undefined
+        homeIcon: undefined,
+
+        category: "home",
+        catleader: true
     },
     admin: {
         name: "routes.admin",
@@ -51,7 +70,10 @@ export const AppRoutes: {
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
 
         visibleNavbar: true,
-        homeIcon: "tools"
+        homeIcon: "tools",
+
+        category: "admin",
+        catleader: true
     },
     admin_update: {
         name: "routes.admin.update",
@@ -73,7 +95,9 @@ export const AppRoutes: {
             return false;
         },
         visibleNavbar: true,
-        homeIcon: undefined
+        homeIcon: undefined,
+
+        category: "admin"
     },
     config: {
         name: "routes.config",
@@ -88,5 +112,30 @@ export const AppRoutes: {
 
         visibleNavbar: false,
         homeIcon: "cogs"
+    }
+};
+
+export type UnpopulatedAppCategory = Partial<AppCategory>;
+
+export interface AppCategory {
+    name: string; //doesnt really matter, kinda bullshit
+    routes: AppRoute[];
+    leader: AppRoute;
+}
+
+export type UnpopulatedAppCategories = {
+    [key: string]: UnpopulatedAppCategory;
+};
+
+export type AppCategories = {
+    [key: string]: AppCategory;
+};
+
+export const AppCategories: UnpopulatedAppCategories = {
+    home: {
+        name: "home"
+    },
+    admin: {
+        name: "admin"
     }
 };

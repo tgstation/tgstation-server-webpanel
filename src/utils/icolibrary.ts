@@ -13,6 +13,8 @@ import { faTools } from "@fortawesome/free-solid-svg-icons/faTools";
 import { faCogs } from "@fortawesome/free-solid-svg-icons/faCogs";
 import { faUndo } from "@fortawesome/free-solid-svg-icons/faUndo";
 import { faInfo } from "@fortawesome/free-solid-svg-icons/faInfo";
+import { faGripLinesVertical } from "@fortawesome/free-solid-svg-icons/faGripLinesVertical";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 
 library.add(
     faCheck,
@@ -28,5 +30,7 @@ library.add(
     faTools,
     faCogs,
     faUndo,
-    faInfo
+    faInfo,
+    faGripLinesVertical,
+    faAngleRight
 );

@@ -1,4 +1,4 @@
-import { AppRoute, AppRoutes } from "./routes";
+import { AppCategories, AppCategory, AppRoute, AppRoutes, UnpopulatedAppCategory } from "./routes";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import ServerClient from "../ApiClient/ServerClient";
@@ -19,6 +19,39 @@ class RouteController extends TypedEmitter<IEvents> {
         ServerClient.on("purgeCache", () => this.refreshRoutes);
         LoginHooks.addHook(this.refreshRoutes);
         this.refreshRoutes().catch(console.error);
+
+        //process categories
+        console.time("Category mapping");
+        const catmap = new Map<string, UnpopulatedAppCategory>();
+
+        for (const val of Object.values(AppCategories)) {
+            val.routes = [];
+            //null asserted the name because that one is everywhere, even if the rest is partial
+            catmap.set(val.name!, val);
+        }
+
+        for (const route of Object.values(AppRoutes)) {
+            if (!route.category) continue;
+
+            const cat = catmap.get(route.category);
+            if (!cat) {
+                console.error("Route has invalid category", route);
+                continue;
+            }
+
+            //this is guaranteed to be an array as its set in the loop above
+            cat.routes!.push(route);
+
+            if (route.catleader) {
+                if (cat.leader) {
+                    console.error("Category has two leaders", cat.leader, route);
+                    continue;
+                }
+                cat.leader = route;
+            }
+        }
+        console.log("Categories mapped", catmap);
+        console.timeEnd("Category mapping");
     }
 
     public async refreshRoutes() {
@@ -87,6 +120,12 @@ class RouteController extends TypedEmitter<IEvents> {
         }
 
         return results;
+    }
+
+    //this is to ensure that the constructor(and that the categories are populated) is finished running before we try to access categories
+    public getCategories() {
+        //the second AppCategories here is a type that refers to { [key: string]: AppCategory }
+        return AppCategories as AppCategories;
     }
 }
 

@@ -38,7 +38,7 @@ export default withRouter(
 
             const components = new Map<string, LoadableComponent<unknown>>();
 
-            const routes = RouteController.getImmediateRoutes(true, false);
+            const routes = RouteController.getImmediateRoutes(false);
             routes.forEach(route => {
                 components.set(
                     route.name,
@@ -65,7 +65,7 @@ export default withRouter(
             });
 
             this.setState({
-                routes: await RouteController.getRoutes(true, false)
+                routes: await RouteController.getRoutes(false)
             });
         }
 

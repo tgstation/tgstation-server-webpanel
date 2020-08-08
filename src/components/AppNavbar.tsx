@@ -7,13 +7,14 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AppRoutes, AppRoute } from "../utils/routes";
+import { AppRoutes, AppRoute, AppCategories } from "../utils/routes";
 import { Components } from "../ApiClient/generatedcode/_generated";
 import RouteController from "../utils/RouteController";
 import { withRouter, RouteComponentProps } from "react-router";
 import UserClient from "../ApiClient/UserClient";
 import ServerClient from "../ApiClient/ServerClient";
 import LoginHooks from "../ApiClient/util/LoginHooks";
+import CSSTransition from "react-transition-group/CSSTransition";
 
 interface IProps extends RouteComponentProps {}
 
@@ -23,8 +24,12 @@ interface IState {
     userNameError?: string;
     serverInfoError?: string;
     loggedIn: boolean;
-    routes: Array<AppRoute>;
+    //so we dont actually use the routes but it allows us to make react update the component
+    routes: AppRoute[];
+    categories: AppCategories;
+    focusedCategory: string;
 }
+
 export default withRouter(
     class AppNavbar extends React.Component<IProps, IState> {
         public constructor(props: IProps) {
@@ -35,7 +40,9 @@ export default withRouter(
 
             this.state = {
                 loggedIn: false,
-                routes: []
+                routes: [],
+                categories: RouteController.getCategories(),
+                focusedCategory: ""
             };
         }
 
@@ -106,20 +113,75 @@ export default withRouter(
                                     </Nav.Link>
                                 </Nav.Item>
                             ) : (
-                                this.state.routes.map(val => {
-                                    if (!val) return;
-                                    if (!val.visibleNavbar) return;
-
+                                Object.values(this.state.categories).map(cat => {
                                     return (
-                                        <Nav.Item key={val.route}>
-                                            <Nav.Link
-                                                as={NavLink}
-                                                to={val.route}
-                                                activeClassName="active"
-                                                exact={!val.navbarLoose}>
-                                                <FormattedMessage id={val.name} />
-                                            </Nav.Link>
-                                        </Nav.Item>
+                                        <div key={cat.name} className="d-flex">
+                                            <Nav.Item
+                                                onMouseEnter={() => {
+                                                    this.setState({
+                                                        focusedCategory: cat.name
+                                                    });
+                                                }}>
+                                                <Nav.Link
+                                                    as={NavLink}
+                                                    to={cat.leader.route}
+                                                    activeClassName="active"
+                                                    exact={!cat.leader.navbarLoose}>
+                                                    <FormattedMessage id={cat.leader.name} />
+                                                </Nav.Link>
+                                            </Nav.Item>
+                                            {Object.keys(cat.routes).length >= 2 ? (
+                                                <CSSTransition
+                                                    in={this.state.focusedCategory === cat.name}
+                                                    classNames="anim-collapse"
+                                                    className="nowrap anim-collapse-all"
+                                                    addEndListener={(node, done) => {
+                                                        node.addEventListener(
+                                                            "transitionend",
+                                                            done,
+                                                            false
+                                                        );
+                                                    }}
+                                                    onMouseEnter={() => {
+                                                        this.setState({
+                                                            focusedCategory: cat.name
+                                                        });
+                                                    }}>
+                                                    <div>
+                                                        <Nav>
+                                                            <div className="navbar-icons">
+                                                                <FontAwesomeIcon icon="angle-right" />
+                                                            </div>
+                                                            {cat.routes.map(val => {
+                                                                if (val.catleader) return; //we already display this but differently
+                                                                if (!val.visibleNavbar) return;
+
+                                                                return (
+                                                                    <Nav.Item key={val.route}>
+                                                                        <Nav.Link
+                                                                            as={NavLink}
+                                                                            to={val.route}
+                                                                            activeClassName="active"
+                                                                            exact={
+                                                                                !val.navbarLoose
+                                                                            }>
+                                                                            <FormattedMessage
+                                                                                id={val.name}
+                                                                            />
+                                                                        </Nav.Link>
+                                                                    </Nav.Item>
+                                                                );
+                                                            })}
+                                                            <div className="navbar-icons">
+                                                                <FontAwesomeIcon icon="grip-lines-vertical" />
+                                                            </div>
+                                                        </Nav>
+                                                    </div>
+                                                </CSSTransition>
+                                            ) : (
+                                                ""
+                                            )}
+                                        </div>
                                     );
                                 })
                             )}
