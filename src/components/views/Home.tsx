@@ -56,9 +56,7 @@ export default class Home extends React.Component<IProps, IState> {
                                 //@ts-expect-error //dont really know how to fix this so uhhhhhhh, this will do for now
                                 to={val.route}
                                 className={`text-decoration-none m-1 h-75 ${
-                                    val.cachedAuth
-                                        ? "text-secondary"
-                                        : "text-danger d-sm-flex d-none"
+                                    val.cachedAuth ? "text-primary" : "text-danger d-sm-flex d-none"
                                 }`}>
                                 <Card.Body>
                                     <FontAwesomeIcon
