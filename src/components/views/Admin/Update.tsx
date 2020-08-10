@@ -175,7 +175,7 @@ export default class Update extends React.Component<IProps, IState> {
             });
             return;
         }
-        const response = await AdminClient.updateServer({ newVersion: this.state.selectedOption });
+        const response = await AdminClient.updateServer(this.state.selectedOption);
 
         switch (response.code) {
             case StatusCode.ERROR: {

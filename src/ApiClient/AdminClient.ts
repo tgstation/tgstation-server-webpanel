@@ -175,11 +175,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
         }
     }
 
-    public async updateServer({
-        newVersion
-    }: {
-        newVersion: string;
-    }): Promise<InternalStatus<null, UpdateErrors>> {
+    public async updateServer(newVersion: string): Promise<InternalStatus<null, UpdateErrors>> {
         await ServerClient.wait4Init();
 
         let response;
