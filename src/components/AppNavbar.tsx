@@ -97,7 +97,10 @@ export default withRouter(
                             ? "danger"
                             : "primary"
                     }>
-                    <Navbar.Brand as={NavLink} to={AppRoutes.home.route} className="mr-auto">
+                    <Navbar.Brand
+                        as={NavLink}
+                        to={AppRoutes.home.link || AppRoutes.home.route}
+                        className="mr-auto">
                         {this.renderVersion()}
                     </Navbar.Brand>
                     <Navbar.Toggle className="mr-2" aria-controls="responsive-navbar-nav" />
@@ -107,7 +110,7 @@ export default withRouter(
                                 <Nav.Item>
                                     <Nav.Link
                                         as={NavLink}
-                                        to={AppRoutes.home.route}
+                                        to={AppRoutes.home.link || AppRoutes.home.route}
                                         isActive={() => true}>
                                         <FormattedMessage id="routes.login" />
                                     </Nav.Link>
@@ -124,7 +127,7 @@ export default withRouter(
                                                 }}>
                                                 <Nav.Link
                                                     as={NavLink}
-                                                    to={cat.leader.route}
+                                                    to={cat.leader.link || cat.leader.route}
                                                     activeClassName="active"
                                                     exact={!cat.leader.navbarLoose}>
                                                     <FormattedMessage id={cat.leader.name} />
@@ -157,10 +160,14 @@ export default withRouter(
                                                                 if (!val.visibleNavbar) return;
 
                                                                 return (
-                                                                    <Nav.Item key={val.route}>
+                                                                    <Nav.Item
+                                                                        key={val.link || val.route}>
                                                                         <Nav.Link
                                                                             as={NavLink}
-                                                                            to={val.route}
+                                                                            to={
+                                                                                val.link ||
+                                                                                val.route
+                                                                            }
                                                                             activeClassName="active"
                                                                             exact={
                                                                                 !val.navbarLoose
@@ -220,7 +227,7 @@ export default withRouter(
                 return (
                     <Button
                         as={Link}
-                        to={AppRoutes.config.route}
+                        to={AppRoutes.config.link || AppRoutes.config.route}
                         variant={
                             this.state.serverInfoError || this.state.userNameError
                                 ? "danger"
@@ -262,7 +269,9 @@ export default withRouter(
                             )}
                         </Dropdown.Toggle>
                         <Dropdown.Menu alignRight className="text-right">
-                            <Dropdown.Item as={Link} to={AppRoutes.config.route}>
+                            <Dropdown.Item
+                                as={Link}
+                                to={AppRoutes.config.link || AppRoutes.config.route}>
                                 <FormattedMessage id="routes.config" />
                             </Dropdown.Item>
                             <Dropdown.Item

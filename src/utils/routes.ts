@@ -10,6 +10,8 @@ export interface AppRoute {
     name: string;
     //must be unique, url to access
     route: string;
+    //link to link to when linking to the route, defaults to the "route"
+    link?: string;
     //filename in components/view that the route should display
     file: string;
 
@@ -77,7 +79,7 @@ export const AppRoutes: {
     },
     admin_update: {
         name: "routes.admin.update",
-        route: "/admin/update",
+        route: "/admin/update/",
         file: "Admin/Update",
 
         loose: false,
