@@ -282,7 +282,7 @@ export default withRouter(
                             </Dropdown.Item>
                             <Dropdown.Item
                                 onClick={() => {
-                                    this.props.history.push(this.props.location.pathname);
+                                    this.props.history.replace(this.props.location.pathname);
                                 }}>
                                 <FormattedMessage id="navbar.refresh" />
                             </Dropdown.Item>
