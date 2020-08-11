@@ -233,8 +233,7 @@ export default withRouter(
                                     this.props.history.push(
                                         AppRoutes.admin_update.link || AppRoutes.admin_update.route
                                     );
-                                }}
-                                to={AppRoutes.admin_update.link || AppRoutes.admin_update.route}>
+                                }}>
                                 <FormattedMessage id="view.admin.update.button" />
                             </Button>
                             <Button
