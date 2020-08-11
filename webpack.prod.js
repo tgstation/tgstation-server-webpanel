@@ -6,8 +6,6 @@ const { merge } = require("webpack-merge");
 const common = require("./webpack.common.js");
 const path = require("path");
 
-const appPath = "/";
-const apiPath = "/";
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 
 const profile = false;
@@ -71,9 +69,7 @@ module.exports = smp.wrap(
             new webpack.DefinePlugin({
                 API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
                 VERSION: JSON.stringify(require("./package.json").version),
-                MODE: JSON.stringify("PROD"),
-                BASEPATH: JSON.stringify(appPath),
-                APIPATH: JSON.stringify(apiPath)
+                MODE: JSON.stringify("PROD")
             })
         ]
     })

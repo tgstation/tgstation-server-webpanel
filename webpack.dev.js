@@ -79,9 +79,7 @@ module.exports = smp.wrap(
             new webpack.DefinePlugin({
                 API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
                 VERSION: JSON.stringify(require("./package.json").version),
-                MODE: JSON.stringify("DEV"),
-                BASEPATH: JSON.stringify("/"),
-                APIPATH: JSON.stringify("http://192.168.0.144:5000/")
+                MODE: JSON.stringify("DEV")
             })
         ]
     })

@@ -20,6 +20,7 @@ import ServerClient from "./ApiClient/ServerClient";
 import { getSavedCreds } from "./utils/misc";
 import UserClient from "./ApiClient/UserClient";
 import Router from "./Router";
+import configOptions from "./ApiClient/util/config";
 
 interface IState {
     translation?: ITranslation;
@@ -105,7 +106,7 @@ class App extends React.Component<IAppProps, IState> {
             <IntlProvider
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}>
-                <BrowserRouter basename={BASEPATH}>
+                <BrowserRouter basename={configOptions.basepath.value as string}>
                     <AppNavbar />
                     <Container className="mt-5 mb-5">
                         {this.state.loading ? (

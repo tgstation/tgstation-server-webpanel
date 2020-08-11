@@ -8,7 +8,7 @@ import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import LoginHooks from "./util/LoginHooks";
 import CredentialsProvider from "./util/CredentialsProvider";
-import configOptions from "../utils/config";
+import configOptions from "./util/config";
 
 interface IEvents {
     //tasks once the user is fully logged in
@@ -69,11 +69,12 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         console.log("Initializing API client");
         console.time("APIInit");
         const defObj = (await import("./generatedcode/swagger.json")).default as Document;
+
         this.api = new OpenAPIClientAxios({
             definition: defObj,
             validate: false,
             axiosConfigDefaults: {
-                baseURL: APIPATH,
+                baseURL: configOptions.apipath.value as string,
                 withCredentials: false,
                 headers: {
                     Accept: "application/json",

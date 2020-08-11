@@ -2,7 +2,7 @@ import { Octokit } from "@octokit/rest";
 import { retry } from "@octokit/plugin-retry";
 import { throttling } from "@octokit/plugin-throttling";
 
-import configOptions from "./config";
+import configOptions from "../ApiClient/util/config";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 import InternalStatus, { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";

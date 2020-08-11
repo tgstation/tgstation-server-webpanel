@@ -12,7 +12,7 @@ import "./definitions/globals.d";
 
 //init script
 import "./utils/icolibrary";
-import "./utils/ConfigController";
+import "./ApiClient/util/ConfigController";
 
 //css
 import "./styles/dark.scss";

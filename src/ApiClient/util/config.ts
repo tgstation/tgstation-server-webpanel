@@ -21,6 +21,16 @@ const configOptions: ConfigMap = {
         id: "config.localstoragecreds",
         type: "bool",
         value: false
+    },
+    apipath: {
+        id: "config.apipath",
+        type: "str",
+        value: "/"
+    },
+    basepath: {
+        id: "config.basepath",
+        type: "str",
+        value: "/"
     }
 };
 
