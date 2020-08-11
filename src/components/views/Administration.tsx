@@ -121,7 +121,7 @@ export default withRouter(
 
             if (response.code === StatusCode.OK) {
                 this.setState({
-                    canReboot: !!(
+                    canUpdate: !!(
                         response.payload!.administrationRights & AdministrationRights.ChangeVersion
                     )
                 });
