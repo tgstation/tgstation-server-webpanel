@@ -21,7 +21,7 @@ class Reload extends Component<IProps, IState> {
             return;
         }
         if (
-            prevProps.location.pathname == this.props.location.pathname &&
+            prevProps.match.path == this.props.match.path &&
             prevProps.location.key != this.props.location.key
         ) {
             this.setState({
