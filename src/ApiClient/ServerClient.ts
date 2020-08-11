@@ -211,8 +211,18 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         }
                         case 409: {
                             const errorMessage = res.data as Components.Schemas.ErrorMessage;
+
+                            //Thanks for reusing a global erorr status cyber. Log operations can return 409
+                            const request = error.config;
+                            const status =
+                                (request.url?.startsWith("/Administration/Logs") ||
+                                    request.url?.startsWith("Administration/Logs")) &&
+                                request.method === "get"
+                                    ? ErrorCode.ADMIN_LOGS_IO_ERROR
+                                    : ErrorCode.HTTP_DATA_INEGRITY;
+
                             const errorobj = new InternalError(
-                                ErrorCode.HTTP_DATA_INEGRITY,
+                                status,
                                 {
                                     errorMessage
                                 },

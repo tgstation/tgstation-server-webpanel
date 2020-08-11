@@ -25,6 +25,7 @@ interface IState {
     busy: boolean;
     canReboot: boolean;
     canUpdate: boolean;
+    canLogs: boolean;
     showRebootModal?: boolean;
 }
 
@@ -36,7 +37,8 @@ export default class Administration extends React.Component<IProps, IState> {
         this.state = {
             busy: false,
             canReboot: false,
-            canUpdate: false
+            canUpdate: false,
+            canLogs: false
         };
     }
 
@@ -51,6 +53,7 @@ export default class Administration extends React.Component<IProps, IState> {
         tasks.push(this.loadServerInfo());
         tasks.push(this.checkRebootRights());
         tasks.push(this.checkUpdateRights());
+        tasks.push(this.checkLogsRights());
 
         await Promise.all(tasks);
         console.timeEnd("DataLoad");
@@ -118,6 +121,18 @@ export default class Administration extends React.Component<IProps, IState> {
             this.setState({
                 canReboot: !!(
                     response.payload!.administrationRights & AdministrationRights.ChangeVersion
+                )
+            });
+        }
+    }
+
+    private async checkLogsRights() {
+        const response = await UserClient.getCurrentUser();
+
+        if (response.code === StatusCode.OK) {
+            this.setState({
+                canLogs: !!(
+                    response.payload!.administrationRights & AdministrationRights.DownloadLogs
                 )
             });
         }
@@ -202,6 +217,7 @@ export default class Administration extends React.Component<IProps, IState> {
                         </h3>
                         <hr />
                         <Button
+                            className="mr-2"
                             variant="danger"
                             disabled={
                                 !(
@@ -212,16 +228,24 @@ export default class Administration extends React.Component<IProps, IState> {
                             }
                             onClick={handleOpen}>
                             <FormattedMessage id="view.admin.reboot.button" />
-                        </Button>{" "}
+                        </Button>
                         <Button
+                            className="mr-2"
                             variant="primary"
                             disabled={
                                 !this.state.canUpdate &&
                                 this.state.serverInfo.version! < this.state.adminInfo.latestVersion!
                             }
                             as={Link}
-                            to={AppRoutes.admin_update.route}>
+                            to={AppRoutes.admin_update.link || AppRoutes.admin_update.route}>
                             <FormattedMessage id="view.admin.update.button" />
+                        </Button>
+                        <Button
+                            variant="primary"
+                            disabled={!this.state.canLogs}
+                            as={Link}
+                            to={AppRoutes.admin_logs.link || AppRoutes.admin_logs.route}>
+                            <FormattedMessage id="view.admin.logs.button" />
                         </Button>
                         <Modal
                             show={this.state.showRebootModal}

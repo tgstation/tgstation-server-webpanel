@@ -101,6 +101,31 @@ export const AppRoutes: {
 
         category: "admin"
     },
+    admin_logs: {
+        name: "routes.admin.logs",
+        route: "/admin/logs/:name?/",
+        link: "/admin/logs/",
+        file: "Admin/Logs",
+
+        loose: false,
+        navbarLoose: true,
+
+        isAuthorized: async (): Promise<boolean> => {
+            if (!CredentialsProvider.isTokenValid()) return false;
+            const response = await UserClient.getCurrentUser();
+
+            if (response.code == StatusCode.OK) {
+                return !!(
+                    response.payload!.administrationRights & AdministrationRights.DownloadLogs
+                );
+            }
+            return false;
+        },
+        visibleNavbar: true,
+        homeIcon: undefined,
+
+        category: "admin"
+    },
     config: {
         name: "routes.config",
         route: "/config/",

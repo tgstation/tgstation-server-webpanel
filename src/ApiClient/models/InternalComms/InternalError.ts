@@ -47,7 +47,8 @@ export enum ErrorCode {
     ADMIN_GITHUB_RATE = "error.admin.rate", //errmessage
     ADMIN_GITHUB_ERROR = "error.admin.error", //errmessage
     ADMIN_WATCHDOG_UNAVAIL = "error.admin.watchdog.avail", //errmessage
-    ADMIN_VERSION_NOT_FOUND = "error.admin.update.notfound" //errmessage
+    ADMIN_VERSION_NOT_FOUND = "error.admin.update.notfound", //errmessage
+    ADMIN_LOGS_IO_ERROR = "error.admin.logs.io" //errmessage
 }
 
 type errorMessage = {

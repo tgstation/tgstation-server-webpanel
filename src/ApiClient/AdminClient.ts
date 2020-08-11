@@ -24,6 +24,10 @@ export type UpdateErrors =
     | ErrorCode.ADMIN_GITHUB_RATE
     | ErrorCode.ADMIN_GITHUB_ERROR;
 
+export type LogsErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
+
+export type LogErrors = GenericErrors;
+
 export default new (class AdminClient extends TypedEmitter<IEvents> {
     private _cachedAdminInfo?: InternalStatus<Components.Schemas.Administration, ErrorCode.OK>;
     public get cachedAdminInfo() {
@@ -243,6 +247,83 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
             }
             default: {
                 return new InternalStatus<null, ErrorCode.UNHANDLED_RESPONSE>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async getLogs(): Promise<InternalStatus<Components.Schemas.LogFile[], LogsErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.AdministrationController_ListLogs();
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<LogsErrors>
+            });
+        }
+
+        switch (response.status) {
+            case 200: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: response.data as Components.Schemas.LogFile[]
+                });
+            }
+            /*case 409: {
+                //not handled here as its a global error but instead handled in the interceptor as a snowflaky response, thanks for using 409 for two things cyber.
+
+            }*/
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async getLog(
+        logName: string
+    ): Promise<InternalStatus<Components.Schemas.LogFile, LogErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.AdministrationController_GetLog({
+                path: logName
+            });
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+        switch (response.status) {
+            case 200: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    //TODO: fix this once cyber fixes too
+                    payload: (response.data as unknown) as Components.Schemas.LogFile
+                });
+            }
+            /*case 409: {
+                //not handled here as its a global error but instead handled in the interceptor as a snowflaky response, thanks for using 409 for two things cyber.
+            }*/
+            default: {
+                return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,
