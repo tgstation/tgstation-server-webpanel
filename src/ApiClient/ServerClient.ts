@@ -404,7 +404,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         (() => {})(); //noop
                     }
                 }
-                await this.getServerInfo();
                 await LoginHooks.runHooks(token);
                 console.log("Running post login event");
                 this.emit("loginSuccess", token);
