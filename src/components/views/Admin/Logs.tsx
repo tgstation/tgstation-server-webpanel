@@ -10,12 +10,11 @@ import Tooltip from "react-bootstrap/Tooltip";
 import Button from "react-bootstrap/Button";
 import Loading from "../../utils/Loading";
 
-import { timeSince } from "../../../utils/time";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 import { Link } from "react-router-dom";
 import { AppRoutes } from "../../../utils/routes";
-import { download } from "../../../utils/misc";
+import { download, timeSince } from "../../../utils/misc";
 
 interface IProps extends RouteComponentProps<{ name: string | undefined }> {}
 
