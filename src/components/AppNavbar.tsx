@@ -117,6 +117,8 @@ export default withRouter(
                                 </Nav.Item>
                             ) : (
                                 Object.values(this.state.categories).map(cat => {
+                                    if (!cat.leader.cachedAuth) return;
+
                                     return (
                                         <div key={cat.name} className="d-flex">
                                             <Nav.Item
@@ -133,7 +135,9 @@ export default withRouter(
                                                     <FormattedMessage id={cat.leader.name} />
                                                 </Nav.Link>
                                             </Nav.Item>
-                                            {Object.keys(cat.routes).length >= 2 ? (
+                                            {Object.values(cat.routes).filter(
+                                                value => value.cachedAuth
+                                            ).length >= 2 ? (
                                                 <CSSTransition
                                                     in={this.state.focusedCategory === cat.name}
                                                     classNames="anim-collapse"
@@ -157,6 +161,7 @@ export default withRouter(
                                                             </div>
                                                             {cat.routes.map(val => {
                                                                 if (val.catleader) return; //we already display this but differently
+                                                                if (!val.cachedAuth) return;
                                                                 if (!val.visibleNavbar) return;
 
                                                                 return (

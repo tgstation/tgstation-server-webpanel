@@ -52,6 +52,9 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         LoginHooks.addHook(this.getServerInfo);
         this.on("purgeCache", () => {
             this._serverInfo = undefined;
+            if (CredentialsProvider.token) {
+                void LoginHooks.runHooks(CredentialsProvider.token).catch(console.error);
+            }
         });
     }
 

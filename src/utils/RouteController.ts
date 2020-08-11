@@ -1,7 +1,6 @@
-import { AppCategories, AppCategory, AppRoute, AppRoutes, UnpopulatedAppCategory } from "./routes";
+import { AppCategories, AppRoute, AppRoutes, UnpopulatedAppCategory } from "./routes";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 import LoginHooks from "../ApiClient/util/LoginHooks";
-import ServerClient from "../ApiClient/ServerClient";
 
 interface IEvents {
     refresh: (routes: Array<AppRoute>) => void; //auth
@@ -16,7 +15,6 @@ class RouteController extends TypedEmitter<IEvents> {
         super();
         this.refreshRoutes = this.refreshRoutes.bind(this);
 
-        ServerClient.on("purgeCache", () => this.refreshRoutes);
         LoginHooks.addHook(this.refreshRoutes);
         this.refreshRoutes().catch(console.error);
 
