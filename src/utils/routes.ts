@@ -42,6 +42,20 @@ export interface AppRoute {
     catleader?: boolean;
 }
 
+function adminRight(right: AdministrationRights) {
+    return async (): Promise<boolean> => {
+        if (!CredentialsProvider.isTokenValid()) return false;
+        const response = await UserClient.getCurrentUser();
+
+        if (response.code == StatusCode.OK) {
+            return !!(
+                response.payload!.administrationRights & right
+            );
+        }
+        return false;
+    };
+}
+
 export const AppRoutes: {
     [id: string]: AppRoute;
 } = {
@@ -85,17 +99,7 @@ export const AppRoutes: {
         loose: false,
         navbarLoose: false,
 
-        isAuthorized: async (): Promise<boolean> => {
-            if (!CredentialsProvider.isTokenValid()) return false;
-            const response = await UserClient.getCurrentUser();
-
-            if (response.code == StatusCode.OK) {
-                return !!(
-                    response.payload!.administrationRights & AdministrationRights.ChangeVersion
-                );
-            }
-            return false;
-        },
+        isAuthorized: adminRight(AdministrationRights.ChangeVersion),
         visibleNavbar: true,
         homeIcon: undefined,
 
@@ -110,17 +114,7 @@ export const AppRoutes: {
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: async (): Promise<boolean> => {
-            if (!CredentialsProvider.isTokenValid()) return false;
-            const response = await UserClient.getCurrentUser();
-
-            if (response.code == StatusCode.OK) {
-                return !!(
-                    response.payload!.administrationRights & AdministrationRights.DownloadLogs
-                );
-            }
-            return false;
-        },
+        isAuthorized: adminRight(AdministrationRights.DownloadLogs),
         visibleNavbar: true,
         homeIcon: undefined,
 
@@ -134,17 +128,7 @@ export const AppRoutes: {
         loose: true,
         navbarLoose: true,
 
-        isAuthorized: async (): Promise<boolean> => {
-            if (!CredentialsProvider.isTokenValid()) return false;
-            const response = await UserClient.getCurrentUser();
-
-            if (response.code == StatusCode.OK) {
-                return !!(
-                    response.payload!.administrationRights & AdministrationRights.EditOwnPassword
-                );
-            }
-            return false;
-        },
+        isAuthorized: adminRight(AdministrationRights.EditOwnPassword),
 
         visibleNavbar: false,
         homeIcon: "key"
