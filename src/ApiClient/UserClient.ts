@@ -33,9 +33,11 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         if (this.loadingUserInfo) {
             return await new Promise(resolve => {
-                this.on("loadUserInfo", user => {
+                const resolver = (user: InternalStatus<Components.Schemas.User, GenericErrors>) => {
                     resolve(user);
-                });
+                    this.removeListener("loadUserInfo", resolver);
+                };
+                this.on("loadUserInfo", resolver);
             });
         }
 

@@ -341,7 +341,11 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         if (this.loggingIn) {
             return await new Promise(resolve => {
-                this.on("loadLoginInfo", loginInfo => resolve(loginInfo));
+                const resolver = (info: InternalStatus<Components.Schemas.Token, LoginErrors>) => {
+                    resolve(info);
+                    this.removeListener("loadLoginInfo", resolver);
+                };
+                this.on("loadLoginInfo", resolver);
             });
         }
         this.loggingIn = true;
@@ -362,7 +366,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         } finally {
             this.loggingIn = false;
         }
-
         switch (response.status) {
             case 200: {
                 console.log("Login success");
@@ -460,9 +463,13 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                     resolve(this._serverInfo);
                     return;
                 }
-                this.on("loadServerInfo", info => {
+                const resolver = (
+                    info: InternalStatus<Components.Schemas.ServerInformation, GenericErrors>
+                ) => {
                     resolve(info);
-                });
+                    this.removeListener("loadServerInfo", resolver);
+                };
+                this.on("loadServerInfo", resolver);
             });
         }
 

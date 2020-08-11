@@ -52,9 +52,13 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
 
         if (this.loadingAdminInfo) {
             return await new Promise(resolve => {
-                this.on("loadAdminInfo", info => {
-                    resolve(info);
-                });
+                const resolver = (
+                    user: InternalStatus<Components.Schemas.Administration, AdminInfoErrors>
+                ) => {
+                    resolve(user);
+                    this.removeListener("loadAdminInfo", resolver);
+                };
+                this.on("loadAdminInfo", resolver);
             });
         }
 
