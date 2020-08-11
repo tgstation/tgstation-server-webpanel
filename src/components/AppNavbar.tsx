@@ -274,6 +274,15 @@ export default withRouter(
                                 to={AppRoutes.config.link || AppRoutes.config.route}>
                                 <FormattedMessage id="routes.config" />
                             </Dropdown.Item>
+                            {AppRoutes.passwd.cachedAuth ? (
+                                <Dropdown.Item
+                                    as={Link}
+                                    to={AppRoutes.passwd.link || AppRoutes.passwd.route}>
+                                    <FormattedMessage id="routes.passwd" />
+                                </Dropdown.Item>
+                            ) : (
+                                ""
+                            )}
                             <Dropdown.Item
                                 onClick={() => {
                                     ServerClient.emit("purgeCache");

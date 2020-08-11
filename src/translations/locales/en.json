@@ -7,8 +7,12 @@
     "routes.admin.update": "TGS Update",
     "routes.admin.logs": "TGS Logs",
     "routes.config": "Configuration",
+    "routes.passwd": "Change Password",
     "login.submit": "Login",
     "login.password": "Password",
+    "login.password.repeat": "Confirm Password",
+    "login.password.repeat.match": "Passwords do not match!",
+    "login.password.repeat.short": "Password is too short! It must have a length of atleast ",
     "login.title": "Login",
     "login.username": "Username",
     "navbar.user_error": "Error loading current user",
@@ -90,5 +94,7 @@
     "loading.admin": "Loading admin info...",
     "loading.version": "Loading versions...",
     "loading.updating": "Updating server...",
-    "loading.logs": "Loading Log(s)..."
+    "loading.logs": "Loading Log(s)...",
+    "loading.info": "Loading Information...",
+    "loading.passwd": "Changing password..."
 }

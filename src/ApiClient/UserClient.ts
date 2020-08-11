@@ -4,9 +4,12 @@ import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatu
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import LoginHooks from "./util/LoginHooks";
 import ServerClient from "./ServerClient";
+
 interface IEvents {
     loadUserInfo: (user: InternalStatus<Components.Schemas.User, GenericErrors>) => void;
 }
+
+export type ChangePasswordError = GenericErrors | ErrorCode.USER_NOT_FOUND;
 
 export default new (class UserClient extends TypedEmitter<IEvents> {
     private _cachedUser?: InternalStatus<Components.Schemas.User, ErrorCode.OK>;
@@ -23,6 +26,60 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         ServerClient.on("purgeCache", () => {
             this._cachedUser = undefined;
         });
+    }
+
+    public async changeOwnPassword(
+        password: string
+    ): Promise<InternalStatus<Components.Schemas.User, ChangePasswordError>> {
+        await ServerClient.wait4Init();
+
+        const thing = await this.getCurrentUser();
+        switch (thing.code) {
+            case StatusCode.ERROR: {
+                return thing;
+            }
+            case StatusCode.OK: {
+                let response;
+                try {
+                    //TODO: threaten cyberboss into fixing this
+                    //@ts-expect-error //blame cyberboss for bad typedefs
+                    response = await ServerClient.apiClient!.UserController_Update(null, {
+                        id: thing.payload!.id,
+                        password: password
+                    });
+                } catch (stat) {
+                    return new InternalStatus({
+                        code: StatusCode.ERROR,
+                        error: stat as InternalError<ChangePasswordError>
+                    });
+                }
+                switch (response.status) {
+                    case 200: {
+                        return new InternalStatus({
+                            code: StatusCode.OK,
+                            payload: response.data as Components.Schemas.User
+                        });
+                    }
+                    case 404: {
+                        const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                        return new InternalStatus({
+                            code: StatusCode.ERROR,
+                            error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
+                        });
+                    }
+                    default: {
+                        return new InternalStatus({
+                            code: StatusCode.ERROR,
+                            error: new InternalError(
+                                ErrorCode.UNHANDLED_RESPONSE,
+                                { axiosResponse: response },
+                                response
+                            )
+                        });
+                    }
+                }
+            }
+        }
     }
 
     public async getCurrentUser(): Promise<InternalStatus<Components.Schemas.User, GenericErrors>> {

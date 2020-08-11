@@ -126,13 +126,36 @@ export const AppRoutes: {
 
         category: "admin"
     },
+    passwd: {
+        name: "routes.passwd",
+        route: "/passwd/",
+        file: "ChangePassword",
+
+        loose: true,
+        navbarLoose: true,
+
+        isAuthorized: async (): Promise<boolean> => {
+            if (!CredentialsProvider.isTokenValid()) return false;
+            const response = await UserClient.getCurrentUser();
+
+            if (response.code == StatusCode.OK) {
+                return !!(
+                    response.payload!.administrationRights & AdministrationRights.EditOwnPassword
+                );
+            }
+            return false;
+        },
+
+        visibleNavbar: false,
+        homeIcon: "key"
+    },
     config: {
         name: "routes.config",
         route: "/config/",
         file: "Configuration",
 
         loose: true,
-        navbarLoose: false,
+        navbarLoose: true,
 
         loginless: true,
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
