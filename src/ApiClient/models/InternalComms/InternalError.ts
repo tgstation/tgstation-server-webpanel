@@ -1,6 +1,8 @@
 import { Components } from "../../generatedcode/_generated";
 import { AxiosResponse } from "axios";
 import CredentialsProvider from "../../util/CredentialsProvider";
+import configOptions from "../../util/config";
+import { replaceAll } from "../../../utils/misc";
 
 export type GenericErrors =
     | ErrorCode.HTTP_BAD_REQUEST
@@ -102,26 +104,28 @@ export default class InternalError<T extends ErrorCode> {
                 desc: `${err.name}: ${err.message}`
             };
         }
-        let debuginfo = JSON.stringify({ addon, origin });
-        //@ts-expect-error //slander, replaceAll() exists >:(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        debuginfo = debuginfo.replaceAll(
+        let debuginfo = JSON.stringify({ addon, origin, config: configOptions });
+        debuginfo = debuginfo.replace(
             /Basic (?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?/g,
             "Basic **************"
-        ) as string;
-        //@ts-expect-error //slander, replaceAll() exists >:(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        debuginfo = debuginfo.replaceAll(
+        );
+        debuginfo = debuginfo.replace(
             /{"username":".+?","password":".+?"}/g,
             '{"username":"*******","password":"*******"}'
-        ) as string;
+        );
         if (CredentialsProvider.isTokenValid()) {
-            //@ts-expect-error //slander, replaceAll() exists >:(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            debuginfo = debuginfo.replaceAll(
+            debuginfo = replaceAll(
+                debuginfo,
                 CredentialsProvider.token?.bearer as string,
                 "**************"
-            ) as string;
+            );
+        }
+        if (configOptions.githubtoken.value) {
+            debuginfo = replaceAll(
+                debuginfo,
+                configOptions.githubtoken.value as string,
+                "**************"
+            );
         }
         this.extendedInfo = debuginfo;
     }

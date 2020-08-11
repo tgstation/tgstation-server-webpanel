@@ -57,4 +57,11 @@ function timeSince(date: Date): string {
     return `${Math.floor(interval)} seconds`;
 }
 
-export { getSavedCreds, download, timeSince };
+function replaceAll(str: string, find: string, replace: string, ignore?: boolean): string {
+    return str.replace(
+        new RegExp(find.replace(/([/,!\\^${}[\]().*+?|<>\-&])/g, "\\$&"), ignore ? "gi" : "g"),
+        replace.replace(/\$/g, "$$$$")
+    );
+}
+
+export { getSavedCreds, download, timeSince, replaceAll };
