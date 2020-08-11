@@ -179,7 +179,7 @@ export default withRouter(
                                                                     </Nav.Item>
                                                                 );
                                                             })}
-                                                            <div className="navbar-icons">
+                                                            <div className="py-2">
                                                                 <FontAwesomeIcon icon="grip-lines-vertical" />
                                                             </div>
                                                         </Nav>
