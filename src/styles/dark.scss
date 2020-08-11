@@ -129,6 +129,8 @@ $dropdown-link-hover-bg: darken($dropdown-bg, 5%);
 
 $hr-border-color: rgba($white, 0.2);
 
+$link-color: theme-color("secondary");
+
 $modal-content-bg: $dark;
 
 $navbar-dark-color: rgba($white, 0.75);
@@ -136,7 +138,7 @@ $navbar-dark-color: rgba($white, 0.75);
     font-weight: bold;
 }
 
-$link-color: theme-color("secondary");
+$pre-color: inherit;
 
 @import "~bootstrap/scss/variables";
 
@@ -272,10 +274,4 @@ $link-color: theme-color("secondary");
     .navbar-icons{
         display:none !important;
     }
-}
-
-.navbar-icons{
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }

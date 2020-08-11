@@ -152,7 +152,7 @@ export default withRouter(
                                                     }}>
                                                     <div>
                                                         <Nav>
-                                                            <div className="navbar-icons">
+                                                            <div className="py-2">
                                                                 <FontAwesomeIcon icon="angle-right" />
                                                             </div>
                                                             {cat.routes.map(val => {
