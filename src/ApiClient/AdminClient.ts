@@ -319,8 +319,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    //TODO: fix this once cyber fixes too
-                    payload: (response.data as unknown) as Components.Schemas.LogFile
+                    payload: response.data as Components.Schemas.LogFile
                 });
             }
             /*case 409: {
