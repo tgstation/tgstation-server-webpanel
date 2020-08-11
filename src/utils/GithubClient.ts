@@ -145,6 +145,3 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
     }
 })();
 export default e;
-//@ts-expect-error TODO: remove this, obviously.
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-window.test = e;
