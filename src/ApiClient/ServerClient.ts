@@ -407,10 +407,12 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 await LoginHooks.runHooks(token);
                 console.log("Running post login event");
                 this.emit("loginSuccess", token);
-                return new InternalStatus<Components.Schemas.Token, ErrorCode.OK>({
+                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: token
                 });
+                this.emit("loadLoginInfo", res);
+                return res;
             }
             default: {
                 return new InternalStatus<Components.Schemas.Token, ErrorCode.UNHANDLED_RESPONSE>({
