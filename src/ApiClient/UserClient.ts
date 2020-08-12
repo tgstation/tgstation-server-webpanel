@@ -143,5 +143,37 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
             }
         }
     }
-    //TODO: implement all user endpoints
+
+    public async listUsers(): Promise<InternalStatus<Components.Schemas.User[], GenericErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.UserController_List();
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+
+        switch (response.status) {
+            case 200: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: response.data as Components.Schemas.User[]
+                });
+            }
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
 })();

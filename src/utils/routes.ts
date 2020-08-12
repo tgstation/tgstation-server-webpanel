@@ -73,6 +73,36 @@ export const AppRoutes: {
         category: "home",
         catleader: true
     },
+    usermanager: {
+        name: "routes.usermanager",
+        route: "/users/",
+        file: "UserList",
+
+        loose: false,
+        navbarLoose: true,
+
+        isAuthorized: adminRight(AdministrationRights.ReadUsers),
+
+        visibleNavbar: true,
+        homeIcon: "user",
+
+        category: "user",
+        catleader: true
+    },
+    useredit: {
+        name: "routes.useredit",
+        route: "/users/:id(\\d+)",
+        link: "/users/",
+        file: "UserEdit",
+
+        loose: true,
+        navbarLoose: true,
+
+        isAuthorized: adminRight(AdministrationRights.ReadUsers),
+
+        visibleNavbar: false,
+        homeIcon: undefined
+    },
     admin: {
         name: "routes.admin",
         route: "/admin/",
@@ -166,6 +196,9 @@ export type AppCategories = {
 export const AppCategories: UnpopulatedAppCategories = {
     home: {
         name: "home"
+    },
+    user: {
+        name: "user"
     },
     admin: {
         name: "admin"
