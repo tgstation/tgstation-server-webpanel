@@ -191,16 +191,18 @@ export default withRouter(
                     ) : (
                         <Table striped bordered hover variant="dark" responsive>
                             <thead>
-                                <th>#</th>
-                                <th>
-                                    <FormattedMessage id="generic.name" />
-                                </th>
-                                <th>
-                                    <FormattedMessage id="generic.datetime" />
-                                </th>
-                                <th>
-                                    <FormattedMessage id="generic.action" />
-                                </th>
+                                <tr>
+                                    <th>#</th>
+                                    <th>
+                                        <FormattedMessage id="generic.name" />
+                                    </th>
+                                    <th>
+                                        <FormattedMessage id="generic.datetime" />
+                                    </th>
+                                    <th>
+                                        <FormattedMessage id="generic.action" />
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {this.state.logs.map((value, index) => {
