@@ -76,7 +76,7 @@ export const AppRoutes: {
     usermanager: {
         name: "routes.usermanager",
         route: "/users/",
-        file: "UserList",
+        file: "User/List",
 
         loose: false,
         navbarLoose: true,
@@ -93,7 +93,7 @@ export const AppRoutes: {
         name: "routes.useredit",
         route: "/users/:id(\\d+)",
         link: "/users/",
-        file: "UserEdit",
+        file: "User/Edit",
 
         loose: true,
         navbarLoose: true,

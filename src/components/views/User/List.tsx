@@ -1,19 +1,19 @@
 import React from "react";
-import { Components } from "../../ApiClient/generatedcode/_generated";
-import Loading from "../utils/Loading";
-import UserClient from "../../ApiClient/UserClient";
-import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
-import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
-import ErrorAlert from "../utils/ErrorAlert";
+import { Components } from "../../../ApiClient/generatedcode/_generated";
+import Loading from "../../utils/Loading";
+import UserClient from "../../../ApiClient/UserClient";
+import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
+import ErrorAlert from "../../utils/ErrorAlert";
 import { FormattedMessage } from "react-intl";
 import Table from "react-bootstrap/Table";
 import Tooltip from "react-bootstrap/Tooltip";
 import Badge from "react-bootstrap/Badge";
-import { timeSince } from "../../utils/misc";
+import { timeSince } from "../../../utils/misc";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
-import { AppRoutes } from "../../utils/routes";
+import { AppRoutes } from "../../../utils/routes";
 
 interface IProps {}
 
