@@ -9,7 +9,7 @@ interface IEvents {
     loadUserInfo: (user: InternalStatus<Components.Schemas.User, GenericErrors>) => void;
 }
 
-export type ChangePasswordError = GenericErrors | ErrorCode.USER_NOT_FOUND;
+export type ChangePasswordErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 
 export default new (class UserClient extends TypedEmitter<IEvents> {
     private _cachedUser?: InternalStatus<Components.Schemas.User, ErrorCode.OK>;
@@ -30,7 +30,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
     public async changeOwnPassword(
         password: string
-    ): Promise<InternalStatus<Components.Schemas.User, ChangePasswordError>> {
+    ): Promise<InternalStatus<Components.Schemas.User, ChangePasswordErrors>> {
         await ServerClient.wait4Init();
 
         const thing = await this.getCurrentUser();
