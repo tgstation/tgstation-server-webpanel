@@ -11,7 +11,7 @@ import ClickToSelect from "@mapbox/react-click-to-select";
 
 interface IProps {
     error: InternalError<ErrorCode> | undefined;
-    onClose: () => void;
+    onClose?: () => void;
 }
 
 interface IState {
@@ -37,8 +37,8 @@ export default class ErrorAlert extends Component<IProps, IState> {
             <Alert
                 className="clearfix"
                 variant="error"
-                dismissible
-                onClose={() => this.setState(this.props.onClose)}>
+                dismissible={!!this.props.onClose}
+                onClose={this.props.onClose}>
                 <FormattedMessage id={this.props.error.code} />
                 <hr />
 
@@ -70,7 +70,7 @@ API Version: ${API_VERSION}
 Error Code: ${this.props.error.code}
 Error Description: ${this.props.error.desc ? this.props.error.desc.desc : "No description"}
 
-Additional Information: 
+Additional Information:
 ${this.props.error.extendedInfo}`}
                             </code>
                         </ClickToSelect>
