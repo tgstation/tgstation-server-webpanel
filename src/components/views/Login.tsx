@@ -33,8 +33,8 @@ export default withRouter(
             this.state = {
                 busy: false,
                 validated: false,
-                username: "",
-                password: "",
+                username: usr || "",
+                password: pwd || "",
                 save: !!(usr && pwd)
             };
         }
