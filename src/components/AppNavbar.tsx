@@ -89,7 +89,7 @@ export default withRouter(
             return (
                 <Navbar
                     className="shadow-lg"
-                    expand={this.state.loggedIn ? "md" : undefined}
+                    expand={this.state.loggedIn ? "lg" : undefined}
                     collapseOnSelect
                     variant="dark"
                     bg={
@@ -156,7 +156,7 @@ export default withRouter(
                                                     }}>
                                                     <div>
                                                         <Nav>
-                                                            <div className="py-2">
+                                                            <div className="py-2 d-none d-lg-inline">
                                                                 <FontAwesomeIcon icon="angle-right" />
                                                             </div>
                                                             {cat.routes.map(val => {
@@ -184,7 +184,7 @@ export default withRouter(
                                                                     </Nav.Item>
                                                                 );
                                                             })}
-                                                            <div className="py-2">
+                                                            <div className="py-2 d-none d-lg-inline">
                                                                 <FontAwesomeIcon icon="grip-lines-vertical" />
                                                             </div>
                                                         </Nav>

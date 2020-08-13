@@ -269,9 +269,3 @@ $pre-color: inherit;
 .nowrap {
     white-space: nowrap;
 }
-
-@include media-breakpoint-down("md") {
-    .navbar-icons{
-        display:none !important;
-    }
-}
