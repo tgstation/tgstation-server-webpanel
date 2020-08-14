@@ -206,7 +206,7 @@ export default withRouter(
 
         private renderVersion(): React.ReactNode {
             if (!this.state.loggedIn) {
-                return `tgstation-server`;
+                return <FormattedMessage id="generic.appname" />;
             }
             if (this.state.serverInfoError)
                 return (
@@ -222,7 +222,13 @@ export default withRouter(
                     </div>
                 );
             if (this.state.serverInformation)
-                return `tgstation-server v${this.state.serverInformation.version!}`;
+                return (
+                    <React.Fragment>
+                        <FormattedMessage id="generic.appname" />
+                        {" v"}
+                        {this.state.serverInformation.version!}
+                    </React.Fragment>
+                );
 
             return "loading"; //TODO: add a spinner;
         }

@@ -181,20 +181,20 @@ export default withRouter(
                     {this.state.adminInfo && this.state.serverInfo ? (
                         <div className="text-center">
                             <h3 className=" text-secondary">
-                                Host Machine OS:{" "}
+                                <FormattedMessage id="view.admin.hostos" />
                                 <FontAwesomeIcon
                                     fixedWidth
                                     icon={this.state.adminInfo.windowsHost ? faWindows : faLinux}
                                 />
                             </h3>
                             <h5 className="text-secondary">
-                                Remote repository:{" "}
+                                <FormattedMessage id="view.admin.remote" />
                                 <a href={this.state.adminInfo.trackedRepositoryUrl!}>
                                     {this.state.adminInfo.trackedRepositoryUrl!}
                                 </a>
                             </h5>
                             <h3 className="text-secondary">
-                                Current version:{" "}
+                                <FormattedMessage id="view.admin.version.current" />
                                 <span
                                     className={
                                         this.state.serverInfo.version! <
@@ -206,7 +206,7 @@ export default withRouter(
                                 </span>
                             </h3>
                             <h3 className="text-secondary">
-                                Latest version:{" "}
+                                <FormattedMessage id="view.admin.version.latest" />
                                 <span
                                     className={
                                         this.state.serverInfo.version! <
