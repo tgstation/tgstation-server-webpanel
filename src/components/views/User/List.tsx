@@ -149,7 +149,21 @@ export default class UserList extends React.Component<IProps, IState> {
                                             </td>
                                         )}
                                     </OverlayTrigger>
-                                    <td>{value.createdBy.name}</td>
+                                    <OverlayTrigger
+                                        overlay={
+                                            <Tooltip id={`${value.name}-tooltip-createdby`}>
+                                                <FormattedMessage id="generic.userid" />
+                                                {value.createdBy.id}
+                                            </Tooltip>
+                                        }>
+                                        {({ ref, ...triggerHandler }) => (
+                                            <td {...triggerHandler}>
+                                                <span ref={ref as React.Ref<HTMLSpanElement>}>
+                                                    {value.createdBy.name}
+                                                </span>
+                                            </td>
+                                        )}
+                                    </OverlayTrigger>
                                     <td className="align-middle p-0">
                                         <Button
                                             as={Link}
