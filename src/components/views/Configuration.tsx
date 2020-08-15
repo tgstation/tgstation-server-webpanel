@@ -100,7 +100,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                     const random = Math.random().toString();
 
                     return (
-                        <InputGroup className="mb-4" key={value.id}>
+                        <InputGroup key={value.id}>
                             <InputGroup.Prepend className="w-40 flex-grow-1 flex-xl-grow-0 overflow-auto mb-2 mb-xl-0">
                                 {/*<InputGroup.Text
                                     as="label"
@@ -135,11 +135,11 @@ export default class Configuration extends React.Component<IProps, IState> {
                                     )}
                                 </OverlayTrigger>
                             </InputGroup.Prepend>
-                            <div className="flex-grow-1 w-100 w-xl-auto d-flex">
+                            <div className="flex-grow-1 w-100 w-xl-auto d-flex mb-3 mb-xl-0">
                                 {type === "switch" ? (
                                     <label
                                         htmlFor={random}
-                                        className="d-flex justify-content-center align-content-center flex-grow-1 w-100 w-xl-auto">
+                                        className="d-flex justify-content-center align-content-center flex-grow-1 w-100 w-xl-auto mb-0">
                                         <Form.Check
                                             inline
                                             type="switch"
@@ -156,7 +156,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                                     <FormControl
                                         custom
                                         type={type}
-                                        className={`flex-fill ${
+                                        className={`flex-fill mb-0 ${
                                             this.state.values[key] ? "font-weight-bold" : ""
                                         }`}
                                         ref={valueRef}
