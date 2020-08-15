@@ -64,4 +64,16 @@ function replaceAll(str: string, find: string, replace: string, ignore?: boolean
     );
 }
 
-export { getSavedCreds, download, timeSince, replaceAll };
+function matchesPath(path: string, target: string, exact = false): boolean {
+    //remove trailing slashes
+    if (path.slice(-1) === "/") path = path.slice(0, -1);
+    if (target.slice(-1) === "/") target = target.slice(0, -1);
+
+    if (exact) {
+        return path == target;
+    } else {
+        return path.startsWith(target);
+    }
+}
+
+export { getSavedCreds, download, timeSince, replaceAll, matchesPath };

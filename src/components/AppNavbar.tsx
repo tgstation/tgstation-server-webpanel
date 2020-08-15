@@ -1,5 +1,4 @@
 import * as React from "react";
-import { NavLink, Link } from "react-router-dom";
 import { FormattedMessage } from "react-intl";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
@@ -15,6 +14,7 @@ import UserClient from "../ApiClient/UserClient";
 import ServerClient from "../ApiClient/ServerClient";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import CSSTransition from "react-transition-group/CSSTransition";
+import { matchesPath } from "../utils/misc";
 
 interface IProps extends RouteComponentProps {}
 
@@ -98,8 +98,11 @@ export default withRouter(
                             : "primary"
                     }>
                     <Navbar.Brand
-                        as={NavLink}
-                        to={AppRoutes.home.link || AppRoutes.home.route}
+                        onClick={() => {
+                            this.props.history.push(AppRoutes.home.link || AppRoutes.home.route, {
+                                reload: true
+                            });
+                        }}
                         className="mr-auto">
                         {this.renderVersion()}
                     </Navbar.Brand>
@@ -109,9 +112,13 @@ export default withRouter(
                             {!this.state.loggedIn ? (
                                 <Nav.Item>
                                     <Nav.Link
-                                        as={NavLink}
-                                        to={AppRoutes.home.link || AppRoutes.home.route}
-                                        isActive={() => true}>
+                                        onClick={() => {
+                                            this.props.history.push(
+                                                AppRoutes.home.link || AppRoutes.home.route,
+                                                { reload: true }
+                                            );
+                                        }}
+                                        active={true}>
                                         <FormattedMessage id="routes.login" />
                                     </Nav.Link>
                                 </Nav.Item>
@@ -128,10 +135,17 @@ export default withRouter(
                                                     });
                                                 }}>
                                                 <Nav.Link
-                                                    as={NavLink}
-                                                    to={cat.leader.link || cat.leader.route}
-                                                    activeClassName="active"
-                                                    exact={!cat.leader.navbarLoose}>
+                                                    onClick={() => {
+                                                        this.props.history.push(
+                                                            cat.leader.link || cat.leader.route,
+                                                            { reload: true }
+                                                        );
+                                                    }}
+                                                    active={matchesPath(
+                                                        this.props.location.pathname,
+                                                        cat.leader.route,
+                                                        !cat.leader.navbarLoose
+                                                    )}>
                                                     <FormattedMessage id={cat.leader.name} />
                                                 </Nav.Link>
                                             </Nav.Item>
@@ -168,15 +182,21 @@ export default withRouter(
                                                                     <Nav.Item
                                                                         key={val.link || val.route}>
                                                                         <Nav.Link
-                                                                            as={NavLink}
-                                                                            to={
-                                                                                val.link ||
-                                                                                val.route
-                                                                            }
-                                                                            activeClassName="active"
-                                                                            exact={
+                                                                            onClick={() => {
+                                                                                this.props.history.push(
+                                                                                    val.link ||
+                                                                                        val.route,
+                                                                                    {
+                                                                                        reload: true
+                                                                                    }
+                                                                                );
+                                                                            }}
+                                                                            active={matchesPath(
+                                                                                this.props.location
+                                                                                    .pathname,
+                                                                                val.route,
                                                                                 !val.navbarLoose
-                                                                            }>
+                                                                            )}>
                                                                             <FormattedMessage
                                                                                 id={val.name}
                                                                             />
@@ -237,8 +257,12 @@ export default withRouter(
             if (!this.state.loggedIn)
                 return (
                     <Button
-                        as={Link}
-                        to={AppRoutes.config.link || AppRoutes.config.route}
+                        onClick={() => {
+                            this.props.history.push(
+                                AppRoutes.config.link || AppRoutes.config.route,
+                                { reload: true }
+                            );
+                        }}
                         variant={
                             this.state.serverInfoError || this.state.userNameError
                                 ? "danger"
@@ -281,14 +305,22 @@ export default withRouter(
                         </Dropdown.Toggle>
                         <Dropdown.Menu alignRight className="text-right">
                             <Dropdown.Item
-                                as={Link}
-                                to={AppRoutes.config.link || AppRoutes.config.route}>
+                                onClick={() => {
+                                    this.props.history.push(
+                                        AppRoutes.config.link || AppRoutes.config.route,
+                                        { reload: true }
+                                    );
+                                }}>
                                 <FormattedMessage id="routes.config" />
                             </Dropdown.Item>
                             {AppRoutes.passwd.cachedAuth ? (
                                 <Dropdown.Item
-                                    as={Link}
-                                    to={AppRoutes.passwd.link || AppRoutes.passwd.route}>
+                                    onClick={() => {
+                                        this.props.history.push(
+                                            AppRoutes.passwd.link || AppRoutes.passwd.route,
+                                            { reload: true }
+                                        );
+                                    }}>
                                     <FormattedMessage id="routes.passwd" />
                                 </Dropdown.Item>
                             ) : (
@@ -302,7 +334,9 @@ export default withRouter(
                             </Dropdown.Item>
                             <Dropdown.Item
                                 onClick={() => {
-                                    this.props.history.replace(this.props.location.pathname);
+                                    this.props.history.replace(this.props.location.pathname, {
+                                        reload: true
+                                    });
                                 }}>
                                 <FormattedMessage id="navbar.refresh" />
                             </Dropdown.Item>
