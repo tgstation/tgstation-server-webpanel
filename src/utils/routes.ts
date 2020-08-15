@@ -91,7 +91,7 @@ export const AppRoutes: {
     },
     useredit: {
         name: "routes.useredit",
-        route: "/users/:id(\\d+)",
+        route: "/users/:id(\\d+)/:tab?/",
         link: "/users/",
         file: "User/Edit",
 

@@ -10,6 +10,7 @@ interface IEvents {
 }
 
 export type ChangePasswordErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
+export type GetUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 
 export default new (class UserClient extends TypedEmitter<IEvents> {
     private _cachedUser?: InternalStatus<Components.Schemas.User, ErrorCode.OK>;
@@ -50,9 +51,10 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
                 } catch (stat) {
                     return new InternalStatus({
                         code: StatusCode.ERROR,
-                        error: stat as InternalError<ChangePasswordError>
+                        error: stat as InternalError<ChangePasswordErrors>
                     });
                 }
+                // noinspection DuplicatedCode
                 switch (response.status) {
                     case 200: {
                         return new InternalStatus({
@@ -162,6 +164,48 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
                 return new InternalStatus({
                     code: StatusCode.OK,
                     payload: response.data as Components.Schemas.User[]
+                });
+            }
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async getUser(
+        id: number
+    ): Promise<InternalStatus<Components.Schemas.User, GetUserErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.UserController_GetId({ id: id });
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+        // noinspection DuplicatedCode
+        switch (response.status) {
+            case 200: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: response.data as Components.Schemas.User
+                });
+            }
+            case 404: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
                 });
             }
             default: {

@@ -16,6 +16,7 @@ import { faInfo } from "@fortawesome/free-solid-svg-icons/faInfo";
 import { faGripLinesVertical } from "@fortawesome/free-solid-svg-icons/faGripLinesVertical";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 import { faKey } from "@fortawesome/free-solid-svg-icons/faKey";
+import { faPen } from "@fortawesome/free-solid-svg-icons/faPen";
 
 library.add(
     faCheck,
@@ -34,5 +35,6 @@ library.add(
     faInfo,
     faGripLinesVertical,
     faAngleRight,
-    faKey
+    faKey,
+    faPen
 );

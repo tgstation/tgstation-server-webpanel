@@ -138,6 +138,12 @@ $navbar-dark-color: rgba($white, 0.75);
     font-weight: bold;
 }
 
+$nav-tabs-border-color:             $gray-700;
+$nav-tabs-link-hover-border-color:  $gray-700 $gray-700 $nav-tabs-border-color;
+$nav-tabs-link-active-color:        theme-color("secondary"); //$gray-200;
+$nav-tabs-link-active-bg:           $body-bg;
+$nav-tabs-link-active-border-color: $gray-500 $gray-500 $nav-tabs-link-active-bg;
+
 $pre-color: inherit;
 
 @import "~bootstrap/scss/variables";
@@ -183,6 +189,20 @@ $pre-color: inherit;
     color: #3b93de !important;
 }
 
+.nav-tabs .nav-link {
+    color: $gray-200;
+    border: $nav-tabs-border-width solid $gray-700;
+    margin-right: 0.10rem;
+    margin-left: 0.10rem;
+}
+
+@include media-breakpoint-down("sm") {
+    .nav-tabs .nav-link{
+        margin-bottom: 0;
+    }
+}
+
+
 .alert-error {
     @include alert-variant($dark, $danger, $white);
 }
@@ -205,6 +225,16 @@ $pre-color: inherit;
                     #{$prop}: $length !important;
                 }
             }
+        }
+    }
+}
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+    @include media-breakpoint-down($breakpoint) {
+        $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+        .text#{$infix}-break {
+            word-wrap: break-word !important;
         }
     }
 }
