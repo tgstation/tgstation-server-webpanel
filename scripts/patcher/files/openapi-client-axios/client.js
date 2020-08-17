@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var __assign =
     (this && this.__assign) ||
     function () {
@@ -26,7 +26,7 @@ var __awaiter =
             }
             function rejected(value) {
                 try {
-                    step(generator['throw'](value));
+                    step(generator["throw"](value));
                 } catch (e) {
                     reject(e);
                 }
@@ -59,7 +59,7 @@ var __generator =
             g;
         return (
             (g = { next: verb(0), throw: verb(1), return: verb(2) }),
-            typeof Symbol === 'function' &&
+            typeof Symbol === "function" &&
                 (g[Symbol.iterator] = function () {
                     return this;
                 }),
@@ -71,7 +71,7 @@ var __generator =
             };
         }
         function step(op) {
-            if (f) throw new TypeError('Generator is already executing.');
+            if (f) throw new TypeError("Generator is already executing.");
             while (_)
                 try {
                     if (
@@ -79,9 +79,9 @@ var __generator =
                         y &&
                             (t =
                                 op[0] & 2
-                                    ? y['return']
+                                    ? y["return"]
                                     : op[0]
-                                    ? y['throw'] || ((t = y['return']) && t.call(y), 0)
+                                    ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
                                     : y.next) &&
                             !(t = t.call(y, op[1])).done)
                     )
@@ -146,15 +146,15 @@ var __importDefault =
     function (mod) {
         return mod && mod.__esModule ? mod : { default: mod };
     };
-Object.defineProperty(exports, '__esModule', { value: true });
-var lodash_1 = __importDefault(require('lodash'));
-var axios_1 = __importDefault(require('axios'));
-var bath_es5_1 = __importDefault(require('bath-es5'));
-var openapi_schema_validation_1 = require('openapi-schema-validation');
-var swagger_parser_1 = __importDefault(require('swagger-parser'));
-var query_string_1 = __importDefault(require('query-string'));
-var json_schema_deref_sync_1 = __importDefault(require('json-schema-deref-sync'));
-var client_1 = require('./types/client');
+Object.defineProperty(exports, "__esModule", { value: true });
+var lodash_1 = __importDefault(require("lodash"));
+var axios_1 = __importDefault(require("axios"));
+var bath_es5_1 = __importDefault(require("bath-es5"));
+var openapi_schema_validation_1 = require("openapi-schema-validation");
+var swagger_parser_1 = __importDefault(require("swagger-parser"));
+var query_string_1 = __importDefault(require("query-string"));
+var json_schema_deref_sync_1 = __importDefault(require("json-schema-deref-sync"));
+var client_1 = require("./types/client");
 /**
  * Main class and the default export of the 'openapi-client-axios' module
  *
@@ -253,7 +253,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
          * @memberof OpenAPIClientAxios
          */
         this.initSync = function () {
-            if (typeof _this.inputDocument !== 'object') {
+            if (typeof _this.inputDocument !== "object") {
                 throw new Error(
                     ".initSync() can't be called with a non-object definition. Please use .init()"
                 );
@@ -345,9 +345,9 @@ var OpenAPIClientAxios = /** @class */ (function () {
             if (!valid) {
                 var prettyErrors = JSON.stringify(errors, null, 2);
                 throw new Error(
-                    'Document is not valid OpenAPI. ' +
+                    "Document is not valid OpenAPI. " +
                         errors.length +
-                        ' validation errors:\n' +
+                        " validation errors:\n" +
                         prettyErrors
                 );
             }
@@ -364,7 +364,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
                 return undefined;
             }
             if (operation) {
-                if (typeof operation === 'string') {
+                if (typeof operation === "string") {
                     operation = _this.getOperation(operation);
                 }
                 if (operation.servers && operation.servers[0]) {
@@ -381,7 +381,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
          * @memberof OpenAPIClientAxios
          */
         this.getAxiosConfigForOperation = function (operation, args) {
-            if (typeof operation === 'string') {
+            if (typeof operation === "string") {
                 operation = _this.getOperation(operation);
             }
             var request = _this.getRequestConfigForOperation(operation, args);
@@ -410,7 +410,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
          * @memberof OpenAPIClientAxios
          */
         this.getRequestConfigForOperation = function (operation, args) {
-            if (typeof operation === 'string') {
+            if (typeof operation === "string") {
                 operation = _this.getOperation(operation);
             }
             var pathParams = {};
@@ -461,7 +461,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
                     var param = _a[_i];
                     setRequestParam(param.name, param.value, param.in || getParamType(param.name));
                 }
-            } else if (typeof paramsArg === 'object') {
+            } else if (typeof paramsArg === "object") {
                 // ParamsObject
                 for (var name in paramsArg) {
                     if (paramsArg[name]) {
@@ -471,7 +471,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
             } else if (!lodash_1.default.isNil(paramsArg)) {
                 var firstParam = getFirstOperationParam();
                 if (!firstParam) {
-                    throw new Error('No parameters found for operation ' + operation.operationId);
+                    throw new Error("No parameters found for operation " + operation.operationId);
                 }
                 setRequestParam(firstParam.name, paramsArg, firstParam.in);
             }
@@ -481,14 +481,14 @@ var OpenAPIClientAxios = /** @class */ (function () {
             for (var _b = 0, _c = pathBuilder.names; _b < _c.length; _b++) {
                 var name = _c[_b];
                 var value = pathParams[name];
-                pathParams[name] = '' + value;
+                pathParams[name] = "" + value;
             }
             var path = pathBuilder.path(pathParams);
             // query parameters
-            var queryString = query_string_1.default.stringify(query, { arrayFormat: 'none' });
+            var queryString = query_string_1.default.stringify(query, { arrayFormat: "none" });
             // full url with query string
             var url =
-                '' + _this.getBaseURL(operation) + path + (queryString ? '?' + queryString : '');
+                "" + _this.getBaseURL(operation) + path + (queryString ? "?" + queryString : "");
             // construct request config
             var config = {
                 method: operation.method,
@@ -510,7 +510,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
          * @memberof OpenAPIBackend
          */
         this.getOperations = function () {
-            var paths = lodash_1.default.get(_this.definition, 'paths', {});
+            var paths = lodash_1.default.get(_this.definition, "paths", {});
             return lodash_1.default
                 .chain(paths)
                 .entries()
@@ -526,7 +526,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
                             operation = _a[1];
                         operation.operationId = operation.operationId.replace(
                             /[^0-9A-Za-z_$]+/g,
-                            '_'
+                            "_"
                         );
                         var op = __assign({}, operation, { path: path, method: method });
                         if (pathObject.parameters) {
@@ -577,7 +577,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
             axiosConfigDefaults: __assign(
                 {
                     paramsSerializer: function (params) {
-                        return query_string_1.default.stringify(params, { arrayFormat: 'none' });
+                        return query_string_1.default.stringify(params, { arrayFormat: "none" });
                     }
                 },
                 opts.axiosConfigDefaults || {}
@@ -588,7 +588,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
         this.validate = optsWithDefaults.validate;
         this.axiosConfigDefaults = optsWithDefaults.axiosConfigDefaults;
     }
-    Object.defineProperty(OpenAPIClientAxios.prototype, 'client', {
+    Object.defineProperty(OpenAPIClientAxios.prototype, "client", {
         /**
          * Returns the instance of OpenAPIClient
          *
