@@ -36,7 +36,6 @@
         "fs-extra": "^9.0.1",
         "jquery": "^3.5.1",
         "openapi-client-axios": "3.4.1",
-        "openapi-types": "^7.0.0",
         "popper.js": "^1.16.1",
         "react": "^16.13.1",
         "react-bootstrap": "^1.3.0",
@@ -107,7 +106,7 @@
         "webpack-dev-server": "^3.11.0",
         "webpack-merge": "^5.0.9"
     },
-    "tgs_api_version": "7.2.2",
+    "tgs_api_version": "7.2.4",
     "files": [
         "build/lib",
         "build/public"

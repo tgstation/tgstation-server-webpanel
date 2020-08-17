@@ -71,7 +71,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     public async initApi() {
         console.log("Initializing API client");
         console.time("APIInit");
-        const defObj = (await import("./generatedcode/swagger.json")).default as Document;
+        const defObj = ((await import("./generatedcode/swagger.json"))
+            .default as unknown) as Document;
 
         this.api = new OpenAPIClientAxios({
             definition: defObj,

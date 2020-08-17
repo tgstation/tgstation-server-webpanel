@@ -48,7 +48,7 @@ function adminRight(right: AdministrationRights) {
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {
-            return !!(response.payload!.administrationRights & right);
+            return !!(response.payload!.administrationRights! & right);
         }
         return false;
     };

@@ -1,7 +1,14 @@
 import { RouteComponentProps, withRouter } from "react-router";
 import { Component, ReactNode } from "react";
 
-interface IProps extends RouteComponentProps<unknown, unknown, { reload?: boolean }> {}
+interface IProps
+    extends RouteComponentProps<
+        Record<string, string>,
+        {
+            statusCode?: number;
+        },
+        { reload?: boolean }
+    > {}
 interface IState {
     clear: boolean;
 }

@@ -109,13 +109,13 @@ export default class UserList extends React.Component<IProps, IState> {
                     </thead>
                     <tbody>
                         {this.state.users.map(value => {
-                            const createddate = new Date(value.createdAt);
+                            const createddate = new Date(value.createdAt!);
                             return (
-                                <tr key={value.id}>
-                                    <td>{value.id}</td>
+                                <tr key={value.id!}>
+                                    <td>{value.id!}</td>
                                     <td>{value.name}</td>
                                     <td>
-                                        {value.systemIdentifier ? (
+                                        {value.systemIdentifier! ? (
                                             <Badge variant="primary">
                                                 <FormattedMessage id="generic.system.short" />
                                             </Badge>
@@ -124,7 +124,7 @@ export default class UserList extends React.Component<IProps, IState> {
                                                 <FormattedMessage id="generic.tgs" />
                                             </Badge>
                                         )}{" "}
-                                        {value.enabled ? (
+                                        {value.enabled! ? (
                                             <Badge variant="success">
                                                 <FormattedMessage id="generic.enabled" />
                                             </Badge>
@@ -136,7 +136,7 @@ export default class UserList extends React.Component<IProps, IState> {
                                     </td>
                                     <OverlayTrigger
                                         overlay={
-                                            <Tooltip id={`${value.name}-tooltip`}>
+                                            <Tooltip id={`${value.name!}-tooltip`}>
                                                 {createddate.toLocaleString()}
                                             </Tooltip>
                                         }>
@@ -153,13 +153,13 @@ export default class UserList extends React.Component<IProps, IState> {
                                         overlay={
                                             <Tooltip id={`${value.name}-tooltip-createdby`}>
                                                 <FormattedMessage id="generic.userid" />
-                                                {value.createdBy.id}
+                                                {value.createdBy!.id}
                                             </Tooltip>
                                         }>
                                         {({ ref, ...triggerHandler }) => (
                                             <td {...triggerHandler}>
                                                 <span ref={ref as React.Ref<HTMLSpanElement>}>
-                                                    {value.createdBy.name}
+                                                    {value.createdBy!.name}
                                                 </span>
                                             </td>
                                         )}
@@ -169,7 +169,7 @@ export default class UserList extends React.Component<IProps, IState> {
                                             as={Link}
                                             to={
                                                 (AppRoutes.useredit.link ||
-                                                    AppRoutes.useredit.route) + value.id
+                                                    AppRoutes.useredit.route) + value.id!.toString()
                                             }>
                                             <FormattedMessage id="generic.edit" />
                                         </Button>

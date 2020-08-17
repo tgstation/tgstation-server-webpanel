@@ -94,7 +94,7 @@ export default withRouter(
                 //we dont care about nothing
                 if (key == "none") return;
 
-                const currentVal = !!(this.state.user!.administrationRights & val);
+                const currentVal = !!(this.state.user!.administrationRights! & val);
                 this.setState(prevState => {
                     return {
                         permsadmin: {
@@ -118,7 +118,7 @@ export default withRouter(
                 //we dont care about nothing
                 if (key == "none") return;
 
-                const currentVal = !!(this.state.user!.instanceManagerRights & val);
+                const currentVal = !!(this.state.user!.instanceManagerRights! & val);
                 this.setState(prevState => {
                     return {
                         permsinstance: {
@@ -239,7 +239,7 @@ export default withRouter(
                                                     </h5>
                                                 </Col>
                                                 <Col className="text-capitalize mb-2">
-                                                    {this.state.user.enabled.toString()}
+                                                    {this.state.user.enabled!.toString()}
                                                 </Col>
                                             </Row>
                                             <Row xs={1} md={2}>
@@ -253,7 +253,7 @@ export default withRouter(
                                                         <Tooltip
                                                             id={`${this.state.user.name}-tooltip`}>
                                                             {new Date(
-                                                                this.state.user.createdAt
+                                                                this.state.user.createdAt!
                                                             ).toLocaleString()}
                                                         </Tooltip>
                                                     }>
@@ -267,7 +267,9 @@ export default withRouter(
                                                                         HTMLSpanElement
                                                                     >
                                                                 }>{`${timeSince(
-                                                                new Date(this.state.user!.createdAt)
+                                                                new Date(
+                                                                    this.state.user!.createdAt!
+                                                                )
                                                             )} ago`}</span>
                                                         </Col>
                                                     )}
@@ -284,7 +286,7 @@ export default withRouter(
                                                         <Tooltip
                                                             id={`${this.state.user.name}-tooltip-createdby`}>
                                                             <FormattedMessage id="generic.userid" />
-                                                            {this.state.user.createdBy.id}
+                                                            {this.state.user.createdBy!.id}
                                                         </Tooltip>
                                                     }>
                                                     {({ ref, ...triggerHandler }) => (
@@ -297,7 +299,7 @@ export default withRouter(
                                                                         HTMLSpanElement
                                                                     >
                                                                 }>
-                                                                {this.state.user!.createdBy.name}
+                                                                {this.state.user!.createdBy!.name}
                                                             </span>
                                                         </Col>
                                                     )}

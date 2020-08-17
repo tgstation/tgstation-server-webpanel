@@ -110,7 +110,7 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canReboot: !!(
-                        response.payload!.administrationRights & AdministrationRights.RestartHost
+                        response.payload!.administrationRights! & AdministrationRights.RestartHost
                     )
                 });
             }
@@ -122,7 +122,7 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canUpdate: !!(
-                        response.payload!.administrationRights & AdministrationRights.ChangeVersion
+                        response.payload!.administrationRights! & AdministrationRights.ChangeVersion
                     )
                 });
             }
@@ -134,7 +134,7 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canLogs: !!(
-                        response.payload!.administrationRights & AdministrationRights.DownloadLogs
+                        response.payload!.administrationRights! & AdministrationRights.DownloadLogs
                     )
                 });
             }
