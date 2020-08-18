@@ -43,6 +43,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
                 let response;
                 try {
                     response = await ServerClient.apiClient!.UserController_Update(null, {
+                        name: "",
                         id: thing.payload!.id,
                         password: password
                     });

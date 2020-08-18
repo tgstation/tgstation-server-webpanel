@@ -181,8 +181,9 @@ var SchemaConvertor = (function () {
         }
         (_a = this.processor).outputJSDoc.apply(_a, tslib_1.__spread(comments));
     };
-    SchemaConvertor.prototype.outputPropertyName = function (_schema, propertyName, optional) {
-        this.processor.outputKey(propertyName, optional).output(": ");
+    SchemaConvertor.prototype.outputPropertyName = function (_schema, propertyName, required) {
+        var optionalProperty = required == null || required.indexOf(propertyName) < 0;
+        this.processor.outputKey(propertyName, optionalProperty).output(": ");
     };
     SchemaConvertor.prototype.outputPropertyAttribute = function (schema) {
         var content = schema.content;
@@ -219,15 +220,11 @@ var SchemaConvertor = (function () {
         schema,
         currentSchema,
         terminate,
-        nullable,
         outputOptional
     ) {
         var _this = this;
         if (terminate === void 0) {
             terminate = true;
-        }
-        if (nullable === void 0) {
-            nullable = false;
         }
         if (outputOptional === void 0) {
             outputOptional = true;
@@ -308,19 +305,7 @@ var SchemaConvertor = (function () {
         }
         this.outputTypeNameTrailer(schema, terminate, outputOptional);
     };
-    SchemaConvertor.prototype.outputTypeNameTrailer = function (
-        schema,
-        terminate,
-        outputOptional,
-        nullable
-    ) {
-        if (nullable === void 0) {
-            nullable = false;
-        }
-
-        if (nullable) {
-            this.processor.output(" | null");
-        }
+    SchemaConvertor.prototype.outputTypeNameTrailer = function (schema, terminate, outputOptional) {
         if (terminate) {
             this.processor.output(";");
         }

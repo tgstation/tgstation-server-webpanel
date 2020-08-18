@@ -24,12 +24,7 @@ function getSubSchema(rootSchema, pointer, id) {
     var content = JsonPointer.get(rootSchema.content, JsonPointer.parse(pointer));
     if (id == null) {
         var subId = getId(rootSchema.type, content);
-        var t_1 = 0;
         var getParentIds_1 = function (s, result) {
-            t_1++;
-            if (t_1 >= 20) {
-                debugger;
-            }
             result.push(s.id.getAbsoluteId());
             return s.rootSchema == null ? result : getParentIds_1(s.rootSchema, result);
         };
@@ -180,6 +175,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             var params = new Map();
             var refs = new Map();
             array.forEach(function (item) {
+                var _a, _b, _c;
                 if ("schema" in item) {
                     setSubIdToParameter(item, keys);
                     var work = params.get(item.in);
@@ -190,20 +186,30 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
                     work.push(item);
                 } else if ("$ref" in item) {
                     var result = /\/([^\/]*)$/.exec(item.$ref)[1];
-                    if (item.$ref.includes("Api") || item.$ref.includes("User-Agent")) {
+                    if (
+                        ((_a = item.$ref) === null || _a === void 0
+                            ? void 0
+                            : _a.includes("Api")) ||
+                        ((_b = item.$ref) === null || _b === void 0
+                            ? void 0
+                            : _b.includes("User-Agent"))
+                    ) {
                         return;
                     }
                     setSubId(item, keys.concat(result));
-                    if (item.$ref.includes("Instance")) {
-                        var work = refs.get("header");
-
+                    var work = void 0;
+                    if (
+                        (_c = item.$ref) === null || _c === void 0
+                            ? void 0
+                            : _c.includes("Instance")
+                    ) {
+                        work = refs.get("header");
                         if (work == null) {
                             work = [];
                             refs.set("header", work);
                         }
                     } else {
-                        var work = refs.get("path");
-
+                        work = refs.get("path");
                         if (work == null) {
                             work = [];
                             refs.set("path", work);
@@ -267,9 +273,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             var paths = keys.slice(0, keys.length - 1).concat(inType + "Parameters");
             var properties = {};
             params.forEach(function (item) {
-                properties[item.name] = {
-                    $ref: createId(keys.concat(item.name))
-                };
+                properties[item.name] = { $ref: createId(keys.concat(item.name)) };
             });
             return [
                 paths,
@@ -293,9 +297,7 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
             refs.forEach(function (item) {
                 if (item.$ref != null) {
                     var result = /\/([^\/]*)$/.exec(item.$ref)[1];
-                    properties[result] = {
-                        $ref: createId(keys.concat(result))
-                    };
+                    properties[result] = { $ref: createId(keys.concat(result)) };
                 }
             });
             return [

@@ -44,12 +44,7 @@ export function getSubSchema(rootSchema: Schema, pointer: string, id?: SchemaId)
     const content = JsonPointer.get(rootSchema.content, JsonPointer.parse(pointer));
     if (id == null) {
         const subId = getId(rootSchema.type, content);
-        let t = 0;
         const getParentIds = (s: Schema, result: string[]): string[] => {
-            t++;
-            if (t >= 20) {
-                debugger;
-            }
             result.push(s.id.getAbsoluteId());
             return s.rootSchema == null ? result : getParentIds(s.rootSchema, result);
         };
@@ -252,7 +247,7 @@ export function searchAllSubSchema(
 
                         if (work == null) {
                             work = [];
-                            refs.set("path", work);
+                            refs.set("header", work);
                         }
                     } else {
                         work = refs.get("path");
