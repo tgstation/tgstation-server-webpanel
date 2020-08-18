@@ -98,9 +98,10 @@ export default class DtsGenerator {
                 if (type == null) {
                     content.type = 'null';
                 } else if (!Array.isArray(type)) {
-                    content.type = [type, 'null'];
+                    content.type = [type, 'null', 'undefined'];
                 } else {
                     type.push('null');
+                    type.push('undefined')
                 }
             }
             const types = content.type;

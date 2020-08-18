@@ -136,7 +136,7 @@ export default class UserList extends React.Component<IProps, IState> {
                                     </td>
                                     <OverlayTrigger
                                         overlay={
-                                            <Tooltip id={`${value.name!}-tooltip`}>
+                                            <Tooltip id={`${value.name}-tooltip`}>
                                                 {createddate.toLocaleString()}
                                             </Tooltip>
                                         }>

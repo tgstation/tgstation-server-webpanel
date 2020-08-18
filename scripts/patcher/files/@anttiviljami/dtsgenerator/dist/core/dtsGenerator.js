@@ -125,10 +125,11 @@ var DtsGenerator = (function () {
                     content.type = 'null';
                 }
                 else if (!Array.isArray(type)) {
-                    content.type = [type, 'null'];
+                    content.type = [type, 'null', 'undefined'];
                 }
                 else {
                     type.push('null');
+                    type.push('undefined');
                 }
             }
             var types = content.type;

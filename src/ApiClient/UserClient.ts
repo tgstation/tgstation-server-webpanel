@@ -42,8 +42,6 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
             case StatusCode.OK: {
                 let response;
                 try {
-                    //TODO: threaten cyberboss into fixing this
-                    //@ts-expect-error //blame cyberboss for bad typedefs
                     response = await ServerClient.apiClient!.UserController_Update(null, {
                         id: thing.payload!.id,
                         password: password
