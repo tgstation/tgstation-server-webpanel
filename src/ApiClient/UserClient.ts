@@ -23,7 +23,6 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         super();
         this.getCurrentUser = this.getCurrentUser.bind(this);
 
-        LoginHooks.addHook(this.getCurrentUser);
         ServerClient.on("purgeCache", () => {
             this._cachedUser = undefined;
         });
