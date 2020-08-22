@@ -464,7 +464,7 @@ var OpenAPIClientAxios = /** @class */ (function () {
             } else if (typeof paramsArg === "object") {
                 // ParamsObject
                 for (var name in paramsArg) {
-                    if (paramsArg[name]) {
+                    if (paramsArg[name] !== undefined) {
                         setRequestParam(name, paramsArg[name], getParamType(name));
                     }
                 }
