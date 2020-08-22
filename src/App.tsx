@@ -21,6 +21,7 @@ import { getSavedCreds } from "./utils/misc";
 import UserClient from "./ApiClient/UserClient";
 import Router from "./Router";
 import configOptions from "./ApiClient/util/config";
+import LoginHooks from "./ApiClient/util/LoginHooks";
 
 interface IState {
     translation?: ITranslation;
@@ -45,7 +46,7 @@ class App extends React.Component<IAppProps, IState> {
         };
     }
     public async componentDidMount(): Promise<void> {
-        ServerClient.on("loginSuccess", () => {
+        LoginHooks.on("loginSuccess", () => {
             console.log("Logging in");
 
             void UserClient.getCurrentUser(); //preload the user, we dont particularly care about the content, just that its preloaded

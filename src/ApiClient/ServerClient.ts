@@ -11,8 +11,6 @@ import CredentialsProvider from "./util/CredentialsProvider";
 import configOptions from "./util/config";
 
 interface IEvents {
-    //tasks once the user is fully logged in
-    loginSuccess: (token: Components.Schemas.Token) => void;
     //self explainatory
     logout: () => void;
     //fired whenever something is denied access, shouldnt really be used
@@ -321,7 +319,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 resolve(CredentialsProvider.token);
                 return;
             }
-            this.on("loginSuccess", token => {
+            LoginHooks.on("loginSuccess", token => {
                 resolve(token);
             });
         });
@@ -408,9 +406,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         (() => {})(); //noop
                     }
                 }
-                await LoginHooks.runHooks(token);
-                console.log("Running post login event");
-                this.emit("loginSuccess", token);
+                LoginHooks.runHooks(token);
                 const res = new InternalStatus<Components.Schemas.Token, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: token

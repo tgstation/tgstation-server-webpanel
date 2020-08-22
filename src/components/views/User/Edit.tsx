@@ -1,5 +1,5 @@
 import { RouteComponentProps, withRouter } from "react-router";
-import React, { ChangeEvent } from "react";
+import React from "react";
 import Loading from "../../utils/Loading";
 import ErrorAlert from "../../utils/ErrorAlert";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
@@ -31,6 +31,7 @@ interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     user?: Components.Schemas.User;
     loading: boolean;
+    saving: boolean;
     permsadmin: { [key: string]: Permission };
     permsinstance: { [key: string]: Permission };
 }
@@ -38,7 +39,6 @@ interface IState {
 interface Permission {
     readonly bitflag: number;
     readonly currentVal: boolean;
-    newVal: boolean;
 }
 
 export default withRouter(
@@ -49,6 +49,7 @@ export default withRouter(
             this.state = {
                 errors: [],
                 loading: true,
+                saving: false,
                 permsadmin: {},
                 permsinstance: {}
             };
@@ -62,16 +63,20 @@ export default withRouter(
                     break;
                 }
                 case StatusCode.OK: {
-                    this.setState({
-                        user: response.payload!
-                    });
-                    this.loadEnums();
+                    this.loadUser(response.payload!);
                     break;
                 }
             }
             this.setState({
                 loading: false
             });
+        }
+
+        private loadUser(user: Components.Schemas.User) {
+            this.setState({
+                user
+            });
+            this.loadEnums();
         }
 
         private loadEnums(): void {
@@ -146,7 +151,10 @@ export default withRouter(
 
         public render(): React.ReactNode {
             if (this.state.loading) {
-                return <Loading text="loading.user" />;
+                return <Loading text="loading.user.load" />;
+            }
+            if (this.state.saving) {
+                return <Loading text="loading.user.save" />;
             }
 
             return (
@@ -305,6 +313,40 @@ export default withRouter(
                                                     )}
                                                 </OverlayTrigger>
                                             </Row>
+                                            <Button
+                                                className="mx-auto mt-3 d-block"
+                                                variant={
+                                                    this.state.user.enabled ? "danger" : "success"
+                                                }
+                                                onClick={async () => {
+                                                    this.setState({
+                                                        saving: true
+                                                    });
+
+                                                    const response = await UserClient.editUser(
+                                                        this.state.user!.id!,
+                                                        {
+                                                            enabled: !this.state.user!.enabled!
+                                                        }
+                                                    );
+                                                    if (response.code == StatusCode.OK) {
+                                                        this.loadUser(response.payload!);
+                                                    } else {
+                                                        this.addError(response.error!);
+                                                    }
+
+                                                    this.setState({
+                                                        saving: false
+                                                    });
+                                                }}>
+                                                <FormattedMessage
+                                                    id={
+                                                        this.state.user.enabled
+                                                            ? "generic.disable"
+                                                            : "generic.enable"
+                                                    }
+                                                />
+                                            </Button>
                                         </Col>
                                     ) : (
                                         ""
@@ -337,36 +379,45 @@ export default withRouter(
             enumname: "permsadmin" | "permsinstance",
             permprefix: string
         ): React.ReactNode {
+            const inputs: Record<string, React.RefObject<HTMLInputElement>> = {};
             const setAll = (val: boolean): (() => void) => {
                 return () => {
-                    this.setState(prevState => {
-                        const newobj: { [key: string]: Permission } = {};
-                        for (const [key, permission] of Object.entries(prevState[enumname])) {
-                            const newperm = Object.assign({}, permission);
-                            newperm.newVal = val;
-                            newobj[key] = newperm;
-                        }
-
-                        return {
-                            ...prevState,
-                            [enumname]: newobj
-                        };
-                    });
+                    for (const ref of Object.values(inputs)) {
+                        if (ref.current) ref.current.checked = val;
+                    }
                 };
             };
             const resetAll = () => {
-                this.setState(prevState => {
-                    const newobj: { [key: string]: Permission } = {};
-                    for (const [key, permission] of Object.entries(prevState[enumname])) {
-                        const newperm = Object.assign({}, permission);
-                        newperm.newVal = newperm.currentVal;
-                        newobj[key] = newperm;
-                    }
+                for (const [permname, ref] of Object.entries(inputs)) {
+                    if (!ref.current) continue;
 
-                    return {
-                        ...prevState,
-                        [enumname]: newobj
-                    };
+                    ref.current.checked = this.state[enumname][permname].currentVal;
+                }
+            };
+            const save = async () => {
+                this.setState({
+                    saving: true
+                });
+                let bitflag = 0;
+
+                for (const [permname, ref] of Object.entries(inputs)) {
+                    if (!ref.current) continue;
+
+                    bitflag += ref.current.checked ? this.state[enumname][permname].bitflag : 0;
+                }
+
+                const response = await UserClient.editUser(this.state.user!.id!, {
+                    [enumname == "permsadmin"
+                        ? "administrationRights"
+                        : "instanceManagerRights"]: bitflag
+                } as { administrationRights: AdministrationRights } | { instanceManagerRights: InstanceManagerRights });
+                if (response.code == StatusCode.OK) {
+                    this.loadUser(response.payload!);
+                } else {
+                    this.addError(response.error!);
+                }
+                this.setState({
+                    saving: false
                 });
             };
             return (
@@ -386,6 +437,8 @@ export default withRouter(
                     <Col md={8} lg={7} xl={6} className="mx-auto">
                         <hr />
                         {Object.entries(this.state[enumname]).map(([perm, value]) => {
+                            const inputref = React.createRef<HTMLInputElement>();
+                            inputs[perm] = inputref;
                             return (
                                 <InputGroup key={perm} as="label" htmlFor={perm} className="mb-0">
                                     <InputGroup.Prepend className="flex-grow-1 overflow-auto">
@@ -398,16 +451,12 @@ export default withRouter(
                                                 </Tooltip>
                                             }>
                                             {({ ref, ...triggerHandler }) => (
-                                                <InputGroup.Text
-                                                    className={`flex-fill ${
-                                                        value.currentVal !== value.newVal
-                                                            ? "font-weight-bold"
-                                                            : ""
-                                                    }`}
-                                                    {...triggerHandler}>
-                                                    <FormattedMessage
-                                                        id={`perms.${permprefix}.${perm}`}
-                                                    />
+                                                <InputGroup.Text className="flex-fill">
+                                                    <div {...triggerHandler}>
+                                                        <FormattedMessage
+                                                            id={`perms.${permprefix}.${perm}`}
+                                                        />
+                                                    </div>
                                                     <div className="ml-auto d-flex align-items-center">
                                                         <Form.Check
                                                             inline
@@ -416,29 +465,12 @@ export default withRouter(
                                                             id={perm}
                                                             className="d-flex justify-content-center align-content-center mx-2"
                                                             label=""
-                                                            onChange={(
-                                                                event: ChangeEvent<HTMLInputElement>
-                                                            ) => {
-                                                                const checked =
-                                                                    event.target.checked;
-                                                                this.setState(prevState => {
-                                                                    const permission: Permission = Object.assign(
-                                                                        {},
-                                                                        prevState[enumname][perm]
-                                                                    );
-                                                                    permission.newVal = checked;
-                                                                    return {
-                                                                        ...prevState,
-                                                                        [enumname]: {
-                                                                            ...prevState[enumname],
-                                                                            [perm]: permission
-                                                                        }
-                                                                    };
-                                                                });
-                                                            }}
-                                                            checked={value.newVal}
+                                                            ref={inputref}
+                                                            defaultChecked={value.currentVal}
                                                         />
-                                                        <div ref={ref as React.Ref<HTMLDivElement>}>
+                                                        <div
+                                                            {...triggerHandler}
+                                                            ref={ref as React.Ref<HTMLDivElement>}>
                                                             <FontAwesomeIcon
                                                                 fixedWidth
                                                                 icon="info"
@@ -454,19 +486,8 @@ export default withRouter(
                         })}
                         <hr />
                     </Col>
-                    <Button
-                        onClick={() => {
-                            let admin = 0;
-                            let instance = 0;
-
-                            for (const perm of Object.values(this.state.permsadmin)) {
-                                admin += perm.newVal ? perm.bitflag : 0;
-                            }
-                            for (const perm of Object.values(this.state.permsinstance)) {
-                                instance += perm.newVal ? perm.bitflag : 0;
-                            }
-                        }}>
-                        Save
+                    <Button onClick={save}>
+                        <FormattedMessage id="generic.savepage" />
                     </Button>
                 </React.Fragment>
             );

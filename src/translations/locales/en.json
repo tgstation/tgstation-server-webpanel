@@ -58,6 +58,8 @@
     "error.app": "An error occured in the application",
     "error.api.empty": "No description available",
     "generic.save": "Save",
+    "generic.savepage": "Save Page",
+    "generic.saveall": "Save All",
     "generic.details": "Details",
     "generic.debugwarn": "Be careful to censor out any credentials or tokens when copying errors!",
     "generic.close": "Close",
@@ -86,6 +88,8 @@
     "generic.true": "True",
     "generic.false": "False",
     "generic.reset": "Reset",
+    "generic.disable": "Disable",
+    "generic.enable": "Enable",
     "view.admin.hostos": "Host Machine OS: ",
     "view.admin.remote": "Remote repository: ",
     "view.admin.version.current": "Current Version",
@@ -155,5 +159,6 @@
     "loading.info": "Loading Information...",
     "loading.passwd": "Changing password...",
     "loading.userlist": "Loading user list...",
-    "loading.user": "Loading user information"
+    "loading.user.load": "Loading user information",
+    "loading.user.save": "Saving user information"
 }

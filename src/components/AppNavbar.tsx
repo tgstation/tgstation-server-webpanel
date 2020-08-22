@@ -63,7 +63,7 @@ export default withRouter(
                 });
             });
 
-            ServerClient.on("loginSuccess", () => {
+            LoginHooks.on("loginSuccess", () => {
                 this.setState({
                     loggedIn: true
                 });
