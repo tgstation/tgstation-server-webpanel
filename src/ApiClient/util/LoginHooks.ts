@@ -1,5 +1,4 @@
 import { Components } from "../generatedcode/_generated";
-import ServerClient from "../ServerClient";
 import { TypedEmitter } from "tiny-typed-emitter";
 
 interface IEvents {
