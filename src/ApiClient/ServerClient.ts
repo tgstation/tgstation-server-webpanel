@@ -332,7 +332,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         await this.wait4Init();
         console.log("Attempting login");
         if (newCreds) {
-            this.logout();
             CredentialsProvider.credentials = newCreds;
         }
         if (!CredentialsProvider.credentials)
