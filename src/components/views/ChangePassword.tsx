@@ -102,31 +102,42 @@ export default class ChangePassword extends React.Component<IProps, IState> {
             pwdload: true
         });
 
-        const res = await UserClient.changeOwnPassword(this.state.password1);
-        switch (res.code) {
-            case StatusCode.OK: {
-                this.setState({
-                    redirect: true
-                });
-                const [usr, pwd] = getSavedCreds() || [undefined, undefined];
-                // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
-                void ServerClient.login(
-                    {
-                        userName: CredentialsProvider.credentials!.userName,
-                        password: this.state.password1
-                    },
-                    !!(usr && pwd)
-                );
-                break;
+        const user = await UserClient.getCurrentUser();
+        if (user.code == StatusCode.OK) {
+            const res = await UserClient.editUser(user.payload!.id!, {
+                password: this.state.password1
+            });
+            switch (res.code) {
+                case StatusCode.OK: {
+                    this.setState({
+                        redirect: true
+                    });
+                    const [usr, pwd] = getSavedCreds() || [undefined, undefined];
+                    // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
+                    void ServerClient.login(
+                        {
+                            userName: CredentialsProvider.credentials!.userName,
+                            password: this.state.password1
+                        },
+                        !!(usr && pwd)
+                    );
+                    break;
+                }
+                case StatusCode.ERROR: {
+                    this.addError(res.error!);
+                    //we only unset it here because its going to get redirected anyways
+                    this.setState({
+                        pwdload: false
+                    });
+                    break;
+                }
             }
-            case StatusCode.ERROR: {
-                this.addError(res.error!);
-                //we only unset it here because its going to get redirected anyways
-                this.setState({
-                    pwdload: false
-                });
-                break;
-            }
+        } else {
+            this.addError(user.error!);
+            //we only unset it here because its going to get redirected anyways
+            this.setState({
+                pwdload: false
+            });
         }
     }
 

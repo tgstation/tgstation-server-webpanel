@@ -3,14 +3,22 @@ import { Components } from "../generatedcode/_generated";
 class LoginHooks {
     private promiseHooks: Set<(token: Components.Schemas.Token) => Promise<unknown>> = new Set();
 
-    public async runHooks(token: Components.Schemas.Token) {
+    public runHooks(token: Components.Schemas.Token) {
         console.log("Running login hooks");
-        const work: Promise<unknown>[] = [];
+        let i = 0;
         for (const hook of this.promiseHooks) {
-            work.push(hook(token));
+            const id = i;
+            console.log(`Running hook ${hook.name}(${id})`);
+            hook(token)
+                .then(arg => {
+                    console.log(`Done hook ${hook.name}(${id})`);
+                    return arg;
+                })
+                .catch(err => {
+                    console.log(`Error running hook ${hook.name}(${id}): `, err);
+                });
+            i++;
         }
-        await Promise.all(work);
-        console.log("Done running login hooks");
     }
 
     public addHook(hook: (token: Components.Schemas.Token) => Promise<unknown>): void {

@@ -4,13 +4,21 @@ import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatu
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import LoginHooks from "./util/LoginHooks";
 import ServerClient from "./ServerClient";
+import { AdministrationRights, InstanceManagerRights } from "./generatedcode/_enums";
 
 interface IEvents {
     loadUserInfo: (user: InternalStatus<Components.Schemas.User, GenericErrors>) => void;
 }
 
-export type ChangePasswordErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
+export type EditUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type GetUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
+
+//https://stackoverflow.com/questions/40510611/typescript-interface-require-one-of-two-properties-to-exist
+//name describes what it does, makes the passed type only require 1 property, the others being optional
+type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<T, Exclude<keyof T, Keys>> &
+    {
+        [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
+    }[Keys];
 
 export default new (class UserClient extends TypedEmitter<IEvents> {
     private _cachedUser?: InternalStatus<Components.Schemas.User, ErrorCode.OK>;
@@ -28,56 +36,59 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         });
     }
 
-    public async changeOwnPassword(
-        password: string
-    ): Promise<InternalStatus<Components.Schemas.User, ChangePasswordErrors>> {
+    public async editUser(
+        id: number,
+        newUser: RequireAtLeastOne<{
+            password: string;
+            enabled: boolean;
+            administrationRights: AdministrationRights;
+            instanceManagerRights: InstanceManagerRights;
+        }>
+    ): Promise<InternalStatus<Components.Schemas.User, EditUserErrors>> {
         await ServerClient.wait4Init();
 
-        const thing = await this.getCurrentUser();
-        switch (thing.code) {
-            case StatusCode.ERROR: {
-                return thing;
+        let response;
+        try {
+            response = await ServerClient.apiClient!.UserController_Update(null, {
+                //@ts-expect-error // name is set as non nullable despite being nullable
+                name: undefined,
+                id: id,
+                //@ts-expect-error // password is set as non nullable despite being nullable
+                password: newUser.password,
+                enabled: newUser.enabled,
+                administrationRights: newUser.administrationRights,
+                instanceManagerRights: newUser.instanceManagerRights
+            });
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<EditUserErrors>
+            });
+        }
+        // noinspection DuplicatedCode
+        switch (response.status) {
+            case 200: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: response.data as Components.Schemas.User
+                });
             }
-            case StatusCode.OK: {
-                let response;
-                try {
-                    response = await ServerClient.apiClient!.UserController_Update(null, {
-                        name: "",
-                        id: thing.payload!.id,
-                        password: password
-                    });
-                } catch (stat) {
-                    return new InternalStatus({
-                        code: StatusCode.ERROR,
-                        error: stat as InternalError<ChangePasswordErrors>
-                    });
-                }
-                // noinspection DuplicatedCode
-                switch (response.status) {
-                    case 200: {
-                        return new InternalStatus({
-                            code: StatusCode.OK,
-                            payload: response.data as Components.Schemas.User
-                        });
-                    }
-                    case 404: {
-                        const errorMessage = response.data as Components.Schemas.ErrorMessage;
-                        return new InternalStatus({
-                            code: StatusCode.ERROR,
-                            error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
-                        });
-                    }
-                    default: {
-                        return new InternalStatus({
-                            code: StatusCode.ERROR,
-                            error: new InternalError(
-                                ErrorCode.UNHANDLED_RESPONSE,
-                                { axiosResponse: response },
-                                response
-                            )
-                        });
-                    }
-                }
+            case 404: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
+                });
+            }
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
             }
         }
     }
