@@ -14,6 +14,8 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import { AppRoutes } from "../../../utils/routes";
+import { AdministrationRights } from "../../../ApiClient/generatedcode/_enums";
+import Alert from "react-bootstrap/Alert";
 
 interface IProps {}
 
@@ -21,6 +23,7 @@ interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     users: Components.Schemas.User[];
     loading: boolean;
+    canList: boolean;
 }
 
 export default class UserList extends React.Component<IProps, IState> {
@@ -30,7 +33,8 @@ export default class UserList extends React.Component<IProps, IState> {
         this.state = {
             errors: [],
             users: [],
-            loading: true
+            loading: true,
+            canList: false
         };
     }
 
@@ -45,17 +49,36 @@ export default class UserList extends React.Component<IProps, IState> {
     }
 
     public async componentDidMount(): Promise<void> {
-        const res = await UserClient.listUsers();
-        switch (res.code) {
-            case StatusCode.OK: {
+        const response = await UserClient.getCurrentUser();
+        if (response.code == StatusCode.OK) {
+            const canList = !!(
+                response.payload!.administrationRights! & AdministrationRights.ReadUsers
+            );
+            this.setState({
+                canList
+            });
+
+            if (canList) {
+                const res = await UserClient.listUsers();
+                switch (res.code) {
+                    case StatusCode.OK: {
+                        this.setState({
+                            users: res.payload!
+                        });
+                        break;
+                    }
+                    case StatusCode.ERROR: {
+                        this.addError(res.error!);
+                    }
+                }
+            } else {
+                //if we cant list users, add our own user to the list
                 this.setState({
-                    users: res.payload!
+                    users: [response.payload!]
                 });
-                break;
             }
-            case StatusCode.ERROR: {
-                this.addError(res.error!);
-            }
+        } else {
+            this.addError(response.error!);
         }
         this.setState({
             loading: false
@@ -68,6 +91,13 @@ export default class UserList extends React.Component<IProps, IState> {
         }
         return (
             <div className="text-center">
+                {!this.state.canList ? (
+                    <Alert className="clearfix" variant="error">
+                        <FormattedMessage id="view.user.list.cantlist" />
+                    </Alert>
+                ) : (
+                    ""
+                )}
                 {this.state.errors.map((err, index) => {
                     if (!err) return;
                     return (

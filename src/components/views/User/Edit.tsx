@@ -24,6 +24,8 @@ import {
     InstanceManagerRights
 } from "../../../ApiClient/generatedcode/_enums";
 import { AppRoutes } from "../../../utils/routes";
+import ServerClient from "../../../ApiClient/ServerClient";
+import Alert from "react-bootstrap/Alert";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
@@ -34,6 +36,7 @@ interface IState {
     saving: boolean;
     permsadmin: { [key: string]: Permission };
     permsinstance: { [key: string]: Permission };
+    canEdit: boolean;
 }
 
 interface Permission {
@@ -51,11 +54,18 @@ export default withRouter(
                 loading: true,
                 saving: false,
                 permsadmin: {},
-                permsinstance: {}
+                permsinstance: {},
+                canEdit: false
             };
         }
 
         public async componentDidMount(): Promise<void> {
+            console.log(
+                this.props.match,
+                this.props.match.params,
+                this.props.match.params.id,
+                parseInt(this.props.match.params.id)
+            );
             const response = await UserClient.getUser(parseInt(this.props.match.params.id));
             switch (response.code) {
                 case StatusCode.ERROR: {
@@ -66,6 +76,14 @@ export default withRouter(
                     this.loadUser(response.payload!);
                     break;
                 }
+            }
+            const currentuser = await UserClient.getCurrentUser();
+            if (currentuser.code == StatusCode.OK) {
+                this.setState({
+                    canEdit: !!(
+                        currentuser.payload!.administrationRights! & AdministrationRights.WriteUsers
+                    )
+                });
             }
             this.setState({
                 loading: false
@@ -179,6 +197,13 @@ export default withRouter(
                     })}
                     {this.state.user ? (
                         <React.Fragment>
+                            {!this.state.canEdit ? (
+                                <Alert className="clearfix" variant="error">
+                                    <FormattedMessage id="view.user.edit.cantedit" />
+                                </Alert>
+                            ) : (
+                                ""
+                            )}
                             {this.state.user.systemIdentifier ? (
                                 <Badge variant="primary">
                                     <FormattedMessage id="generic.system.short" />
@@ -313,40 +338,46 @@ export default withRouter(
                                                     )}
                                                 </OverlayTrigger>
                                             </Row>
-                                            <Button
-                                                className="mx-auto mt-3 d-block"
-                                                variant={
-                                                    this.state.user.enabled ? "danger" : "success"
-                                                }
-                                                onClick={async () => {
-                                                    this.setState({
-                                                        saving: true
-                                                    });
-
-                                                    const response = await UserClient.editUser(
-                                                        this.state.user!.id!,
-                                                        {
-                                                            enabled: !this.state.user!.enabled!
-                                                        }
-                                                    );
-                                                    if (response.code == StatusCode.OK) {
-                                                        this.loadUser(response.payload!);
-                                                    } else {
-                                                        this.addError(response.error!);
-                                                    }
-
-                                                    this.setState({
-                                                        saving: false
-                                                    });
-                                                }}>
-                                                <FormattedMessage
-                                                    id={
+                                            {this.state.canEdit ? (
+                                                <Button
+                                                    className="mx-auto mt-3 d-block"
+                                                    variant={
                                                         this.state.user.enabled
-                                                            ? "generic.disable"
-                                                            : "generic.enable"
+                                                            ? "danger"
+                                                            : "success"
                                                     }
-                                                />
-                                            </Button>
+                                                    onClick={async () => {
+                                                        this.setState({
+                                                            saving: true
+                                                        });
+
+                                                        const response = await UserClient.editUser(
+                                                            this.state.user!.id!,
+                                                            {
+                                                                enabled: !this.state.user!.enabled!
+                                                            }
+                                                        );
+                                                        if (response.code == StatusCode.OK) {
+                                                            this.loadUser(response.payload!);
+                                                        } else {
+                                                            this.addError(response.error!);
+                                                        }
+
+                                                        this.setState({
+                                                            saving: false
+                                                        });
+                                                    }}>
+                                                    <FormattedMessage
+                                                        id={
+                                                            this.state.user.enabled
+                                                                ? "generic.disable"
+                                                                : "generic.enable"
+                                                        }
+                                                    />
+                                                </Button>
+                                            ) : (
+                                                ""
+                                            )}
                                         </Col>
                                     ) : (
                                         ""
@@ -422,18 +453,24 @@ export default withRouter(
             };
             return (
                 <React.Fragment>
-                    <h5>
-                        <FormattedMessage id="generic.setall" />
-                    </h5>
-                    <Button onClick={setAll(true)}>
-                        <FormattedMessage id="generic.true" />
-                    </Button>{" "}
-                    <Button onClick={setAll(false)}>
-                        <FormattedMessage id="generic.false" />
-                    </Button>{" "}
-                    <Button onClick={resetAll}>
-                        <FormattedMessage id="generic.reset" />
-                    </Button>
+                    {this.state.canEdit ? (
+                        <React.Fragment>
+                            <h5>
+                                <FormattedMessage id="generic.setall" />
+                            </h5>
+                            <Button onClick={setAll(true)}>
+                                <FormattedMessage id="generic.true" />
+                            </Button>{" "}
+                            <Button onClick={setAll(false)}>
+                                <FormattedMessage id="generic.false" />
+                            </Button>{" "}
+                            <Button onClick={resetAll}>
+                                <FormattedMessage id="generic.reset" />
+                            </Button>
+                        </React.Fragment>
+                    ) : (
+                        ""
+                    )}
                     <Col md={8} lg={7} xl={6} className="mx-auto">
                         <hr />
                         {Object.entries(this.state[enumname]).map(([perm, value]) => {
@@ -466,6 +503,7 @@ export default withRouter(
                                                             className="d-flex justify-content-center align-content-center mx-2"
                                                             label=""
                                                             ref={inputref}
+                                                            disabled={!this.state.canEdit}
                                                             defaultChecked={value.currentVal}
                                                         />
                                                         <div
@@ -486,9 +524,13 @@ export default withRouter(
                         })}
                         <hr />
                     </Col>
-                    <Button onClick={save}>
-                        <FormattedMessage id="generic.savepage" />
-                    </Button>
+                    {this.state.canEdit ? (
+                        <Button onClick={save}>
+                            <FormattedMessage id="generic.savepage" />
+                        </Button>
+                    ) : (
+                        ""
+                    )}
                 </React.Fragment>
             );
         }

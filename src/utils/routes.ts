@@ -81,7 +81,8 @@ export const AppRoutes: {
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: adminRight(AdministrationRights.ReadUsers),
+        //you can always read your own user
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
 
         visibleNavbar: true,
         homeIcon: "user",
@@ -98,7 +99,8 @@ export const AppRoutes: {
         loose: true,
         navbarLoose: true,
 
-        isAuthorized: adminRight(AdministrationRights.ReadUsers),
+        //you can always read your own user
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
 
         visibleNavbar: false,
         homeIcon: undefined
