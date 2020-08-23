@@ -24,8 +24,8 @@ import {
     InstanceManagerRights
 } from "../../../ApiClient/generatedcode/_enums";
 import { AppRoutes } from "../../../utils/routes";
-import ServerClient from "../../../ApiClient/ServerClient";
 import Alert from "react-bootstrap/Alert";
+import { Link } from "react-router-dom";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
@@ -37,6 +37,8 @@ interface IState {
     permsadmin: { [key: string]: Permission };
     permsinstance: { [key: string]: Permission };
     canEdit: boolean;
+    //override for if its the current user and it can edit its own password
+    canEditOwnPassword: boolean;
 }
 
 interface Permission {
@@ -60,13 +62,8 @@ export default withRouter(
         }
 
         public async componentDidMount(): Promise<void> {
-            console.log(
-                this.props.match,
-                this.props.match.params,
-                this.props.match.params.id,
-                parseInt(this.props.match.params.id)
-            );
-            const response = await UserClient.getUser(parseInt(this.props.match.params.id));
+            const userid = parseInt(this.props.match.params.id);
+            const response = await UserClient.getUser(userid);
             switch (response.code) {
                 case StatusCode.ERROR: {
                     this.addError(response.error!);
@@ -82,7 +79,12 @@ export default withRouter(
                 this.setState({
                     canEdit: !!(
                         currentuser.payload!.administrationRights! & AdministrationRights.WriteUsers
-                    )
+                    ),
+                    canEditOwnPassword:
+                        !!(
+                            currentuser.payload!.administrationRights! &
+                            AdministrationRights.EditOwnPassword
+                        ) && currentuser.payload!.id! === userid
                 });
             }
             this.setState({
@@ -338,46 +340,63 @@ export default withRouter(
                                                     )}
                                                 </OverlayTrigger>
                                             </Row>
-                                            {this.state.canEdit ? (
-                                                <Button
-                                                    className="mx-auto mt-3 d-block"
-                                                    variant={
-                                                        this.state.user.enabled
-                                                            ? "danger"
-                                                            : "success"
-                                                    }
-                                                    onClick={async () => {
-                                                        this.setState({
-                                                            saving: true
-                                                        });
-
-                                                        const response = await UserClient.editUser(
-                                                            this.state.user!.id!,
-                                                            {
-                                                                enabled: !this.state.user!.enabled!
-                                                            }
-                                                        );
-                                                        if (response.code == StatusCode.OK) {
-                                                            this.loadUser(response.payload!);
-                                                        } else {
-                                                            this.addError(response.error!);
-                                                        }
-
-                                                        this.setState({
-                                                            saving: false
-                                                        });
-                                                    }}>
-                                                    <FormattedMessage
-                                                        id={
+                                            <div className="text-center mt-3">
+                                                {this.state.canEdit ||
+                                                this.state.canEditOwnPassword ? (
+                                                    <Button
+                                                        className="mr-2"
+                                                        as={Link}
+                                                        to={
+                                                            (AppRoutes.passwd.link ||
+                                                                AppRoutes.passwd.route) +
+                                                            this.state.user!.id!.toString()
+                                                        }>
+                                                        <FormattedMessage id="routes.passwd" />
+                                                    </Button>
+                                                ) : (
+                                                    ""
+                                                )}
+                                                {this.state.canEdit ? (
+                                                    <Button
+                                                        variant={
                                                             this.state.user.enabled
-                                                                ? "generic.disable"
-                                                                : "generic.enable"
+                                                                ? "danger"
+                                                                : "success"
                                                         }
-                                                    />
-                                                </Button>
-                                            ) : (
-                                                ""
-                                            )}
+                                                        onClick={async () => {
+                                                            this.setState({
+                                                                saving: true
+                                                            });
+
+                                                            const response = await UserClient.editUser(
+                                                                this.state.user!.id!,
+                                                                {
+                                                                    enabled: !this.state.user!
+                                                                        .enabled!
+                                                                }
+                                                            );
+                                                            if (response.code == StatusCode.OK) {
+                                                                this.loadUser(response.payload!);
+                                                            } else {
+                                                                this.addError(response.error!);
+                                                            }
+
+                                                            this.setState({
+                                                                saving: false
+                                                            });
+                                                        }}>
+                                                        <FormattedMessage
+                                                            id={
+                                                                this.state.user.enabled
+                                                                    ? "generic.disable"
+                                                                    : "generic.enable"
+                                                            }
+                                                        />
+                                                    </Button>
+                                                ) : (
+                                                    ""
+                                                )}
+                                            </div>
                                         </Col>
                                     ) : (
                                         ""
