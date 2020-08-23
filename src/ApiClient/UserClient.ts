@@ -69,6 +69,18 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         // noinspection DuplicatedCode
         switch (response.status) {
             case 200: {
+                const current = await this.getCurrentUser();
+                if (current.code == StatusCode.OK) {
+                    if (current.payload!.id! == id) {
+                        //if we are editing ourselves, clear cached data to reload permissions on the app
+                        ServerClient.emit("purgeCache");
+                    }
+                } else {
+                    return new InternalStatus({
+                        code: StatusCode.ERROR,
+                        error: current.error!
+                    });
+                }
                 return new InternalStatus({
                     code: StatusCode.OK,
                     payload: response.data as Components.Schemas.User
