@@ -73,7 +73,7 @@ export const AppRoutes: {
         category: "home",
         catleader: true
     },
-    usermanager: {
+    userlist: {
         name: "routes.usermanager",
         route: "/users/",
         file: "User/List",

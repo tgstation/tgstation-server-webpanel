@@ -57,7 +57,8 @@ export default withRouter(
                 saving: false,
                 permsadmin: {},
                 permsinstance: {},
-                canEdit: false
+                canEdit: false,
+                canEditOwnPassword: false
             };
         }
 
@@ -225,6 +226,11 @@ export default withRouter(
                                 </Badge>
                             )}
                             <h3 className="text-capitalize">{this.state.user.name}</h3>
+                            <Button
+                                as={Link}
+                                to={AppRoutes.userlist.link || AppRoutes.userlist.route}>
+                                <FormattedMessage id="generic.goback" />
+                            </Button>
                             <Tabs
                                 activeKey={this.props.match.params.tab || "info"}
                                 onSelect={newkey => {
@@ -349,7 +355,7 @@ export default withRouter(
                                                         to={
                                                             (AppRoutes.passwd.link ||
                                                                 AppRoutes.passwd.route) +
-                                                            this.state.user!.id!.toString()
+                                                            this.state.user.id!.toString()
                                                         }>
                                                         <FormattedMessage id="routes.passwd" />
                                                     </Button>
