@@ -92,8 +92,8 @@ export const AppRoutes: {
     },
     useredit: {
         name: "routes.useredit",
-        route: "/users/:id(\\d+)/:tab?/",
-        link: "/users/",
+        route: "/users/edit/:id(\\d+)/:tab?/",
+        link: "/users/edit/",
         file: "User/Edit",
 
         loose: true,
@@ -152,7 +152,8 @@ export const AppRoutes: {
     },
     passwd: {
         name: "routes.passwd",
-        route: "/passwd/",
+        route: "/users/passwd/:id(\\d+)?/",
+        link: "/users/passwd/",
         file: "ChangePassword",
 
         loose: true,
