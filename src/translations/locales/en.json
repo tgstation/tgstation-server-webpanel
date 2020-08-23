@@ -106,6 +106,7 @@
     "view.admin.logs.button": "TGS Logs",
     "view.user.list.cantlist": "This user does not have the permission to list users, only the current user is listed/editable.",
     "view.user.edit.cantedit": "This user does not have the permission to edit users.",
+    "view.user.passwd.title": "Editing password for ",
     "perms.admin": "Administration Permissions",
     "perms.admin.writeusers": "Edit Users",
     "perms.admin.writeusers.desc": "Ability to edit users, if View Users is granted, all users can be edited, otherwise, only the current user can be edited",
