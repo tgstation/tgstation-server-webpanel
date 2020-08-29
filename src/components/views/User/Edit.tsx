@@ -236,11 +236,11 @@ export default withRouter(
                                 onSelect={newkey => {
                                     if (!newkey) return;
 
+                                    if (!AppRoutes.useredit.data) AppRoutes.useredit.data = {};
+                                    AppRoutes.useredit.data.lastid = this.props.match.params.id;
+                                    AppRoutes.useredit.data.tab = newkey;
                                     this.props.history.push(
-                                        (AppRoutes.useredit.link || AppRoutes.useredit.route) +
-                                            this.props.match.params.id +
-                                            "/" +
-                                            newkey
+                                        AppRoutes.useredit.link || AppRoutes.useredit.route
                                     );
                                 }}
                                 id="test"

@@ -40,6 +40,10 @@ export interface AppRoute {
     category?: string;
     //if this is the main button in the category
     catleader?: boolean;
+
+    ///misc
+    //used for user edits and stuff like that
+    data?: Record<string, number | string>;
 }
 
 function adminRight(right: AdministrationRights) {
@@ -93,7 +97,13 @@ export const AppRoutes: {
     useredit: {
         name: "routes.useredit",
         route: "/users/edit/:id(\\d+)/:tab?/",
-        link: "/users/edit/",
+
+        //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
+        get link(): string {
+            return this.data?.lastid
+                ? `/users/edit/${this.data?.lastid}/${this.data?.tab ? `${this.data?.tab}/` : "/"}`
+                : "/users/";
+        },
         file: "User/Edit",
 
         loose: true,
@@ -102,8 +112,12 @@ export const AppRoutes: {
         //you can always read your own user
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
 
-        visibleNavbar: false,
-        homeIcon: undefined
+        visibleNavbar: true,
+        homeIcon: undefined,
+
+        category: "user",
+
+        data: {}
     },
     admin: {
         name: "routes.admin",
