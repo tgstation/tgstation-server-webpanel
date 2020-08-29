@@ -12,6 +12,7 @@ interface IEvents {
 
 export type EditUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type GetUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
+export type CreateUserErrors = GenericErrors | ErrorCode.USER_NO_SYS_IDENT;
 
 //https://stackoverflow.com/questions/40510611/typescript-interface-require-one-of-two-properties-to-exist
 //name describes what it does, makes the passed type only require 1 property, the others being optional
@@ -228,6 +229,55 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
+                });
+            }
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async createUser(
+        newuser:
+            | { name: string; password: string; enabled?: boolean }
+            | { systemIdentifier: string; enabled?: boolean }
+    ): Promise<InternalStatus<Components.Schemas.User, CreateUserErrors>> {
+        await ServerClient.wait4Init();
+
+        if (newuser.enabled === undefined) newuser.enabled = true;
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.UserController_Create(
+                null,
+                newuser as Components.Schemas.UserUpdate
+            );
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+
+        switch (response.status) {
+            case 201: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: response.data as Components.Schemas.User
+                });
+            }
+            case 410: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.USER_NO_SYS_IDENT, { errorMessage })
                 });
             }
             default: {

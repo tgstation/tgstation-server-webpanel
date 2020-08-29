@@ -8,8 +8,9 @@
     "routes.admin.logs": "TGS Logs",
     "routes.config": "Configuration",
     "routes.passwd": "Change Password",
-    "routes.usermanager": "User Manager",
+    "routes.usermanager": "Users",
     "routes.useredit": "User Editor",
+    "routes.usercreate": "Create User",
     "login.submit": "Login",
     "login.password": "Password",
     "login.password.repeat": "Confirm Password",
@@ -107,6 +108,8 @@
     "view.user.list.cantlist": "This user does not have the permission to list users, only the current user is listed/editable.",
     "view.user.edit.cantedit": "This user does not have the permission to edit users.",
     "view.user.passwd.title": "Editing password for ",
+    "view.user.create.tgs": "Create user with TGS identifier",
+    "view.user.create.sys": "Create user with system identifier",
     "perms.admin": "Administration Permissions",
     "perms.admin.writeusers": "Edit Users",
     "perms.admin.writeusers.desc": "Ability to edit users, if View Users is granted, all users can be edited, otherwise, only the current user can be edited",
@@ -163,5 +166,6 @@
     "loading.passwd": "Changing password...",
     "loading.userlist": "Loading user list...",
     "loading.user.load": "Loading user information",
-    "loading.user.save": "Saving user information"
+    "loading.user.save": "Saving user information",
+    "loading.user.create": "Creating user"
 }

@@ -115,9 +115,24 @@ export const AppRoutes: {
         visibleNavbar: true,
         homeIcon: undefined,
 
-        category: "user",
+        category: "user"
+    },
+    usercreate: {
+        name: "routes.usercreate",
+        route: "/users/create/",
 
-        data: {}
+        link: "/users/create/",
+        file: "User/Create",
+
+        loose: true,
+        navbarLoose: true,
+
+        isAuthorized: adminRight(AdministrationRights.WriteUsers),
+
+        visibleNavbar: true,
+        homeIcon: undefined,
+
+        category: "user"
     },
     admin: {
         name: "routes.admin",

@@ -103,6 +103,7 @@ export default withRouter(
             });
         }
 
+        // noinspection DuplicatedCode
         private async submit(event: FormEvent<HTMLFormElement>): Promise<void> {
             event.preventDefault();
             let err = false;
