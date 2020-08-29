@@ -2,7 +2,7 @@
 <project version="4">
   <component name="TypeScriptCompiler">
     <option name="recompileOnChanges" value="true" />
-    <option name="scopeName" value="Current File" />
+    <option name="scopeName" value="Recently Changed Files" />
     <option name="showAllErrors" value="true" />
   </component>
 </project>

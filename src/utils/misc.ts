@@ -1,3 +1,5 @@
+import { pathToRegexp } from "path-to-regexp";
+
 function getSavedCreds(): string[] | null {
     let usr: string | null = null;
     let pwd: string | null = null;
@@ -69,11 +71,7 @@ function matchesPath(path: string, target: string, exact = false): boolean {
     if (path.slice(-1) === "/") path = path.slice(0, -1);
     if (target.slice(-1) === "/") target = target.slice(0, -1);
 
-    if (exact) {
-        return path == target;
-    } else {
-        return path.startsWith(target);
-    }
+    return pathToRegexp(target, undefined, { end: exact }).test(path);
 }
 
 export { getSavedCreds, download, timeSince, replaceAll, matchesPath };
