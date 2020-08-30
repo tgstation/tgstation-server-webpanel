@@ -78,20 +78,19 @@ export default withRouter(
                         break;
                     }
                 }
-            } else {
-                const res = await AdminClient.getLogs();
+            }
+            const response = await AdminClient.getLogs();
 
-                switch (res.code) {
-                    case StatusCode.OK: {
-                        this.setState({
-                            logs: res.payload!
-                        });
-                        break;
-                    }
-                    case StatusCode.ERROR: {
-                        this.addError(res.error!);
-                        break;
-                    }
+            switch (response.code) {
+                case StatusCode.OK: {
+                    this.setState({
+                        logs: response.payload!
+                    });
+                    break;
+                }
+                case StatusCode.ERROR: {
+                    this.addError(response.error!);
+                    break;
                 }
             }
             this.setState({
@@ -230,14 +229,17 @@ export default withRouter(
                                             <td className="align-middle p-0">
                                                 <Button
                                                     className="mr-1"
-                                                    as={Link}
-                                                    to={
-                                                        (AppRoutes.admin_logs.link ||
-                                                            AppRoutes.admin_logs.route) +
-                                                        //TODO: fix this when cyber fixes it
-                                                        value.name! +
-                                                        "/"
-                                                    }>
+                                                    onClick={() => {
+                                                        this.props.history.push(
+                                                            (AppRoutes.admin_logs.link ||
+                                                                AppRoutes.admin_logs.route) +
+                                                                value.name! +
+                                                                "/",
+                                                            {
+                                                                reload: true
+                                                            }
+                                                        );
+                                                    }}>
                                                     <FormattedMessage id="generic.view" />
                                                 </Button>
                                                 <Button
