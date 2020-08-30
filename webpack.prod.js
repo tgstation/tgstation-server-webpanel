@@ -57,7 +57,7 @@ module.exports = smp.wrap(
             }
         },
         output: {
-            publicPath: appPath,
+            publicPath: "/",
             filename: "[name].[contenthash].js",
             path: path.resolve(__dirname, "dist")
         },
