@@ -104,6 +104,7 @@
     "view.admin.update.current": " (Current)",
     "view.admin.update.releasenotes": "Release Notes",
     "view.admin.update.wait": "Please take the time to read the release notes before proceeding",
+    "view.admin.update.showall": "Show all versions",
     "view.admin.logs.button": "TGS Logs",
     "view.user.list.cantlist": "This user does not have the permission to list users, only the current user is listed/editable.",
     "view.user.edit.cantedit": "This user does not have the permission to edit users.",

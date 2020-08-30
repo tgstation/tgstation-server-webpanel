@@ -58,7 +58,7 @@ function adminRight(right: AdministrationRights) {
     };
 }
 
-export const AppRoutes: {
+const AppRoutes: {
     [id: string]: AppRoute;
 } = {
     home: {
@@ -152,11 +152,13 @@ export const AppRoutes: {
     },
     admin_update: {
         name: "routes.admin.update",
-        route: "/admin/update/",
+        route: "/admin/update/:all?/",
         file: "Admin/Update",
 
-        loose: false,
-        navbarLoose: false,
+        link: "/admin/update/",
+
+        loose: true,
+        navbarLoose: true,
 
         isAuthorized: adminRight(AdministrationRights.ChangeVersion),
         visibleNavbar: true,
@@ -208,6 +210,8 @@ export const AppRoutes: {
         homeIcon: "cogs"
     }
 };
+
+export { AppRoutes };
 
 export type UnpopulatedAppCategory = Partial<AppCategory>;
 

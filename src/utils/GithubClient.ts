@@ -90,11 +90,13 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
     public async getVersions({
         owner,
         repo,
-        current
+        current,
+        all
     }: {
         owner: string;
         repo: string;
         current: string;
+        all?: boolean;
     }): Promise<InternalStatus<TGSVersion[], ErrorCode.GITHUB_FAIL>> {
         let payload: TGSVersion[];
         let oldversions = 0;
@@ -106,13 +108,14 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                     return response.data.reduce((result, release) => {
                         const match = /tgstation-server-v([\d.]+)/.exec(release.name);
                         if (!match) return result;
+                        if (match[1][0] !== "4") return result;
 
                         const version = match[1];
                         let old = false;
 
                         //show 3 outdated versions(2 if you count the current one)
                         if (version <= current) {
-                            if (oldversions >= 3) {
+                            if (oldversions >= 3 && !all) {
                                 (done as () => void)();
                                 return result;
                             }
