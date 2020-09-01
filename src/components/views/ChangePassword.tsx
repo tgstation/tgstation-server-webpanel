@@ -27,6 +27,7 @@ interface IState {
     loading: boolean;
     pwdload?: boolean;
     user?: Components.Schemas.User;
+    currentUser?: boolean;
 }
 
 export default withRouter(
@@ -61,31 +62,32 @@ export default withRouter(
             }
 
             let id: number | undefined = undefined;
-            if (this.props.match.params.id) {
-                id = parseInt(this.props.match.params.id);
-            } else {
-                const user = await UserClient.getCurrentUser();
-                if (user.code == StatusCode.OK) {
-                    id = user.payload!.id!;
+            const cuser = await UserClient.getCurrentUser();
+            if (cuser.code == StatusCode.OK) {
+                if (this.props.match.params.id) {
+                    id = parseInt(this.props.match.params.id);
                 } else {
-                    this.addError(user.error!);
+                    id = cuser.payload!.id!;
                 }
+                if (id === cuser.payload!.id!) {
+                    this.setState({
+                        currentUser: true
+                    });
+                }
+            } else {
+                this.setState({
+                    loading: false
+                });
+                return this.addError(cuser.error!);
             }
 
-            if (id) {
-                const user = await UserClient.getUser(id);
-                if (user.code == StatusCode.OK) {
-                    this.setState({
-                        user: user.payload!
-                    });
-                } else {
-                    this.addError(user.error!);
-                }
+            const user = await UserClient.getUser(id);
+            if (user.code == StatusCode.OK) {
+                this.setState({
+                    user: user.payload!
+                });
             } else {
-                this.addError(
-                    new InternalError(ErrorCode.APP_FAIL, { jsError: Error("ID is not set") })
-                );
-                return;
+                this.addError(user.error!);
             }
 
             this.setState({
@@ -138,15 +140,17 @@ export default withRouter(
             });
             switch (res.code) {
                 case StatusCode.OK: {
-                    const [usr, pwd] = getSavedCreds() || [undefined, undefined];
-                    // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
-                    void ServerClient.login(
-                        {
-                            userName: CredentialsProvider.credentials!.userName,
-                            password: this.state.password1
-                        },
-                        !!(usr && pwd)
-                    );
+                    if (this.state.currentUser) {
+                        const [usr, pwd] = getSavedCreds() || [undefined, undefined];
+                        // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
+                        void ServerClient.login(
+                            {
+                                userName: CredentialsProvider.credentials!.userName,
+                                password: this.state.password1
+                            },
+                            !!(usr && pwd)
+                        );
+                    }
                     this.props.history.goBack();
                     break;
                 }
