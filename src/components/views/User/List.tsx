@@ -12,7 +12,7 @@ import Badge from "react-bootstrap/Badge";
 import { timeSince } from "../../../utils/misc";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Button from "react-bootstrap/Button";
-import { withRouter, RouteComponentProps } from "react-router-dom";
+import { withRouter, RouteComponentProps, Link } from "react-router-dom";
 import { AppRoutes } from "../../../utils/routes";
 import { AdministrationRights } from "../../../ApiClient/generatedcode/_enums";
 import Alert from "react-bootstrap/Alert";
@@ -214,6 +214,9 @@ export default withRouter(
                             })}
                         </tbody>
                     </Table>
+                    <Button as={Link} to={AppRoutes.usercreate.link || AppRoutes.usercreate.route}>
+                        <FormattedMessage id="routes.usercreate" />
+                    </Button>
                 </div>
             );
         }
