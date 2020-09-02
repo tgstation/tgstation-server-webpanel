@@ -77,6 +77,22 @@ const AppRoutes: {
         category: "home",
         catleader: true
     },
+    instancelist: {
+        name: "routes.instancelist",
+        route: "/instances/list",
+        file: "Instance/List",
+
+        loose: false,
+        navbarLoose: true,
+
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+
+        visibleNavbar: true,
+        homeIcon: "hdd",
+
+        category: "instance",
+        catleader: true
+    },
     userlist: {
         name: "routes.usermanager",
         route: "/users/",
@@ -232,6 +248,9 @@ export type AppCategories = {
 export const AppCategories: UnpopulatedAppCategories = {
     home: {
         name: "home"
+    },
+    instance: {
+        name: "instance"
     },
     user: {
         name: "user"
