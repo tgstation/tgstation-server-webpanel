@@ -40,10 +40,6 @@ export interface AppRoute {
     category?: string;
     //if this is the main button in the category
     catleader?: boolean;
-
-    ///misc
-    //used for user edits and stuff like that
-    data?: Record<string, number | string>;
 }
 
 function adminRight(right: AdministrationRights) {
@@ -93,6 +89,69 @@ const AppRoutes: {
         category: "instance",
         catleader: true
     },
+    instancecode: {
+        name: "routes.instancecode",
+        route: "/instances/code/:id(\\d+)/",
+        file: "Instance/CodeDeployment",
+
+        get link(): string {
+            return AppCategories.instance.data
+                ? `/instances/code/${AppCategories.instance.data.instanceid}/`
+                : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
+        },
+
+        loose: false,
+        navbarLoose: true,
+
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+
+        visibleNavbar: true,
+        homeIcon: undefined,
+
+        category: "instance"
+    },
+    instancehosting: {
+        name: "routes.instancehosting",
+        route: "/instances/hosting/:id(\\d+)/",
+        file: "Instance/Hosting",
+
+        get link(): string {
+            return AppCategories.instance.data
+                ? `/instances/hosting/${AppCategories.instance.data.instanceid}/`
+                : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
+        },
+
+        loose: false,
+        navbarLoose: true,
+
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+
+        visibleNavbar: true,
+        homeIcon: undefined,
+
+        category: "instance"
+    },
+    instanceconfig: {
+        name: "routes.instanceconfig",
+        route: "/instances/config/:id(\\d+)/",
+        file: "Instance/Config",
+
+        get link(): string {
+            return AppCategories.instance.data
+                ? `/instances/config/${AppCategories.instance.data.instanceid}/`
+                : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
+        },
+
+        loose: false,
+        navbarLoose: true,
+
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+
+        visibleNavbar: true,
+        homeIcon: undefined,
+
+        category: "instance"
+    },
     userlist: {
         name: "routes.usermanager",
         route: "/users/",
@@ -116,8 +175,10 @@ const AppRoutes: {
 
         //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
         get link(): string {
-            return this.data?.lastid
-                ? `/users/edit/${this.data?.lastid}/${this.data?.tab ? `${this.data?.tab}/` : "/"}`
+            return AppCategories.user.data?.selectedid
+                ? `/users/edit/${AppCategories.user.data?.selectedid}/${
+                      AppCategories.user.data?.tab ? `${AppCategories.user.data?.tab}/` : ""
+                  }`
                 : "/users/";
         },
         file: "User/Edit",
@@ -235,6 +296,7 @@ export interface AppCategory {
     name: string; //doesnt really matter, kinda bullshit
     routes: AppRoute[];
     leader: AppRoute;
+    data: Record<string, string | number>;
 }
 
 export type UnpopulatedAppCategories = {

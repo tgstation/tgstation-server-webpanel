@@ -13,7 +13,7 @@ import { timeSince } from "../../../utils/misc";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Button from "react-bootstrap/Button";
 import { withRouter, RouteComponentProps, Link } from "react-router-dom";
-import { AppRoutes } from "../../../utils/routes";
+import { AppCategories, AppRoutes } from "../../../utils/routes";
 import { AdministrationRights } from "../../../ApiClient/generatedcode/_enums";
 import Alert from "react-bootstrap/Alert";
 
@@ -198,9 +198,9 @@ export default withRouter(
                                         <td className="align-middle p-0">
                                             <Button
                                                 onClick={() => {
-                                                    if (!AppRoutes.useredit.data)
-                                                        AppRoutes.useredit.data = {};
-                                                    AppRoutes.useredit.data.lastid = value.id!.toString();
+                                                    if (!AppCategories.user.data)
+                                                        AppCategories.user.data = {};
+                                                    AppCategories.user.data.selectedid = value.id!.toString();
                                                     this.props.history.push(
                                                         AppRoutes.useredit.link ||
                                                             AppRoutes.useredit.route

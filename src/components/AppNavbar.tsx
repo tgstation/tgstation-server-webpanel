@@ -185,11 +185,7 @@ export default withRouter(
                                                                     if (!val.visibleNavbar) return;
 
                                                                     return (
-                                                                        <Nav.Item
-                                                                            key={
-                                                                                val.link ||
-                                                                                val.route
-                                                                            }>
+                                                                        <Nav.Item key={val.name}>
                                                                             <Nav.Link
                                                                                 onClick={() => {
                                                                                     this.props.history.push(

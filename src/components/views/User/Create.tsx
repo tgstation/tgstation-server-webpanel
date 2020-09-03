@@ -11,7 +11,7 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import Loading from "../../utils/Loading";
 import UserClient from "../../../ApiClient/UserClient";
 import { withRouter, RouteComponentProps } from "react-router-dom";
-import { AppRoutes } from "../../../utils/routes";
+import { AppCategories, AppRoutes } from "../../../utils/routes";
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
@@ -110,8 +110,8 @@ export default withRouter(
             });
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
-                if (!AppRoutes.useredit.data) AppRoutes.useredit.data = {};
-                AppRoutes.useredit.data.lastid = user.payload!.id!;
+                if (!AppCategories.user.data) AppCategories.user.data = {};
+                AppCategories.user.data.selectedid = user.payload!.id!;
                 this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
             } else {
                 this.addError(user.error!);
@@ -136,8 +136,8 @@ export default withRouter(
             });
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
-                if (!AppRoutes.useredit.data) AppRoutes.useredit.data = {};
-                AppRoutes.useredit.data.lastid = user.payload!.id!;
+                if (!AppCategories.user.data) AppCategories.user.data = {};
+                AppCategories.user.data.selectedid = user.payload!.id!;
                 this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
             } else {
                 this.addError(user.error!);

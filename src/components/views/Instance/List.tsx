@@ -9,6 +9,7 @@ import { FormattedMessage } from "react-intl";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
+import { AppCategories, AppRoutes } from "../../../utils/routes";
 
 interface IState {
     instances: Components.Schemas.Instance[];
@@ -127,16 +128,11 @@ export default class InstanceList extends React.Component<IProps, IState> {
                                     </td>
                                     <td className="align-middle p-0">
                                         <Button
-                                        /*onClick={() => {
-                                            if (!AppRoutes.useredit.data)
-                                                AppRoutes.useredit.data = {};
-                                            AppRoutes.useredit.data.lastid = value.id!.toString();
-                                            this.props.history.push(
-                                                AppRoutes.useredit.link ||
-                                                AppRoutes.useredit.route
-                                            );
-                                        }}*/
-                                        >
+                                            onClick={() => {
+                                                if (!AppCategories.instance.data)
+                                                    AppCategories.instance.data = {};
+                                                AppCategories.instance.data.instanceid = value.id.toString();
+                                            }}>
                                             <FormattedMessage id="generic.edit" />
                                         </Button>
                                     </td>
@@ -145,6 +141,7 @@ export default class InstanceList extends React.Component<IProps, IState> {
                         })}
                     </tbody>
                 </Table>
+                Selected instance: {AppCategories.instance.data?.instanceid}
             </div>
         );
     }

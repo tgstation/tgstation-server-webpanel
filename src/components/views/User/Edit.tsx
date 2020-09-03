@@ -23,7 +23,7 @@ import {
     AdministrationRights,
     InstanceManagerRights
 } from "../../../ApiClient/generatedcode/_enums";
-import { AppRoutes } from "../../../utils/routes";
+import { AppCategories, AppRoutes } from "../../../utils/routes";
 import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router-dom";
 
@@ -236,9 +236,9 @@ export default withRouter(
                                 onSelect={newkey => {
                                     if (!newkey) return;
 
-                                    if (!AppRoutes.useredit.data) AppRoutes.useredit.data = {};
-                                    AppRoutes.useredit.data.lastid = this.props.match.params.id;
-                                    AppRoutes.useredit.data.tab = newkey;
+                                    if (!AppCategories.user.data) AppCategories.user.data = {};
+                                    AppCategories.user.data.selectedid = this.props.match.params.id;
+                                    AppCategories.user.data.tab = newkey;
                                     this.props.history.push(
                                         AppRoutes.useredit.link || AppRoutes.useredit.route
                                     );
