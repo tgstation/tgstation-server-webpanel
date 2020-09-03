@@ -30,6 +30,7 @@ interface IState {
     routes: AppRoute[];
     categories: AppCategories;
     focusedCategory: string;
+    focusTimer?: number;
 }
 
 export default withRouter(
@@ -131,15 +132,35 @@ export default withRouter(
                                 ) : (
                                     Object.values(this.state.categories).map(cat => {
                                         if (!cat.leader.cachedAuth) return;
-
                                         return (
-                                            <div key={cat.name} className="d-flex">
-                                                <Nav.Item
-                                                    onMouseEnter={() => {
+                                            <div
+                                                key={cat.name}
+                                                className="d-flex"
+                                                onMouseEnter={() => {
+                                                    const timer = window.setTimeout(() => {
                                                         this.setState({
-                                                            focusedCategory: cat.name
+                                                            focusedCategory: cat.name,
+                                                            focusTimer: undefined
                                                         });
-                                                    }}>
+                                                    }, 130);
+                                                    this.setState({
+                                                        focusTimer: timer
+                                                    });
+                                                }}
+                                                onMouseLeave={() => {
+                                                    window.clearTimeout(this.state.focusTimer);
+                                                    this.setState({
+                                                        focusTimer: undefined
+                                                    });
+                                                }}
+                                                onClick={() => {
+                                                    window.clearTimeout(this.state.focusTimer);
+                                                    this.setState({
+                                                        focusedCategory: cat.name,
+                                                        focusTimer: undefined
+                                                    });
+                                                }}>
+                                                <Nav.Item>
                                                     <Nav.Link
                                                         onClick={() => {
                                                             this.props.history.push(
