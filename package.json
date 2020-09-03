@@ -1,6 +1,6 @@
 {
     "name": "tgstation-server-control-panel",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "private": false,
     "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
     "repository": "github:tgstation/tgstation-server-control-panel",
@@ -23,7 +23,6 @@
         "@hot-loader/react-dom": "^16.13.0",
         "@loadable/component": "^5.13.1",
         "@mapbox/react-click-to-select": "^2.2.0",
-        "@matsun/reactiscapslockactive": "^1.1.0",
         "@octokit/plugin-paginate-rest": "^2.2.3",
         "@octokit/plugin-retry": "^3.0.3",
         "@octokit/plugin-throttling": "^3.3.0",
@@ -125,7 +124,5 @@
             "last 3 safari version"
         ]
     },
-    "sideEffects": [
-        "./src/clients/_clients.ts"
-    ]
+    "sideEffects": []
 }
