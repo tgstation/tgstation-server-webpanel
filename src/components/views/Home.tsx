@@ -58,7 +58,10 @@ export default class Home extends React.Component<IProps, IState> {
                                 className={`text-decoration-none m-1 h-75 ${
                                     val.cachedAuth ? "text-primary" : "text-danger d-sm-flex d-none"
                                 }`}>
-                                <Card.Body>
+                                <Card.Body
+                                    style={{
+                                        height: "245px"
+                                    }}>
                                     <FontAwesomeIcon
                                         fixedWidth={true}
                                         icon={val.homeIcon}
