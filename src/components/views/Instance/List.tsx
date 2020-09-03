@@ -9,7 +9,7 @@ import { FormattedMessage } from "react-intl";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
-import { AppCategories, AppRoutes } from "../../../utils/routes";
+import { AppCategories } from "../../../utils/routes";
 
 interface IState {
     instances: Components.Schemas.Instance[];
