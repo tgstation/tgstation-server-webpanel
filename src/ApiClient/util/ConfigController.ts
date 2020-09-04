@@ -34,6 +34,7 @@ export default new (class ConfigController {
                 if (Number.isNaN(option.value)) return;
                 break;
             case "str":
+            case "pwd":
                 if (typeof option.value !== "string") return;
                 break;
         }

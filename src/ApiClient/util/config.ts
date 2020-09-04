@@ -2,7 +2,7 @@ export type ConfigValue = number | string | boolean | undefined;
 
 export interface ConfigOption {
     id: string;
-    type: "num" | "str" | "bool";
+    type: "num" | "str" | "pwd" | "bool";
     value: ConfigValue;
     //persist?: boolean;
 }
@@ -14,7 +14,7 @@ export type ConfigMap = {
 const configOptions: ConfigMap = {
     githubtoken: {
         id: "config.githubtoken",
-        type: "str",
+        type: "pwd",
         value: ""
     },
     apipath: {

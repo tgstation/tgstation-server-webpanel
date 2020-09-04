@@ -84,6 +84,10 @@ export default class Configuration extends React.Component<IProps, IState> {
                             type = "input";
                             break;
                         }
+                        case "pwd": {
+                            type = "password";
+                            break;
+                        }
                         case "bool": {
                             type = "switch";
                         }
