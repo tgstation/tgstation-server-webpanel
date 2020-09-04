@@ -114,8 +114,8 @@ export default withRouter(
                             {this.renderVersion()}
                         </Navbar.Brand>
                         <Navbar.Toggle className="mr-2" aria-controls="responsive-navbar-nav" />
-                        <Navbar.Collapse className="text-right mr-2">
-                            <Nav className="mr-auto">
+                        <Navbar.Collapse className="text-right mr-2" style={{ minWidth: "0px" }}>
+                            <Nav className="mr-auto overflow-hidden">
                                 {!this.state.loggedIn ? (
                                     <Nav.Item>
                                         <Nav.Link
