@@ -98,6 +98,7 @@
     "generic.online": "Online",
     "generic.offline": "Offline",
     "generic.path": "Path",
+    "generic.select": "Select",
     "view.admin.hostos": "Host Machine OS: ",
     "view.admin.remote": "Remote repository: ",
     "view.admin.version.current": "Current Version: ",
