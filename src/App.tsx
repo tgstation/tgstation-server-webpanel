@@ -87,8 +87,6 @@ class App extends React.Component<IAppProps, IState> {
                     try {
                         window.localStorage.removeItem("username");
                         window.localStorage.removeItem("password");
-                        window.sessionStorage.removeItem("username");
-                        window.sessionStorage.removeItem("password");
                     } catch (e) {
                         // eslint-disable-next-line @typescript-eslint/no-empty-function
                         (() => {})(); //noop

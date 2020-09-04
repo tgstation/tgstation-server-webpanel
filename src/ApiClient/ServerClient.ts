@@ -381,22 +381,11 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 }*/
                 if (savePassword) {
                     try {
-                        if (configOptions.localstoragecreds.value) {
-                            window.localStorage.setItem(
-                                "username",
-                                CredentialsProvider.credentials.userName
-                            );
-                            window.localStorage.setItem(
-                                "password",
-                                CredentialsProvider.credentials.password
-                            );
-                        }
-                        //we save it in both places just in case
-                        window.sessionStorage.setItem(
+                        window.localStorage.setItem(
                             "username",
                             CredentialsProvider.credentials.userName
                         );
-                        window.sessionStorage.setItem(
+                        window.localStorage.setItem(
                             "password",
                             CredentialsProvider.credentials.password
                         );
@@ -435,8 +424,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         try {
             window.localStorage.removeItem("username");
             window.localStorage.removeItem("password");
-            window.sessionStorage.removeItem("username");
-            window.sessionStorage.removeItem("password");
         } catch (e) {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})();
