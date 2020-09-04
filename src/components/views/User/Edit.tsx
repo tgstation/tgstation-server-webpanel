@@ -60,6 +60,10 @@ export default withRouter(
                 canEdit: false,
                 canEditOwnPassword: false
             };
+
+            if (!AppCategories.user.data) AppCategories.user.data = {};
+            AppCategories.user.data.selectedid = props.match.params.id;
+            AppCategories.user.data.tab = props.match.params.tab;
         }
 
         public async componentDidMount(): Promise<void> {
