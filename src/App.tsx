@@ -29,6 +29,7 @@ interface IState {
     loggedIn: boolean;
     loading: boolean;
     autoLogin: boolean;
+    passdownCat?: string;
 }
 
 class App extends React.Component<IAppProps, IState> {
@@ -106,14 +107,21 @@ class App extends React.Component<IAppProps, IState> {
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}>
                 <BrowserRouter basename={configOptions.basepath.value as string}>
-                    <AppNavbar />
+                    <AppNavbar category={this.state.passdownCat} />
                     <Container className="mt-5 mb-5">
                         {this.state.loading ? (
                             <Loading text="loading.app" />
                         ) : this.state.autoLogin && !this.state.loggedIn ? (
                             <Loading text="loading.app" />
                         ) : (
-                            <Router loggedIn={this.state.loggedIn} />
+                            <Router
+                                loggedIn={this.state.loggedIn}
+                                selectCategory={cat => {
+                                    this.setState({
+                                        passdownCat: cat
+                                    });
+                                }}
+                            />
                         )}
                     </Container>
                 </BrowserRouter>

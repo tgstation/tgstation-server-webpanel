@@ -18,7 +18,9 @@ import { matchesPath } from "../utils/misc";
 import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/InternalError";
 import ErrorAlert from "./utils/ErrorAlert";
 
-interface IProps extends RouteComponentProps {}
+interface IProps extends RouteComponentProps {
+    category?: string;
+}
 
 interface IState {
     currentUser?: Components.Schemas.User;
@@ -45,7 +47,7 @@ export default withRouter(
                 loggedIn: false,
                 routes: [],
                 categories: RouteController.getCategories(),
-                focusedCategory: ""
+                focusedCategory: this.props.category || ""
             };
         }
 
@@ -86,6 +88,14 @@ export default withRouter(
                     routes
                 });
             });
+        }
+
+        public componentDidUpdate(prevProps: Readonly<IProps>) {
+            if (this.props.category !== prevProps.category && this.props.category) {
+                this.setState({
+                    focusedCategory: this.props.category
+                });
+            }
         }
 
         public render(): React.ReactNode {

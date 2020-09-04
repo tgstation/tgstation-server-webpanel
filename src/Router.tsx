@@ -11,6 +11,7 @@ import { AppRoute } from "./utils/routes";
 import loadable, { LoadableComponent } from "@loadable/component";
 import Loading from "./components/utils/Loading";
 import { FormattedMessage } from "react-intl";
+import { matchesPath } from "./utils/misc";
 
 interface IState {
     loading: boolean;
@@ -19,6 +20,7 @@ interface IState {
 }
 interface IProps extends RouteComponentProps {
     loggedIn: boolean;
+    selectCategory: (category: string) => void;
 }
 
 const LoadSpin = (page: string) => (
@@ -59,13 +61,30 @@ export default withRouter(
 
         public async componentDidMount() {
             RouteController.on("refreshAll", routes => {
+                for (const route of routes) {
+                    if (route.category && matchesPath(this.props.location.pathname, route.route)) {
+                        this.props.selectCategory(route.category);
+                        break;
+                    }
+                }
                 this.setState({
                     routes
                 });
             });
 
+            const routes = await RouteController.getRoutes(false);
+            for (const route of routes) {
+                if (
+                    route.category &&
+                    route.navbarLoose &&
+                    matchesPath(this.props.location.pathname, route.route)
+                ) {
+                    this.props.selectCategory(route.category);
+                    break;
+                }
+            }
             this.setState({
-                routes: await RouteController.getRoutes(false)
+                routes
             });
         }
 
