@@ -95,7 +95,7 @@ const AppRoutes: {
         file: "Instance/CodeDeployment",
 
         get link(): string {
-            return AppCategories.instance.data
+            return AppCategories.instance.data?.instanceid !== undefined
                 ? `/instances/code/${AppCategories.instance.data.instanceid}/`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
@@ -116,7 +116,7 @@ const AppRoutes: {
         file: "Instance/Hosting",
 
         get link(): string {
-            return AppCategories.instance.data
+            return AppCategories.instance.data?.instanceid !== undefined
                 ? `/instances/hosting/${AppCategories.instance.data.instanceid}/`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
@@ -137,7 +137,7 @@ const AppRoutes: {
         file: "Instance/Config",
 
         get link(): string {
-            return AppCategories.instance.data
+            return AppCategories.instance.data?.instanceid !== undefined
                 ? `/instances/config/${AppCategories.instance.data.instanceid}/`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
@@ -175,9 +175,11 @@ const AppRoutes: {
 
         //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
         get link(): string {
-            return AppCategories.user.data?.selectedid
+            return AppCategories.user.data?.selectedid !== undefined
                 ? `/users/edit/${AppCategories.user.data?.selectedid}/${
-                      AppCategories.user.data?.tab ? `${AppCategories.user.data?.tab}/` : ""
+                      AppCategories.user.data?.tab !== undefined
+                          ? `${AppCategories.user.data?.tab}/`
+                          : ""
                   }`
                 : "/users/";
         },
@@ -296,7 +298,7 @@ export interface AppCategory {
     name: string; //doesnt really matter, kinda bullshit
     routes: AppRoute[];
     leader: AppRoute;
-    data: Record<string, string | number>;
+    data: Record<string, string | number | undefined>;
 }
 
 export type UnpopulatedAppCategories = {
