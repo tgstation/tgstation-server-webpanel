@@ -61,31 +61,29 @@ export default withRouter(
 
         public async componentDidMount() {
             RouteController.on("refreshAll", routes => {
-                for (const route of routes) {
-                    if (route.category && matchesPath(this.props.location.pathname, route.route)) {
-                        this.props.selectCategory(route.category);
-                        break;
-                    }
-                }
                 this.setState({
                     routes
                 });
             });
 
+            this.setState({
+                routes: await RouteController.getRoutes(false)
+            });
+
+            this.props.history.listen(location => {
+                void this.listener(location.pathname);
+            });
+            await this.listener(this.props.location.pathname);
+        }
+
+        private async listener(location: string) {
             const routes = await RouteController.getRoutes(false);
             for (const route of routes) {
-                if (
-                    route.category &&
-                    route.navbarLoose &&
-                    matchesPath(this.props.location.pathname, route.route)
-                ) {
+                if (route.category && route.navbarLoose && matchesPath(location, route.route)) {
                     this.props.selectCategory(route.category);
                     break;
                 }
             }
-            this.setState({
-                routes
-            });
         }
 
         public render(): ReactNode {

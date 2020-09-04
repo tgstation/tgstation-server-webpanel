@@ -29,7 +29,7 @@ interface IState {
     loggedIn: boolean;
     loading: boolean;
     autoLogin: boolean;
-    passdownCat?: string;
+    passdownCat?: { name: string; key: string };
 }
 
 class App extends React.Component<IAppProps, IState> {
@@ -118,7 +118,10 @@ class App extends React.Component<IAppProps, IState> {
                                 loggedIn={this.state.loggedIn}
                                 selectCategory={cat => {
                                     this.setState({
-                                        passdownCat: cat
+                                        passdownCat: {
+                                            name: cat,
+                                            key: Math.random().toString()
+                                        }
                                     });
                                 }}
                             />

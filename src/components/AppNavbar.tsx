@@ -19,7 +19,10 @@ import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/
 import ErrorAlert from "./utils/ErrorAlert";
 
 interface IProps extends RouteComponentProps {
-    category?: string;
+    category?: {
+        name: string;
+        key: string;
+    };
 }
 
 interface IState {
@@ -47,7 +50,7 @@ export default withRouter(
                 loggedIn: false,
                 routes: [],
                 categories: RouteController.getCategories(),
-                focusedCategory: this.props.category || ""
+                focusedCategory: this.props.category?.name || ""
             };
         }
 
@@ -91,9 +94,12 @@ export default withRouter(
         }
 
         public componentDidUpdate(prevProps: Readonly<IProps>) {
-            if (this.props.category !== prevProps.category && this.props.category) {
+            if (
+                this.props.category !== undefined &&
+                this.props.category.key !== prevProps.category?.key
+            ) {
                 this.setState({
-                    focusedCategory: this.props.category
+                    focusedCategory: this.props.category.name
                 });
             }
         }
