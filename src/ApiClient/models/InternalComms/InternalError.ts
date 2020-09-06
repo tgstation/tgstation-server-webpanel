@@ -128,5 +128,10 @@ export default class InternalError<T extends ErrorCode> {
             );
         }
         this.extendedInfo = debuginfo;
+
+        console.error(
+            `Operational error: ${this.code} (${this.desc?.desc || "No description"})`,
+            this
+        );
     }
 }
