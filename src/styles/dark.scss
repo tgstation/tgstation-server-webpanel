@@ -299,3 +299,21 @@ $pre-color: inherit;
 .nowrap {
     white-space: nowrap;
 }
+
+//these exists on firefox
+//noinspection CssUnknownProperty
+.fancyscroll {
+    scrollbar-width: thin;
+    scrollbar-color: $gray-800 rgba($gray-800, 0.5);
+}
+
+//chrome/safari
+.fancyscroll::-webkit-scrollbar {
+    height: 8px;
+}
+.fancyscroll::-webkit-scrollbar-track {
+    background: rgba($gray-800, 0.5);
+}
+.fancyscroll::-webkit-scrollbar-thumb {
+    background-color: $gray-800;
+}

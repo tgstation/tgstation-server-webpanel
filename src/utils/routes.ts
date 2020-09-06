@@ -131,6 +131,31 @@ const AppRoutes: {
 
         category: "instance"
     },
+    instancejobs: {
+        name: "routes.instancejobs",
+        route: "/instances/jobs/:id(\\d+)/:jobid?(\\d+)/",
+        file: "Instance/Jobs",
+
+        get link(): string {
+            return AppCategories.instance.data?.instanceid !== undefined
+                ? `/instances/jobs/${AppCategories.instance.data.instanceid}/${
+                      AppCategories.instance.data.lastjob !== undefined
+                          ? `${AppCategories.instance.data.lastjob}/`
+                          : ""
+                  }`
+                : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
+        },
+
+        loose: false,
+        navbarLoose: true,
+
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+
+        visibleNavbar: true,
+        homeIcon: undefined,
+
+        category: "instance"
+    },
     instanceconfig: {
         name: "routes.instanceconfig",
         route: "/instances/config/:id(\\d+)/",
@@ -181,7 +206,7 @@ const AppRoutes: {
                           ? `${AppCategories.user.data?.tab}/`
                           : ""
                   }`
-                : "/users/";
+                : AppRoutes.userlist.link || AppRoutes.userlist.route;
         },
         file: "User/Edit",
 
