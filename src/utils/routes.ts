@@ -2,7 +2,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import UserClient from "../ApiClient/UserClient";
 import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
-import { AdministrationRights } from "../ApiClient/generatedcode/_enums";
+import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/_enums";
 
 export interface AppRoute {
     ///Base parameters
@@ -54,6 +54,18 @@ function adminRight(right: AdministrationRights) {
     };
 }
 
+function instanceManagerRight(right: InstanceManagerRights) {
+    return async (): Promise<boolean> => {
+        if (!CredentialsProvider.isTokenValid()) return false;
+        const response = await UserClient.getCurrentUser();
+
+        if (response.code == StatusCode.OK) {
+            return !!(response.payload!.instanceManagerRights! & right);
+        }
+        return false;
+    };
+}
+
 const AppRoutes: {
     [id: string]: AppRoute;
 } = {
@@ -81,7 +93,7 @@ const AppRoutes: {
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        isAuthorized: instanceManagerRight(InstanceManagerRights.List | InstanceManagerRights.Read),
 
         visibleNavbar: true,
         homeIcon: "hdd",
