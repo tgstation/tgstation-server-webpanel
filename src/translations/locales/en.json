@@ -139,7 +139,7 @@
     "perms.admin.downloadlogs.desc": "Ability to view and download all TGS logs",
     "perms.instance": "Instance Manager Permissions",
     "perms.instance.read": "Read Accessible Instances",
-    "perms.instance.read.desc": "Ability to list and view instances the user is allowed access to",
+    "perms.instance.read.desc": "Ability to list and view instances the user is allowed access to. WARNING: Users who know the instance ID can still use the API to edit it using other permissions even if they lack this one.",
     "perms.instance.create": "Create Instances",
     "perms.instance.create.desc": "Ability to create new instances",
     "perms.instance.rename": "Rename Instances",
