@@ -9,7 +9,7 @@ import { FormattedMessage } from "react-intl";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
-import { AppCategories } from "../../../utils/routes";
+import { AppCategories, AppRoutes } from "../../../utils/routes";
 import { withRouter, RouteComponentProps } from "react-router-dom";
 
 interface IState {
@@ -70,9 +70,6 @@ export default withRouter(
 
             return (
                 <div className="text-center">
-                    <h3>
-                        <FormattedMessage id="view.instance.list.title" />
-                    </h3>
                     {this.state.errors.map((err, index) => {
                         if (!err) return;
                         return (
@@ -91,7 +88,10 @@ export default withRouter(
                             />
                         );
                     })}
-                    <Table striped bordered hover variant="dark" responsive>
+                    <h3>
+                        <FormattedMessage id="view.instance.list.title" />
+                    </h3>
+                    <Table striped bordered hover variant="dark" responsive className="mb-4">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -153,7 +153,45 @@ export default withRouter(
                             })}
                         </tbody>
                     </Table>
-                    Selected instance: {this.state.instanceid}
+                    <Button
+                        className="mr-2"
+                        onClick={() => {
+                            this.props.history.push(
+                                AppRoutes.instancecode.link || AppRoutes.instancecode.route
+                            );
+                        }}
+                        disabled={this.state.instanceid === undefined}>
+                        <FormattedMessage id="routes.instancecode" />
+                    </Button>
+                    <Button
+                        className="mr-2"
+                        onClick={() => {
+                            this.props.history.push(
+                                AppRoutes.instancehosting.link || AppRoutes.instancehosting.route
+                            );
+                        }}
+                        disabled={this.state.instanceid === undefined}>
+                        <FormattedMessage id="routes.instancehosting" />
+                    </Button>
+                    <Button
+                        className="mr-2"
+                        onClick={() => {
+                            this.props.history.push(
+                                AppRoutes.instancejobs.link || AppRoutes.instancejobs.route
+                            );
+                        }}
+                        disabled={this.state.instanceid === undefined}>
+                        <FormattedMessage id="routes.instancejobs" />
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            this.props.history.push(
+                                AppRoutes.instanceconfig.link || AppRoutes.instanceconfig.route
+                            );
+                        }}
+                        disabled={this.state.instanceid === undefined}>
+                        <FormattedMessage id="routes.instanceconfig" />
+                    </Button>
                 </div>
             );
         }
