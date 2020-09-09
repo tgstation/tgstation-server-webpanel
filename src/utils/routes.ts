@@ -3,6 +3,7 @@ import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import UserClient from "../ApiClient/UserClient";
 import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/_enums";
+import JobsController from "../ApiClient/util/JobsController";
 
 export interface AppRoute {
     ///Base parameters
@@ -351,7 +352,28 @@ export const AppCategories: UnpopulatedAppCategories = {
         name: "home"
     },
     instance: {
-        name: "instance"
+        name: "instance",
+
+        data: {
+            _instanceid: 0,
+            set instanceid(newval: string) {
+                //check if its a number
+                const id = parseInt(newval);
+                if (Number.isNaN(id)) {
+                    return;
+                }
+                //check if its the same
+                if (id === this._instanceid) {
+                    return;
+                }
+
+                this._instanceid = id;
+                JobsController.instance = id;
+            },
+            get instanceid(): string {
+                return this._instanceid as string;
+            }
+        }
     },
     user: {
         name: "user"

@@ -26,6 +26,16 @@ const configOptions: ConfigMap = {
         id: "config.basepath",
         type: "str",
         value: "/"
+    },
+    jobpollinactive: {
+        id: "config.jobpollinactive",
+        type: "num",
+        value: 30
+    },
+    jobpollactive: {
+        id: "config.jobpollactive",
+        type: "num",
+        value: 5
     }
 };
 
