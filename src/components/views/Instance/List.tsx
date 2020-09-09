@@ -10,10 +10,15 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import { AppCategories, AppRoutes } from "../../../utils/routes";
-import { withRouter, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import InstanceUserClient from "../../../ApiClient/InstanceUserClient";
+
+type Instance = Components.Schemas.Instance & {
+    canAccess: boolean;
+};
 
 interface IState {
-    instances: Components.Schemas.Instance[];
+    instances: Instance[];
     loading?: boolean;
     errors: Array<InternalError<ErrorCode> | undefined>;
     //isnt directly used but is used to make react rerender when the selected insance is changed
@@ -50,9 +55,37 @@ export default withRouter(
 
         public async componentDidMount(): Promise<void> {
             const instancelist = await InstanceClient.listInstances();
+            const modifiedlist: Array<Instance> = [];
+
+            const work: Array<Promise<void>> = [];
+            for (const instance of instancelist.payload!) {
+                const modifiedinstance = instance as Instance;
+                if (instance.online) {
+                    work.push(
+                        InstanceUserClient.getCurrentInstanceUser(instance.id).then(
+                            instanceuser => {
+                                if (instanceuser.code == StatusCode.OK) {
+                                    modifiedinstance.canAccess = true;
+                                } else {
+                                    modifiedinstance.canAccess = false;
+                                    if (instanceuser.error!.code !== ErrorCode.HTTP_ACCESS_DENIED) {
+                                        this.addError(instanceuser.error!);
+                                    }
+                                }
+                                modifiedlist.push(modifiedinstance);
+                            }
+                        )
+                    );
+                } else {
+                    modifiedinstance.canAccess = false;
+                    modifiedlist.push(modifiedinstance);
+                }
+            }
+            await Promise.all(work);
+
             if (instancelist.code == StatusCode.OK) {
                 this.setState({
-                    instances: instancelist.payload!
+                    instances: modifiedlist
                 });
             } else {
                 this.addError(instancelist.error!);
@@ -144,7 +177,8 @@ export default withRouter(
                                                     this.setState({
                                                         instanceid: value.id
                                                     });
-                                                }}>
+                                                }}
+                                                disabled={!value.canAccess}>
                                                 <FormattedMessage id="generic.select" />
                                             </Button>
                                         </td>
