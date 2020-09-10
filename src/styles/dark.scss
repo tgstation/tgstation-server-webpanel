@@ -146,6 +146,13 @@ $nav-tabs-link-active-border-color: $gray-500 $gray-500 $nav-tabs-link-active-bg
 
 $pre-color: inherit;
 
+$toast-color: $black;
+$toast-background-color: $gray-700;
+$toast-header-color: $toast-color;
+$toast-header-background-color: $gray-600;
+
+
+
 @import "~bootstrap/scss/variables";
 
 @import "~bootstrap/scss/mixins";
@@ -172,11 +179,11 @@ $pre-color: inherit;
 @import "~bootstrap/scss/badge";
 //@import "~bootstrap/scss/jumbotron";
 @import "~bootstrap/scss/alert";
-//@import "~bootstrap/scss/progress";
+@import "~bootstrap/scss/progress";
 //@import "~bootstrap/scss/media";
 //@import "~bootstrap/scss/list-group";
 @import "~bootstrap/scss/close";
-//@import "~bootstrap/scss/toasts";
+@import "~bootstrap/scss/toasts";
 @import "~bootstrap/scss/modal";
 @import "~bootstrap/scss/tooltip";
 //@import "~bootstrap/scss/popover";
