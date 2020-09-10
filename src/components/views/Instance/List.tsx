@@ -148,7 +148,13 @@ export default withRouter(
                         <tbody>
                             {this.state.instances.map(value => {
                                 return (
-                                    <tr key={value.id}>
+                                    <tr
+                                        key={value.id}
+                                        className={
+                                            value.id === AppCategories.instance.data?.instanceid
+                                                ? "font-weight-bold"
+                                                : ""
+                                        }>
                                         <td>{value.id}</td>
                                         <td>{value.name}</td>
                                         <td>
