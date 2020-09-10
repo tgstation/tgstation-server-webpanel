@@ -7,7 +7,7 @@ import { Components } from "../generatedcode/_generated";
 import { TypedEmitter } from "tiny-typed-emitter";
 
 interface IEvents {
-    jobsLoaded: (jobs: InternalStatus<Components.Schemas.Job[], listJobsErrors>) => void;
+    jobsLoaded: (jobs: InternalStatus<Components.Schemas.Job[], listJobsErrors>) => unknown;
 }
 
 export default new (class JobsController extends TypedEmitter<IEvents> {
