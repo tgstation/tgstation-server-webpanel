@@ -50,7 +50,10 @@ export enum ErrorCode {
     ADMIN_GITHUB_ERROR = "error.admin.error", //errmessage
     ADMIN_WATCHDOG_UNAVAIL = "error.admin.watchdog.avail", //errmessage
     ADMIN_VERSION_NOT_FOUND = "error.admin.update.notfound", //errmessage
-    ADMIN_LOGS_IO_ERROR = "error.admin.logs.io" //errmessage
+    ADMIN_LOGS_IO_ERROR = "error.admin.logs.io", //errmessage
+
+    //Job errors
+    JOB_JOB_NOT_FOUND = "error.job.not_found" //errmessage
 }
 
 type errorMessage = {

@@ -61,6 +61,7 @@
     "error.notfound": "This page has not been found!",
     "error.github": "An error occured while interacting with the Github API",
     "error.app": "An error occured in the application",
+    "error.job.not_found": "The specified job could not be found",
     "error.api.empty": "No description available",
     "generic.save": "Save",
     "generic.savepage": "Save Page",
