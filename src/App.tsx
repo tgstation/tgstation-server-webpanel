@@ -26,12 +26,8 @@ import UserClient from "./ApiClient/UserClient";
 import Router from "./Router";
 import configOptions from "./ApiClient/util/config";
 import LoginHooks from "./ApiClient/util/LoginHooks";
-import JobsController from "./ApiClient/util/JobsController";
-import { Components } from "./ApiClient/generatedcode/_generated";
-import JobsClient from "./ApiClient/JobsClient";
-import { AppCategories } from "./utils/routes";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
+import ErrorBoundary from "./components/utils/ErrorBoundary";
+import JobsList from "./components/utils/JobsList";
 
 interface IState {
     translation?: ITranslation;
@@ -40,7 +36,6 @@ interface IState {
     loading: boolean;
     autoLogin: boolean;
     passdownCat?: { name: string; key: string };
-    jobs: Components.Schemas.Job[];
 }
 
 class App extends React.Component<IAppProps, IState> {
@@ -54,8 +49,7 @@ class App extends React.Component<IAppProps, IState> {
         this.state = {
             loggedIn: false,
             loading: true,
-            autoLogin: false,
-            jobs: []
+            autoLogin: false
         };
     }
     public async componentDidMount(): Promise<void> {
@@ -73,31 +67,6 @@ class App extends React.Component<IAppProps, IState> {
             this.setState({
                 loggedIn: false
             });
-        });
-
-        JobsController.on("jobsLoaded", async jobs => {
-            //alot of code to query each job and set its progress
-            if (jobs.code === StatusCode.OK) {
-                const work: Array<Promise<void>> = [];
-                for (const job of jobs.payload!) {
-                    if (AppCategories.instance.data?.instanceid === undefined) continue;
-                    work.push(
-                        JobsClient.getJob(
-                            parseInt(AppCategories.instance.data.instanceid as string),
-                            job.id
-                        ).then(progressedjob => {
-                            if (progressedjob.code === StatusCode.OK) {
-                                job.progress = progressedjob.payload!.progress;
-                            }
-                        })
-                    );
-                }
-                await Promise.all(work);
-
-                this.setState({
-                    jobs: jobs.payload!
-                });
-            }
         });
 
         await this.loadTranslation();
@@ -144,87 +113,29 @@ class App extends React.Component<IAppProps, IState> {
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}>
                 <BrowserRouter basename={configOptions.basepath.value as string}>
-                    <AppNavbar category={this.state.passdownCat} />
-                    <Container className="mt-5 mb-5">
-                        {this.state.loading ? (
-                            <Loading text="loading.app" />
-                        ) : this.state.autoLogin && !this.state.loggedIn ? (
-                            <Loading text="loading.app" />
-                        ) : (
-                            <Router
-                                loggedIn={this.state.loggedIn}
-                                selectCategory={cat => {
-                                    this.setState({
-                                        passdownCat: {
-                                            name: cat,
-                                            key: Math.random().toString()
-                                        }
-                                    });
-                                }}
-                            />
-                        )}
-                    </Container>
-                    <div
-                        className="position-absolute d-none d-sm-block"
-                        style={{ bottom: "1rem", right: "1rem" }}>
-                        {this.state.jobs.map(job => {
-                            const createddate = new Date(job.startedAt!);
-
-                            return (
-                                <Toast key={job.id}>
-                                    <ToastHeader closeButton={false}>
-                                        #{job.id}: {job.description}
-                                    </ToastHeader>
-                                    <ToastBody>
-                                        <FormattedMessage id="app.job.started" />
-                                        <OverlayTrigger
-                                            overlay={
-                                                <Tooltip id={`${job.id}-tooltip`}>
-                                                    {createddate.toLocaleString()}
-                                                </Tooltip>
-                                            }>
-                                            {({ ref, ...triggerHandler }) => (
-                                                <span
-                                                    {...triggerHandler}
-                                                    ref={
-                                                        ref as React.Ref<HTMLSpanElement>
-                                                    }>{`${timeSince(createddate)} ago`}</span>
-                                            )}
-                                        </OverlayTrigger>
-                                        <br />
-                                        <FormattedMessage id="app.job.startedby" />
-                                        <OverlayTrigger
-                                            overlay={
-                                                <Tooltip id={`${job.id}-tooltip-createdby`}>
-                                                    <FormattedMessage id="generic.userid" />
-                                                    {job.startedBy!.id}
-                                                </Tooltip>
-                                            }>
-                                            {({ ref, ...triggerHandler }) => (
-                                                <span
-                                                    ref={ref as React.Ref<HTMLSpanElement>}
-                                                    {...triggerHandler}>
-                                                    {job.startedBy!.name}
-                                                </span>
-                                            )}
-                                        </OverlayTrigger>
-                                        {job.progress !== undefined && job.progress !== null ? (
-                                            <ProgressBar
-                                                className="mt-2"
-                                                animated
-                                                label={`${job.progress.toString()}%`}
-                                                now={job.progress}
-                                                striped
-                                                variant="info"
-                                            />
-                                        ) : (
-                                            ""
-                                        )}
-                                    </ToastBody>
-                                </Toast>
-                            );
-                        })}
-                    </div>
+                    <ErrorBoundary>
+                        <AppNavbar category={this.state.passdownCat} />
+                        <Container className="mt-5 mb-5">
+                            {this.state.loading ? (
+                                <Loading text="loading.app" />
+                            ) : this.state.autoLogin && !this.state.loggedIn ? (
+                                <Loading text="loading.app" />
+                            ) : (
+                                <Router
+                                    loggedIn={this.state.loggedIn}
+                                    selectCategory={cat => {
+                                        this.setState({
+                                            passdownCat: {
+                                                name: cat,
+                                                key: Math.random().toString()
+                                            }
+                                        });
+                                    }}
+                                />
+                            )}
+                        </Container>
+                        <JobsList />
+                    </ErrorBoundary>
                 </BrowserRouter>
             </IntlProvider>
         );

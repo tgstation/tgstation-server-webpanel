@@ -1,5 +1,4 @@
 import JobsClient, { listJobsErrors } from "../JobsClient";
-import InternalError from "../models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "../models/InternalComms/InternalStatus";
 import configOptions from "./config";
 import ServerClient from "../ServerClient";
@@ -14,10 +13,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     private _instance: number | undefined;
     public set instance(id: number) {
         this._instance = id;
+        this.lastvalue = undefined;
         this.restartLoop();
     }
 
-    public lasterror: InternalError<listJobsErrors> | undefined;
+    public lastvalue?: InternalStatus<Components.Schemas.Job[], listJobsErrors>;
     private currentLoop: Date = new Date(0);
 
     public constructor() {
@@ -27,6 +27,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
         //technically not a "cache" but we might as well reload it
         ServerClient.on("purgeCache", () => {
+            this.lastvalue = undefined;
             this.restartLoop();
         });
     }
@@ -64,7 +65,39 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 // get fixed on its own after a few seconds
                 if (loopid !== this.currentLoop) return;
 
-                this.emit("jobsLoaded", value);
+                /*const payload: Components.Schemas.Job[] = [
+                    {
+                        description: "Doing a normal boring task like any other",
+                        id: 1237,
+                        startedBy: {
+                            id: 1,
+                            instanceManagerRights: 0,
+                            administrationRights: 0,
+                            name: "UwU Boy"
+                        },
+                        progress: 69,
+                        startedAt: "2020-09-11"
+                    },
+                    {
+                        description:
+                            "Doing a normal boring task like any other with some more text poggers",
+                        id: 1238,
+                        startedBy: {
+                            id: 1,
+                            instanceManagerRights: 0,
+                            administrationRights: 0,
+                            name: "UwU Boy"
+                        },
+                        progress: 69,
+                        startedAt: "2020-09-11"
+                    }
+                ];*/
+                const status = value; /*new InternalStatus<Components.Schemas.Job[], listJobsErrors>({
+                    code: StatusCode.OK,
+                    payload
+                });*/
+                this.lastvalue = status;
+                this.emit("jobsLoaded", status);
 
                 if (value.code === StatusCode.OK) {
                     window.setTimeout(
