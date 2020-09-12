@@ -146,7 +146,7 @@ const AppRoutes: {
     },
     instancejobs: {
         name: "routes.instancejobs",
-        route: "/instances/jobs/:id(\\d+)/:jobid?(\\d+)/",
+        route: "/instances/jobs/:id(\\d+)/:jobid(\\d+)?/",
         file: "Instance/Jobs",
 
         get link(): string {
