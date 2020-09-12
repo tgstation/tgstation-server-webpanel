@@ -184,9 +184,13 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 200: {
+                const payload = (response.data as Components.Schemas.User[]).sort(
+                    (a, b) => a.id! - b.id!
+                );
+
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.User[]
+                    payload
                 });
             }
             default: {

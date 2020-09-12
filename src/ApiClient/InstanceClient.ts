@@ -23,9 +23,13 @@ export default new (class InstanceClient {
 
         switch (response.status) {
             case 200: {
+                const payload = (response.data as Components.Schemas.Instance[]).sort(
+                    (a, b) => a.id - b.id
+                );
+
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.Instance[]
+                    payload
                 });
             }
             default: {
