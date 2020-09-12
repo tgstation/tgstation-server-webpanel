@@ -246,6 +246,17 @@ $toast-header-background-color: $gray-600;
     }
 }
 
+.toast-header {
+    .close {
+        margin-left: auto !important;
+        span {
+            margin-left: 0.5rem !important;
+        }
+    }
+}
+
+
+
 .anim-fade-appear {
     opacity: 0;
 }
