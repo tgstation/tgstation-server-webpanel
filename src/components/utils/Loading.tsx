@@ -9,8 +9,6 @@ type IProps = SpinnerProps & {
     center: boolean;
     width: number;
     widthUnit: string;
-    height: number;
-    heightUnit: string;
     className?: string;
     text?: string;
 };
@@ -22,8 +20,6 @@ export default class Loading extends React.Component<IProps, IState> {
         animation: "border",
         width: "50",
         widthUnit: "vmin",
-        height: "50",
-        heightUnit: "vmin",
         center: true
     };
     public constructor(props: IProps) {
@@ -38,15 +34,13 @@ export default class Loading extends React.Component<IProps, IState> {
             className,
             width,
             widthUnit,
-            height,
-            heightUnit,
             text,
             children,
             ...otherprops
         } = this.props;
         const styles: React.CSSProperties = {
             width: `${width}${widthUnit}`,
-            height: `${height}${heightUnit}`
+            height: `${width}${widthUnit}`
         } as React.CSSProperties;
         return (
             <TransitionGroup>
