@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
 import Tooltip from "react-bootstrap/Tooltip";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 
 import { AdministrationRights } from "../../../ApiClient/generatedcode/_enums";
@@ -13,7 +13,6 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
-import { timeSince } from "../../../utils/misc";
 import { AppCategories, AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
@@ -142,6 +141,8 @@ export default withRouter(
                         <tbody>
                             {this.state.users.map(value => {
                                 const createddate = new Date(value.createdAt!);
+                                const createddiff = (createddate.getTime() - Date.now()) / 1000;
+
                                 return (
                                     <tr key={value.id!}>
                                         <td>{value.id!}</td>
@@ -174,10 +175,13 @@ export default withRouter(
                                             }>
                                             {({ ref, ...triggerHandler }) => (
                                                 <td {...triggerHandler}>
-                                                    <span
-                                                        ref={
-                                                            ref as React.Ref<HTMLSpanElement>
-                                                        }>{`${timeSince(createddate)} ago`}</span>
+                                                    <span ref={ref as React.Ref<HTMLSpanElement>}>
+                                                        <FormattedRelativeTime
+                                                            value={createddiff}
+                                                            numeric="auto"
+                                                            updateIntervalInSeconds={1}
+                                                        />
+                                                    </span>
                                                 </td>
                                             )}
                                         </OverlayTrigger>

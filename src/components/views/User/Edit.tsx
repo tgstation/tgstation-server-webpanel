@@ -11,7 +11,7 @@ import Row from "react-bootstrap/Row";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Tooltip from "react-bootstrap/Tooltip";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 import { Link } from "react-router-dom";
 
@@ -23,7 +23,6 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
-import { timeSince } from "../../../utils/misc";
 import { AppCategories, AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
@@ -312,11 +311,19 @@ export default withRouter(
                                                                     ref as React.Ref<
                                                                         HTMLSpanElement
                                                                     >
-                                                                }>{`${timeSince(
-                                                                new Date(
-                                                                    this.state.user!.createdAt!
-                                                                )
-                                                            )} ago`}</span>
+                                                                }>
+                                                                <FormattedRelativeTime
+                                                                    value={
+                                                                        (new Date(
+                                                                            this.state.user!.createdAt!
+                                                                        ).getTime() -
+                                                                            Date.now()) /
+                                                                        1000
+                                                                    }
+                                                                    numeric="auto"
+                                                                    updateIntervalInSeconds={1}
+                                                                />
+                                                            </span>
                                                         </Col>
                                                     )}
                                                 </OverlayTrigger>

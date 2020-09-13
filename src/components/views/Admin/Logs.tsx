@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
 import Tooltip from "react-bootstrap/Tooltip";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 import { Link } from "react-router-dom";
 
@@ -11,7 +11,7 @@ import AdminClient from "../../../ApiClient/AdminClient";
 import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
-import { download, timeSince } from "../../../utils/misc";
+import { download } from "../../../utils/misc";
 import { AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
@@ -206,6 +206,8 @@ export default withRouter(
                             <tbody>
                                 {this.state.logs.map((value, index) => {
                                     const logdate = new Date(value.lastModified);
+                                    const logdiff = (logdate.getTime() - Date.now()) / 1000;
+
                                     return (
                                         //yes hello this shouldnt be nullable apparently
                                         <tr key={value.name!}>
@@ -213,16 +215,20 @@ export default withRouter(
                                             <td>{value.name}</td>
                                             <OverlayTrigger
                                                 overlay={
-                                                    <Tooltip id={`${value.name!}-tooltip`}>
+                                                    <Tooltip id={`${value.name}-tooltip`}>
                                                         {logdate.toLocaleString()}
                                                     </Tooltip>
                                                 }>
                                                 {({ ref, ...triggerHandler }) => (
                                                     <td {...triggerHandler}>
                                                         <span
-                                                            ref={
-                                                                ref as React.Ref<HTMLSpanElement>
-                                                            }>{`${timeSince(logdate)} ago`}</span>
+                                                            ref={ref as React.Ref<HTMLSpanElement>}>
+                                                            <FormattedRelativeTime
+                                                                value={logdiff}
+                                                                numeric="auto"
+                                                                updateIntervalInSeconds={1}
+                                                            />
+                                                        </span>
                                                     </td>
                                                 )}
                                             </OverlayTrigger>

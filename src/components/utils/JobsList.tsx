@@ -14,7 +14,6 @@ import JobsClient, { getJobErrors } from "../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import JobsController from "../../ApiClient/util/JobsController";
-import { timeSince } from "../../utils/misc";
 import { AppCategories } from "../../utils/routes";
 import ErrorAlert from "./ErrorAlert";
 
@@ -139,8 +138,7 @@ export default class JobsList extends React.Component<IProps, IState> {
                     .sort((a, b) => b.id - a.id)
                     .map(job => {
                         const createddate = new Date(job.startedAt!);
-                        const createddiff =
-                            (new Date(job.startedAt!).getTime() - Date.now()) / 1000;
+                        const createddiff = (createddate.getTime() - Date.now()) / 1000;
                         const variant =
                             job.errorCode !== undefined || job.exceptionDetails !== undefined
                                 ? "danger"
