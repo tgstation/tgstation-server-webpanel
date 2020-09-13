@@ -1,8 +1,9 @@
-import { Components } from "../../generatedcode/_generated";
 import { AxiosResponse } from "axios";
-import CredentialsProvider from "../../util/CredentialsProvider";
-import configOptions from "../../util/config";
+
 import { replaceAll } from "../../../utils/misc";
+import { Components } from "../../generatedcode/_generated";
+import configOptions from "../../util/config";
+import CredentialsProvider from "../../util/CredentialsProvider";
 
 export type GenericErrors =
     | ErrorCode.HTTP_BAD_REQUEST

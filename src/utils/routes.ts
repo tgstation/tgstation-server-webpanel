@@ -1,8 +1,9 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
-import UserClient from "../ApiClient/UserClient";
-import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
+
 import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/_enums";
+import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
+import UserClient from "../ApiClient/UserClient";
+import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import JobsController from "../ApiClient/util/JobsController";
 
 export interface AppRoute {

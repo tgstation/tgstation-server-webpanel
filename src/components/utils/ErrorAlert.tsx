@@ -1,13 +1,14 @@
+import ClickToSelect from "@mapbox/react-click-to-select";
+import React, { Component, ReactNode } from "react";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import { FormattedMessage } from "react-intl";
+
 import InternalError, {
     DescType,
     ErrorCode
 } from "../../ApiClient/models/InternalComms/InternalError";
-import React, { Component, ReactNode } from "react";
-import { FormattedMessage } from "react-intl";
-import Alert from "react-bootstrap/Alert";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import ClickToSelect from "@mapbox/react-click-to-select";
 
 interface IProps {
     error: InternalError<ErrorCode> | undefined;

@@ -1,21 +1,22 @@
 import React, { ChangeEvent, ReactNode } from "react";
-import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
-import ErrorAlert from "../../utils/ErrorAlert";
-import AdminClient from "../../../ApiClient/AdminClient";
-import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
-import GithubClient, { TGSVersion } from "../../../utils/GithubClient";
-import ServerClient from "../../../ApiClient/ServerClient";
-import InputGroup from "react-bootstrap/InputGroup";
-import FormControl from "react-bootstrap/FormControl";
-import Col from "react-bootstrap/Col";
-import Loading from "../../utils/Loading";
 import Button from "react-bootstrap/Button";
-import { FormattedMessage } from "react-intl";
-import ReactMarkdown from "react-markdown";
+import Col from "react-bootstrap/Col";
+import FormControl from "react-bootstrap/FormControl";
+import InputGroup from "react-bootstrap/InputGroup";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import { withRouter, RouteComponentProps } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
+import ReactMarkdown from "react-markdown";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+
+import AdminClient from "../../../ApiClient/AdminClient";
+import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import ServerClient from "../../../ApiClient/ServerClient";
+import GithubClient, { TGSVersion } from "../../../utils/GithubClient";
 import { AppRoutes } from "../../../utils/routes";
+import ErrorAlert from "../../utils/ErrorAlert";
+import Loading from "../../utils/Loading";
 
 interface IProps
     extends RouteComponentProps<{

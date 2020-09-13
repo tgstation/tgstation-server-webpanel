@@ -1,21 +1,21 @@
-import * as React from "react";
-import { FormattedMessage } from "react-intl";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import Dropdown from "react-bootstrap/Dropdown";
-import Button from "react-bootstrap/Button";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AppRoutes, AppRoute, AppCategories } from "../utils/routes";
-import { Components } from "../ApiClient/generatedcode/_generated";
-import RouteController from "../utils/RouteController";
-import { withRouter, RouteComponentProps } from "react-router";
-import UserClient from "../ApiClient/UserClient";
-import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
-import LoginHooks from "../ApiClient/util/LoginHooks";
+import * as React from "react";
+import Button from "react-bootstrap/Button";
+import Dropdown from "react-bootstrap/Dropdown";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import { FormattedMessage } from "react-intl";
+import { RouteComponentProps, withRouter } from "react-router";
 import CSSTransition from "react-transition-group/CSSTransition";
-import { matchesPath } from "../utils/misc";
+
+import { Components } from "../ApiClient/generatedcode/_generated";
 import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/InternalError";
+import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
+import UserClient from "../ApiClient/UserClient";
+import LoginHooks from "../ApiClient/util/LoginHooks";
+import { matchesPath } from "../utils/misc";
+import RouteController from "../utils/RouteController";
+import { AppCategories, AppRoute, AppRoutes } from "../utils/routes";
 import ErrorAlert from "./utils/ErrorAlert";
 
 interface IProps extends RouteComponentProps {

@@ -6,9 +6,9 @@ import { Client, Components } from "./generatedcode/_generated";
 import { ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
-import LoginHooks from "./util/LoginHooks";
-import CredentialsProvider from "./util/CredentialsProvider";
 import configOptions from "./util/config";
+import CredentialsProvider from "./util/CredentialsProvider";
+import LoginHooks from "./util/LoginHooks";
 
 interface IEvents {
     //self explainatory

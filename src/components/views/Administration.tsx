@@ -1,22 +1,23 @@
-import React, { ReactNode } from "react";
-import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
-import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
-import Loading from "../utils/Loading";
-import ErrorAlert from "../utils/ErrorAlert";
-import { Components } from "../../ApiClient/generatedcode/_generated";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWindows } from "@fortawesome/free-brands-svg-icons/faWindows";
 import { faLinux } from "@fortawesome/free-brands-svg-icons/faLinux";
-import AdminClient from "../../ApiClient/AdminClient";
-import ServerClient from "../../ApiClient/ServerClient";
+import { faWindows } from "@fortawesome/free-brands-svg-icons/faWindows";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { ReactNode } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import UserClient from "../../ApiClient/UserClient";
-import { AdministrationRights } from "../../ApiClient/generatedcode/_enums";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
+
+import AdminClient from "../../ApiClient/AdminClient";
+import { AdministrationRights } from "../../ApiClient/generatedcode/_enums";
+import { Components } from "../../ApiClient/generatedcode/_generated";
+import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
+import ServerClient from "../../ApiClient/ServerClient";
+import UserClient from "../../ApiClient/UserClient";
 import { AppRoutes } from "../../utils/routes";
+import ErrorAlert from "../utils/ErrorAlert";
+import Loading from "../utils/Loading";
 
 interface IProps extends RouteComponentProps {}
 interface IState {

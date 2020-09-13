@@ -1,12 +1,13 @@
-import * as React from "react";
-import { Link } from "react-router-dom";
-import Card from "react-bootstrap/Card";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import { AppRoutes, AppRoute } from "../../utils/routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import * as React from "react";
+import Card from "react-bootstrap/Card";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import { FormattedMessage } from "react-intl";
+import { Link } from "react-router-dom";
+
 import RouteController from "../../utils/RouteController";
+import { AppRoute, AppRoutes } from "../../utils/routes";
 
 interface IProps {}
 interface IState {

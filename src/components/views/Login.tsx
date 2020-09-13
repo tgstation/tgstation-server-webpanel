@@ -1,16 +1,17 @@
 import React, { ChangeEvent, FormEvent, ReactNode } from "react";
-import Form from "react-bootstrap/Form";
-import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
-import Loading from "../utils/Loading";
-import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
+
 import InternalError from "../../ApiClient/models/InternalComms/InternalError";
-import ErrorAlert from "../utils/ErrorAlert";
+import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
 import { getSavedCreds } from "../../utils/misc";
+import ErrorAlert from "../utils/ErrorAlert";
+import Loading from "../utils/Loading";
 
 interface IProps extends RouteComponentProps {}
 interface IState {

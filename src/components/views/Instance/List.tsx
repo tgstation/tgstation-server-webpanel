@@ -1,17 +1,18 @@
 import React, { ReactNode } from "react";
-import { Components } from "../../../ApiClient/generatedcode/_generated";
-import Loading from "../../utils/Loading";
-import InstanceClient from "../../../ApiClient/InstanceClient";
-import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
-import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
-import ErrorAlert from "../../utils/ErrorAlert";
-import { FormattedMessage } from "react-intl";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
-import { AppCategories, AppRoutes } from "../../../utils/routes";
+import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+
+import { Components } from "../../../ApiClient/generatedcode/_generated";
+import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstanceUserClient from "../../../ApiClient/InstanceUserClient";
+import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import { AppCategories, AppRoutes } from "../../../utils/routes";
+import ErrorAlert from "../../utils/ErrorAlert";
+import Loading from "../../utils/Loading";
 
 type Instance = Components.Schemas.Instance & {
     canAccess: boolean;

@@ -1,5 +1,6 @@
-import { Components } from "../generatedcode/_generated";
 import { TypedEmitter } from "tiny-typed-emitter";
+
+import { Components } from "../generatedcode/_generated";
 
 interface IEvents {
     //tasks once the user is fully logged in

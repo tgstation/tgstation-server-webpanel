@@ -1,10 +1,11 @@
 import { TypedEmitter } from "tiny-typed-emitter/lib";
-import { Components } from "./generatedcode/_generated";
-import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
-import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
-import LoginHooks from "./util/LoginHooks";
-import ServerClient from "./ServerClient";
+
 import { AdministrationRights, InstanceManagerRights } from "./generatedcode/_enums";
+import { Components } from "./generatedcode/_generated";
+import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
+import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
+import ServerClient from "./ServerClient";
+import LoginHooks from "./util/LoginHooks";
 
 interface IEvents {
     loadUserInfo: (user: InternalStatus<Components.Schemas.User, GenericErrors>) => void;

@@ -1,7 +1,7 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
-import { withRouter, RouteComponentProps } from "react-router";
 import { FormattedMessage } from "react-intl";
+import { RouteComponentProps, withRouter } from "react-router";
 
 interface IProps extends RouteComponentProps {}
 interface IState {

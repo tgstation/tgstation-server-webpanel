@@ -1,20 +1,20 @@
 import React, { Component } from "react";
-import AdminClient from "../../../ApiClient/AdminClient";
-import { Components } from "../../../ApiClient/generatedcode/_generated";
-import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
-import ErrorAlert from "../../utils/ErrorAlert";
-import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
-import Table from "react-bootstrap/Table";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
 import Button from "react-bootstrap/Button";
-import Loading from "../../utils/Loading";
-
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Table from "react-bootstrap/Table";
+import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 import { Link } from "react-router-dom";
-import { AppRoutes } from "../../../utils/routes";
+
+import AdminClient from "../../../ApiClient/AdminClient";
+import { Components } from "../../../ApiClient/generatedcode/_generated";
+import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import { download, timeSince } from "../../../utils/misc";
+import { AppRoutes } from "../../../utils/routes";
+import ErrorAlert from "../../utils/ErrorAlert";
+import Loading from "../../utils/Loading";
 
 interface IProps extends RouteComponentProps<{ name: string | undefined }> {}
 

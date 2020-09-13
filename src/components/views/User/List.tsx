@@ -1,21 +1,22 @@
 import React from "react";
-import { Components } from "../../../ApiClient/generatedcode/_generated";
-import Loading from "../../utils/Loading";
-import UserClient from "../../../ApiClient/UserClient";
-import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
-import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
-import ErrorAlert from "../../utils/ErrorAlert";
-import { FormattedMessage } from "react-intl";
+import Alert from "react-bootstrap/Alert";
+import Badge from "react-bootstrap/Badge";
+import Button from "react-bootstrap/Button";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
 import Tooltip from "react-bootstrap/Tooltip";
-import Badge from "react-bootstrap/Badge";
-import { timeSince } from "../../../utils/misc";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Button from "react-bootstrap/Button";
-import { withRouter, RouteComponentProps, Link } from "react-router-dom";
-import { AppCategories, AppRoutes } from "../../../utils/routes";
+import { FormattedMessage } from "react-intl";
+import { Link, RouteComponentProps, withRouter } from "react-router-dom";
+
 import { AdministrationRights } from "../../../ApiClient/generatedcode/_enums";
-import Alert from "react-bootstrap/Alert";
+import { Components } from "../../../ApiClient/generatedcode/_generated";
+import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import UserClient from "../../../ApiClient/UserClient";
+import { timeSince } from "../../../utils/misc";
+import { AppCategories, AppRoutes } from "../../../utils/routes";
+import ErrorAlert from "../../utils/ErrorAlert";
+import Loading from "../../utils/Loading";
 
 interface IProps extends RouteComponentProps {}
 

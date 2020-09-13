@@ -1,5 +1,5 @@
-import { RouteComponentProps, withRouter } from "react-router";
 import { Component, ReactNode } from "react";
+import { RouteComponentProps, withRouter } from "react-router";
 
 interface IProps
     extends RouteComponentProps<

@@ -1,8 +1,9 @@
 import React, { ReactNode } from "react";
-import { withRouter, RouteComponentProps } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+
 import { AppCategories } from "../../../utils/routes";
 import JobsList from "../../utils/JobsList";
-import { FormattedMessage } from "react-intl";
 
 interface IProps extends RouteComponentProps<{ id: string }> {}
 interface IState {}

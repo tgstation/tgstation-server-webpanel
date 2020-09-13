@@ -1,17 +1,18 @@
-import { Route, Switch, withRouter } from "react-router-dom";
+import loadable, { LoadableComponent } from "@loadable/component";
 import { Component, ReactNode } from "react";
-import { RouteComponentProps } from "react-router";
-import Reload from "./components/utils/Reload";
-import AccessDenied from "./components/utils/AccessDenied";
-import Login from "./components/views/Login";
-import ErrorBoundary from "./components/utils/ErrorBoundary";
 import * as React from "react";
+import { FormattedMessage } from "react-intl";
+import { RouteComponentProps } from "react-router";
+import { Route, Switch, withRouter } from "react-router-dom";
+
+import AccessDenied from "./components/utils/AccessDenied";
+import ErrorBoundary from "./components/utils/ErrorBoundary";
+import Loading from "./components/utils/Loading";
+import Reload from "./components/utils/Reload";
+import Login from "./components/views/Login";
+import { matchesPath } from "./utils/misc";
 import RouteController from "./utils/RouteController";
 import { AppRoute } from "./utils/routes";
-import loadable, { LoadableComponent } from "@loadable/component";
-import Loading from "./components/utils/Loading";
-import { FormattedMessage } from "react-intl";
-import { matchesPath } from "./utils/misc";
 
 interface IState {
     loading: boolean;

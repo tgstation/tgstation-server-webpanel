@@ -1,14 +1,15 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ReactNode } from "react";
-import InputGroup from "react-bootstrap/InputGroup";
-import FormControl from "react-bootstrap/FormControl";
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { FormattedMessage } from "react-intl";
-import configOptions, { ConfigMap, ConfigOption } from "../../ApiClient/util/config";
+import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
+import InputGroup from "react-bootstrap/InputGroup";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import { FormattedMessage } from "react-intl";
+
+import configOptions, { ConfigMap, ConfigOption } from "../../ApiClient/util/config";
 import ConfigController from "../../ApiClient/util/ConfigController";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface IProps {}
 interface IState {

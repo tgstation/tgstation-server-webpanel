@@ -1,28 +1,27 @@
-import { hot } from "react-hot-loader/root";
+import "./App.css";
+
 import * as React from "react";
+import Container from "react-bootstrap/Container";
+import { hot } from "react-hot-loader/root";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
-import Container from "react-bootstrap/Container";
-import IAppProps from "./IAppProps";
 
+import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
+import ServerClient from "./ApiClient/ServerClient";
+import UserClient from "./ApiClient/UserClient";
+import configOptions from "./ApiClient/util/config";
+import LoginHooks from "./ApiClient/util/LoginHooks";
+import AppNavbar from "./components/AppNavbar";
+import ErrorBoundary from "./components/utils/ErrorBoundary";
+import JobsList from "./components/utils/JobsList";
+import Loading from "./components/utils/Loading";
+import IAppProps from "./IAppProps";
+import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import TranslationFactory from "./translations/TranslationFactory";
-
-import AppNavbar from "./components/AppNavbar";
-
-import "./App.css";
-import Loading from "./components/utils/Loading";
-import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
-import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
-import ServerClient from "./ApiClient/ServerClient";
 import { getSavedCreds } from "./utils/misc";
-import UserClient from "./ApiClient/UserClient";
-import Router from "./Router";
-import configOptions from "./ApiClient/util/config";
-import LoginHooks from "./ApiClient/util/LoginHooks";
-import ErrorBoundary from "./components/utils/ErrorBoundary";
-import JobsList from "./components/utils/JobsList";
 
 interface IState {
     translation?: ITranslation;

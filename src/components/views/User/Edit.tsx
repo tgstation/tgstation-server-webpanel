@@ -1,31 +1,32 @@
-import { RouteComponentProps, withRouter } from "react-router";
-import React from "react";
-import Loading from "../../utils/Loading";
-import ErrorAlert from "../../utils/ErrorAlert";
-import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
-import { Components } from "../../../ApiClient/generatedcode/_generated";
-import UserClient from "../../../ApiClient/UserClient";
-import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
-import { FormattedMessage } from "react-intl";
-import Tabs from "react-bootstrap/Tabs";
-import Tab from "react-bootstrap/Tab";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Badge from "react-bootstrap/Badge";
-import Tooltip from "react-bootstrap/Tooltip";
-import InputGroup from "react-bootstrap/InputGroup";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { timeSince } from "../../../utils/misc";
+import React from "react";
+import Alert from "react-bootstrap/Alert";
+import Badge from "react-bootstrap/Badge";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Row from "react-bootstrap/Row";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
+import Tooltip from "react-bootstrap/Tooltip";
+import { FormattedMessage } from "react-intl";
+import { RouteComponentProps, withRouter } from "react-router";
+import { Link } from "react-router-dom";
+
 import {
     AdministrationRights,
     InstanceManagerRights
 } from "../../../ApiClient/generatedcode/_enums";
+import { Components } from "../../../ApiClient/generatedcode/_generated";
+import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import UserClient from "../../../ApiClient/UserClient";
+import { timeSince } from "../../../utils/misc";
 import { AppCategories, AppRoutes } from "../../../utils/routes";
-import Alert from "react-bootstrap/Alert";
-import { Link } from "react-router-dom";
+import ErrorAlert from "../../utils/ErrorAlert";
+import Loading from "../../utils/Loading";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 

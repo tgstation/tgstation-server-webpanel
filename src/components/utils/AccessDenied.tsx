@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
-import { FormattedMessage } from "react-intl";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
+import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 
 interface IProps extends RouteComponentProps {}

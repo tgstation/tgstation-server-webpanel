@@ -1,6 +1,7 @@
-import { AppCategories, AppRoute, AppRoutes, UnpopulatedAppCategory } from "./routes";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
+
 import LoginHooks from "../ApiClient/util/LoginHooks";
+import { AppCategories, AppRoute, AppRoutes, UnpopulatedAppCategory } from "./routes";
 
 interface IEvents {
     refresh: (routes: Array<AppRoute>) => void; //auth
