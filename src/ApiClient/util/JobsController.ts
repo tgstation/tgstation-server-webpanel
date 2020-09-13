@@ -100,13 +100,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         );
                     }
                     await Promise.all(work);
-                } else {
-                    this.errors.push(value.error!);
-                }
-
-                this.emit("jobsLoaded");
-
-                if (value.code === StatusCode.OK) {
                     window.setTimeout(
                         () => this.loop(loopid),
                         (value.payload!.length
@@ -114,11 +107,14 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                             : (configOptions.jobpollinactive.value as number)) * 1000
                     );
                 } else {
+                    this.errors.push(value.error!);
                     window.setTimeout(
                         () => this.loop(loopid),
                         configOptions.jobpollactive.value as number
                     );
                 }
+
+                this.emit("jobsLoaded");
             })
             .catch(reason => {
                 console.error(reason);
