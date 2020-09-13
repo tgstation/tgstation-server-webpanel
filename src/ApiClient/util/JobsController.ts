@@ -134,7 +134,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         if (!job) return;
 
         //just clear out the job
-        if (job.exceptionDetails || job.cancelled || job.stoppedAt) {
+        if (job.stoppedAt) {
             this.jobs.delete(jobid);
             this.emit("jobsLoaded");
         }

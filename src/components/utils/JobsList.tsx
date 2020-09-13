@@ -134,7 +134,7 @@ export default class JobsList extends React.Component<IProps, IState> {
                     .sort((a, b) => b.id - a.id)
                     .map(job => {
                         const createddate = new Date(job.startedAt!);
-                        const variant = job.exceptionDetails
+                        const variant = job.errorCode
                             ? "danger"
                             : job.cancelled
                             ? "warning"
