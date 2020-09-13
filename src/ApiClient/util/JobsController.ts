@@ -35,7 +35,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 administrationRights: 0,
                 name: "UwU Girl"
             },
-            progress: 69,
+            progress: 15,
             startedAt: "2020-09-11"
         });
         this.restartLoop();
@@ -97,7 +97,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                             administrationRights: 0,
                             name: "UwU Boy"
                         },
-                        progress: 69,
+                        progress: 34,
                         startedAt: "2020-09-11"
                     },
                     {
@@ -111,7 +111,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                             name: "UwU Boy"
                         },
                         cancelled: true,
-                        progress: 69,
                         startedAt: "2020-09-11"
                     },
                     {
@@ -138,7 +137,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                             administrationRights: 0,
                             name: "UwU Boy"
                         },
-                        progress: 69,
+                        progress: 34,
                         startedAt: "2020-09-11",
                         exceptionDetails: "Grrrr"
                     }

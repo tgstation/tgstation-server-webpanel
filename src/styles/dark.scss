@@ -328,10 +328,20 @@ $toast-header-background-color: $gray-600;
 //chrome/safari
 .fancyscroll::-webkit-scrollbar {
     height: 8px;
+    width: 8px;
 }
 .fancyscroll::-webkit-scrollbar-track {
     background: rgba($gray-600, 0.5);
 }
 .fancyscroll::-webkit-scrollbar-thumb {
     background-color: $gray-800;
+}
+
+.jobswidget {
+    border: $gray-600 double;
+    background: rgba($gray-600, 0.5);
+
+    h5 {
+        background: rgba($gray-800, 0.2);
+    }
 }

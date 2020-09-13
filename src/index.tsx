@@ -17,11 +17,6 @@ import "./ApiClient/util/ConfigController";
 //css
 import "./styles/dark.scss";
 
-import JobsController from "./ApiClient/util/JobsController";
-JobsController.on("jobsLoaded", value => {
-    console.log(value);
-});
-
 const rootNode = document.getElementById("root") as HTMLElement;
 const appTsx = (
     <React.StrictMode>

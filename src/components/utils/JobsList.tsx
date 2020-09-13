@@ -14,6 +14,7 @@ import { timeSince } from "../../utils/misc";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import ErrorAlert from "./ErrorAlert";
+import { Rnd } from "react-rnd";
 
 interface IProps {
     width?: string;
@@ -77,16 +78,56 @@ export default class JobsList extends React.Component<IProps, IState> {
     }
 
     public render(): ReactNode {
+        if (AppCategories.instance.data?.instanceid === undefined) return "";
+
+        if (!this.props.corner) return this.nested();
         return (
             <div
-                className={this.props.corner ? "position-fixed d-none d-sm-block fancyscroll" : ""}
-                style={
-                    this.props.corner
-                        ? { bottom: "1rem", right: "1rem", height: "50vh", overflow: "auto" }
-                        : {}
-                }>
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    pointerEvents: "none"
+                }}>
+                <Rnd
+                    className="jobswidget"
+                    style={{
+                        pointerEvents: "auto",
+                        bottom: 0,
+                        right: 0
+                    }}
+                    default={{
+                        width: "30vw",
+                        height: "50vh",
+                        x: 0,
+                        y: window.innerHeight - window.innerHeight * 0.5
+                    }}
+                    maxWidth={350}
+                    minHeight={50}
+                    minWidth={110}
+                    bounds="parent">
+                    <div className="fancyscroll overflow-auto h-100">
+                        <h5 className="text-center text-darker font-weight-bold">
+                            <FormattedMessage id="view.instance.jobs.title" />
+                        </h5>
+                        {this.nested()}
+                    </div>
+                </Rnd>
+            </div>
+        );
+    }
+
+    private nested(): ReactNode {
+        return (
+            <div className={this.props.corner ? "d-none d-sm-block" : ""}>
                 {this.state.errors.map((error, index) => {
-                    return <ErrorAlert error={error} />;
+                    return (
+                        <div key={index} style={{ maxWidth: this.props.corner ? 350 : "unset" }}>
+                            <ErrorAlert error={error} />
+                        </div>
+                    );
                 })}
                 {Array.from(this.state.jobs, ([, job]) => job)
                     .sort((a, b) => b.id - a.id)
