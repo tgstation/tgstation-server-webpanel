@@ -1,5 +1,5 @@
 import JobsClient, { getJobErrors, listJobsErrors } from "../JobsClient";
-import InternalStatus, { StatusCode } from "../models/InternalComms/InternalStatus";
+import { StatusCode } from "../models/InternalComms/InternalStatus";
 import configOptions from "./config";
 import ServerClient from "../ServerClient";
 import { Components } from "../generatedcode/_generated";
@@ -24,20 +24,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
     private reset() {
         this.jobs = new Map<number, Components.Schemas.Job>();
-
-        //TODO: debug
-        this.jobs.set(22, {
-            description: "Doing a normal boring task like any other",
-            id: 22,
-            startedBy: {
-                id: 1,
-                instanceManagerRights: 0,
-                administrationRights: 0,
-                name: "UwU Girl"
-            },
-            progress: 15,
-            startedAt: "2020-09-11"
-        });
         this.restartLoop();
     }
 
@@ -86,62 +72,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 // with the jobs of another even if it is for a single fire and would eventually
                 // get fixed on its own after a few seconds
                 if (loopid !== this.currentLoop) return;
-
-                value.payload = [
-                    {
-                        description: "Doing a normal boring task like any other",
-                        id: 17,
-                        startedBy: {
-                            id: 1,
-                            instanceManagerRights: 0,
-                            administrationRights: 0,
-                            name: "UwU Boy"
-                        },
-                        progress: 34,
-                        startedAt: "2020-09-11"
-                    },
-                    {
-                        description:
-                            "Doing a normal boring task like any other with some more text poggers",
-                        id: 18,
-                        startedBy: {
-                            id: 1,
-                            instanceManagerRights: 0,
-                            administrationRights: 0,
-                            name: "UwU Boy"
-                        },
-                        cancelled: true,
-                        startedAt: "2020-09-11"
-                    },
-                    {
-                        description:
-                            "Doing a normal boring task like any other with some more text poggers",
-                        id: 19,
-                        startedBy: {
-                            id: 1,
-                            instanceManagerRights: 0,
-                            administrationRights: 0,
-                            name: "UwU Boy"
-                        },
-                        progress: 69,
-                        startedAt: "2020-09-11",
-                        stoppedAt: "2020-09-12"
-                    },
-                    {
-                        description:
-                            "Doing a normal boring task like any other with some more text poggers",
-                        id: 21,
-                        startedBy: {
-                            id: 1,
-                            instanceManagerRights: 0,
-                            administrationRights: 0,
-                            name: "UwU Boy"
-                        },
-                        progress: 34,
-                        startedAt: "2020-09-11",
-                        exceptionDetails: "Grrrr"
-                    }
-                ];
 
                 if (value.code === StatusCode.OK) {
                     for (const job of value.payload!) {
