@@ -1,35 +1,54 @@
-import JobsClient, { listJobsErrors } from "../JobsClient";
+import JobsClient, { getJobErrors, listJobsErrors } from "../JobsClient";
 import InternalStatus, { StatusCode } from "../models/InternalComms/InternalStatus";
 import configOptions from "./config";
 import ServerClient from "../ServerClient";
 import { Components } from "../generatedcode/_generated";
 import { TypedEmitter } from "tiny-typed-emitter";
+import InternalError from "../models/InternalComms/InternalError";
 
 interface IEvents {
-    jobsLoaded: (jobs: InternalStatus<Components.Schemas.Job[], listJobsErrors>) => unknown;
+    jobsLoaded: () => unknown;
 }
 
 export default new (class JobsController extends TypedEmitter<IEvents> {
     private _instance: number | undefined;
     public set instance(id: number) {
         this._instance = id;
-        this.lastvalue = undefined;
-        this.restartLoop();
+        this.reset();
     }
 
-    public lastvalue?: InternalStatus<Components.Schemas.Job[], listJobsErrors>;
     private currentLoop: Date = new Date(0);
+
+    public errors: InternalError<getJobErrors | listJobsErrors>[] = [];
+    public jobs: Map<number, Components.Schemas.Job> = new Map<number, Components.Schemas.Job>();
+
+    private reset() {
+        this.jobs = new Map<number, Components.Schemas.Job>();
+
+        //TODO: debug
+        this.jobs.set(22, {
+            description: "Doing a normal boring task like any other",
+            id: 22,
+            startedBy: {
+                id: 1,
+                instanceManagerRights: 0,
+                administrationRights: 0,
+                name: "UwU Girl"
+            },
+            progress: 69,
+            startedAt: "2020-09-11"
+        });
+        this.restartLoop();
+    }
 
     public constructor() {
         super();
 
         this.loop = this.loop.bind(this);
+        this.reset = this.reset.bind(this);
 
         //technically not a "cache" but we might as well reload it
-        ServerClient.on("purgeCache", () => {
-            this.lastvalue = undefined;
-            this.restartLoop();
-        });
+        ServerClient.on("purgeCache", this.reset);
     }
 
     public restartLoop() {
@@ -56,19 +75,22 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             return;
         }
 
+        //time to clear out errors
+        this.errors = [];
+
         //now since this is async, it still possible that a single fire gets done after the new loop started, theres no really much that can be done about it
         JobsClient.listJobs(this._instance)
-            .then(value => {
+            .then(async value => {
                 //this check is here because the request itself is async and could return after
                 // the loop is terminated, we dont want to contaminate the jobs of an instance
                 // with the jobs of another even if it is for a single fire and would eventually
                 // get fixed on its own after a few seconds
                 if (loopid !== this.currentLoop) return;
 
-                /*const payload: Components.Schemas.Job[] = [
+                value.payload = [
                     {
                         description: "Doing a normal boring task like any other",
-                        id: 1237,
+                        id: 17,
                         startedBy: {
                             id: 1,
                             instanceManagerRights: 0,
@@ -81,7 +103,21 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     {
                         description:
                             "Doing a normal boring task like any other with some more text poggers",
-                        id: 1238,
+                        id: 18,
+                        startedBy: {
+                            id: 1,
+                            instanceManagerRights: 0,
+                            administrationRights: 0,
+                            name: "UwU Boy"
+                        },
+                        cancelled: true,
+                        progress: 69,
+                        startedAt: "2020-09-11"
+                    },
+                    {
+                        description:
+                            "Doing a normal boring task like any other with some more text poggers",
+                        id: 19,
                         startedBy: {
                             id: 1,
                             instanceManagerRights: 0,
@@ -89,15 +125,56 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                             name: "UwU Boy"
                         },
                         progress: 69,
-                        startedAt: "2020-09-11"
+                        startedAt: "2020-09-11",
+                        stoppedAt: "2020-09-12"
+                    },
+                    {
+                        description:
+                            "Doing a normal boring task like any other with some more text poggers",
+                        id: 21,
+                        startedBy: {
+                            id: 1,
+                            instanceManagerRights: 0,
+                            administrationRights: 0,
+                            name: "UwU Boy"
+                        },
+                        progress: 69,
+                        startedAt: "2020-09-11",
+                        exceptionDetails: "Grrrr"
                     }
-                ];*/
-                const status = value; /*new InternalStatus<Components.Schemas.Job[], listJobsErrors>({
-                    code: StatusCode.OK,
-                    payload
-                });*/
-                this.lastvalue = status;
-                this.emit("jobsLoaded", status);
+                ];
+
+                if (value.code === StatusCode.OK) {
+                    for (const job of value.payload!) {
+                        this.jobs.set(job.id, job);
+                    }
+
+                    //we check all jobs we have locally against the active jobs we got in the reply so
+                    // we can query jobs which we didnt get informed about manually
+                    const localids = Array.from(this.jobs, ([, job]) => job.id);
+                    const remoteids = value.payload!.map(job => job.id);
+
+                    const manualids = localids.filter(x => !remoteids.includes(x));
+                    console.log("Manually querying jobs:", manualids);
+
+                    const work: Promise<void>[] = [];
+                    for (const id of manualids) {
+                        work.push(
+                            JobsClient.getJob(this._instance!, id).then(status => {
+                                if (status.code === StatusCode.OK) {
+                                    this.jobs.set(id, status.payload!);
+                                } else {
+                                    this.errors.push(status.error!);
+                                }
+                            })
+                        );
+                    }
+                    await Promise.all(work);
+                } else {
+                    this.errors.push(value.error!);
+                }
+
+                this.emit("jobsLoaded");
 
                 if (value.code === StatusCode.OK) {
                     window.setTimeout(
@@ -116,5 +193,20 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             .catch(reason => {
                 console.error(reason);
             });
+    }
+
+    //TODO: remove
+    // eslint-disable-next-line @typescript-eslint/require-await
+    public async cancelOrClear(jobid: number) {
+        const job = this.jobs.get(jobid);
+
+        //no we cant cancel jobs we arent aware of yet
+        if (!job) return;
+
+        //just clear out the job
+        if (job.exceptionDetails || job.cancelled || job.stoppedAt) {
+            this.jobs.delete(jobid);
+            this.emit("jobsLoaded");
+        }
     }
 })();

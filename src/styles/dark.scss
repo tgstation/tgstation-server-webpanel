@@ -322,7 +322,7 @@ $toast-header-background-color: $gray-600;
 //noinspection CssUnknownProperty
 .fancyscroll {
     scrollbar-width: thin;
-    scrollbar-color: $gray-800 rgba($gray-800, 0.5);
+    scrollbar-color: $gray-800 rgba($gray-600, 0.5);
 }
 
 //chrome/safari
@@ -330,7 +330,7 @@ $toast-header-background-color: $gray-600;
     height: 8px;
 }
 .fancyscroll::-webkit-scrollbar-track {
-    background: rgba($gray-800, 0.5);
+    background: rgba($gray-600, 0.5);
 }
 .fancyscroll::-webkit-scrollbar-thumb {
     background-color: $gray-800;

@@ -88,7 +88,7 @@ const AppRoutes: {
     },
     instancelist: {
         name: "routes.instancelist",
-        route: "/instances/list",
+        route: "/instances/",
         file: "Instance/List",
 
         loose: false,
@@ -355,7 +355,7 @@ export const AppCategories: UnpopulatedAppCategories = {
         name: "instance",
 
         data: {
-            _instanceid: 0,
+            _instanceid: undefined,
             set instanceid(newval: string) {
                 //check if its a number
                 const id = parseInt(newval);

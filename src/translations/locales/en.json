@@ -127,6 +127,7 @@
     "view.instance.configmode.0": "Disabled",
     "view.instance.configmode.1": "Authorized users can read/write",
     "view.instance.configmode.2": "Authorized users can read/write using their system user",
+    "view.instance.jobs.title": "Jobs list",
     "perms.admin": "Administration Permissions",
     "perms.admin.writeusers": "Edit Users",
     "perms.admin.writeusers.desc": "Ability to edit users, if View Users is granted, all users can be edited, otherwise, only the current user can be edited",
