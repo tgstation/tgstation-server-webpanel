@@ -5,11 +5,12 @@ import Toast from "react-bootstrap/Toast";
 import ToastBody from "react-bootstrap/ToastBody";
 import ToastHeader from "react-bootstrap/ToastHeader";
 import Tooltip from "react-bootstrap/Tooltip";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 import { Rnd } from "react-rnd";
 
+import { ErrorCode as TGSErrorCode } from "../../ApiClient/generatedcode/_enums";
 import { Components } from "../../ApiClient/generatedcode/_generated";
-import JobsClient from "../../ApiClient/JobsClient";
+import JobsClient, { getJobErrors } from "../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import JobsController from "../../ApiClient/util/JobsController";
@@ -56,6 +57,7 @@ export default class JobsList extends React.Component<IProps, IState> {
         //alot of code to query each job and set its progress
         //TODO: implement when its an error
         const work: Array<Promise<void>> = [];
+        const errors: InternalError<getJobErrors>[] = [];
         for (const job of JobsController.jobs.values()) {
             if (job.progress !== undefined) continue;
 
@@ -66,6 +68,8 @@ export default class JobsList extends React.Component<IProps, IState> {
                 ).then(progressedjob => {
                     if (progressedjob.code === StatusCode.OK) {
                         job.progress = progressedjob.payload!.progress;
+                    } else {
+                        errors.push(progressedjob.error!);
                     }
                 })
             );
@@ -74,7 +78,8 @@ export default class JobsList extends React.Component<IProps, IState> {
 
         this.setState({
             jobs: JobsController.jobs,
-            errors: JobsController.errors
+            //we cant concat directly as it would edit the array on the JobsController which other things may use
+            errors: Array.from(JobsController.errors).concat(errors)
         });
     }
 
@@ -134,13 +139,16 @@ export default class JobsList extends React.Component<IProps, IState> {
                     .sort((a, b) => b.id - a.id)
                     .map(job => {
                         const createddate = new Date(job.startedAt!);
-                        const variant = job.errorCode
-                            ? "danger"
-                            : job.cancelled
-                            ? "warning"
-                            : job.stoppedAt
-                            ? "success"
-                            : "info";
+                        const createddiff =
+                            (new Date(job.startedAt!).getTime() - Date.now()) / 1000;
+                        const variant =
+                            job.errorCode !== undefined || job.exceptionDetails !== undefined
+                                ? "danger"
+                                : job.cancelled
+                                ? "warning"
+                                : job.stoppedAt
+                                ? "success"
+                                : "info";
 
                         return (
                             <Toast
@@ -167,9 +175,13 @@ export default class JobsList extends React.Component<IProps, IState> {
                                         {({ ref, ...triggerHandler }) => (
                                             <span
                                                 {...triggerHandler}
-                                                ref={
-                                                    ref as React.Ref<HTMLSpanElement>
-                                                }>{`${timeSince(createddate)} ago`}</span>
+                                                ref={ref as React.Ref<HTMLSpanElement>}>
+                                                <FormattedRelativeTime
+                                                    value={createddiff}
+                                                    numeric="auto"
+                                                    updateIntervalInSeconds={1}
+                                                />
+                                            </span>
                                         )}
                                     </OverlayTrigger>
                                     <br />
@@ -189,18 +201,31 @@ export default class JobsList extends React.Component<IProps, IState> {
                                             </span>
                                         )}
                                     </OverlayTrigger>
-                                    {job.progress !== undefined && job.progress !== null ? (
-                                        <ProgressBar
-                                            className="mt-2 text-black"
-                                            animated={variant === "info"}
-                                            label={`${job.progress.toString()}%`}
-                                            now={job.progress}
-                                            striped
-                                            variant={variant}
-                                        />
+                                    <br />
+                                    {job.errorCode !== undefined ||
+                                    job.exceptionDetails !== undefined ? (
+                                        <span>
+                                            <FormattedMessage id="view.instance.jobs.error" />(
+                                            {job.errorCode !== undefined
+                                                ? TGSErrorCode[job.errorCode]
+                                                : "NoCode"}
+                                            ): {job.exceptionDetails}
+                                        </span>
                                     ) : (
                                         ""
                                     )}
+                                    <ProgressBar
+                                        className="mt-2 text-darker font-weight-bold"
+                                        animated={!job.stoppedAt}
+                                        label={
+                                            typeof job.progress === "number"
+                                                ? `${job.progress.toString()}%`
+                                                : undefined
+                                        }
+                                        now={typeof job.progress === "number" ? job.progress : 100}
+                                        striped
+                                        variant={variant}
+                                    />
                                 </ToastBody>
                             </Toast>
                         );

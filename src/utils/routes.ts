@@ -363,10 +363,6 @@ export const AppCategories: UnpopulatedAppCategories = {
                 if (Number.isNaN(id)) {
                     return;
                 }
-                //check if its the same
-                if (id === this._instanceid) {
-                    return;
-                }
 
                 this._instanceid = id;
                 JobsController.instance = id;
