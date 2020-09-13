@@ -1,13 +1,8 @@
 import { hot } from "react-hot-loader/root";
 import * as React from "react";
-import { FormattedMessage, IntlProvider } from "react-intl";
+import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 import Container from "react-bootstrap/Container";
-import Toast from "react-bootstrap/Toast";
-import ToastHeader from "react-bootstrap/ToastHeader";
-import ToastBody from "react-bootstrap/ToastBody";
-import ProgressBar from "react-bootstrap/ProgressBar";
-
 import IAppProps from "./IAppProps";
 
 import ITranslation from "./translations/ITranslation";
@@ -21,7 +16,7 @@ import Loading from "./components/utils/Loading";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import ServerClient from "./ApiClient/ServerClient";
-import { getSavedCreds, timeSince } from "./utils/misc";
+import { getSavedCreds } from "./utils/misc";
 import UserClient from "./ApiClient/UserClient";
 import Router from "./Router";
 import configOptions from "./ApiClient/util/config";
