@@ -1,4 +1,3 @@
-//external imports
 //definition files
 import "./definitions/scss.d";
 import "./definitions/globals.d";
@@ -7,6 +6,11 @@ import "./utils/icolibrary";
 import "./ApiClient/util/ConfigController";
 //css
 import "./styles/dark.scss";
+//polyfills
+import "@formatjs/intl-relativetimeformat/polyfill";
+import "@formatjs/intl-relativetimeformat/locale-data/en";
+import "@formatjs/intl-pluralrules/polyfill";
+import "@formatjs/intl-pluralrules/locale-data/en";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
