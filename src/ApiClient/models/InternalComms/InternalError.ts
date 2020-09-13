@@ -4,6 +4,7 @@ import { replaceAll } from "../../../utils/misc";
 import { Components } from "../../generatedcode/_generated";
 import configOptions from "../../util/config";
 import CredentialsProvider from "../../util/CredentialsProvider";
+import { ErrorCode as TGSErrorCode } from "../../generatedcode/_enums";
 
 export type GenericErrors =
     | ErrorCode.HTTP_BAD_REQUEST
@@ -92,12 +93,16 @@ export default class InternalError<T extends ErrorCode> {
             const err = addon.errorMessage;
             this.desc = {
                 type: DescType.TEXT,
-                desc: err.message + (err.additionalData ? ": " + err.additionalData : "")
+                desc:
+                    TGSErrorCode[err.errorCode] +
+                    ": " +
+                    err.message +
+                    (err.additionalData ? ": " + err.additionalData : "")
             };
             if (!err.message) {
                 this.desc = {
-                    type: DescType.LOCALE,
-                    desc: "error.api.emptyerror"
+                    type: DescType.TEXT,
+                    desc: TGSErrorCode[err.errorCode]
                 };
             }
         }
