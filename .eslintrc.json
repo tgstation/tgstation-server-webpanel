@@ -34,8 +34,9 @@
         "tsconfigRootDir": ".",
         "project": ["./tsconfig.json"]
     },
-    "plugins": ["react", "@typescript-eslint", "prettier"],
+    "plugins": ["react", "@typescript-eslint", "prettier", "simple-import-sort"],
     "rules": {
+        "simple-import-sort/sort": "error",
         "@typescript-eslint/explicit-member-accessibility": [
             "error",
             {
