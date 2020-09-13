@@ -30,7 +30,7 @@ const configOptions: ConfigMap = {
     jobpollinactive: {
         id: "config.jobpollinactive",
         type: "num",
-        value: 30
+        value: 15
     },
     jobpollactive: {
         id: "config.jobpollactive",
