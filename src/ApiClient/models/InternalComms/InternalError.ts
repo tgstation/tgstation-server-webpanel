@@ -1,10 +1,10 @@
 import { AxiosResponse } from "axios";
 
 import { replaceAll } from "../../../utils/misc";
+import { ErrorCode as TGSErrorCode } from "../../generatedcode/_enums";
 import { Components } from "../../generatedcode/_generated";
 import configOptions from "../../util/config";
 import CredentialsProvider from "../../util/CredentialsProvider";
-import { ErrorCode as TGSErrorCode } from "../../generatedcode/_enums";
 
 export type GenericErrors =
     | ErrorCode.HTTP_BAD_REQUEST

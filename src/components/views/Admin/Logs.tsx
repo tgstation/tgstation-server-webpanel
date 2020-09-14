@@ -215,7 +215,7 @@ export default withRouter(
                                             <td>{value.name}</td>
                                             <OverlayTrigger
                                                 overlay={
-                                                    <Tooltip id={`${value.name}-tooltip`}>
+                                                    <Tooltip id={`${value.name!}-tooltip`}>
                                                         {logdate.toLocaleString()}
                                                     </Tooltip>
                                                 }>

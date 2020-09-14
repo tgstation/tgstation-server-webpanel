@@ -1,6 +1,4 @@
 import { pathToRegexp } from "path-to-regexp";
-import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
-import { Components } from "../ApiClient/generatedcode/_generated";
 
 function getSavedCreds(): string[] | null {
     let usr: string | null = null;
