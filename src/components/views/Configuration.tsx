@@ -42,6 +42,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                 {config.map(([key, currentVal]) => {
                     //const persistRef = React.createRef<HTMLInputElement>();
                     const valueRef = React.createRef<HTMLInputElement>();
+                    const enumRef = React.createRef<HTMLSelectElement>();
                     const value = this.state.values[key] || currentVal;
                     const reset = () => {
                         this.setState((prevState: IState) => {
@@ -58,12 +59,13 @@ export default class Configuration extends React.Component<IProps, IState> {
 
                     const updateValue = () => {
                         const obj: ConfigOption = this.state.values[key] || {
-                            id: currentVal.id,
-                            type: currentVal.type
+                            ...currentVal
                         };
                         //obj.persist = persistRef.current!.checked;
                         obj.value =
-                            value.type === "bool"
+                            value.type === "enum"
+                                ? enumRef.current!.selectedOptions[0].value
+                                : value.type === "bool"
                                 ? valueRef.current!.checked
                                 : valueRef.current!.value;
                         this.setState(prevstate => {
@@ -75,24 +77,6 @@ export default class Configuration extends React.Component<IProps, IState> {
                             };
                         });
                     };
-                    let type;
-                    switch (value.type) {
-                        case "num": {
-                            type = "number";
-                            break;
-                        }
-                        case "str": {
-                            type = "input";
-                            break;
-                        }
-                        case "pwd": {
-                            type = "password";
-                            break;
-                        }
-                        case "bool": {
-                            type = "switch";
-                        }
-                    }
 
                     const tooltip = (innerid: string) => {
                         return (
@@ -141,7 +125,25 @@ export default class Configuration extends React.Component<IProps, IState> {
                                 </OverlayTrigger>
                             </InputGroup.Prepend>
                             <div className="flex-grow-1 w-100 w-xl-auto d-flex mb-3 mb-xl-0">
-                                {type === "switch" ? (
+                                {value.type === "enum" ? (
+                                    <select
+                                        className={`flex-fill mb-0 ${
+                                            this.state.values[key] ? "font-weight-bold" : ""
+                                        }`}
+                                        ref={enumRef}
+                                        onChange={updateValue}
+                                        defaultValue={value.value}>
+                                        {Object.values(value.possibleValues).map(possiblevalue => (
+                                            <FormattedMessage
+                                                key={possiblevalue}
+                                                id={`${value.id}.enum.${possiblevalue}`}>
+                                                {message => (
+                                                    <option value={possiblevalue}>{message}</option>
+                                                )}
+                                            </FormattedMessage>
+                                        ))}
+                                    </select>
+                                ) : value.type === "bool" ? (
                                     <label
                                         htmlFor={random}
                                         className="d-flex justify-content-center align-content-center flex-grow-1 w-100 w-xl-auto mb-0">
@@ -154,19 +156,25 @@ export default class Configuration extends React.Component<IProps, IState> {
                                             label=""
                                             ref={valueRef}
                                             onChange={updateValue}
-                                            checked={value.value as boolean}
+                                            checked={value.value}
                                         />
                                     </label>
                                 ) : (
                                     <FormControl
                                         custom
-                                        type={type}
+                                        type={
+                                            value.type === "num"
+                                                ? "number"
+                                                : value.type === "pwd"
+                                                ? "password"
+                                                : "text"
+                                        }
                                         className={`flex-fill mb-0 ${
                                             this.state.values[key] ? "font-weight-bold" : ""
                                         }`}
                                         ref={valueRef}
                                         onChange={updateValue}
-                                        value={value.value as number | string}
+                                        value={value.value}
                                     />
                                 )}
                                 {this.state.values[key] ? (

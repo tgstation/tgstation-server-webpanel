@@ -1,15 +1,43 @@
-export type ConfigValue = number | string | boolean | undefined;
+export type ConfigValue = number | string | boolean;
 
-export interface ConfigOption {
+export type ConfigOption = BaseConfigOption &
+    (NumConfigOption | StrConfigOption | PwdConfigOption | BoolConfigOption | EnumConfigOption);
+
+export interface BaseConfigOption {
     id: string;
-    type: "num" | "str" | "pwd" | "bool";
-    value: ConfigValue;
-    //persist?: boolean;
+}
+
+export interface NumConfigOption extends BaseConfigOption {
+    type: "num";
+    value: number;
+}
+export interface StrConfigOption extends BaseConfigOption {
+    type: "str";
+    value: string;
+}
+export interface PwdConfigOption extends BaseConfigOption {
+    type: "pwd";
+    value: string;
+}
+export interface BoolConfigOption extends BaseConfigOption {
+    type: "bool";
+    value: boolean;
+}
+export interface EnumConfigOption extends BaseConfigOption {
+    type: "enum";
+    possibleValues: Record<string, string>;
+    value: string;
 }
 
 export type ConfigMap = {
     [key: string]: ConfigOption;
 };
+
+enum jobsWidgetOptions {
+    ALWAYS = "always",
+    AUTO = "auto",
+    NEVER = "never"
+}
 
 const configOptions: ConfigMap = {
     githubtoken: {

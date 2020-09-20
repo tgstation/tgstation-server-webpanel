@@ -53,18 +53,21 @@ export default new (class ConfigController {
         }
     }
 
-    private getconfig(option: ConfigOption): ConfigValue {
+    private getconfig(option: ConfigOption): void {
         try {
             const data = localStorage.getItem(option.id);
-            if (data !== null) {
-                option.value = JSON.parse(data) as ConfigValue;
+            if (data !== undefined && data !== null) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const json = JSON.parse(data);
+                if (json !== null && json !== undefined) {
+                    option.value = json as ConfigValue;
+                }
                 //option.persist = true;
             }
         } catch (e) {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})(); //noop
         }
-        return;
     }
 
     private deleteconfig(key: string): void {
