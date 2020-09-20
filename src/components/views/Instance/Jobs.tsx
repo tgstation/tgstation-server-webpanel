@@ -23,7 +23,7 @@ export default withRouter(
                     <h3 className="text-center">
                         <FormattedMessage id="view.instance.jobs.title" />
                     </h3>
-                    <JobsList width={"unset"} corner={false} />
+                    <JobsList width={"unset"} widget={false} />
                 </div>
             );
         }

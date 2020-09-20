@@ -19,7 +19,7 @@ import ErrorAlert from "./ErrorAlert";
 
 interface IProps {
     width?: string;
-    corner: boolean;
+    widget: boolean;
 }
 interface IState {
     jobs: Map<number, Components.Schemas.Job>;
@@ -28,7 +28,7 @@ interface IState {
 
 export default class JobsList extends React.Component<IProps, IState> {
     public static defaultProps = {
-        corner: true
+        widget: true
     };
     public constructor(props: IProps) {
         super(props);
@@ -85,7 +85,7 @@ export default class JobsList extends React.Component<IProps, IState> {
     public render(): ReactNode {
         if (AppCategories.instance.data?.instanceid === undefined) return "";
 
-        if (!this.props.corner) return this.nested();
+        if (!this.props.widget) return this.nested();
         return (
             <div
                 style={{
@@ -126,10 +126,10 @@ export default class JobsList extends React.Component<IProps, IState> {
 
     private nested(): ReactNode {
         return (
-            <div className={this.props.corner ? "d-none d-sm-block" : ""}>
+            <div className={this.props.widget ? "d-none d-sm-block" : ""}>
                 {this.state.errors.map((error, index) => {
                     return (
-                        <div key={index} style={{ maxWidth: this.props.corner ? 350 : "unset" }}>
+                        <div key={index} style={{ maxWidth: this.props.widget ? 350 : "unset" }}>
                             <ErrorAlert error={error} />
                         </div>
                     );
