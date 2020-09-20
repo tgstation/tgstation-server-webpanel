@@ -13,10 +13,10 @@ import { Components } from "../../ApiClient/generatedcode/_generated";
 import JobsClient, { getJobErrors } from "../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
+import configOptions, { jobsWidgetOptions } from "../../ApiClient/util/config";
 import JobsController from "../../ApiClient/util/JobsController";
 import { AppCategories } from "../../utils/routes";
 import ErrorAlert from "./ErrorAlert";
-import configOptions, { jobsWidgetOptions } from "../../ApiClient/util/config";
 
 interface IProps {
     width?: string;
@@ -171,10 +171,11 @@ export default class JobsList extends React.Component<IProps, IState> {
                                     #{job.id}: {job.description}
                                 </ToastHeader>
                                 <ToastBody>
+                                    {/*STARTED AT*/}
                                     <FormattedMessage id="app.job.started" />
                                     <OverlayTrigger
                                         overlay={
-                                            <Tooltip id={`${job.id}-tooltip`}>
+                                            <Tooltip id={`${job.id}-tooltip-started`}>
                                                 {createddate.toLocaleString()}
                                             </Tooltip>
                                         }>
@@ -191,10 +192,11 @@ export default class JobsList extends React.Component<IProps, IState> {
                                         )}
                                     </OverlayTrigger>
                                     <br />
+                                    {/*CREATED BY*/}
                                     <FormattedMessage id="app.job.startedby" />
                                     <OverlayTrigger
                                         overlay={
-                                            <Tooltip id={`${job.id}-tooltip-createdby`}>
+                                            <Tooltip id={`${job.id}-tooltip-startedby`}>
                                                 <FormattedMessage id="generic.userid" />
                                                 {job.startedBy!.id}
                                             </Tooltip>
@@ -208,15 +210,78 @@ export default class JobsList extends React.Component<IProps, IState> {
                                         )}
                                     </OverlayTrigger>
                                     <br />
+                                    <br />
+                                    {/*STOPPED AT*/}
+                                    {job.stoppedAt ? (
+                                        <React.Fragment>
+                                            <FormattedMessage id="app.job.stopped" />
+                                            <OverlayTrigger
+                                                overlay={
+                                                    <Tooltip id={`${job.id}-tooltip-stopped`}>
+                                                        {createddate.toLocaleString()}
+                                                    </Tooltip>
+                                                }>
+                                                {({ ref, ...triggerHandler }) => (
+                                                    <span
+                                                        {...triggerHandler}
+                                                        ref={ref as React.Ref<HTMLSpanElement>}>
+                                                        <FormattedRelativeTime
+                                                            value={createddiff}
+                                                            numeric="auto"
+                                                            updateIntervalInSeconds={1}
+                                                        />
+                                                    </span>
+                                                )}
+                                            </OverlayTrigger>
+                                            <br />
+                                        </React.Fragment>
+                                    ) : (
+                                        ""
+                                    )}
+                                    {/*STOPPED BY*/}
+                                    {job.cancelledBy ? (
+                                        <React.Fragment>
+                                            <FormattedMessage id="app.job.stoppedby-stoppedby" />
+                                            <OverlayTrigger
+                                                overlay={
+                                                    <Tooltip id={`${job.id}-tooltip-createdby`}>
+                                                        <FormattedMessage id="generic.userid" />
+                                                        {job.startedBy!.id}
+                                                    </Tooltip>
+                                                }>
+                                                {({ ref, ...triggerHandler }) => (
+                                                    <span
+                                                        ref={ref as React.Ref<HTMLSpanElement>}
+                                                        {...triggerHandler}>
+                                                        {job.cancelledBy!.name}
+                                                    </span>
+                                                )}
+                                            </OverlayTrigger>
+                                            <br />
+                                        </React.Fragment>
+                                    ) : (
+                                        ""
+                                    )}
+                                    {(job.stoppedAt || job.cancelledBy) &&
+                                    (job.errorCode !== undefined ||
+                                        job.exceptionDetails !== undefined) ? (
+                                        <br />
+                                    ) : (
+                                        ""
+                                    )}
+                                    {/*ERROR*/}
                                     {job.errorCode !== undefined ||
                                     job.exceptionDetails !== undefined ? (
-                                        <span>
-                                            <FormattedMessage id="view.instance.jobs.error" />(
-                                            {job.errorCode !== undefined
-                                                ? TGSErrorCode[job.errorCode]
-                                                : "NoCode"}
-                                            ): {job.exceptionDetails}
-                                        </span>
+                                        <React.Fragment>
+                                            <span>
+                                                <FormattedMessage id="view.instance.jobs.error" />(
+                                                {job.errorCode !== undefined
+                                                    ? TGSErrorCode[job.errorCode]
+                                                    : "NoCode"}
+                                                ): {job.exceptionDetails}
+                                            </span>
+                                            <br />
+                                        </React.Fragment>
                                     ) : (
                                         ""
                                     )}
