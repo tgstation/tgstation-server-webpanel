@@ -241,7 +241,7 @@ export default class JobsList extends React.Component<IProps, IState> {
                                     {/*STOPPED BY*/}
                                     {job.cancelledBy ? (
                                         <React.Fragment>
-                                            <FormattedMessage id="app.job.stoppedby-stoppedby" />
+                                            <FormattedMessage id="app.job.stoppedby" />
                                             <OverlayTrigger
                                                 overlay={
                                                     <Tooltip id={`${job.id}-tooltip-createdby`}>
