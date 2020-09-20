@@ -16,6 +16,7 @@ import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus"
 import JobsController from "../../ApiClient/util/JobsController";
 import { AppCategories } from "../../utils/routes";
 import ErrorAlert from "./ErrorAlert";
+import configOptions, { jobsWidgetOptions } from "../../ApiClient/util/config";
 
 interface IProps {
     width?: string;
@@ -54,7 +55,6 @@ export default class JobsList extends React.Component<IProps, IState> {
         if (AppCategories.instance.data?.instanceid === undefined) return;
 
         //alot of code to query each job and set its progress
-        //TODO: implement when its an error
         const work: Array<Promise<void>> = [];
         const errors: InternalError<getJobErrors>[] = [];
         for (const job of JobsController.jobs.values()) {
@@ -97,7 +97,15 @@ export default class JobsList extends React.Component<IProps, IState> {
                     pointerEvents: "none"
                 }}>
                 <Rnd
-                    className="jobswidget"
+                    className={`jobswidget ${
+                        //Ensure the option ISNT never, then either see if theres something to display(for auto) or if its just set to always in which case we display it
+                        configOptions.jobswidgetdisplay.value !== jobsWidgetOptions.NEVER &&
+                        (configOptions.jobswidgetdisplay.value === jobsWidgetOptions.ALWAYS ||
+                            this.state.jobs.size ||
+                            this.state.errors.length)
+                            ? ""
+                            : "d-none"
+                    }`}
                     style={{
                         pointerEvents: "auto",
                         bottom: 0,

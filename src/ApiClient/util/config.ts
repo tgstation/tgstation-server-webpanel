@@ -33,7 +33,7 @@ export type ConfigMap = {
     [key: string]: ConfigOption;
 };
 
-enum jobsWidgetOptions {
+export enum jobsWidgetOptions {
     ALWAYS = "always",
     AUTO = "auto",
     NEVER = "never"
@@ -64,6 +64,12 @@ const configOptions: ConfigMap = {
         id: "config.jobpollactive",
         type: "num",
         value: 5
+    },
+    jobswidgetdisplay: {
+        id: "config.jobswidgetdisplay",
+        type: "enum",
+        possibleValues: jobsWidgetOptions,
+        value: jobsWidgetOptions.AUTO
     }
 };
 
