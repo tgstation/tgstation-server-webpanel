@@ -72,7 +72,7 @@ Error Code: ${this.props.error.code}
 Error Description: ${this.props.error.desc ? this.props.error.desc.desc : "No description"}
 
 Additional Information:
-${this.props.error.extendedInfo}`}
+${this.props.error.extendedInfo}`.replace(/\\/g, "\\\\")}
                             </code>
                         </ClickToSelect>
                     </Modal.Body>
