@@ -178,13 +178,9 @@ export default class Configuration extends React.Component<IProps, IState> {
                                     />
                                 )}
                                 {this.state.values[key] ? (
-                                    <InputGroup.Append>
+                                    <InputGroup.Append onClick={reset}>
                                         <InputGroup.Text>
-                                            <FontAwesomeIcon
-                                                fixedWidth
-                                                icon="undo"
-                                                onClick={reset}
-                                            />
+                                            <FontAwesomeIcon fixedWidth icon="undo" />
                                         </InputGroup.Text>
                                     </InputGroup.Append>
                                 ) : (
