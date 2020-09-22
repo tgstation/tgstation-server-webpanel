@@ -114,8 +114,12 @@ export default class JobsList extends React.Component<IProps, IState> {
                     default={{
                         width: "30vw",
                         height: "50vh",
-                        x: 0,
-                        y: window.innerHeight - window.innerHeight * 0.5
+                        x:
+                            document.documentElement.clientWidth -
+                            Math.min(document.documentElement.clientWidth * 0.3, 350),
+                        y:
+                            document.documentElement.clientHeight -
+                            document.documentElement.clientHeight * 0.5
                     }}
                     maxWidth={350}
                     minHeight={50}
