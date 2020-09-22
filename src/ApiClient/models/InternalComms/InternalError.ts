@@ -113,7 +113,9 @@ export default class InternalError<T extends ErrorCode> {
                 desc: `${err.name}: ${err.message}`
             };
         }
-        let debuginfo = JSON.stringify({ addon, origin, config: configOptions });
+        const stack = new Error().stack;
+
+        let debuginfo = JSON.stringify({ addon, origin, config: configOptions, stack });
         debuginfo = debuginfo.replace(
             /Basic (?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?/g,
             "Basic **************"
