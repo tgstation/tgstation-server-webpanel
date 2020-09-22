@@ -85,7 +85,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     const remoteids = value.payload!.map(job => job.id);
 
                     const manualids = localids.filter(x => !remoteids.includes(x));
-                    console.log("Manually querying jobs:", manualids);
 
                     const work: Promise<void>[] = [];
                     for (const id of manualids) {
