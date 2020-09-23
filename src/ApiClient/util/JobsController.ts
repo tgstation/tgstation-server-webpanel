@@ -38,6 +38,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
     private hypercount = 0;
     public set hyper(cycles: number) {
+        console.log(`JobsController going in hyper for ${cycles} cycles`);
         this.hypercount = cycles;
         this.restartLoop();
     }
@@ -161,15 +162,17 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     if (this.hypercount && loopid === this.currentLoop) {
                         window.setTimeout(() => this.loop(loopid), 800);
                         this.hypercount--;
-                        return;
+                        console.log(
+                            `JobsController will remain in hyper for ${this.hypercount} cycles`
+                        );
+                    } else {
+                        window.setTimeout(
+                            () => this.loop(loopid),
+                            (value.payload!.length
+                                ? (configOptions.jobpollactive.value as number)
+                                : (configOptions.jobpollinactive.value as number)) * 1000
+                        );
                     }
-
-                    window.setTimeout(
-                        () => this.loop(loopid),
-                        (value.payload!.length
-                            ? (configOptions.jobpollactive.value as number)
-                            : (configOptions.jobpollinactive.value as number)) * 1000
-                    );
                 } else {
                     this.errors.push(value.error!);
                     window.setTimeout(
