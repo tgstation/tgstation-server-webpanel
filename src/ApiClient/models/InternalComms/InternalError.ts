@@ -55,7 +55,8 @@ export enum ErrorCode {
     ADMIN_LOGS_IO_ERROR = "error.admin.logs.io", //errmessage
 
     //Job errors
-    JOB_JOB_NOT_FOUND = "error.job.not_found" //errmessage
+    JOB_JOB_NOT_FOUND = "error.job.not_found", //errmessage
+    JOB_JOB_COMPLETE = "error.job.complete" //void
 }
 
 type errorMessage = {
