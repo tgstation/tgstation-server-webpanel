@@ -74,10 +74,16 @@ export default class JobsList extends React.Component<IProps, IState> {
     }
 
     private async onCancelorClose(job: CanCancelJob) {
+        const cancelling = !job.stoppedAt;
         const status = await JobsController.cancelOrClear(job.id, error => this.addError(error));
 
+        if (!status) {
+            return;
+        }
         //Jobs changed, might as well refresh
-        if (status) {
+        if (cancelling) {
+            JobsController.hyper = 5;
+        } else {
             JobsController.restartLoop();
         }
     }
