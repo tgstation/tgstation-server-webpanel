@@ -41,7 +41,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                     this.props.onClose(job);
                 }}>
                 <ToastHeader
-                    closeButton={/*variant !== "info"*/ job.canCancel}
+                    closeButton={!!(job.canCancel || job.stoppedAt)}
                     className={`bg-${variant}`}>
                     #{job.id}: {job.description}
                 </ToastHeader>
