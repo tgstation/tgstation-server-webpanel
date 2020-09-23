@@ -364,6 +364,11 @@ export const AppCategories: UnpopulatedAppCategories = {
                     return;
                 }
 
+                //setting the instance id causes the thing to drop all jobs its aware of, so avoid when possible
+                if (this._instanceid == id) {
+                    return;
+                }
+
                 this._instanceid = id;
                 JobsController.instance = id;
             },
