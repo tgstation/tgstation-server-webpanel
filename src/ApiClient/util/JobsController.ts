@@ -36,6 +36,12 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         this.reset();
     }
 
+    private hypercount = 0;
+    public set hyper(cycles: number) {
+        this.hypercount = cycles;
+        this.restartLoop();
+    }
+
     private currentLoop: Date = new Date(0);
 
     public errors: InternalError<getJobErrors | listJobsErrors>[] = [];
@@ -151,6 +157,13 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     await Promise.all(work);
 
                     if (loopid !== this.currentLoop) return;
+
+                    if (this.hypercount && loopid === this.currentLoop) {
+                        window.setTimeout(() => this.loop(loopid), 800);
+                        this.hypercount--;
+                        return;
+                    }
+
                     window.setTimeout(
                         () => this.loop(loopid),
                         (value.payload!.length
@@ -161,7 +174,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     this.errors.push(value.error!);
                     window.setTimeout(
                         () => this.loop(loopid),
-                        configOptions.jobpollactive.value as number
+                        this.hypercount ? 800 : (configOptions.jobpollactive.value as number)
                     );
                 }
 
