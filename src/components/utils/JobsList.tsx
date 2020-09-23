@@ -2,41 +2,62 @@ import React, { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 import { Rnd } from "react-rnd";
 
-import { Components } from "../../ApiClient/generatedcode/_generated";
-import JobsClient, { getJobErrors } from "../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
-import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import configOptions, { jobsWidgetOptions } from "../../ApiClient/util/config";
-import JobsController from "../../ApiClient/util/JobsController";
+import JobsController, { CanCancelJob } from "../../ApiClient/util/JobsController";
 import { AppCategories } from "../../utils/routes";
 import ErrorAlert from "./ErrorAlert";
 import JobCard from "./JobCard";
+import Loading from "./Loading";
 
 interface IProps {
     width?: string;
     widget: boolean;
 }
+
 interface IState {
-    jobs: Map<number, Components.Schemas.Job>;
+    jobs: Map<number, CanCancelJob>;
     errors: InternalError<ErrorCode>[];
+    ownerrors: Array<InternalError<ErrorCode> | undefined>;
+    loading: boolean;
 }
 
 export default class JobsList extends React.Component<IProps, IState> {
     public static defaultProps = {
         widget: true
     };
+
+    private widgetRef = React.createRef<HTMLDivElement>();
+
     public constructor(props: IProps) {
         super(props);
 
         this.handleUpdate = this.handleUpdate.bind(this);
+        this.onCancelorClose = this.onCancelorClose.bind(this);
 
         this.state = {
-            jobs: JobsController.jobs,
-            errors: JobsController.errors
+            jobs: new Map<number, CanCancelJob>(),
+            errors: [],
+            ownerrors: [],
+            loading: true
         };
     }
 
+    private addError(error: InternalError<ErrorCode>): void {
+        this.setState(prevState => {
+            const ownerrors = Array.from(prevState.ownerrors);
+            ownerrors.push(error);
+            if (this.widgetRef.current) {
+                this.widgetRef.current.scrollTop = 0;
+            }
+            return {
+                ownerrors
+            };
+        });
+    }
+
     public componentDidMount(): void {
+        JobsController.restartLoop();
         JobsController.on("jobsLoaded", this.handleUpdate);
     }
 
@@ -44,36 +65,21 @@ export default class JobsList extends React.Component<IProps, IState> {
         JobsController.removeListener("jobsLoaded", this.handleUpdate);
     }
 
-    private async handleUpdate(): Promise<void> {
-        //shouldnt really occur in normal conditions but this is a safety anyways
-        if (AppCategories.instance.data?.instanceid === undefined) return;
-
-        //alot of code to query each job and set its progress
-        const work: Array<Promise<void>> = [];
-        const errors: InternalError<getJobErrors>[] = [];
-        for (const job of JobsController.jobs.values()) {
-            if (job.progress !== undefined) continue;
-
-            work.push(
-                JobsClient.getJob(
-                    parseInt(AppCategories.instance.data.instanceid as string),
-                    job.id
-                ).then(progressedjob => {
-                    if (progressedjob.code === StatusCode.OK) {
-                        job.progress = progressedjob.payload!.progress;
-                    } else {
-                        errors.push(progressedjob.error!);
-                    }
-                })
-            );
-        }
-        await Promise.all(work);
-
+    public handleUpdate(): void {
         this.setState({
             jobs: JobsController.jobs,
-            //we cant concat directly as it would edit the array on the JobsController which other things may use
-            errors: Array.from(JobsController.errors).concat(errors)
+            errors: JobsController.errors,
+            loading: false
         });
+    }
+
+    private async onCancelorClose(job: CanCancelJob) {
+        const status = await JobsController.cancelOrClear(job.id, error => this.addError(error));
+
+        //Jobs changed, might as well refresh
+        if (status) {
+            JobsController.restartLoop();
+        }
     }
 
     public render(): ReactNode {
@@ -119,7 +125,7 @@ export default class JobsList extends React.Component<IProps, IState> {
                     minHeight={50}
                     minWidth={110}
                     bounds="parent">
-                    <div className="fancyscroll overflow-auto h-100">
+                    <div className="fancyscroll overflow-auto h-100" ref={this.widgetRef}>
                         <h5 className="text-center text-darker font-weight-bold">
                             <FormattedMessage id="view.instance.jobs.title" />
                         </h5>
@@ -133,6 +139,25 @@ export default class JobsList extends React.Component<IProps, IState> {
     private nested(): ReactNode {
         return (
             <div className={this.props.widget ? "d-none d-sm-block" : ""}>
+                {this.state.loading ? <Loading text="loading.instance.jobs.list" /> : ""}
+                {this.state.ownerrors.map((err, index) => {
+                    if (!err) return;
+                    return (
+                        <ErrorAlert
+                            key={index}
+                            error={err}
+                            onClose={() =>
+                                this.setState(prev => {
+                                    const newarr = Array.from(prev.ownerrors);
+                                    newarr[index] = undefined;
+                                    return {
+                                        ownerrors: newarr
+                                    };
+                                })
+                            }
+                        />
+                    );
+                })}
                 {this.state.errors.map((error, index) => {
                     return (
                         <div key={index} style={{ maxWidth: this.props.widget ? 350 : "unset" }}>
@@ -143,7 +168,12 @@ export default class JobsList extends React.Component<IProps, IState> {
                 {Array.from(this.state.jobs, ([, job]) => job)
                     .sort((a, b) => b.id - a.id)
                     .map(job => (
-                        <JobCard job={job} width={this.props.width} key={job.id} />
+                        <JobCard
+                            job={job}
+                            width={this.props.width}
+                            key={job.id}
+                            onClose={this.onCancelorClose}
+                        />
                     ))}
             </div>
         );

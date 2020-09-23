@@ -1,15 +1,33 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 
+import {
+    AdministrationRights,
+    ByondRights,
+    ChatBotRights,
+    ConfigurationRights,
+    DreamDaemonRights,
+    DreamMakerRights,
+    InstanceManagerRights,
+    InstanceUserRights,
+    RepositoryRights,
+    RightsType
+} from "../generatedcode/_enums";
 import { Components } from "../generatedcode/_generated";
+import InstanceUserClient from "../InstanceUserClient";
 import JobsClient, { getJobErrors, listJobsErrors } from "../JobsClient";
-import InternalError from "../models/InternalComms/InternalError";
+import InternalError, { ErrorCode } from "../models/InternalComms/InternalError";
 import { StatusCode } from "../models/InternalComms/InternalStatus";
 import ServerClient from "../ServerClient";
+import UserClient from "../UserClient";
 import configOptions from "./config";
 
 interface IEvents {
     jobsLoaded: () => unknown;
 }
+
+export type CanCancelJob = Components.Schemas.Job & {
+    canCancel?: boolean;
+};
 
 export default new (class JobsController extends TypedEmitter<IEvents> {
     private _instance: number | undefined;
@@ -98,7 +116,30 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                             })
                         );
                     }
+                    //await all jobs to exist
                     await Promise.all(work);
+
+                    work.length = 0;
+                    for (const _job of this.jobs.values()) {
+                        const job = _job as CanCancelJob;
+                        if (job.progress === undefined) {
+                            work.push(
+                                JobsClient.getJob(this._instance!, job.id).then(progressedjob => {
+                                    if (progressedjob.code === StatusCode.OK) {
+                                        job.progress = progressedjob.payload!.progress;
+                                    } else {
+                                        this.errors.push(progressedjob.error!);
+                                    }
+                                })
+                            );
+                        }
+
+                        work.push(this.canCancel(job, this.errors));
+                    }
+
+                    //populate fields on jobs
+                    await Promise.all(work);
+
                     window.setTimeout(
                         () => this.loop(loopid),
                         (value.payload!.length
@@ -120,18 +161,158 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             });
     }
 
+    private async canCancel(job: CanCancelJob, errors: InternalError<ErrorCode>[]): Promise<void> {
+        //shouldnt really occur in normal conditions but this is a safety anyways
+        if (this._instance === undefined) return;
+
+        //we dont need to reevalutate stuff that we already know
+        if (job.canCancel !== undefined) return;
+
+        if (job.cancelRightsType === undefined) {
+            job.canCancel = true;
+            return;
+        }
+
+        switch (job.cancelRightsType as RightsType) {
+            case RightsType.Administration: {
+                const userInfo = await UserClient.getCurrentUser();
+                if (userInfo.code === StatusCode.OK) {
+                    const required = job.cancelRight as AdministrationRights;
+                    job.canCancel = !!(userInfo.payload!.administrationRights! & required);
+                } else {
+                    errors.push(userInfo.error!);
+                }
+                return;
+            }
+            case RightsType.InstanceManager: {
+                const userInfo = await UserClient.getCurrentUser();
+                if (userInfo.code === StatusCode.OK) {
+                    const required = job.cancelRight as InstanceManagerRights;
+                    job.canCancel = !!(userInfo.payload!.instanceManagerRights! & required);
+                } else {
+                    errors.push(userInfo.error!);
+                }
+                return;
+            }
+            case RightsType.Byond: {
+                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                    this._instance
+                );
+                if (instanceUser.code === StatusCode.OK) {
+                    const required = job.cancelRight as ByondRights;
+                    job.canCancel = !!(instanceUser.payload!.byondRights! & required);
+                } else {
+                    errors.push(instanceUser.error!);
+                }
+                return;
+            }
+            case RightsType.ChatBots: {
+                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                    this._instance
+                );
+                if (instanceUser.code === StatusCode.OK) {
+                    const required = job.cancelRight as ChatBotRights;
+                    job.canCancel = !!(instanceUser.payload!.chatBotRights! & required);
+                } else {
+                    errors.push(instanceUser.error!);
+                }
+                return;
+            }
+            case RightsType.Configuration: {
+                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                    this._instance
+                );
+                if (instanceUser.code === StatusCode.OK) {
+                    const required = job.cancelRight as ConfigurationRights;
+                    job.canCancel = !!(instanceUser.payload!.configurationRights! & required);
+                } else {
+                    errors.push(instanceUser.error!);
+                }
+                return;
+            }
+            case RightsType.DreamDaemon: {
+                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                    this._instance
+                );
+                if (instanceUser.code === StatusCode.OK) {
+                    const required = job.cancelRight as DreamDaemonRights;
+                    job.canCancel = !!(instanceUser.payload!.dreamDaemonRights! & required);
+                } else {
+                    errors.push(instanceUser.error!);
+                }
+                return;
+            }
+            case RightsType.DreamMaker: {
+                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                    this._instance
+                );
+                if (instanceUser.code === StatusCode.OK) {
+                    const required = job.cancelRight as DreamMakerRights;
+                    job.canCancel = !!(instanceUser.payload!.dreamMakerRights! & required);
+                } else {
+                    errors.push(instanceUser.error!);
+                }
+                return;
+            }
+            case RightsType.InstanceUser: {
+                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                    this._instance
+                );
+                if (instanceUser.code === StatusCode.OK) {
+                    const required = job.cancelRight as InstanceUserRights;
+                    job.canCancel = !!(instanceUser.payload!.instanceUserRights! & required);
+                } else {
+                    errors.push(instanceUser.error!);
+                }
+                return;
+            }
+            case RightsType.Repository: {
+                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                    this._instance
+                );
+                if (instanceUser.code === StatusCode.OK) {
+                    const required = job.cancelRight as RepositoryRights;
+                    job.canCancel = !!(instanceUser.payload!.repositoryRights! & required);
+                } else {
+                    errors.push(instanceUser.error!);
+                }
+                return;
+            }
+        }
+    }
+
     //TODO: remove
     // eslint-disable-next-line @typescript-eslint/require-await
-    public async cancelOrClear(jobid: number) {
+    public async cancelOrClear(
+        jobid: number,
+        onError: (error: InternalError<ErrorCode>) => void
+    ): Promise<boolean> {
         const job = this.jobs.get(jobid);
 
         //no we cant cancel jobs we arent aware of yet
-        if (!job) return;
+        if (!job) return false;
 
         //just clear out the job
         if (job.stoppedAt) {
             this.jobs.delete(jobid);
-            this.emit("jobsLoaded");
+            return true;
+        } else {
+            if (this._instance === undefined) {
+                onError(
+                    new InternalError(ErrorCode.APP_FAIL, {
+                        jsError: new Error("No instance selected during deletion of a job")
+                    })
+                );
+                return false;
+            } else {
+                const deleteInfo = await JobsClient.deleteJob(this._instance, jobid);
+                if (deleteInfo.code === StatusCode.OK) {
+                    return true;
+                } else {
+                    onError(deleteInfo.error!);
+                    return false;
+                }
+            }
         }
     }
 })();

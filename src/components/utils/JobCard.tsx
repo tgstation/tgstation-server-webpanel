@@ -8,13 +8,13 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 
 import { ErrorCode as TGSErrorCode } from "../../ApiClient/generatedcode/_enums";
-import { Components } from "../../ApiClient/generatedcode/_generated";
-import JobsController from "../../ApiClient/util/JobsController";
+import { CanCancelJob } from "../../ApiClient/util/JobsController";
 
 interface IState {}
 interface IProps {
-    job: Components.Schemas.Job;
+    job: CanCancelJob;
     width?: string;
+    onClose: (job: CanCancelJob) => void;
 }
 
 export default class JobCard extends React.Component<IProps, IState> {
@@ -38,9 +38,11 @@ export default class JobCard extends React.Component<IProps, IState> {
                     maxWidth: this.props.width
                 }}
                 onClose={() => {
-                    void JobsController.cancelOrClear(job.id).catch(console.error);
+                    this.props.onClose(job);
                 }}>
-                <ToastHeader closeButton={variant !== "info"} className={`bg-${variant}`}>
+                <ToastHeader
+                    closeButton={/*variant !== "info"*/ job.canCancel}
+                    className={`bg-${variant}`}>
                     #{job.id}: {job.description}
                 </ToastHeader>
                 <ToastBody>

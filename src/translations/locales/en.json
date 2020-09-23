@@ -66,6 +66,7 @@
     "error.github": "An error occured while interacting with the Github API",
     "error.app": "An error occured in the application",
     "error.job.not_found": "The specified job could not be found",
+    "error.job.complete": "Unable to delete the job, perhaps it already completed",
     "error.api.empty": "No description available",
     "generic.save": "Save",
     "generic.savepage": "Save Page",
@@ -196,5 +197,6 @@
     "loading.user.load": "Loading user information...",
     "loading.user.save": "Saving user information...",
     "loading.user.create": "Creating user...",
-    "loading.instance.list": "Loading instance list..."
+    "loading.instance.list": "Loading instance list...",
+    "loading.instance.jobs.list": "Loading job list..."
 }
