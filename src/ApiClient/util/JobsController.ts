@@ -108,6 +108,8 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     for (const id of manualids) {
                         work.push(
                             JobsClient.getJob(this._instance!, id).then(status => {
+                                if (loopid !== this.currentLoop) return;
+
                                 if (status.code === StatusCode.OK) {
                                     this.jobs.set(id, status.payload!);
                                 } else {
@@ -119,12 +121,15 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     //await all jobs to exist
                     await Promise.all(work);
 
+                    if (loopid !== this.currentLoop) return;
+
                     work.length = 0;
                     for (const _job of this.jobs.values()) {
                         const job = _job as CanCancelJob;
                         if (job.progress === undefined) {
                             work.push(
                                 JobsClient.getJob(this._instance!, job.id).then(progressedjob => {
+                                    if (loopid !== this.currentLoop) return;
                                     if (progressedjob.code === StatusCode.OK) {
                                         job.progress = progressedjob.payload!.progress;
                                     } else {
@@ -134,12 +139,18 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                             );
                         }
 
-                        work.push(this.canCancel(job, this.errors));
+                        work.push(
+                            this.canCancel(job, this.errors).then(canCancel => {
+                                if (loopid !== this.currentLoop) return;
+                                job.canCancel = canCancel;
+                            })
+                        );
                     }
 
                     //populate fields on jobs
                     await Promise.all(work);
 
+                    if (loopid !== this.currentLoop) return;
                     window.setTimeout(
                         () => this.loop(loopid),
                         (value.payload!.length
@@ -161,16 +172,18 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             });
     }
 
-    private async canCancel(job: CanCancelJob, errors: InternalError<ErrorCode>[]): Promise<void> {
+    private async canCancel(
+        job: Readonly<CanCancelJob>,
+        errors: InternalError<ErrorCode>[]
+    ): Promise<boolean> {
         //shouldnt really occur in normal conditions but this is a safety anyways
-        if (this._instance === undefined) return;
+        if (this._instance === undefined) return false;
 
         //we dont need to reevalutate stuff that we already know
-        if (job.canCancel !== undefined) return;
+        if (job.canCancel !== undefined) return job.canCancel;
 
         if (job.cancelRightsType === undefined) {
-            job.canCancel = true;
-            return;
+            return true;
         }
 
         switch (job.cancelRightsType as RightsType) {
@@ -178,21 +191,21 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 const userInfo = await UserClient.getCurrentUser();
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as AdministrationRights;
-                    job.canCancel = !!(userInfo.payload!.administrationRights! & required);
+                    return !!(userInfo.payload!.administrationRights! & required);
                 } else {
                     errors.push(userInfo.error!);
+                    return false;
                 }
-                return;
             }
             case RightsType.InstanceManager: {
                 const userInfo = await UserClient.getCurrentUser();
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as InstanceManagerRights;
-                    job.canCancel = !!(userInfo.payload!.instanceManagerRights! & required);
+                    return !!(userInfo.payload!.instanceManagerRights! & required);
                 } else {
                     errors.push(userInfo.error!);
+                    return false;
                 }
-                return;
             }
             case RightsType.Byond: {
                 const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
@@ -200,11 +213,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (instanceUser.code === StatusCode.OK) {
                     const required = job.cancelRight as ByondRights;
-                    job.canCancel = !!(instanceUser.payload!.byondRights! & required);
+                    return !!(instanceUser.payload!.byondRights! & required);
                 } else {
                     errors.push(instanceUser.error!);
+                    return false;
                 }
-                return;
             }
             case RightsType.ChatBots: {
                 const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
@@ -212,11 +225,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (instanceUser.code === StatusCode.OK) {
                     const required = job.cancelRight as ChatBotRights;
-                    job.canCancel = !!(instanceUser.payload!.chatBotRights! & required);
+                    return !!(instanceUser.payload!.chatBotRights! & required);
                 } else {
                     errors.push(instanceUser.error!);
+                    return false;
                 }
-                return;
             }
             case RightsType.Configuration: {
                 const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
@@ -224,11 +237,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (instanceUser.code === StatusCode.OK) {
                     const required = job.cancelRight as ConfigurationRights;
-                    job.canCancel = !!(instanceUser.payload!.configurationRights! & required);
+                    return !!(instanceUser.payload!.configurationRights! & required);
                 } else {
                     errors.push(instanceUser.error!);
+                    return false;
                 }
-                return;
             }
             case RightsType.DreamDaemon: {
                 const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
@@ -236,11 +249,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (instanceUser.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamDaemonRights;
-                    job.canCancel = !!(instanceUser.payload!.dreamDaemonRights! & required);
+                    return !!(instanceUser.payload!.dreamDaemonRights! & required);
                 } else {
                     errors.push(instanceUser.error!);
+                    return false;
                 }
-                return;
             }
             case RightsType.DreamMaker: {
                 const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
@@ -248,11 +261,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (instanceUser.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamMakerRights;
-                    job.canCancel = !!(instanceUser.payload!.dreamMakerRights! & required);
+                    return !!(instanceUser.payload!.dreamMakerRights! & required);
                 } else {
                     errors.push(instanceUser.error!);
+                    return false;
                 }
-                return;
             }
             case RightsType.InstanceUser: {
                 const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
@@ -260,11 +273,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (instanceUser.code === StatusCode.OK) {
                     const required = job.cancelRight as InstanceUserRights;
-                    job.canCancel = !!(instanceUser.payload!.instanceUserRights! & required);
+                    return !!(instanceUser.payload!.instanceUserRights! & required);
                 } else {
                     errors.push(instanceUser.error!);
+                    return false;
                 }
-                return;
             }
             case RightsType.Repository: {
                 const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
@@ -272,11 +285,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (instanceUser.code === StatusCode.OK) {
                     const required = job.cancelRight as RepositoryRights;
-                    job.canCancel = !!(instanceUser.payload!.repositoryRights! & required);
+                    return !!(instanceUser.payload!.repositoryRights! & required);
                 } else {
                     errors.push(instanceUser.error!);
+                    return false;
                 }
-                return;
             }
         }
     }
