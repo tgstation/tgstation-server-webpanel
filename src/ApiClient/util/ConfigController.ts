@@ -24,18 +24,11 @@ export default new (class ConfigController {
 
         //safeties
         switch (option.type) {
-            case "bool":
-                if (typeof option.value !== "boolean") return;
-                break;
             case "num":
                 //this parses strings and numbers alike to numbers and refuses non numbers
                 //@ts-expect-error //parseInt can take numbers
                 option.value = parseInt(option.value);
                 if (Number.isNaN(option.value)) return;
-                break;
-            case "str":
-            case "pwd":
-                if (typeof option.value !== "string") return;
                 break;
         }
 
