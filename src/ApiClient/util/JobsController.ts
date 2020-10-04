@@ -36,10 +36,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         this.reset();
     }
 
-    private hypercount = 0;
-    public set hyper(cycles: number) {
-        console.log(`JobsController going in hyper for ${cycles} cycles`);
-        this.hypercount = cycles;
+    private fastmodecount = 0;
+    public set fastmode(cycles: number) {
+        console.log(`JobsController going in fastmode for ${cycles} cycles`);
+        this.fastmodecount = cycles;
         this.restartLoop();
     }
 
@@ -159,11 +159,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
                     if (loopid !== this.currentLoop) return;
 
-                    if (this.hypercount && loopid === this.currentLoop) {
+                    if (this.fastmodecount && loopid === this.currentLoop) {
                         window.setTimeout(() => this.loop(loopid), 800);
-                        this.hypercount--;
+                        this.fastmodecount--;
                         console.log(
-                            `JobsController will remain in hyper for ${this.hypercount} cycles`
+                            `JobsController will remain in fastmode for ${this.fastmodecount} cycles`
                         );
                     } else {
                         window.setTimeout(
@@ -177,7 +177,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     this.errors.push(value.error!);
                     window.setTimeout(
                         () => this.loop(loopid),
-                        this.hypercount ? 800 : (configOptions.jobpollactive.value as number)
+                        this.fastmodecount ? 800 : (configOptions.jobpollactive.value as number)
                     );
                 }
 

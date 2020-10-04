@@ -82,7 +82,7 @@ export default class JobsList extends React.Component<IProps, IState> {
         }
         //Jobs changed, might as well refresh
         if (cancelling) {
-            JobsController.hyper = 5;
+            JobsController.fastmode = 5;
         } else {
             JobsController.restartLoop();
         }
