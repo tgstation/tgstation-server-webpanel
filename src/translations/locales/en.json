@@ -41,7 +41,7 @@
     "error.user.no_sys_ident.desc": "This system user was not found",
     "error.user.not_found.desc": "This TGS user was not found",
     "error.http.bad_request": "BUG: Bad Request",
-    "error.http.data_integrity": "Data integrity failure(The content has perhaps changed since you attempted to last access it)",
+    "error.http.data_integrity": "A data integrity check failed while performing the operation",
     "error.http.api_mismatch": "API version mismatch",
     "error.http.server_error": "BUG: Server error",
     "error.http.unimplemented": "This feature is unimplemented.",
