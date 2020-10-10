@@ -175,10 +175,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     }
                 } else {
                     this.errors.push(value.error!);
-                    window.setTimeout(
-                        () => this.loop(loopid),
-                        this.fastmodecount ? 800 : (configOptions.jobpollactive.value as number)
-                    );
+                    window.setTimeout(() => this.loop(loopid), 10000);
                 }
 
                 this.emit("jobsLoaded");
