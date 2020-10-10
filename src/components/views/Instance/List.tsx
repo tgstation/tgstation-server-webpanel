@@ -169,7 +169,13 @@ export default withRouter(
                                                 </Badge>
                                             )}
                                         </td>
-                                        <td>{value.path}</td>
+                                        <td>
+                                            {value.moveJob ? (
+                                                <FormattedMessage id="view.instance.moving" />
+                                            ) : (
+                                                value.path
+                                            )}
+                                        </td>
                                         <td>
                                             <FormattedMessage
                                                 id={`view.instance.configmode.${value.configurationType!.toString()}`}

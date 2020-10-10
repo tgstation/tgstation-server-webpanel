@@ -132,6 +132,7 @@
     "view.instance.configmode.2": "Authorized users can read/write using their system user",
     "view.instance.jobs.title": "Job list",
     "view.instance.jobs.error": "An error occured",
+    "view.instance.moving": "[MOVING INSTANCE...]",
     "perms.admin": "Administration Permissions",
     "perms.admin.writeusers": "Edit Users",
     "perms.admin.writeusers.desc": "Ability to edit users, if View Users is granted, all users can be edited, otherwise, only the current user can be edited",
