@@ -56,7 +56,11 @@ export enum ErrorCode {
 
     //Job errors
     JOB_JOB_NOT_FOUND = "error.job.not_found", //errmessage
-    JOB_JOB_COMPLETE = "error.job.complete" //void
+    JOB_JOB_COMPLETE = "error.job.complete", //void
+    JOB_INSTANCE_OFFLINE = "error.job.instance_offline", //errmessage
+
+    //Instance errors
+    INSTANCE_NO_DB_ENTITY = "error.instance.no_db_entity" //errmessage
 }
 
 type errorMessage = {
