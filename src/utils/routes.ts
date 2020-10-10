@@ -356,12 +356,18 @@ export const AppCategories: UnpopulatedAppCategories = {
         name: "instance",
 
         data: {
-            _instanceid: undefined,
-            set instanceid(newval: string) {
-                //check if its a number
-                const id = parseInt(newval);
-                if (Number.isNaN(id)) {
-                    return;
+            _instanceid: undefined as number | undefined,
+            set instanceid(newval: string | undefined) {
+                let id: number | undefined;
+                //Undefined as a value is ok
+                if (newval === undefined) {
+                    id = undefined;
+                } else {
+                    //check if its a number
+                    id = parseInt(newval);
+                    if (Number.isNaN(id)) {
+                        return;
+                    }
                 }
 
                 //setting the instance id causes the thing to drop all jobs its aware of, so avoid when possible
@@ -372,8 +378,8 @@ export const AppCategories: UnpopulatedAppCategories = {
                 this._instanceid = id;
                 JobsController.instance = id;
             },
-            get instanceid(): string {
-                return this._instanceid as string;
+            get instanceid(): string | undefined {
+                return this._instanceid?.toString();
             }
         }
     },
@@ -383,4 +389,9 @@ export const AppCategories: UnpopulatedAppCategories = {
     admin: {
         name: "admin"
     }
+};
+
+//Either pass the instance id or pass an empty string
+JobsController.setInstance = instance => {
+    AppCategories.instance.data!.instanceid = instance?.toString();
 };

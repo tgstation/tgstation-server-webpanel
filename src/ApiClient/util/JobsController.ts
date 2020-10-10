@@ -31,10 +31,15 @@ export type CanCancelJob = Components.Schemas.Job & {
 
 export default new (class JobsController extends TypedEmitter<IEvents> {
     private _instance: number | undefined;
-    public set instance(id: number) {
+    public set instance(id: number | undefined) {
         this._instance = id;
         this.reset();
     }
+
+    //This is a special property that gets set by approutes to add a handler for when this needs to change the instance
+    // This is here as a hack so that JobsController doesnt have to reference files outside the api client
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    public setInstance: (instance: number | undefined) => void = () => {};
 
     private fastmodecount = 0;
     public set fastmode(cycles: number) {
@@ -174,6 +179,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         );
                     }
                 } else {
+                    if (value.error!.code === ErrorCode.JOB_INSTANCE_OFFLINE) {
+                        this.setInstance(undefined);
+                    }
                     this.errors.push(value.error!);
                     window.setTimeout(() => this.loop(loopid), 10000);
                 }
@@ -307,8 +315,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
     }
 
-    //TODO: remove
-    // eslint-disable-next-line @typescript-eslint/require-await
     public async cancelOrClear(
         jobid: number,
         onError: (error: InternalError<ErrorCode>) => void

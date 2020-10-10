@@ -217,12 +217,17 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
                             //Thanks for reusing a global erorr status cyber. Log operations can return 409
                             const request = error.config;
-                            const status =
-                                (request.url?.startsWith("/Administration/Logs") ||
-                                    request.url?.startsWith("Administration/Logs")) &&
+                            let status: ErrorCode;
+                            if (
+                                request.url === "/Administration/Logs" &&
                                 request.method === "get"
-                                    ? ErrorCode.ADMIN_LOGS_IO_ERROR
-                                    : ErrorCode.HTTP_DATA_INEGRITY;
+                            ) {
+                                status = ErrorCode.ADMIN_LOGS_IO_ERROR;
+                            } else if (request.url === "/Job" && request.method === "get") {
+                                status = ErrorCode.JOB_INSTANCE_OFFLINE;
+                            } else {
+                                status = ErrorCode.HTTP_DATA_INEGRITY;
+                            }
 
                             const errorobj = new InternalError(
                                 status,
