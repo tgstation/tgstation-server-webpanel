@@ -5,11 +5,13 @@ import Table from "react-bootstrap/Table";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
+import { InstanceManagerRights } from "../../../ApiClient/generatedcode/_enums";
 import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstanceUserClient from "../../../ApiClient/InstanceUserClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import UserClient from "../../../ApiClient/UserClient";
 import { AppCategories, AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
@@ -24,6 +26,7 @@ interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     //isnt directly used but is used to make react rerender when the selected insance is changed
     instanceid?: number;
+    canOnline: boolean;
 }
 interface IProps extends RouteComponentProps {}
 
@@ -32,15 +35,19 @@ export default withRouter(
         public constructor(props: IProps) {
             super(props);
 
+            this.setOnline = this.setOnline.bind(this);
+
             const actualid =
                 AppCategories.instance.data?.instanceid !== undefined
                     ? parseInt(AppCategories.instance.data.instanceid as string)
                     : undefined;
+
             this.state = {
                 loading: true,
                 instances: [],
                 errors: [],
-                instanceid: actualid
+                instanceid: actualid,
+                canOnline: false
             };
         }
 
@@ -54,7 +61,7 @@ export default withRouter(
             });
         }
 
-        public async componentDidMount(): Promise<void> {
+        private async loadInstances(): Promise<void> {
             const instancelist = await InstanceClient.listInstances();
             const modifiedlist: Array<Instance> = [];
 
@@ -82,19 +89,53 @@ export default withRouter(
                     modifiedlist.push(modifiedinstance);
                 }
             }
+
             await Promise.all(work);
 
             if (instancelist.code == StatusCode.OK) {
                 this.setState({
-                    instances: modifiedlist
+                    instances: modifiedlist.sort((a, b) => a.id - b.id)
                 });
             } else {
                 this.addError(instancelist.error!);
             }
+        }
+
+        public async componentDidMount(): Promise<void> {
+            await this.loadInstances();
+
+            await UserClient.getCurrentUser().then(userinfo => {
+                if (userinfo.code === StatusCode.OK) {
+                    this.setState({
+                        canOnline: !!(
+                            userinfo.payload!.instanceManagerRights! &
+                            InstanceManagerRights.SetOnline
+                        )
+                    });
+                } else {
+                    this.addError(userinfo.error!);
+                }
+            });
 
             this.setState({
                 loading: false
             });
+        }
+
+        private async setOnline(instance: Instance) {
+            //Yes this is desynchronized and will use the last known state of the instance
+            // to determine what state we should put it in, thats intentional, if the user clicks Set Online, it needs
+            // to be online, no matter what it previously was
+            const desiredState = !instance.online;
+            const instanceedit = await InstanceClient.editInstance(({
+                id: instance.id,
+                online: desiredState
+            } as unknown) as Components.Schemas.Instance);
+            if (instanceedit.code === StatusCode.OK) {
+                await this.loadInstances();
+            } else {
+                this.addError(instanceedit.error!);
+            }
         }
 
         public render(): ReactNode {
@@ -183,6 +224,7 @@ export default withRouter(
                                         </td>
                                         <td className="align-middle p-0">
                                             <Button
+                                                className="mr-1"
                                                 onClick={() => {
                                                     if (!AppCategories.instance.data)
                                                         AppCategories.instance.data = {};
@@ -193,6 +235,16 @@ export default withRouter(
                                                 }}
                                                 disabled={!value.canAccess}>
                                                 <FormattedMessage id="generic.select" />
+                                            </Button>
+                                            <Button
+                                                variant={value.online ? "danger" : "success"}
+                                                onClick={() => this.setOnline(value)}
+                                                disabled={!this.state.canOnline}>
+                                                <FormattedMessage
+                                                    id={`view.instance.list.set.${
+                                                        value.online ? "offline" : "online"
+                                                    }`}
+                                                />
                                             </Button>
                                         </td>
                                     </tr>
