@@ -247,7 +247,7 @@ export default withRouter(
                                     </Form.Control.Feedback>
                                 </Form.Group>
                                 <Button type="submit">
-                                    <FormattedMessage id="login.submit" />
+                                    <FormattedMessage id="routes.passwd" />
                                 </Button>
                             </React.Fragment>
                         ) : (
