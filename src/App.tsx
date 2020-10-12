@@ -106,7 +106,7 @@ class App extends React.Component<IAppProps, IState> {
             <IntlProvider
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}>
-                <BrowserRouter basename={configOptions.basepath.value as string}>
+                <BrowserRouter basename={DEFAULT_BASEPATH}>
                     <ErrorBoundary>
                         <AppNavbar category={this.state.passdownCat} />
                         <Container className="mt-5 mb-5">

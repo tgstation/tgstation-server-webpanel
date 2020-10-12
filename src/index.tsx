@@ -1,9 +1,6 @@
 //definition files
 import "./definitions/scss.d";
 import "./definitions/globals.d";
-//init script
-import "./utils/icolibrary";
-import "./ApiClient/util/ConfigController";
 //css
 import "./styles/dark.scss";
 //polyfills
@@ -15,9 +12,13 @@ import "@formatjs/intl-pluralrules/locale-data/en";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-//local imports
+import ConfigController from "./ApiClient/util/ConfigController";
 import App from "./App";
 import Locales from "./translations/Locales";
+import initIcons from "./utils/icolibrary";
+
+initIcons();
+ConfigController.loadconfig();
 
 const rootNode = document.getElementById("root") as HTMLElement;
 const appTsx = (

@@ -18,23 +18,25 @@ import { faUndo } from "@fortawesome/free-solid-svg-icons/faUndo";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { faUserSlash } from "@fortawesome/free-solid-svg-icons/faUserSlash";
 
-library.add(
-    faCheck,
-    faTimes,
-    faExclamationCircle,
-    faUser,
-    faUserSlash,
-    faHdd,
-    faSync,
-    faPlus,
-    faQuestion,
-    faHome,
-    faTools,
-    faCogs,
-    faUndo,
-    faInfo,
-    faGripLinesVertical,
-    faAngleRight,
-    faKey,
-    faPen
-);
+export default function () {
+    library.add(
+        faCheck,
+        faTimes,
+        faExclamationCircle,
+        faUser,
+        faUserSlash,
+        faHdd,
+        faSync,
+        faPlus,
+        faQuestion,
+        faHome,
+        faTools,
+        faCogs,
+        faUndo,
+        faInfo,
+        faGripLinesVertical,
+        faAngleRight,
+        faKey,
+        faPen
+    );
+}

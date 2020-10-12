@@ -24,6 +24,8 @@ if (profile) {
     };
 }
 
+const publicPath = process.env.TGS_OVERRIDE_DEFAULT_BASEPATH || "/app/";
+
 module.exports = smp.wrap(
     merge(common, {
         mode: "production",
@@ -57,7 +59,7 @@ module.exports = smp.wrap(
             }
         },
         output: {
-            publicPath: "/",
+            publicPath: publicPath,
             filename: "[name].[contenthash].js",
             path: path.resolve(__dirname, "dist")
         },
@@ -69,7 +71,8 @@ module.exports = smp.wrap(
             new webpack.DefinePlugin({
                 API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
                 VERSION: JSON.stringify(require("./package.json").version),
-                MODE: JSON.stringify("PROD")
+                MODE: JSON.stringify("PROD"),
+                DEFAULT_BASEPATH: JSON.stringify(publicPath)
             })
         ]
     })

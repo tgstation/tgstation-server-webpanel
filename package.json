@@ -1,6 +1,6 @@
 {
     "name": "tgstation-server-control-panel",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "private": true,
     "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
     "repository": "github:tgstation/tgstation-server-control-panel",
@@ -128,5 +128,10 @@
             "last 3 safari version"
         ]
     },
-    "sideEffects": []
+    "sideEffects": [
+        "@formatjs/intl-relativetimeformat/polyfill",
+        "@formatjs/intl-relativetimeformat/locale-data/en",
+        "@formatjs/intl-pluralrules/polyfill",
+        "@formatjs/intl-pluralrules/locale-data/en"
+    ]
 }

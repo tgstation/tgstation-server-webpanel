@@ -1,10 +1,6 @@
 import configOptions, { ConfigOption, ConfigValue } from "./config";
 
 export default new (class ConfigController {
-    public constructor() {
-        this.loadconfig();
-    }
-
     public loadconfig() {
         for (const val of Object.values(configOptions)) {
             this.getconfig(val);

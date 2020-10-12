@@ -177,8 +177,6 @@
     "config.githubtoken.desc": "You can supply a private authorization token for github to bypass some rate limiting on the github API.",
     "config.apipath": "(Advanced) TGS API Path",
     "config.apipath.desc": "Sets the API client server's path. Applies on next refresh.",
-    "config.basepath": "(Advanced) App base path",
-    "config.basepath.desc": "Base path where the application is served from, used to route. Applies on next refresh.",
     "config.jobpollinactive": "Inactive job poll delay (s)",
     "config.jobpollinactive.desc": "After how many seconds should we check for new jobs if we dont have any active jobs",
     "config.jobpollactive": "Active job poll delay (s)",

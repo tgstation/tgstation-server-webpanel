@@ -38,7 +38,8 @@ module.exports = {
             {
                 test: /\.css$/,
                 exclude: /node_modules/,
-                loader: ["style-loader", "css-loader"]
+                loader: ["style-loader", "css-loader"],
+                sideEffects: true
             },
             {
                 test: /\.(scss)$/,
@@ -60,7 +61,8 @@ module.exports = {
                     {
                         loader: "fast-sass-loader"
                     }
-                ]
+                ],
+                sideEffects: true
             },
             {
                 test: /\.svg$/,
