@@ -113,7 +113,7 @@ class App extends React.Component<IAppProps, IState> {
                             {this.state.loading ? (
                                 <Loading text="loading.app" />
                             ) : this.state.autoLogin && !this.state.loggedIn ? (
-                                <Loading text="loading.app" />
+                                <Loading text="loading.login" />
                             ) : (
                                 <Router
                                     loggedIn={this.state.loggedIn}
