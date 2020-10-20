@@ -39,6 +39,7 @@ interface IState {
     canEdit: boolean;
     //override for if its the current user and it can edit its own password
     canEditOwnPassword: boolean;
+    tab: string;
 }
 
 interface Permission {
@@ -58,12 +59,21 @@ export default withRouter(
                 permsadmin: {},
                 permsinstance: {},
                 canEdit: false,
-                canEditOwnPassword: false
+                canEditOwnPassword: false,
+                tab: props.match.params.tab || "info"
             };
 
             if (!AppCategories.user.data) AppCategories.user.data = {};
             AppCategories.user.data.selectedid = props.match.params.id;
             AppCategories.user.data.tab = props.match.params.tab;
+        }
+
+        public componentDidUpdate(prevProps: Readonly<IProps>) {
+            if (prevProps.match.params.tab !== this.props.match.params.tab) {
+                this.setState({
+                    tab: this.props.match.params.tab || "info"
+                });
+            }
         }
 
         public async componentDidMount(): Promise<void> {
@@ -182,6 +192,23 @@ export default withRouter(
                 return <Loading text="loading.user.save" />;
             }
 
+            // noinspection DuplicatedCode
+            const changetabs = (newkey: string | null) => {
+                if (!newkey) return;
+
+                if (!AppCategories.user.data) AppCategories.user.data = {};
+                AppCategories.user.data.selectedid = this.props.match.params.id;
+                AppCategories.user.data.tab = newkey;
+                window.history.pushState(
+                    null,
+                    window.document.title,
+                    AppRoutes.useredit.link || AppRoutes.useredit.route
+                );
+                this.setState({
+                    tab: newkey
+                });
+            };
+
             return (
                 <div className="text-center">
                     {this.state.errors.map((err, index) => {
@@ -236,203 +263,174 @@ export default withRouter(
                                 <FormattedMessage id="generic.goback" />
                             </Button>
                             <Tabs
-                                activeKey={this.props.match.params.tab || "info"}
-                                onSelect={newkey => {
-                                    if (!newkey) return;
-
-                                    if (!AppCategories.user.data) AppCategories.user.data = {};
-                                    AppCategories.user.data.selectedid = this.props.match.params.id;
-                                    AppCategories.user.data.tab = newkey;
-                                    this.props.history.push(
-                                        AppRoutes.useredit.link || AppRoutes.useredit.route
-                                    );
-                                }}
+                                activeKey={this.state.tab}
+                                onSelect={changetabs}
                                 id="test"
                                 className="justify-content-center mb-3 mt-4 flex-column flex-md-row">
                                 <Tab eventKey="info" title={<FormattedMessage id="generic.info" />}>
-                                    {this.props.match.params.tab === "info" ||
-                                    this.props.match.params.tab === undefined ? (
-                                        <Col lg={5} className="text-center text-md-left mx-auto">
+                                    <Col lg={5} className="text-center text-md-left mx-auto">
+                                        <Row xs={1} md={2}>
+                                            <Col>
+                                                <h5 className="m-0">
+                                                    <FormattedMessage id="generic.userid" />
+                                                </h5>
+                                            </Col>
+                                            <Col className="text-capitalize mb-2">
+                                                {this.state.user.id}
+                                            </Col>
+                                        </Row>
+                                        {this.state.user.systemIdentifier ? (
                                             <Row xs={1} md={2}>
                                                 <Col>
                                                     <h5 className="m-0">
-                                                        <FormattedMessage id="generic.userid" />
+                                                        <FormattedMessage id="generic.systemidentifier" />
                                                     </h5>
                                                 </Col>
-                                                <Col className="text-capitalize mb-2">
-                                                    {this.state.user.id}
+                                                <Col className="mb-2 text-sm-break">
+                                                    {this.state.user.systemIdentifier}
                                                 </Col>
                                             </Row>
-                                            {this.state.user.systemIdentifier ? (
-                                                <Row xs={1} md={2}>
-                                                    <Col>
-                                                        <h5 className="m-0">
-                                                            <FormattedMessage id="generic.systemidentifier" />
-                                                        </h5>
+                                        ) : (
+                                            ""
+                                        )}
+                                        <Row xs={1} md={2}>
+                                            <Col>
+                                                <h5 className="m-0">
+                                                    <FormattedMessage id="generic.enabled" />
+                                                </h5>
+                                            </Col>
+                                            <Col className="text-capitalize mb-2">
+                                                {this.state.user.enabled!.toString()}
+                                            </Col>
+                                        </Row>
+                                        <Row xs={1} md={2}>
+                                            <Col>
+                                                <h5 className="m-0">
+                                                    <FormattedMessage id="generic.created" />
+                                                </h5>
+                                            </Col>
+                                            <OverlayTrigger
+                                                overlay={
+                                                    <Tooltip id={`${this.state.user.name}-tooltip`}>
+                                                        {new Date(
+                                                            this.state.user.createdAt!
+                                                        ).toLocaleString()}
+                                                    </Tooltip>
+                                                }>
+                                                {({ ref, ...triggerHandler }) => (
+                                                    <Col
+                                                        className="text-capitalize mb-2"
+                                                        {...triggerHandler}>
+                                                        <span
+                                                            ref={ref as React.Ref<HTMLSpanElement>}>
+                                                            <FormattedRelativeTime
+                                                                value={
+                                                                    (new Date(
+                                                                        this.state.user!.createdAt!
+                                                                    ).getTime() -
+                                                                        Date.now()) /
+                                                                    1000
+                                                                }
+                                                                numeric="auto"
+                                                                updateIntervalInSeconds={1}
+                                                            />
+                                                        </span>
                                                     </Col>
-                                                    <Col className="mb-2 text-sm-break">
-                                                        {this.state.user.systemIdentifier}
+                                                )}
+                                            </OverlayTrigger>
+                                        </Row>
+                                        <Row xs={1} md={2}>
+                                            <Col>
+                                                <h5 className="m-0">
+                                                    <FormattedMessage id="generic.createdby" />
+                                                </h5>
+                                            </Col>
+                                            <OverlayTrigger
+                                                overlay={
+                                                    <Tooltip
+                                                        id={`${this.state.user.name}-tooltip-createdby`}>
+                                                        <FormattedMessage id="generic.userid" />
+                                                        {this.state.user.createdBy!.id}
+                                                    </Tooltip>
+                                                }>
+                                                {({ ref, ...triggerHandler }) => (
+                                                    <Col
+                                                        className="text-capitalize mb-2"
+                                                        {...triggerHandler}>
+                                                        <span
+                                                            ref={ref as React.Ref<HTMLSpanElement>}>
+                                                            {this.state.user!.createdBy!.name}
+                                                        </span>
                                                     </Col>
-                                                </Row>
+                                                )}
+                                            </OverlayTrigger>
+                                        </Row>
+                                        <div className="text-center mt-3">
+                                            {this.state.canEdit || this.state.canEditOwnPassword ? (
+                                                <Button
+                                                    className="mr-2"
+                                                    as={Link}
+                                                    to={
+                                                        (AppRoutes.passwd.link ||
+                                                            AppRoutes.passwd.route) +
+                                                        this.state.user.id!.toString()
+                                                    }>
+                                                    <FormattedMessage id="routes.passwd" />
+                                                </Button>
                                             ) : (
                                                 ""
                                             )}
-                                            <Row xs={1} md={2}>
-                                                <Col>
-                                                    <h5 className="m-0">
-                                                        <FormattedMessage id="generic.enabled" />
-                                                    </h5>
-                                                </Col>
-                                                <Col className="text-capitalize mb-2">
-                                                    {this.state.user.enabled!.toString()}
-                                                </Col>
-                                            </Row>
-                                            <Row xs={1} md={2}>
-                                                <Col>
-                                                    <h5 className="m-0">
-                                                        <FormattedMessage id="generic.created" />
-                                                    </h5>
-                                                </Col>
-                                                <OverlayTrigger
-                                                    overlay={
-                                                        <Tooltip
-                                                            id={`${this.state.user.name}-tooltip`}>
-                                                            {new Date(
-                                                                this.state.user.createdAt!
-                                                            ).toLocaleString()}
-                                                        </Tooltip>
-                                                    }>
-                                                    {({ ref, ...triggerHandler }) => (
-                                                        <Col
-                                                            className="text-capitalize mb-2"
-                                                            {...triggerHandler}>
-                                                            <span
-                                                                ref={
-                                                                    ref as React.Ref<
-                                                                        HTMLSpanElement
-                                                                    >
-                                                                }>
-                                                                <FormattedRelativeTime
-                                                                    value={
-                                                                        (new Date(
-                                                                            this.state.user!.createdAt!
-                                                                        ).getTime() -
-                                                                            Date.now()) /
-                                                                        1000
-                                                                    }
-                                                                    numeric="auto"
-                                                                    updateIntervalInSeconds={1}
-                                                                />
-                                                            </span>
-                                                        </Col>
-                                                    )}
-                                                </OverlayTrigger>
-                                            </Row>
-                                            <Row xs={1} md={2}>
-                                                <Col>
-                                                    <h5 className="m-0">
-                                                        <FormattedMessage id="generic.createdby" />
-                                                    </h5>
-                                                </Col>
-                                                <OverlayTrigger
-                                                    overlay={
-                                                        <Tooltip
-                                                            id={`${this.state.user.name}-tooltip-createdby`}>
-                                                            <FormattedMessage id="generic.userid" />
-                                                            {this.state.user.createdBy!.id}
-                                                        </Tooltip>
-                                                    }>
-                                                    {({ ref, ...triggerHandler }) => (
-                                                        <Col
-                                                            className="text-capitalize mb-2"
-                                                            {...triggerHandler}>
-                                                            <span
-                                                                ref={
-                                                                    ref as React.Ref<
-                                                                        HTMLSpanElement
-                                                                    >
-                                                                }>
-                                                                {this.state.user!.createdBy!.name}
-                                                            </span>
-                                                        </Col>
-                                                    )}
-                                                </OverlayTrigger>
-                                            </Row>
-                                            <div className="text-center mt-3">
-                                                {this.state.canEdit ||
-                                                this.state.canEditOwnPassword ? (
-                                                    <Button
-                                                        className="mr-2"
-                                                        as={Link}
-                                                        to={
-                                                            (AppRoutes.passwd.link ||
-                                                                AppRoutes.passwd.route) +
-                                                            this.state.user.id!.toString()
-                                                        }>
-                                                        <FormattedMessage id="routes.passwd" />
-                                                    </Button>
-                                                ) : (
-                                                    ""
-                                                )}
-                                                {this.state.canEdit ? (
-                                                    <Button
-                                                        variant={
-                                                            this.state.user.enabled
-                                                                ? "danger"
-                                                                : "success"
+                                            {this.state.canEdit ? (
+                                                <Button
+                                                    variant={
+                                                        this.state.user.enabled
+                                                            ? "danger"
+                                                            : "success"
+                                                    }
+                                                    onClick={async () => {
+                                                        this.setState({
+                                                            saving: true
+                                                        });
+
+                                                        const response = await UserClient.editUser(
+                                                            this.state.user!.id!,
+                                                            {
+                                                                enabled: !this.state.user!.enabled!
+                                                            }
+                                                        );
+                                                        if (response.code == StatusCode.OK) {
+                                                            this.loadUser(response.payload!);
+                                                        } else {
+                                                            this.addError(response.error!);
                                                         }
-                                                        onClick={async () => {
-                                                            this.setState({
-                                                                saving: true
-                                                            });
 
-                                                            const response = await UserClient.editUser(
-                                                                this.state.user!.id!,
-                                                                {
-                                                                    enabled: !this.state.user!
-                                                                        .enabled!
-                                                                }
-                                                            );
-                                                            if (response.code == StatusCode.OK) {
-                                                                this.loadUser(response.payload!);
-                                                            } else {
-                                                                this.addError(response.error!);
-                                                            }
-
-                                                            this.setState({
-                                                                saving: false
-                                                            });
-                                                        }}>
-                                                        <FormattedMessage
-                                                            id={
-                                                                this.state.user.enabled
-                                                                    ? "generic.disable"
-                                                                    : "generic.enable"
-                                                            }
-                                                        />
-                                                    </Button>
-                                                ) : (
-                                                    ""
-                                                )}
-                                            </div>
-                                        </Col>
-                                    ) : (
-                                        ""
-                                    )}
+                                                        this.setState({
+                                                            saving: false
+                                                        });
+                                                    }}>
+                                                    <FormattedMessage
+                                                        id={
+                                                            this.state.user.enabled
+                                                                ? "generic.disable"
+                                                                : "generic.enable"
+                                                        }
+                                                    />
+                                                </Button>
+                                            ) : (
+                                                ""
+                                            )}
+                                        </div>
+                                    </Col>
                                 </Tab>
                                 <Tab
                                     eventKey="adminperms"
                                     title={<FormattedMessage id="perms.admin" />}>
-                                    {this.props.match.params.tab === "adminperms"
-                                        ? this.renderPerms("permsadmin", "admin")
-                                        : ""}
+                                    {this.renderPerms("permsadmin", "admin")}
                                 </Tab>
                                 <Tab
                                     eventKey="instanceperms"
                                     title={<FormattedMessage id="perms.instance" />}>
-                                    {this.props.match.params.tab === "instanceperms"
-                                        ? this.renderPerms("permsinstance", "instance")
-                                        : ""}
+                                    {this.renderPerms("permsinstance", "instance")}
                                 </Tab>
                             </Tabs>
                         </React.Fragment>
