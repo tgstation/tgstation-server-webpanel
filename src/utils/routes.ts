@@ -172,12 +172,16 @@ const AppRoutes: {
     },
     instanceconfig: {
         name: "routes.instanceconfig",
-        route: "/instances/config/:id(\\d+)/",
+        route: "/instances/config/:id(\\d+)/:tab?/",
         file: "Instance/Config",
 
         get link(): string {
             return AppCategories.instance.data?.instanceid !== undefined
-                ? `/instances/config/${AppCategories.instance.data.instanceid}/`
+                ? `/instances/config/${AppCategories.instance.data.instanceid}/${
+                      AppCategories.instance.data.tab !== undefined
+                          ? `${AppCategories.instance.data.tab}/`
+                          : ""
+                  }`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
 
