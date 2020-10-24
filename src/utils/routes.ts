@@ -341,7 +341,7 @@ export interface AppCategory {
     name: string; //doesnt really matter, kinda bullshit
     routes: AppRoute[];
     leader: AppRoute;
-    data: Record<string, string | number | undefined>;
+    data: Record<string, string | undefined>;
 }
 
 export type UnpopulatedAppCategories = {
@@ -352,6 +352,8 @@ export type AppCategories = {
     [key: string]: AppCategory;
 };
 
+let _instanceid: number | undefined = undefined;
+
 export const AppCategories: UnpopulatedAppCategories = {
     home: {
         name: "home"
@@ -360,7 +362,6 @@ export const AppCategories: UnpopulatedAppCategories = {
         name: "instance",
 
         data: {
-            _instanceid: undefined as number | undefined,
             set instanceid(newval: string | undefined) {
                 let id: number | undefined;
                 //Undefined as a value is ok
@@ -375,15 +376,15 @@ export const AppCategories: UnpopulatedAppCategories = {
                 }
 
                 //setting the instance id causes the thing to drop all jobs its aware of, so avoid when possible
-                if (this._instanceid == id) {
+                if (_instanceid == id) {
                     return;
                 }
 
-                this._instanceid = id;
+                _instanceid = id;
                 JobsController.instance = id;
             },
             get instanceid(): string | undefined {
-                return this._instanceid?.toString();
+                return _instanceid?.toString();
             }
         }
     },

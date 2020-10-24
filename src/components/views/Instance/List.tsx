@@ -39,7 +39,7 @@ export default withRouter(
 
             const actualid =
                 AppCategories.instance.data?.instanceid !== undefined
-                    ? parseInt(AppCategories.instance.data.instanceid as string)
+                    ? parseInt(AppCategories.instance.data.instanceid)
                     : undefined;
 
             this.state = {
@@ -193,7 +193,8 @@ export default withRouter(
                                     <tr
                                         key={value.id}
                                         className={
-                                            value.id === AppCategories.instance.data?.instanceid
+                                            value.id.toString() ===
+                                            AppCategories.instance.data?.instanceid
                                                 ? "font-weight-bold"
                                                 : ""
                                         }>
