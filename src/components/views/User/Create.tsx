@@ -112,7 +112,7 @@ export default withRouter(
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
                 if (!AppCategories.user.data) AppCategories.user.data = {};
-                AppCategories.user.data.selectedid = user.payload!.id!;
+                AppCategories.user.data.selectedid = user.payload!.id!.toString();
                 this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
             } else {
                 this.addError(user.error!);
@@ -138,7 +138,7 @@ export default withRouter(
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
                 if (!AppCategories.user.data) AppCategories.user.data = {};
-                AppCategories.user.data.selectedid = user.payload!.id!;
+                AppCategories.user.data.selectedid = user.payload!.id!.toString();
                 this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
             } else {
                 this.addError(user.error!);
