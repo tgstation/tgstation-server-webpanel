@@ -18,7 +18,7 @@ import { faUndo } from "@fortawesome/free-solid-svg-icons/faUndo";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { faUserSlash } from "@fortawesome/free-solid-svg-icons/faUserSlash";
 
-export default function () {
+export default function (): void {
     library.add(
         faCheck,
         faTimes,
