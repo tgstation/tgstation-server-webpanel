@@ -140,8 +140,7 @@ export default withRouter(
                         permsadmin: {
                             ...prevState.permsadmin,
                             [key]: {
-                                currentVal,
-                                newVal: currentVal,
+                                currentVal: currentVal,
                                 bitflag: val
                             }
                         }
@@ -164,8 +163,7 @@ export default withRouter(
                         permsinstance: {
                             ...prevState.permsinstance,
                             [key]: {
-                                currentVal,
-                                newVal: currentVal,
+                                currentVal: currentVal,
                                 bitflag: val
                             }
                         }
@@ -445,19 +443,38 @@ export default withRouter(
             enumname: "permsadmin" | "permsinstance",
             permprefix: string
         ): React.ReactNode {
-            const inputs: Record<string, React.RefObject<HTMLInputElement>> = {};
+            const inputs: Record<
+                string,
+                { input: React.RefObject<HTMLInputElement>; field: React.RefObject<HTMLDivElement> }
+            > = {};
+            const setBold = (
+                inputRef: React.RefObject<HTMLInputElement>,
+                fieldRef: React.RefObject<HTMLDivElement>,
+                defaultVal: boolean
+            ) => {
+                if (!inputRef.current || !fieldRef.current) return;
+                if (inputRef.current.checked !== defaultVal) {
+                    fieldRef.current.classList.add("font-weight-bold");
+                } else {
+                    fieldRef.current.classList.remove("font-weight-bold");
+                }
+            };
             const setAll = (val: boolean): (() => void) => {
                 return () => {
-                    for (const ref of Object.values(inputs)) {
-                        if (ref.current) ref.current.checked = val;
+                    for (const [permname, refs] of Object.entries(inputs)) {
+                        if (!refs.input.current) return;
+
+                        refs.input.current.checked = val;
+                        setBold(refs.input, refs.field, this.state[enumname][permname].currentVal);
                     }
                 };
             };
             const resetAll = () => {
-                for (const [permname, ref] of Object.entries(inputs)) {
-                    if (!ref.current) continue;
+                for (const [permname, refs] of Object.entries(inputs)) {
+                    if (!refs.input.current) continue;
 
-                    ref.current.checked = this.state[enumname][permname].currentVal;
+                    refs.input.current.checked = this.state[enumname][permname].currentVal;
+                    setBold(refs.input, refs.field, this.state[enumname][permname].currentVal);
                 }
             };
             const save = async () => {
@@ -466,10 +483,12 @@ export default withRouter(
                 });
                 let bitflag = 0;
 
-                for (const [permname, ref] of Object.entries(inputs)) {
-                    if (!ref.current) continue;
+                for (const [permname, refs] of Object.entries(inputs)) {
+                    if (!refs.input.current) continue;
 
-                    bitflag += ref.current.checked ? this.state[enumname][permname].bitflag : 0;
+                    bitflag += refs.input.current.checked
+                        ? this.state[enumname][permname].bitflag
+                        : 0;
                 }
 
                 const response = await UserClient.editUser(this.state.user!.id!, {
@@ -509,8 +528,9 @@ export default withRouter(
                     <Col md={8} lg={7} xl={6} className="mx-auto">
                         <hr />
                         {Object.entries(this.state[enumname]).map(([perm, value]) => {
-                            const inputref = React.createRef<HTMLInputElement>();
-                            inputs[perm] = inputref;
+                            const inputRef = React.createRef<HTMLInputElement>();
+                            const fieldRef = React.createRef<HTMLDivElement>();
+                            inputs[perm] = { input: inputRef, field: fieldRef };
                             return (
                                 <InputGroup key={perm} as="label" htmlFor={perm} className="mb-0">
                                     <InputGroup.Prepend className="flex-grow-1 overflow-auto">
@@ -523,7 +543,9 @@ export default withRouter(
                                                 </Tooltip>
                                             }>
                                             {({ ref, ...triggerHandler }) => (
-                                                <InputGroup.Text className="flex-fill">
+                                                <InputGroup.Text
+                                                    className="flex-fill"
+                                                    ref={fieldRef}>
                                                     <div {...triggerHandler}>
                                                         <FormattedMessage
                                                             id={`perms.${permprefix}.${perm}`}
@@ -537,9 +559,16 @@ export default withRouter(
                                                             id={perm}
                                                             className="d-flex justify-content-center align-content-center mx-2"
                                                             label=""
-                                                            ref={inputref}
+                                                            ref={inputRef}
                                                             disabled={!this.state.canEdit}
                                                             defaultChecked={value.currentVal}
+                                                            onChange={() => {
+                                                                setBold(
+                                                                    inputRef,
+                                                                    fieldRef,
+                                                                    value.currentVal
+                                                                );
+                                                            }}
                                                         />
                                                         <div
                                                             {...triggerHandler}
