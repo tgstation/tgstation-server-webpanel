@@ -5,6 +5,7 @@ import ServerClient from "./ServerClient";
 
 export type ListInstancesErrors = GenericErrors;
 export type EditInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
+export type GetInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
 
 export default new (class InstanceClient {
     public async listInstances(): Promise<
@@ -68,6 +69,47 @@ export default new (class InstanceClient {
                 return new InternalStatus({
                     code: StatusCode.OK,
                     payload: instance
+                });
+            }
+            case 410:
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.INSTANCE_NO_DB_ENTITY, {
+                        errorMessage: response.data as Components.Schemas.ErrorMessage
+                    })
+                });
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async getInstance(
+        instanceid: number
+    ): Promise<InternalStatus<Components.Schemas.Instance, GetInstanceErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.InstanceController_GetId({ id: instanceid });
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+        switch (response.status) {
+            case 200: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: response.data as Components.Schemas.Instance
                 });
             }
             case 410:
