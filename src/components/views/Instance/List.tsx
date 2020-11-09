@@ -234,7 +234,11 @@ export default withRouter(
                                                         instanceid: value.id
                                                     });
                                                 }}
-                                                disabled={!value.canAccess}>
+                                                disabled={
+                                                    !value.canAccess ||
+                                                    value.id.toString() ===
+                                                        AppCategories.instance.data?.instanceid
+                                                }>
                                                 <FormattedMessage id="generic.select" />
                                             </Button>
                                             <Button
