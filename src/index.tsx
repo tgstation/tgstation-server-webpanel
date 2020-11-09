@@ -10,7 +10,7 @@ import "@formatjs/intl-pluralrules/polyfill";
 import "@formatjs/intl-pluralrules/locale-data/en";
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { render as ReactDOMRender } from "react-dom";
 
 import ConfigController from "./ApiClient/util/ConfigController";
 import App from "./App";
@@ -27,4 +27,4 @@ const appTsx = (
     </React.StrictMode>
 );
 
-ReactDOM.render(appTsx, rootNode);
+ReactDOMRender(appTsx, rootNode);
