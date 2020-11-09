@@ -67,10 +67,11 @@ function instanceManagerRight(right: InstanceManagerRights) {
         return false;
     };
 }
+//https://stackoverflow.com/questions/54598322/how-to-make-typescript-infer-the-keys-of-an-object-but-define-type-of-its-value
+//Infer the keys but restrict the values to a type
+const asElementTypes = <T>(et: { [K in keyof T]: AppRoute }) => et;
 
-const AppRoutes: {
-    [id: string]: AppRoute;
-} = {
+const AppRoutes = asElementTypes({
     home: {
         name: "routes.home",
         route: "/",
@@ -331,7 +332,7 @@ const AppRoutes: {
         visibleNavbar: false,
         homeIcon: "cogs"
     }
-};
+});
 
 export { AppRoutes };
 
