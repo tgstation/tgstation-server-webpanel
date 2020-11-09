@@ -107,11 +107,7 @@ class RouteController extends TypedEmitter<IEvents> {
     public getImmediateRoutes(auth = true) {
         const results: Array<AppRoute> = [];
 
-        const propNames = Object.getOwnPropertyNames(AppRoutes);
-        for (let i = 0; i < propNames.length; i++) {
-            const name = propNames[i];
-            const val = AppRoutes[name];
-
+        for (const val of Object.values(AppRoutes)) {
             //we check for isauthorized here without calling because routes that lack the function are public
             if (val.isAuthorized && !val.cachedAuth && auth) continue; //if not authorized and we only show authorized routes
 
