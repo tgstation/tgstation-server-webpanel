@@ -72,7 +72,7 @@ module.exports = smp.wrap(
                 outputPath: 'profile.json'
             }),*/
             new webpack.DefinePlugin({
-                API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
+                API_VERSION: JSON.stringify(process.env.GITHUB_SHA),
                 VERSION: JSON.stringify(require("./package.json").version),
                 MODE: JSON.stringify("PROD-GITHUB"),
                 DEFAULT_BASEPATH: JSON.stringify(publicPath),
