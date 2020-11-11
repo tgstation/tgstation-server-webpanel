@@ -146,8 +146,13 @@ export default class InternalError<T extends ErrorCode> {
         this.extendedInfo = debuginfo;
 
         console.error(
-            `Operational error: ${this.code} (${this.desc?.desc || "No description"})`,
+            `Error occured within the application: ${this.code} (${
+                this.desc?.desc || "No description"
+            })`,
             this
         );
+
+        // eslint-disable-next-line no-debugger
+        debugger;
     }
 }
