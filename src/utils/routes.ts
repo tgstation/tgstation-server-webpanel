@@ -146,16 +146,16 @@ const AppRoutes = asElementTypes({
 
         category: "instance"
     },
-    instancejobs: {
-        name: "routes.instancejobs",
-        route: "/instances/jobs/:id(\\d+)/:jobid(\\d+)?/",
-        file: "Instance/Jobs",
+    instanceconfig: {
+        name: "routes.instanceconfig",
+        route: "/instances/config/:id(\\d+)/:tab?/",
+        file: "Instance/Config",
 
         get link(): string {
             return AppCategories.instance.data?.instanceid !== undefined
-                ? `/instances/jobs/${AppCategories.instance.data.instanceid}/${
-                      AppCategories.instance.data.lastjob !== undefined
-                          ? `${AppCategories.instance.data.lastjob}/`
+                ? `/instances/config/${AppCategories.instance.data.instanceid}/${
+                      AppCategories.instance.data.tab !== undefined
+                          ? `${AppCategories.instance.data.tab}/`
                           : ""
                   }`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
@@ -171,16 +171,16 @@ const AppRoutes = asElementTypes({
 
         category: "instance"
     },
-    instanceconfig: {
-        name: "routes.instanceconfig",
-        route: "/instances/config/:id(\\d+)/:tab?/",
-        file: "Instance/Config",
+    instancejobs: {
+        name: "routes.instancejobs",
+        route: "/instances/jobs/:id(\\d+)/:jobid(\\d+)?/",
+        file: "Instance/Jobs",
 
         get link(): string {
             return AppCategories.instance.data?.instanceid !== undefined
-                ? `/instances/config/${AppCategories.instance.data.instanceid}/${
-                      AppCategories.instance.data.tab !== undefined
-                          ? `${AppCategories.instance.data.tab}/`
+                ? `/instances/jobs/${AppCategories.instance.data.instanceid}/${
+                      AppCategories.instance.data.lastjob !== undefined
+                          ? `${AppCategories.instance.data.lastjob}/`
                           : ""
                   }`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;

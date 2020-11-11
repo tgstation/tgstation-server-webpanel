@@ -281,20 +281,20 @@ export default withRouter(
                         className="mr-2"
                         onClick={() => {
                             this.props.history.push(
-                                AppRoutes.instancejobs.link || AppRoutes.instancejobs.route
-                            );
-                        }}
-                        disabled={this.state.instanceid === undefined}>
-                        <FormattedMessage id="routes.instancejobs" />
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            this.props.history.push(
                                 AppRoutes.instanceconfig.link || AppRoutes.instanceconfig.route
                             );
                         }}
                         disabled={this.state.instanceid === undefined}>
                         <FormattedMessage id="routes.instanceconfig" />
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            this.props.history.push(
+                                AppRoutes.instancejobs.link || AppRoutes.instancejobs.route
+                            );
+                        }}
+                        disabled={this.state.instanceid === undefined}>
+                        <FormattedMessage id="routes.instancejobs" />
                     </Button>
                 </div>
             );
