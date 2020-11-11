@@ -72,8 +72,8 @@ module.exports = smp.wrap(
                 outputPath: 'profile.json'
             }),*/
             new webpack.DefinePlugin({
-                API_VERSION: JSON.stringify(process.env.GITHUB_SHA),
-                VERSION: JSON.stringify(require("./package.json").version),
+                API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
+                VERSION: JSON.stringify(process.env.GITHUB_SHA),
                 MODE: JSON.stringify("PROD-GITHUB"),
                 DEFAULT_BASEPATH: JSON.stringify(publicPath),
                 //Fake hardcoded path that throws a unique error message prompting the user to change the configuration
