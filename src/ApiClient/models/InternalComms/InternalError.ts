@@ -18,7 +18,8 @@ export type GenericErrors =
     | ErrorCode.UNHANDLED_GLOBAL_RESPONSE
     | ErrorCode.HTTP_ACCESS_DENIED
     | ErrorCode.HTTP_NOT_ACCEPTABLE
-    | ErrorCode.OK;
+    | ErrorCode.OK
+    | ErrorCode.NO_APIPATH;
 
 export enum ErrorCode {
     OK = 'Isnt displayed but is used as an "error" when everything is ok', //void
@@ -37,6 +38,7 @@ export enum ErrorCode {
     //Generic errors
     GITHUB_FAIL = "error.github", //jserror
     APP_FAIL = "error.app", //jserror
+    NO_APIPATH = "error.no_apipath", //void
 
     //Login errors
     LOGIN_FAIL = "error.login.bad_user_pass", //void

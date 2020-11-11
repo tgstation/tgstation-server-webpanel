@@ -72,7 +72,8 @@ module.exports = smp.wrap(
                 API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
                 VERSION: JSON.stringify(require("./package.json").version),
                 MODE: JSON.stringify("PROD"),
-                DEFAULT_BASEPATH: JSON.stringify(publicPath)
+                DEFAULT_BASEPATH: JSON.stringify(publicPath),
+                DEFAULT_APIPATH: JSON.stringify(process.env.TGS_APIPATH || "/")
             })
         ]
     })

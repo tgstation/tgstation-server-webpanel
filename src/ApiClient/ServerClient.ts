@@ -91,6 +91,13 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         this.apiClient = await this.api.init<Client>();
         this.apiClient.interceptors.request.use(
             async value => {
+                //Meta value that means theres no value
+                if (configOptions.apipath.value === "https://example.org:5000") {
+                    const errorobj = new InternalError(ErrorCode.NO_APIPATH, {
+                        void: true
+                    });
+                    return Promise.reject(errorobj);
+                }
                 if (!((value.url === "/" || value.url === "") && value.method === "post")) {
                     const tok = await this.wait4Token();
                     (value.headers as { [key: string]: string })["Authorization"] =
@@ -105,6 +112,12 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         this.apiClient.interceptors.response.use(
             val => val,
             (error: AxiosError): Promise<AxiosResponse> => {
+                //THIS IS SNOWFLAKE KEKW
+                const snowflake = (error as unknown) as InternalError<ErrorCode.NO_APIPATH>;
+                if (snowflake?.code === ErrorCode.NO_APIPATH) {
+                    return Promise.reject(snowflake);
+                }
+
                 if (
                     error.response &&
                     error.response.status &&

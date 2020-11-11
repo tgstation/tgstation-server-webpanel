@@ -48,7 +48,7 @@ const configOptions: ConfigMap = {
     apipath: {
         id: "config.apipath",
         type: "str",
-        value: "/"
+        value: DEFAULT_APIPATH
     },
     jobpollinactive: {
         id: "config.jobpollinactive",
