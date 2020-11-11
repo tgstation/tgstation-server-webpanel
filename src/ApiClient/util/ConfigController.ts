@@ -37,7 +37,6 @@ export default new (class ConfigController {
             localStorage.setItem(option.id, JSON.stringify(option.value));
             //option.persist = true;
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})(); //noop
         }
     }
@@ -54,7 +53,6 @@ export default new (class ConfigController {
                 //option.persist = true;
             }
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})(); //noop
         }
     }
@@ -65,7 +63,6 @@ export default new (class ConfigController {
             localStorage.removeItem(option.id);
             //option.persist = false;
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})(); //noop
         }
     }

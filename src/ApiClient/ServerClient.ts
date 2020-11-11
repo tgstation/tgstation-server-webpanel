@@ -395,7 +395,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                             CredentialsProvider.credentials.password
                         );
                     } catch (_) {
-                        // eslint-disable-next-line @typescript-eslint/no-empty-function
                         (() => {})(); //noop
                     }
                 }
@@ -430,7 +429,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             window.localStorage.removeItem("username");
             window.localStorage.removeItem("password");
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
             (() => {})();
         }
         CredentialsProvider.token = undefined;
