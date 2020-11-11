@@ -6,7 +6,7 @@ on:
             - next
 
 jobs:
-    build:
+    deploy:
         runs-on: ubuntu-latest
 
         steps:
@@ -31,7 +31,7 @@ jobs:
               uses: crazy-max/ghaction-github-pages@v2
               with:
                   keep_history: true
-                  build_dir: deploy
+                  build_dir: dist
                   jekyll: false
                   target_branch: live
               env:
