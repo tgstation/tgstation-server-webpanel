@@ -158,7 +158,7 @@
     "perms.instance.rename": "Rename Instances",
     "perms.instance.rename.desc": "Ability to rename instances",
     "perms.instance.relocate": "Relocate Instances",
-    "perms.instance.relocate.desc": "Ablity to change the located of an instance on the file system",
+    "perms.instance.relocate.desc": "Ablity to change the location of an instance on the file system",
     "perms.instance.setonline": "Change Instance Online Status",
     "perms.instance.setonline.desc": "Ability to set an instance as online or offline",
     "perms.instance.delete": "Delete Instance",
