@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { CSSProperties, ReactNode } from "react";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
@@ -143,6 +143,10 @@ export default withRouter(
                 return <Loading text="loading.instance.list" />;
             }
 
+            const tablecellstyling: CSSProperties = {
+                verticalAlign: "middle"
+            };
+
             return (
                 <div className="text-center">
                     {this.state.errors.map((err, index) => {
@@ -198,9 +202,9 @@ export default withRouter(
                                                 ? "font-weight-bold"
                                                 : ""
                                         }>
-                                        <td>{value.id}</td>
-                                        <td>{value.name}</td>
-                                        <td>
+                                        <td style={tablecellstyling}>{value.id}</td>
+                                        <td style={tablecellstyling}>{value.name}</td>
+                                        <td style={tablecellstyling}>
                                             {value.online! ? (
                                                 <Badge variant="success">
                                                     <FormattedMessage id="generic.online" />
@@ -211,21 +215,21 @@ export default withRouter(
                                                 </Badge>
                                             )}
                                         </td>
-                                        <td>
+                                        <td style={tablecellstyling}>
                                             {value.moveJob ? (
                                                 <FormattedMessage id="view.instance.moving" />
                                             ) : (
                                                 value.path
                                             )}
                                         </td>
-                                        <td>
+                                        <td style={tablecellstyling}>
                                             <FormattedMessage
                                                 id={`view.instance.configmode.${value.configurationType!.toString()}`}
                                             />
                                         </td>
-                                        <td className="align-middle p-0">
+                                        <td className="align-middle p-1" style={tablecellstyling}>
                                             <Button
-                                                className="mr-1"
+                                                className="mx-1"
                                                 onClick={() => {
                                                     if (!AppCategories.instance.data)
                                                         AppCategories.instance.data = {};
@@ -242,6 +246,7 @@ export default withRouter(
                                                 <FormattedMessage id="generic.select" />
                                             </Button>
                                             <Button
+                                                className="mx-1"
                                                 variant={value.online ? "danger" : "success"}
                                                 onClick={() => this.setOnline(value)}
                                                 disabled={!this.state.canOnline}>
@@ -257,45 +262,49 @@ export default withRouter(
                             })}
                         </tbody>
                     </Table>
-                    <Button
-                        className="mr-2"
-                        onClick={() => {
-                            this.props.history.push(
-                                AppRoutes.instancecode.link || AppRoutes.instancecode.route
-                            );
-                        }}
-                        disabled={this.state.instanceid === undefined}>
-                        <FormattedMessage id="routes.instancecode" />
-                    </Button>
-                    <Button
-                        className="mr-2"
-                        onClick={() => {
-                            this.props.history.push(
-                                AppRoutes.instancehosting.link || AppRoutes.instancehosting.route
-                            );
-                        }}
-                        disabled={this.state.instanceid === undefined}>
-                        <FormattedMessage id="routes.instancehosting" />
-                    </Button>
-                    <Button
-                        className="mr-2"
-                        onClick={() => {
-                            this.props.history.push(
-                                AppRoutes.instanceconfig.link || AppRoutes.instanceconfig.route
-                            );
-                        }}
-                        disabled={this.state.instanceid === undefined}>
-                        <FormattedMessage id="routes.instanceconfig" />
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            this.props.history.push(
-                                AppRoutes.instancejobs.link || AppRoutes.instancejobs.route
-                            );
-                        }}
-                        disabled={this.state.instanceid === undefined}>
-                        <FormattedMessage id="routes.instancejobs" />
-                    </Button>
+                    <div className="align-middle">
+                        <Button
+                            className="mx-1"
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.instancecode.link || AppRoutes.instancecode.route
+                                );
+                            }}
+                            disabled={this.state.instanceid === undefined}>
+                            <FormattedMessage id="routes.instancecode" />
+                        </Button>
+                        <Button
+                            className="mx-1"
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.instancehosting.link ||
+                                        AppRoutes.instancehosting.route
+                                );
+                            }}
+                            disabled={this.state.instanceid === undefined}>
+                            <FormattedMessage id="routes.instancehosting" />
+                        </Button>
+                        <Button
+                            className="mx-1"
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.instanceconfig.link || AppRoutes.instanceconfig.route
+                                );
+                            }}
+                            disabled={this.state.instanceid === undefined}>
+                            <FormattedMessage id="routes.instanceconfig" />
+                        </Button>
+                        <Button
+                            className="mx-1"
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.instancejobs.link || AppRoutes.instancejobs.route
+                                );
+                            }}
+                            disabled={this.state.instanceid === undefined}>
+                            <FormattedMessage id="routes.instancejobs" />
+                        </Button>
+                    </div>
                 </div>
             );
         }
