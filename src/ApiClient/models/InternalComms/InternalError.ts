@@ -152,7 +152,10 @@ export default class InternalError<T extends ErrorCode> {
             this
         );
 
-        // eslint-disable-next-line no-debugger
-        debugger;
+        //@ts-expect-error yeah well, i aint extending the window interface
+        if (window.breakonerror) {
+            // eslint-disable-next-line no-debugger
+            debugger;
+        }
     }
 }
