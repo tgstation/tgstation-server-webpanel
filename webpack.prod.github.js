@@ -9,6 +9,7 @@ const common = require("./webpack.common.js");
 const path = require("path");
 
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 const profile = false;
 
@@ -26,7 +27,7 @@ if (profile) {
     };
 }
 
-const publicPath = process.env.TGS_OVERRIDE_DEFAULT_BASEPATH || "/app/";
+const publicPath = process.env.TGS_OVERRIDE_DEFAULT_BASEPATH || "/tgstation-server-control-panel//";
 
 module.exports = smp.wrap(
     merge(common, {
@@ -73,14 +74,23 @@ module.exports = smp.wrap(
             new webpack.DefinePlugin({
                 API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
                 VERSION: JSON.stringify(require("./package.json").version),
-                MODE: JSON.stringify("PROD"),
+                MODE: JSON.stringify("PROD-GITHUB"),
                 DEFAULT_BASEPATH: JSON.stringify(publicPath),
-                DEFAULT_APIPATH: JSON.stringify("/")
+                //Fake hardcoded path that throws a unique error message prompting the user to change the configuration
+                DEFAULT_APIPATH: JSON.stringify("https://example.org:5000")
             }),
             new HtmlWebpackPlugin({
                 title: "TG Server Control Panel v0.4.0",
                 filename: "index.html",
-                template: "src/index.html"
+                template: "src/index-github.html"
+            }),
+            new CopyPlugin({
+                patterns: [
+                    {
+                        from: "src/404.html",
+                        toType: "dir"
+                    }
+                ]
             })
         ]
     })

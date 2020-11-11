@@ -1,3 +1,5 @@
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
 const webpack = require("webpack");
 
 const { merge } = require("webpack-merge");
@@ -83,7 +85,12 @@ module.exports = smp.wrap(
                 VERSION: JSON.stringify(require("./package.json").version),
                 MODE: JSON.stringify("DEV"),
                 DEFAULT_BASEPATH: JSON.stringify(publicPath),
-                DEFAULT_APIPATH: JSON.stringify(process.env.TGS_APIPATH || "/")
+                DEFAULT_APIPATH: JSON.stringify("/")
+            }),
+            new HtmlWebpackPlugin({
+                title: "TG Server Control Panel v0.4.0",
+                filename: "index.html",
+                template: "src/index.html"
             })
         ]
     })

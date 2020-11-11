@@ -1,4 +1,3 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
@@ -106,11 +105,6 @@ module.exports = {
 
     plugins: [
         new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            title: "TG Server Control Panel v0.4.0",
-            filename: "index.html",
-            template: "src/index.html"
-        }),
         new CopyPlugin({
             patterns: [
                 {
