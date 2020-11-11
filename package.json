@@ -52,6 +52,7 @@
         "postinstall": "npm run generate_api",
         "start": "npx webpack-dev-server --config webpack.dev.js",
         "build": "npx webpack --config webpack.prod.js",
+        "build-github": "npx webpack --config webpack.prod.github.js",
         "msbuild": "npm run build && node scripts/msbuild.js",
         "build-dev": "npx webpack --config webpack.dev.js",
         "lint": "eslint ./src --max-warnings=0",

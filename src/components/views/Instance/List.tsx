@@ -65,34 +65,37 @@ export default withRouter(
             const instancelist = await InstanceClient.listInstances();
             const modifiedlist: Array<Instance> = [];
 
-            const work: Array<Promise<void>> = [];
-            for (const instance of instancelist.payload!) {
-                const modifiedinstance = instance as Instance;
-                if (instance.online) {
-                    work.push(
-                        InstanceUserClient.getCurrentInstanceUser(instance.id).then(
-                            instanceuser => {
-                                if (instanceuser.code == StatusCode.OK) {
-                                    modifiedinstance.canAccess = true;
-                                } else {
-                                    modifiedinstance.canAccess = false;
-                                    if (instanceuser.error!.code !== ErrorCode.HTTP_ACCESS_DENIED) {
-                                        this.addError(instanceuser.error!);
-                                    }
-                                }
-                                modifiedlist.push(modifiedinstance);
-                            }
-                        )
-                    );
-                } else {
-                    modifiedinstance.canAccess = false;
-                    modifiedlist.push(modifiedinstance);
-                }
-            }
-
-            await Promise.all(work);
-
             if (instancelist.code == StatusCode.OK) {
+                const work: Array<Promise<void>> = [];
+                for (const instance of instancelist.payload!) {
+                    const modifiedinstance = instance as Instance;
+                    if (instance.online) {
+                        work.push(
+                            InstanceUserClient.getCurrentInstanceUser(instance.id).then(
+                                instanceuser => {
+                                    if (instanceuser.code == StatusCode.OK) {
+                                        modifiedinstance.canAccess = true;
+                                    } else {
+                                        modifiedinstance.canAccess = false;
+                                        if (
+                                            instanceuser.error!.code !==
+                                            ErrorCode.HTTP_ACCESS_DENIED
+                                        ) {
+                                            this.addError(instanceuser.error!);
+                                        }
+                                    }
+                                    modifiedlist.push(modifiedinstance);
+                                }
+                            )
+                        );
+                    } else {
+                        modifiedinstance.canAccess = false;
+                        modifiedlist.push(modifiedinstance);
+                    }
+                }
+
+                await Promise.all(work);
+
                 this.setState({
                     instances: modifiedlist.sort((a, b) => a.id - b.id)
                 });
