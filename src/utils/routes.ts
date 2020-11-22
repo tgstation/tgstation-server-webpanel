@@ -69,9 +69,9 @@ function instanceManagerRight(right: InstanceManagerRights) {
 }
 //https://stackoverflow.com/questions/54598322/how-to-make-typescript-infer-the-keys-of-an-object-but-define-type-of-its-value
 //Infer the keys but restrict the values to a type
-const asElementTypes = <T>(et: { [K in keyof T]: AppRoute }) => et;
+const asElementTypesAppRoute = <T>(et: { [K in keyof T]: AppRoute }) => et;
 
-const AppRoutes = asElementTypes({
+const AppRoutes = asElementTypesAppRoute({
     home: {
         name: "routes.home",
         route: "/",
@@ -110,8 +110,8 @@ const AppRoutes = asElementTypes({
         file: "Instance/CodeDeployment",
 
         get link(): string {
-            return AppCategories.instance.data?.instanceid !== undefined
-                ? `/instances/code/${AppCategories.instance.data.instanceid}/`
+            return RouteData.instanceid !== undefined
+                ? `/instances/code/${RouteData.instanceid}/`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
 
@@ -131,8 +131,8 @@ const AppRoutes = asElementTypes({
         file: "Instance/Hosting",
 
         get link(): string {
-            return AppCategories.instance.data?.instanceid !== undefined
-                ? `/instances/hosting/${AppCategories.instance.data.instanceid}/`
+            return RouteData.instanceid !== undefined
+                ? `/instances/hosting/${RouteData.instanceid}/`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
 
@@ -152,10 +152,10 @@ const AppRoutes = asElementTypes({
         file: "Instance/Config",
 
         get link(): string {
-            return AppCategories.instance.data?.instanceid !== undefined
-                ? `/instances/config/${AppCategories.instance.data.instanceid}/${
-                      AppCategories.instance.data.tab !== undefined
-                          ? `${AppCategories.instance.data.tab}/`
+            return RouteData.instanceid !== undefined
+                ? `/instances/config/${RouteData.instanceid}/${
+                      RouteData.selectedinstancetab !== undefined
+                          ? `${RouteData.selectedinstancetab}/`
                           : ""
                   }`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
@@ -177,12 +177,8 @@ const AppRoutes = asElementTypes({
         file: "Instance/Jobs",
 
         get link(): string {
-            return AppCategories.instance.data?.instanceid !== undefined
-                ? `/instances/jobs/${AppCategories.instance.data.instanceid}/${
-                      AppCategories.instance.data.lastjob !== undefined
-                          ? `${AppCategories.instance.data.lastjob}/`
-                          : ""
-                  }`
+            return RouteData.instanceid !== undefined
+                ? `/instances/jobs/${RouteData.instanceid}/`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
 
@@ -219,11 +215,9 @@ const AppRoutes = asElementTypes({
 
         //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
         get link(): string {
-            return AppCategories.user.data?.selectedid !== undefined
-                ? `/users/edit/${AppCategories.user.data?.selectedid}/${
-                      AppCategories.user.data?.tab !== undefined
-                          ? `${AppCategories.user.data?.tab}/`
-                          : ""
+            return RouteData.selecteduserid !== undefined
+                ? `/users/edit/${RouteData.selecteduserid}/${
+                      RouteData.selectedusertab !== undefined ? `${RouteData.selectedusertab}/` : ""
                   }`
                 : AppRoutes.userlist.link || AppRoutes.userlist.route;
         },
@@ -336,58 +330,26 @@ const AppRoutes = asElementTypes({
 
 export { AppRoutes };
 
+//https://stackoverflow.com/questions/54598322/how-to-make-typescript-infer-the-keys-of-an-object-but-define-type-of-its-value
+//Infer the keys but restrict the values to a type
+const asElementTypesCategory = <T>(et: { [K in keyof T]: UnpopulatedAppCategory }) => et;
+
 export type UnpopulatedAppCategory = Partial<AppCategory>;
 
 export interface AppCategory {
     name: string; //doesnt really matter, kinda bullshit
     routes: AppRoute[];
     leader: AppRoute;
-    data: Record<string, string | undefined>;
 }
-
-export type UnpopulatedAppCategories = {
-    [key: string]: UnpopulatedAppCategory;
-};
-
-export type AppCategories = {
-    [key: string]: AppCategory;
-};
 
 let _instanceid: number | undefined = undefined;
 
-export const AppCategories: UnpopulatedAppCategories = {
+export const UnpopulatedAppCategories = asElementTypesCategory({
     home: {
         name: "home"
     },
     instance: {
-        name: "instance",
-
-        data: {
-            set instanceid(newval: string | undefined) {
-                let id: number | undefined;
-                //Undefined as a value is ok
-                if (newval === undefined) {
-                    id = undefined;
-                } else {
-                    //check if its a number
-                    id = parseInt(newval);
-                    if (Number.isNaN(id)) {
-                        return;
-                    }
-                }
-
-                //setting the instance id causes the thing to drop all jobs its aware of, so avoid when possible
-                if (_instanceid == id) {
-                    return;
-                }
-
-                _instanceid = id;
-                JobsController.instance = id;
-            },
-            get instanceid(): string | undefined {
-                return _instanceid?.toString();
-            }
-        }
+        name: "instance"
     },
     user: {
         name: "user"
@@ -395,9 +357,40 @@ export const AppCategories: UnpopulatedAppCategories = {
     admin: {
         name: "admin"
     }
-};
+});
 
-//Either pass the instance id or pass an empty string
-JobsController.setInstance = instance => {
-    AppCategories.instance.data!.instanceid = instance?.toString();
+// @ts-expect-error This is populated in the constructor after its populated
+export const AppCategories: { [K in keyof typeof UnpopulatedAppCategories]: AppCategory } = {};
+
+export const RouteData = {
+    selecteduserid: undefined as undefined | number,
+    selectedusertab: undefined as undefined | string,
+
+    selectedinstancetab: undefined as undefined | string,
+    _instanceid: undefined as undefined | number,
+
+    set instanceid(newval: string | undefined) {
+        let id: number | undefined;
+        //Undefined as a value is ok
+        if (newval === undefined) {
+            id = undefined;
+        } else {
+            //check if its a number
+            id = parseInt(newval);
+            if (Number.isNaN(id)) {
+                return;
+            }
+        }
+
+        //setting the instance id causes the thing to drop all jobs its aware of, so avoid when possible
+        if (_instanceid == id) {
+            return;
+        }
+
+        _instanceid = id;
+        JobsController.instance = id;
+    },
+    get instanceid(): string | undefined {
+        return _instanceid?.toString();
+    }
 };

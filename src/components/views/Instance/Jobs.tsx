@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import { AppCategories } from "../../../utils/routes";
+import { RouteData } from "../../../utils/routes";
 import JobsList from "../../utils/JobsList";
 
 interface IProps extends RouteComponentProps<{ id: string }> {}
@@ -13,8 +13,7 @@ export default withRouter(
         public constructor(props: IProps) {
             super(props);
 
-            if (!AppCategories.instance.data) AppCategories.instance.data = {};
-            AppCategories.instance.data.instanceid = props.match.params.id;
+            RouteData.instanceid = props.match.params.id;
         }
 
         public render(): ReactNode {

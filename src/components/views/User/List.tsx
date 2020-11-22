@@ -13,7 +13,7 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
-import { AppCategories, AppRoutes } from "../../../utils/routes";
+import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
 
@@ -203,9 +203,7 @@ export default withRouter(
                                         <td className="align-middle p-0">
                                             <Button
                                                 onClick={() => {
-                                                    if (!AppCategories.user.data)
-                                                        AppCategories.user.data = {};
-                                                    AppCategories.user.data.selectedid = value.id!.toString();
+                                                    RouteData.selecteduserid = value.id!;
                                                     this.props.history.push(
                                                         AppRoutes.useredit.link ||
                                                             AppRoutes.useredit.route

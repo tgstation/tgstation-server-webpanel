@@ -12,7 +12,7 @@ import InstanceUserClient from "../../../ApiClient/InstanceUserClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
-import { AppCategories, AppRoutes } from "../../../utils/routes";
+import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
 
@@ -38,9 +38,7 @@ export default withRouter(
             this.setOnline = this.setOnline.bind(this);
 
             const actualid =
-                AppCategories.instance.data?.instanceid !== undefined
-                    ? parseInt(AppCategories.instance.data.instanceid)
-                    : undefined;
+                RouteData.instanceid !== undefined ? parseInt(RouteData.instanceid) : undefined;
 
             this.state = {
                 loading: true,
@@ -200,8 +198,7 @@ export default withRouter(
                                     <tr
                                         key={value.id}
                                         className={
-                                            value.id.toString() ===
-                                            AppCategories.instance.data?.instanceid
+                                            value.id.toString() === RouteData.instanceid
                                                 ? "font-weight-bold"
                                                 : ""
                                         }>
@@ -233,18 +230,20 @@ export default withRouter(
                                         <td className="align-middle p-1" style={tablecellstyling}>
                                             <Button
                                                 className="mx-1"
+                                                variant={
+                                                    value.id.toString() === RouteData.instanceid
+                                                        ? "success"
+                                                        : "primary"
+                                                }
                                                 onClick={() => {
-                                                    if (!AppCategories.instance.data)
-                                                        AppCategories.instance.data = {};
-                                                    AppCategories.instance.data.instanceid = value.id.toString();
+                                                    RouteData.instanceid = value.id.toString();
                                                     this.setState({
                                                         instanceid: value.id
                                                     });
                                                 }}
                                                 disabled={
                                                     !value.canAccess ||
-                                                    value.id.toString() ===
-                                                        AppCategories.instance.data?.instanceid
+                                                    value.id.toString() === RouteData.instanceid
                                                 }>
                                                 <FormattedMessage id="generic.select" />
                                             </Button>

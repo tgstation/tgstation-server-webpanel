@@ -23,7 +23,7 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
-import { AppCategories, AppRoutes } from "../../../utils/routes";
+import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
 
@@ -63,9 +63,8 @@ export default withRouter(
                 tab: props.match.params.tab || "info"
             };
 
-            if (!AppCategories.user.data) AppCategories.user.data = {};
-            AppCategories.user.data.selectedid = props.match.params.id;
-            AppCategories.user.data.tab = props.match.params.tab;
+            RouteData.selecteduserid = parseInt(props.match.params.id);
+            RouteData.selectedusertab = props.match.params.tab;
         }
 
         public componentDidUpdate(prevProps: Readonly<IProps>) {
@@ -194,9 +193,7 @@ export default withRouter(
             const changetabs = (newkey: string | null) => {
                 if (!newkey) return;
 
-                if (!AppCategories.user.data) AppCategories.user.data = {};
-                AppCategories.user.data.selectedid = this.props.match.params.id;
-                AppCategories.user.data.tab = newkey;
+                RouteData.selectedusertab = newkey;
                 window.history.pushState(
                     null,
                     window.document.title,

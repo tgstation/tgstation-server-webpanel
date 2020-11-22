@@ -33,7 +33,7 @@ interface IState {
     loggedIn: boolean;
     //so we dont actually use the routes but it allows us to make react update the component
     routes: AppRoute[];
-    categories: AppCategories;
+    categories: typeof AppCategories;
     focusedCategory: string;
     focusTimer?: number;
 }
@@ -49,7 +49,7 @@ export default withRouter(
             this.state = {
                 loggedIn: false,
                 routes: [],
-                categories: RouteController.getCategories(),
+                categories: AppCategories,
                 focusedCategory: this.props.category?.name || ""
             };
         }

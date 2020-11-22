@@ -10,7 +10,7 @@ import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComm
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../../ApiClient/ServerClient";
 import UserClient from "../../../ApiClient/UserClient";
-import { AppCategories, AppRoutes } from "../../../utils/routes";
+import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
 
@@ -111,8 +111,7 @@ export default withRouter(
             });
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
-                if (!AppCategories.user.data) AppCategories.user.data = {};
-                AppCategories.user.data.selectedid = user.payload!.id!.toString();
+                RouteData.selecteduserid = user.payload!.id!;
                 this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
             } else {
                 this.addError(user.error!);
@@ -137,8 +136,7 @@ export default withRouter(
             });
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
-                if (!AppCategories.user.data) AppCategories.user.data = {};
-                AppCategories.user.data.selectedid = user.payload!.id!.toString();
+                RouteData.selecteduserid = user.payload!.id!;
                 this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
             } else {
                 this.addError(user.error!);

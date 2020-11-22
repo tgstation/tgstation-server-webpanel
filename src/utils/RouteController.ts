@@ -1,12 +1,28 @@
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
+import JobsController from "../ApiClient/util/JobsController";
 import LoginHooks from "../ApiClient/util/LoginHooks";
-import { AppCategories, AppRoute, AppRoutes, UnpopulatedAppCategory } from "./routes";
+import {
+    AppCategories,
+    AppRoute,
+    AppRoutes,
+    RouteData,
+    UnpopulatedAppCategories,
+    UnpopulatedAppCategory
+} from "./routes";
 
 interface IEvents {
     refresh: (routes: Array<AppRoute>) => void; //auth
     refreshAll: (routes: Array<AppRoute>) => void; //noauth+auth
 }
+
+//Either pass the instance id or pass an empty string
+JobsController.setInstance = instance => {
+    RouteData.instanceid = instance?.toString();
+};
+/*ServerClient.clearInstance = instance => {
+    if(AppCategories.instance.data)
+};*/
 
 //helper class to process AppRoutes
 class RouteController extends TypedEmitter<IEvents> {
@@ -23,10 +39,12 @@ class RouteController extends TypedEmitter<IEvents> {
         console.time("Category mapping");
         const catmap = new Map<string, UnpopulatedAppCategory>();
 
-        for (const val of Object.values(AppCategories)) {
+        for (const [name, val] of Object.entries(UnpopulatedAppCategories)) {
             val.routes = [];
             //null asserted the name because that one is everywhere, even if the rest is partial
             catmap.set(val.name!, val);
+            //@ts-expect-error typescript cannot infer that the name is a key of UnpopulatedAppCategories
+            AppCategories[name] = val;
         }
 
         for (const route of Object.values(AppRoutes)) {
@@ -115,12 +133,6 @@ class RouteController extends TypedEmitter<IEvents> {
         }
 
         return results;
-    }
-
-    //this is to ensure that the constructor(and that the categories are populated) is finished running before we try to access categories
-    public getCategories() {
-        //the second AppCategories here is a type that refers to { [key: string]: AppCategory }
-        return AppCategories as AppCategories;
     }
 }
 

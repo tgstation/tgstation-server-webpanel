@@ -5,7 +5,7 @@ import { Rnd } from "react-rnd";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import configOptions, { jobsWidgetOptions } from "../../ApiClient/util/config";
 import JobsController, { CanCancelJob } from "../../ApiClient/util/JobsController";
-import { AppCategories } from "../../utils/routes";
+import { RouteData } from "../../utils/routes";
 import ErrorAlert from "./ErrorAlert";
 import JobCard from "./JobCard";
 import Loading from "./Loading";
@@ -89,7 +89,7 @@ export default class JobsList extends React.Component<IProps, IState> {
     }
 
     public render(): ReactNode {
-        if (AppCategories.instance.data?.instanceid === undefined) return "";
+        if (RouteData.instanceid === undefined) return "";
 
         if (!this.props.widget) return this.nested();
         return (
