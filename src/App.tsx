@@ -15,7 +15,6 @@ import AppNavbar from "./components/AppNavbar";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
-import IAppProps from "./IAppProps";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
@@ -28,13 +27,64 @@ interface IState {
     loggedIn: boolean;
     loading: boolean;
     autoLogin: boolean;
+}
+
+interface IProps {
+    readonly locale: string;
+    readonly translationFactory?: ITranslationFactory;
+}
+
+interface InnerProps {
+    loading: boolean;
+    autoLogin: boolean;
+    loggedIn: boolean;
+}
+
+interface InnerState {
     passdownCat?: { name: string; key: string };
 }
 
-class App extends React.Component<IAppProps, IState> {
+class InnerApp extends React.Component<InnerProps, InnerState> {
+    constructor(props: InnerProps) {
+        super(props);
+
+        this.state = {};
+    }
+    public render(): React.ReactNode {
+        return (
+            <BrowserRouter basename={DEFAULT_BASEPATH}>
+                <ErrorBoundary>
+                    <AppNavbar category={this.state.passdownCat} />
+                    <Container className="mt-5 mb-5">
+                        {this.props.loading ? (
+                            <Loading text="loading.app" />
+                        ) : this.props.autoLogin && !this.props.loggedIn ? (
+                            <Loading text="loading.login" />
+                        ) : (
+                            <Router
+                                loggedIn={this.props.loggedIn}
+                                selectCategory={cat => {
+                                    this.setState({
+                                        passdownCat: {
+                                            name: cat,
+                                            key: Math.random().toString()
+                                        }
+                                    });
+                                }}
+                            />
+                        )}
+                    </Container>
+                    <JobsList />
+                </ErrorBoundary>
+            </BrowserRouter>
+        );
+    }
+}
+
+class App extends React.Component<IProps, IState> {
     private readonly translationFactory: ITranslationFactory;
 
-    public constructor(props: IAppProps) {
+    public constructor(props: IProps) {
         super(props);
 
         this.translationFactory = this.props.translationFactory || new TranslationFactory();
@@ -45,6 +95,7 @@ class App extends React.Component<IAppProps, IState> {
             autoLogin: false
         };
     }
+
     public async componentDidMount(): Promise<void> {
         LoginHooks.on("loginSuccess", () => {
             console.log("Logging in");
@@ -105,31 +156,11 @@ class App extends React.Component<IAppProps, IState> {
             <IntlProvider
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}>
-                <BrowserRouter basename={DEFAULT_BASEPATH}>
-                    <ErrorBoundary>
-                        <AppNavbar category={this.state.passdownCat} />
-                        <Container className="mt-5 mb-5">
-                            {this.state.loading ? (
-                                <Loading text="loading.app" />
-                            ) : this.state.autoLogin && !this.state.loggedIn ? (
-                                <Loading text="loading.login" />
-                            ) : (
-                                <Router
-                                    loggedIn={this.state.loggedIn}
-                                    selectCategory={cat => {
-                                        this.setState({
-                                            passdownCat: {
-                                                name: cat,
-                                                key: Math.random().toString()
-                                            }
-                                        });
-                                    }}
-                                />
-                            )}
-                        </Container>
-                        <JobsList />
-                    </ErrorBoundary>
-                </BrowserRouter>
+                <InnerApp
+                    loading={this.state.loading}
+                    autoLogin={this.state.autoLogin}
+                    loggedIn={this.state.loggedIn}
+                />
             </IntlProvider>
         );
     }
