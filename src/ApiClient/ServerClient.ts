@@ -80,7 +80,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 withCredentials: false,
                 headers: {
                     Accept: "application/json",
-                    api: `Tgstation.Server.Api/` + API_VERSION,
+                    Api: `Tgstation.Server.Api/` + API_VERSION,
                     "User-Agent": "tgstation-server-control-panel/" + VERSION
                 },
                 validateStatus: status => {
