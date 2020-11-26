@@ -1,3 +1,4 @@
+import { History as LibHistory } from "history";
 import React, { ChangeEvent, FormEvent, ReactNode } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -27,10 +28,19 @@ interface IState {
     creating?: boolean;
     redirect?: boolean;
 }
-interface IProps extends RouteComponentProps {}
+interface IProps extends RouteComponentProps {
+    postCreateAction?: (user: Components.Schemas.User, history: LibHistory) => void;
+}
 
 export default withRouter(
     class UserCreate extends React.Component<IProps, IState> {
+        public static defaultProps = {
+            postCreateAction: (user: Components.Schemas.User, history: LibHistory) => {
+                RouteData.selecteduserid = user.id!;
+                history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
+            }
+        };
+
         public constructor(props: IProps) {
             super(props);
 
@@ -111,8 +121,7 @@ export default withRouter(
             });
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
-                RouteData.selecteduserid = user.payload!.id!;
-                this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
+                this.props.postCreateAction!(user.payload!, this.props.history);
             } else {
                 this.addError(user.error!);
                 this.setState({
@@ -136,8 +145,7 @@ export default withRouter(
             });
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
-                RouteData.selecteduserid = user.payload!.id!;
-                this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
+                this.props.postCreateAction!(user.payload!, this.props.history);
             } else {
                 this.addError(user.error!);
                 this.setState({
