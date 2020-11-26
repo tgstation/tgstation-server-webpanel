@@ -2,7 +2,8 @@
 import Translation from "../translations/Translation";
 
 export interface GlobalObjects {
-    translation: Translation;
+    translation?: Translation;
+    setupMode?: boolean;
 }
 
-export const GlobalObjects = {};
+export const GlobalObjects: GlobalObjects = {};
