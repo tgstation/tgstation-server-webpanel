@@ -28,6 +28,8 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         return this._cachedUser;
     }
     private loadingUserInfo = false;
+    //If set to true, all created users will default to having all permissions granted, used by the setup
+    public createAllUsersWithAA = false;
 
     public constructor() {
         super();
@@ -251,12 +253,37 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
     public async createUser(
         newuser:
-            | { name: string; password: string; enabled?: boolean }
-            | { systemIdentifier: string; enabled?: boolean }
+            | {
+                  name: string;
+                  password: string;
+                  enabled?: boolean;
+                  instanceManagerRights?: InstanceManagerRights;
+                  administrationRights?: AdministrationRights;
+              }
+            | {
+                  systemIdentifier: string;
+                  enabled?: boolean;
+                  instanceManagerRights?: InstanceManagerRights;
+                  administrationRights?: AdministrationRights;
+              }
     ): Promise<InternalStatus<Components.Schemas.User, CreateUserErrors>> {
         await ServerClient.wait4Init();
 
         if (newuser.enabled === undefined) newuser.enabled = true;
+        if (this.createAllUsersWithAA) {
+            newuser.instanceManagerRights = 0;
+            newuser.administrationRights = 0;
+
+            for (const perm of Object.values(InstanceManagerRights)) {
+                if (typeof perm !== "number") continue;
+                newuser.instanceManagerRights += perm;
+            }
+
+            for (const perm of Object.values(AdministrationRights)) {
+                if (typeof perm !== "number") continue;
+                newuser.administrationRights += perm;
+            }
+        }
 
         let response;
         try {
