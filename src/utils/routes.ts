@@ -325,6 +325,19 @@ const AppRoutes = asElementTypesAppRoute({
 
         visibleNavbar: false,
         homeIcon: "cogs"
+    },
+    setup: {
+        name: "routes.setup",
+        route: "/setup/",
+        file: "Setup",
+
+        loose: true,
+        navbarLoose: true,
+
+        loginless: true,
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+
+        visibleNavbar: false
     }
 });
 
