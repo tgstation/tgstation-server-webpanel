@@ -13,7 +13,10 @@ import { getSavedCreds } from "../../utils/misc";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
-interface IProps extends RouteComponentProps {}
+interface IProps extends RouteComponentProps {
+    prefillLogin?: string;
+    postLoginAction?: () => void;
+}
 interface IState {
     busy: boolean;
     validated: boolean;
@@ -29,7 +32,13 @@ export default withRouter(
             super(props);
             this.submit = this.submit.bind(this);
 
-            const [usr, pwd] = getSavedCreds() || [undefined, undefined];
+            let usr, pwd;
+            if (this.props.prefillLogin) {
+                usr = this.props.prefillLogin;
+                pwd = "";
+            } else {
+                [usr, pwd] = getSavedCreds() || [undefined, undefined];
+            }
 
             this.state = {
                 busy: false,
@@ -113,6 +122,10 @@ export default withRouter(
                     busy: false,
                     error: response.error
                 });
+            } else {
+                if (this.props.postLoginAction) {
+                    this.props.postLoginAction();
+                }
             }
         }
     }
