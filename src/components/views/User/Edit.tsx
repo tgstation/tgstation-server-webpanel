@@ -23,6 +23,7 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
+import { GlobalObjects } from "../../../utils/globalObjects";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
@@ -194,11 +195,13 @@ export default withRouter(
                 if (!newkey) return;
 
                 RouteData.selectedusertab = newkey;
-                window.history.pushState(
-                    null,
-                    window.document.title,
-                    AppRoutes.useredit.link || AppRoutes.useredit.route
-                );
+                if (!GlobalObjects.setupMode) {
+                    window.history.pushState(
+                        null,
+                        window.document.title,
+                        AppRoutes.useredit.link || AppRoutes.useredit.route
+                    );
+                }
                 this.setState({
                     tab: newkey
                 });
