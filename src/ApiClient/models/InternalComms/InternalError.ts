@@ -45,6 +45,7 @@ export enum ErrorCode {
     LOGIN_NOCREDS = "error.login.no_creds", //void
     LOGIN_DISABLED = "error.login.user_disabled", //void
     LOGIN_BAD_OAUTH = "error.login.bad_oauth",
+    LOGIN_NO_SESSION_STORAGE = "error.login.no_session_storage",
 
     //User errors
     USER_NO_SYS_IDENT = "error.user.no_sys_ident", //errmessage

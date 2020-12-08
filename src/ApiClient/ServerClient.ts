@@ -32,7 +32,8 @@ export type LoginErrors =
     | ErrorCode.LOGIN_DISABLED
     | ErrorCode.LOGIN_FAIL
     | ErrorCode.LOGIN_NOCREDS
-    | ErrorCode.LOGIN_BAD_OAUTH;
+    | ErrorCode.LOGIN_BAD_OAUTH
+    | ErrorCode.LOGIN_NO_SESSION_STORAGE;
 export type ServerInfoErrors = GenericErrors;
 
 export default new (class ServerClient extends TypedEmitter<IEvents> {

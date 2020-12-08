@@ -16,7 +16,7 @@ import { AppRoute } from "./utils/routes";
 
 interface IState {
     loading: boolean;
-    routes: Array<AppRoute>;
+    routes?: Array<AppRoute>;
     components: Map<string, LoadableComponent<unknown>>;
 }
 interface IProps extends RouteComponentProps {
@@ -55,7 +55,7 @@ export default withRouter(
 
             this.state = {
                 loading: false,
-                routes: [],
+                routes: null,
                 components: components
             };
         }
@@ -91,38 +91,42 @@ export default withRouter(
             return (
                 <ErrorBoundary>
                     <Reload>
-                        <div>
-                            <Switch>
-                                {this.state.routes.map(route => {
-                                    if (!route.loginless && !this.props.loggedIn) return;
-
-                                    return (
-                                        <Route
-                                            exact={!route.loose}
-                                            path={route.route}
-                                            key={route.name}
-                                            render={props => {
-                                                let Comp;
-
-                                                if (!route.cachedAuth) {
-                                                    Comp = AccessDenied;
-                                                } else {
-                                                    Comp = this.state.components.get(route.name)!;
-                                                }
-
-                                                //@ts-expect-error //i cant for the life of me make this shit work so it has to stay like this.
-                                                return <Comp {...props} />;
-                                            }}
-                                        />
-                                    );
-                                })}
-                                <Route key="notfound">
-                                    {this.props.loggedIn ? <NotFound /> : <Login />}
-                                </Route>
-                            </Switch>
-                        </div>
+                        <div>{this.renderSwitch()}</div>
                     </Reload>
                 </ErrorBoundary>
+            );
+        }
+
+        private renderSwitch(): ReactNode {
+            if (!this.state.routes) return <Loading text="loading.app" />;
+
+            return (
+                <Switch>
+                    {this.state.routes.map(route => {
+                        if (!route.loginless && !this.props.loggedIn) return;
+
+                        return (
+                            <Route
+                                exact={!route.loose}
+                                path={route.route}
+                                key={route.name}
+                                render={props => {
+                                    let Comp;
+
+                                    if (!route.cachedAuth) {
+                                        Comp = AccessDenied;
+                                    } else {
+                                        Comp = this.state.components.get(route.name)!;
+                                    }
+
+                                    //@ts-expect-error //i cant for the life of me make this shit work so it has to stay like this.
+                                    return <Comp {...props} />;
+                                }}
+                            />
+                        );
+                    })}
+                    <Route key="notfound">{this.props.loggedIn ? <NotFound /> : <Login />}</Route>
+                </Switch>
             );
         }
     }

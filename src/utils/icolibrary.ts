@@ -1,5 +1,5 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faCogs } from "@fortawesome/free-solid-svg-icons/faCogs";
@@ -39,6 +39,7 @@ export default function (): void {
         faAngleRight,
         faKey,
         faPen,
-        faGithub
+        faGithub,
+        faDiscord
     );
 }

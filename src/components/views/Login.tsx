@@ -1,4 +1,4 @@
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, FormEvent, Fragment, ReactNode } from "react";
 import Button from "react-bootstrap/Button";
@@ -19,7 +19,7 @@ import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
-interface IProps extends RouteComponentProps<{ provider?: string }> {
+interface IProps extends RouteComponentProps<{ provider?: OAuthProvider }> {
     prefillLogin?: string;
     postLoginAction?: () => void;
 }
@@ -38,7 +38,7 @@ export default withRouter(
         public constructor(props: IProps) {
             super(props);
             this.submit = this.submit.bind(this);
-            this.gitHubOAuth = this.gitHubOAuth.bind(this);
+            this.performOAuth = this.performOAuth.bind(this);
 
             let usr, pwd;
             if (this.props.prefillLogin) {
@@ -117,47 +117,7 @@ export default withRouter(
         }
 
         public async componentDidMount(): Promise<void> {
-            if (this.props.match.params.provider) {
-                const query = new URLSearchParams(this.props.location.search);
-                switch (this.props.match.params.provider) {
-                    case "github": {
-                        let storedState: string | null = null;
-                        try {
-                            storedState = window.sessionStorage.getItem("github_state");
-                            window.sessionStorage.removeItem("github_state");
-                        } catch (_) {
-                            //Some browsers throw an exception when it cannot save to local storage(private browsing),
-                            // we dont particularly care to inform the user
-                            (() => {})(); //noop
-                        }
-
-                        const code = query.get("code");
-                        const receivedState = query.get("state");
-
-                        if ((storedState && storedState !== receivedState) || !code) {
-                            this.setState({
-                                error: new InternalError<ErrorCode.LOGIN_BAD_OAUTH>(
-                                    ErrorCode.LOGIN_BAD_OAUTH,
-                                    { void: true }
-                                )
-                            });
-                        } else if (
-                            await this.loginWithCreds({
-                                type: CredentialsType.OAuth,
-                                provider: OAuthProvider.GitHub,
-                                token: code
-                            })
-                        ) {
-                            this.props.history.push(AppRoutes.home.link || AppRoutes.home.route, {
-                                reload: true
-                            });
-                            return;
-                        }
-
-                        break;
-                    }
-                }
-            }
+            if (await this.completeOAuthLogin()) return;
 
             const info = await ServerClient.getServerInfo();
             if (info.code === StatusCode.OK)
@@ -176,9 +136,52 @@ export default withRouter(
             const buttons: ReactNode[] = [];
             if (this.state.serverInformation.oAuthProviderInfos.GitHub) {
                 buttons.push(
-                    <Button onClick={this.gitHubOAuth} key="GitHub">
+                    <Button
+                        onClick={() => this.performOAuth(OAuthProvider.GitHub)}
+                        key={OAuthProvider.GitHub}>
                         <FontAwesomeIcon fixedWidth icon={faGithub} />
+                        <br />
                         <FormattedMessage id="login.github" />
+                    </Button>
+                );
+            }
+
+            if (this.state.serverInformation.oAuthProviderInfos.Discord) {
+                buttons.push(
+                    <Button
+                        onClick={() => this.performOAuth(OAuthProvider.Discord)}
+                        key={OAuthProvider.Discord}>
+                        <FontAwesomeIcon fixedWidth icon={faDiscord} />
+                        <br />
+                        <FormattedMessage id="login.discord" />
+                    </Button>
+                );
+            }
+
+            if (this.state.serverInformation.oAuthProviderInfos.TGForums) {
+                buttons.push(
+                    <Button
+                        onClick={() => this.performOAuth(OAuthProvider.TGForums)}
+                        key={OAuthProvider.TGForums}>
+                        <img
+                            src="https://tgstation13.org/favicon.ico"
+                            style={{ maxHeight: 16 + "px" }}></img>
+                        <br />
+                        <FormattedMessage id="login.tgforums" />
+                    </Button>
+                );
+            }
+
+            if (this.state.serverInformation.oAuthProviderInfos.Keycloak) {
+                buttons.push(
+                    <Button
+                        onClick={() => this.performOAuth(OAuthProvider.Keycloak)}
+                        key={OAuthProvider.Keycloak}>
+                        <img
+                            src="https://github.com/keycloak/keycloak-misc/raw/master/logo/keycloak_icon_64px.png"
+                            style={{ maxHeight: 16 + "px" }}></img>
+                        <br />
+                        <FormattedMessage id="login.keycloak" />
                     </Button>
                 );
             }
@@ -193,29 +196,185 @@ export default withRouter(
             );
         }
 
-        private gitHubOAuth(): void {
-            const state = this.makeState();
+        private oAuthStateName(provider: OAuthProvider): string {
+            return `${provider}_oauth_state`;
+        }
+
+        private performOAuth(provider: OAuthProvider): void {
+            // not using state since it's impossible to XSS tgforum auth with our setup (getting session_public_token from TGS)
+            // we NEED the client id returned from TGS though as it changes
+            let state =
+                provider === OAuthProvider.TGForums
+                    ? this.state.serverInformation!.oAuthProviderInfos![provider].clientId!
+                    : this.makeState();
             const clientId = encodeURIComponent(
-                this.state.serverInformation!.oAuthProviderInfos!.GitHub.clientId!
+                this.state.serverInformation!.oAuthProviderInfos![provider].clientId!
             );
             const redirectUri = encodeURIComponent(
-                this.state.serverInformation!.oAuthProviderInfos!.GitHub.redirectUri!
+                this.state.serverInformation!.oAuthProviderInfos![provider].redirectUri || ""!
             );
 
+            const serverUrl = this.state.serverInformation!.oAuthProviderInfos![provider]
+                .serverUrl as string | null;
             try {
-                window.sessionStorage.setItem("github_state", state);
-            } catch (_) {
-                //Some browsers throw an exception when it cannot save to local storage(private browsing),
-                // we dont particularly care to inform the user
-                (() => {})(); //noop
+                window.sessionStorage.setItem(this.oAuthStateName(provider), state);
+            } catch (ex) {
+                if (provider === OAuthProvider.TGForums) {
+                    // mandatory
+                    this.setState({
+                        error: new InternalError<ErrorCode.LOGIN_NO_SESSION_STORAGE>(
+                            ErrorCode.LOGIN_NO_SESSION_STORAGE,
+                            ex instanceof Error
+                                ? {
+                                      jsError: ex
+                                  }
+                                : {
+                                      void: true
+                                  }
+                        )
+                    });
+                    return;
+                }
             }
 
-            const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&allow_signup=false&state=${state}`;
+            state = encodeURIComponent(state);
+
+            let authUrl: string;
+            switch (provider) {
+                case OAuthProvider.GitHub: {
+                    authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&allow_signup=false&state=${state}`;
+                    break;
+                }
+                case OAuthProvider.Discord: {
+                    authUrl = `https://discord.com/api/oauth2/authorize?response_type=code&client_id=${clientId}&scope=identify&state=${state}&redirect_uri=${redirectUri}`;
+                    break;
+                }
+                case OAuthProvider.TGForums: {
+                    authUrl = `https://tgstation13.org/phpBB/oauth.php?session_public_token=${clientId}`;
+                    break;
+                }
+                case OAuthProvider.Keycloak: {
+                    if (!serverUrl) {
+                        this.setState({
+                            error: new InternalError<ErrorCode.LOGIN_BAD_OAUTH>(
+                                ErrorCode.LOGIN_BAD_OAUTH,
+                                {
+                                    void: true
+                                }
+                            )
+                        });
+                        return;
+                    }
+
+                    authUrl = `${serverUrl}/protocol/openid-connect/auth?client_id=${clientId}&scope=openid&response_type=code&redirect_uri=${redirectUri}&state=${state}`;
+                    break;
+                }
+                default: {
+                    this.setState({
+                        error: new InternalError<ErrorCode.LOGIN_BAD_OAUTH>(
+                            ErrorCode.LOGIN_BAD_OAUTH,
+                            {
+                                void: true
+                            }
+                        )
+                    });
+                    return;
+                }
+            }
+
             window.location.href = authUrl;
         }
 
+        private async completeOAuthLogin(): Promise<boolean> {
+            const provider = this.props.match.params.provider;
+            if (!provider) return false;
+
+            const query = new URLSearchParams(this.props.location.search);
+            let storedState: string | null = null;
+            let sessionStorageError: Error | null = null;
+            try {
+                const stateName = this.oAuthStateName(provider);
+                storedState = window.sessionStorage.getItem(stateName);
+                window.sessionStorage.removeItem(stateName);
+            } catch (ex) {
+                if (ex instanceof Error) sessionStorageError = ex;
+            }
+
+            let code: string | null = null;
+            let receivedState: string | null = null;
+            let errorMessage: string | null = null;
+            switch (provider) {
+                case OAuthProvider.GitHub: {
+                    errorMessage = query.get("error_description");
+                    code = query.get("code");
+                    receivedState = query.get("state");
+                    break;
+                }
+                case OAuthProvider.Discord: {
+                    code = query.get("code");
+                    receivedState = query.get("state");
+                    break;
+                }
+                case OAuthProvider.Keycloak: {
+                    code = query.get("code");
+                    receivedState = query.get("state");
+                    break;
+                }
+                case OAuthProvider.TGForums:
+                    if (!storedState) {
+                        // mandatory
+                        this.setState({
+                            error: new InternalError<ErrorCode.LOGIN_NO_SESSION_STORAGE>(
+                                ErrorCode.LOGIN_NO_SESSION_STORAGE,
+                                sessionStorageError
+                                    ? {
+                                          jsError: sessionStorageError
+                                      }
+                                    : {
+                                          void: true
+                                      }
+                            )
+                        });
+                        return false;
+                    }
+
+                    code = storedState;
+                    storedState = null;
+                    break;
+            }
+
+            if ((storedState && storedState !== receivedState) || !code) {
+                this.setState({
+                    error: new InternalError<ErrorCode.LOGIN_BAD_OAUTH>(
+                        ErrorCode.LOGIN_BAD_OAUTH,
+                        errorMessage
+                            ? {
+                                  jsError: new Error(errorMessage)
+                              }
+                            : {
+                                  void: true
+                              }
+                    )
+                });
+                return false;
+            }
+
+            if (
+                await this.loginWithCreds({
+                    type: CredentialsType.OAuth,
+                    provider: provider,
+                    token: code
+                })
+            ) {
+                this.props.history.push(AppRoutes.home.link || AppRoutes.home.route);
+                return true;
+            }
+
+            return false;
+        }
+
         private makeState() {
-            const array = new Uint32Array(32);
+            const array = new Uint32Array(16);
             window.crypto.getRandomValues(array);
             return Array.from(array, dec => dec.toString(16).padStart(2, "0")).join("");
         }
