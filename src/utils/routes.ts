@@ -338,6 +338,19 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
 
         visibleNavbar: false
+    },
+    oAuth: {
+        name: "routes.oauth",
+        route: "/oauth/:provider?/",
+        file: "Login",
+
+        loose: true,
+        navbarLoose: false,
+
+        loginless: true,
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+
+        visibleNavbar: false
     }
 });
 

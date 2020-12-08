@@ -31,7 +31,8 @@ export type LoginErrors =
     | GenericErrors
     | ErrorCode.LOGIN_DISABLED
     | ErrorCode.LOGIN_FAIL
-    | ErrorCode.LOGIN_NOCREDS;
+    | ErrorCode.LOGIN_NOCREDS
+    | ErrorCode.LOGIN_BAD_OAUTH;
 export type ServerInfoErrors = GenericErrors;
 
 export default new (class ServerClient extends TypedEmitter<IEvents> {
@@ -423,7 +424,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         let response;
         try {
             if (CredentialsProvider.credentials.type == CredentialsType.Password)
-                // @ts-expect-error OAuth provider not required for password logins
+                // @ts-expect-error alex fix pls
                 response = await this.apiClient!.HomeController_CreateToken(null, null, {
                     auth: {
                         username: CredentialsProvider.credentials.userName,
@@ -431,15 +432,13 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                     }
                 });
             else {
-                response = await this.apiClient!.HomeController_CreateToken(
-                    CredentialsProvider.credentials.provider,
-                    null,
-                    {
-                        headers: {
-                            Authorization: `OAuth ${CredentialsProvider.credentials.token}`
-                        }
+                // @ts-expect-error alex fix pls
+                response = await this.apiClient!.HomeController_CreateToken(null, null, {
+                    headers: {
+                        OAuthProvider: CredentialsProvider.credentials.provider,
+                        Authorization: `OAuth ${CredentialsProvider.credentials.token}`
                     }
-                );
+                });
             }
         } catch (stat) {
             return new InternalStatus<Components.Schemas.Token, GenericErrors>({
