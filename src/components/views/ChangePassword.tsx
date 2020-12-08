@@ -7,11 +7,11 @@ import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
 import { Components } from "../../ApiClient/generatedcode/_generated";
+import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
 import UserClient from "../../ApiClient/UserClient";
-import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 import { getSavedCreds } from "../../utils/misc";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
@@ -142,16 +142,22 @@ export default withRouter(
             switch (res.code) {
                 case StatusCode.OK: {
                     if (this.state.currentUser) {
-                        const [usr, pwd] = getSavedCreds() || [undefined, undefined];
-                        // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
-                        void ServerClient.login(
-                            {
-                                userName: CredentialsProvider.credentials!.userName,
-                                password: this.state.password1
-                            },
-                            !!(usr && pwd)
-                        );
+                        const [, pwd] = getSavedCreds() || [undefined, undefined];
+                        const currentUserResult = await UserClient.getCurrentUser();
+                        if (currentUserResult.code === StatusCode.OK) {
+                            const usr = currentUserResult.payload!.name;
+                            // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
+                            void ServerClient.login(
+                                {
+                                    type: CredentialsType.Password,
+                                    userName: usr,
+                                    password: this.state.password1
+                                },
+                                !!(usr && pwd)
+                            );
+                        }
                     }
+
                     this.props.history.goBack();
                     break;
                 }

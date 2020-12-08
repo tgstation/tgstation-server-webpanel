@@ -111,7 +111,7 @@
         "webpack-dev-server": "^3.11.0",
         "webpack-merge": "^5.0.9"
     },
-    "tgs_api_version": "7.3.2",
+    "tgs_api_version": "8.0.0",
     "files": [
         "build/lib",
         "build/public"

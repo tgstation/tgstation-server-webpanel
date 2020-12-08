@@ -11,7 +11,6 @@ import AdminClient from "../../../ApiClient/AdminClient";
 import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
-import { download } from "../../../utils/misc";
 import { AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
@@ -53,6 +52,12 @@ export default withRouter(
 
                 switch (res.code) {
                     case StatusCode.OK: {
+                        this.addError(
+                            new InternalError<ErrorCode.APP_FAIL>(ErrorCode.APP_FAIL, {
+                                jsError: new Error("FILE TRANSFERS NOT IMPLEMENTED")
+                            })
+                        );
+                        /*
                         const regex = RegExp(
                             /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7}[-+]\d{2}:\d{2}) {2}(.*?)(?=(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7}[-+]\d{2}:\d{2}|$))/,
                             "gs"
@@ -71,6 +76,7 @@ export default withRouter(
                                 entries: entries
                             }
                         });
+                        */
                         break;
                     }
                     case StatusCode.ERROR: {
@@ -112,7 +118,12 @@ export default withRouter(
             const res = await AdminClient.getLog(name);
             switch (res.code) {
                 case StatusCode.OK: {
-                    download(name, atob(res.payload!.content!));
+                    this.addError(
+                        new InternalError<ErrorCode.APP_FAIL>(ErrorCode.APP_FAIL, {
+                            jsError: new Error("FILE TRANSFERS NOT IMPLEMENTED")
+                        })
+                    );
+                    // download(name, atob(res.payload!.content!));
                     break;
                 }
                 case StatusCode.ERROR: {
@@ -156,10 +167,16 @@ export default withRouter(
                             </Button>
                             <Button
                                 onClick={() => {
+                                    this.addError(
+                                        new InternalError<ErrorCode.APP_FAIL>(ErrorCode.APP_FAIL, {
+                                            jsError: new Error("FILE TRANSFERS NOT IMPLEMENTED")
+                                        })
+                                    );
+                                    /*
                                     download(
                                         this.props.match.params.name!,
                                         atob(this.state.viewedLog!.logFile.content!)
-                                    );
+                                    );*/
                                 }}>
                                 <FormattedMessage id="generic.download" />
                             </Button>

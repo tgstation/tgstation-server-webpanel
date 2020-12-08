@@ -6,6 +6,7 @@ import { hot } from "react-hot-loader/root";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
+import { CredentialsType } from "./ApiClient/models/ICredentials";
 import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
@@ -45,7 +46,7 @@ interface InnerState {
 }
 
 class InnerApp extends React.Component<InnerProps, InnerState> {
-    constructor(props: InnerProps) {
+    public constructor(props: InnerProps) {
         super(props);
 
         this.state = {};
@@ -115,6 +116,7 @@ class App extends React.Component<IProps, IState> {
 
         await this.loadTranslation();
         await ServerClient.initApi();
+        await ServerClient.getServerInfo();
 
         const [usr, pwd] = getSavedCreds() || [undefined, undefined];
 
@@ -126,7 +128,11 @@ class App extends React.Component<IProps, IState> {
             autoLogin: autoLogin
         });
         if (autoLogin) {
-            const res = await ServerClient.login({ userName: usr!, password: pwd! });
+            const res = await ServerClient.login({
+                type: CredentialsType.Password,
+                userName: usr!,
+                password: pwd!
+            });
             if (res.code == StatusCode.ERROR) {
                 this.setState({
                     autoLogin: false

@@ -3,7 +3,7 @@ import { Document } from "openapi-client-axios/types/client";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import { Client, Components } from "./generatedcode/_generated";
-import { ICredentials, Provider } from "./models/ICredentials";
+import { CredentialsType, ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import configOptions from "./util/config";
@@ -111,7 +111,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 //This applies the authorization header, it will wait however long it needs until
                 // theres a token available. It obviously won't wait for a token before sending the request
                 // if its currently sending a request to the login endpoint...
-                if (!((value.url === "/" || value.url === "") && value.method === "post")) {
+                if (!(value.url === "/" || value.url === "")) {
                     const tok = await this.wait4Token();
                     (value.headers as { [key: string]: string })["Authorization"] =
                         "Bearer " + tok.bearer!;
@@ -387,12 +387,18 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         //Newcreds is optional, if its missing its going to try to reuse the last used credentials,
         // if newCreds exists, its going to use newCreds
+        let oauthAutoLogin = false;
         if (newCreds) {
             CredentialsProvider.credentials = newCreds;
+        } else if (CredentialsProvider.credentials?.type === CredentialsType.OAuth) {
+            // autologin doesn't work with OAuth
+            this.logout();
+            oauthAutoLogin = true;
         }
 
         //This is thrown if you try to reuse the last credentials without actually having last used credentials
-        if (!CredentialsProvider.credentials)
+        //or you let an oauth login expire
+        if (oauthAutoLogin || !CredentialsProvider.credentials)
             return new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_NOCREDS>({
                 code: StatusCode.ERROR,
                 error: new InternalError(ErrorCode.LOGIN_NOCREDS, { void: true })
@@ -416,7 +422,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            if (CredentialsProvider.credentials.type == Provider.Password)
+            if (CredentialsProvider.credentials.type == CredentialsType.Password)
                 // @ts-expect-error OAuth provider not required for password logins
                 response = await this.apiClient!.HomeController_CreateToken(null, null, {
                     auth: {
@@ -451,7 +457,10 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
                 CredentialsProvider.token = token;
 
-                if (savePassword && CredentialsProvider.credentials.type == Provider.Password) {
+                if (
+                    savePassword &&
+                    CredentialsProvider.credentials.type == CredentialsType.Password
+                ) {
                     try {
                         window.localStorage.setItem(
                             "username",
