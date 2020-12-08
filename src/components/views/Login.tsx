@@ -164,7 +164,7 @@ export default withRouter(
                         onClick={() => this.performOAuth(OAuthProvider.TGForums)}
                         key={OAuthProvider.TGForums}>
                         <img
-                            src="https://tgstation13.org/favicon.ico"
+                            src="https://cdn.discordapp.com/attachments/484170915253321734/785966334952341584/tglogo-white.svg"
                             style={{ maxHeight: 16 + "px" }}></img>
                         <br />
                         <FormattedMessage id="login.tgforums" />
