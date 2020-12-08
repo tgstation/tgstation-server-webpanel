@@ -3,7 +3,7 @@ import { Document } from "openapi-client-axios/types/client";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import { Client, Components } from "./generatedcode/_generated";
-import { ICredentials } from "./models/ICredentials";
+import { ICredentials, Provider } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import configOptions from "./util/config";
@@ -416,12 +416,25 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await this.apiClient!.HomeController_CreateToken(null, null, {
-                auth: {
-                    username: CredentialsProvider.credentials.userName,
-                    password: CredentialsProvider.credentials.password
-                }
-            });
+            if (CredentialsProvider.credentials.type == Provider.Password)
+                // @ts-expect-error OAuth provider not required for password logins
+                response = await this.apiClient!.HomeController_CreateToken(null, null, {
+                    auth: {
+                        username: CredentialsProvider.credentials.userName,
+                        password: CredentialsProvider.credentials.password
+                    }
+                });
+            else {
+                response = await this.apiClient!.HomeController_CreateToken(
+                    CredentialsProvider.credentials.provider,
+                    null,
+                    {
+                        headers: {
+                            Authorization: `OAuth ${CredentialsProvider.credentials.token}`
+                        }
+                    }
+                );
+            }
         } catch (stat) {
             return new InternalStatus<Components.Schemas.Token, GenericErrors>({
                 code: StatusCode.ERROR,
@@ -438,7 +451,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
                 CredentialsProvider.token = token;
 
-                if (savePassword) {
+                if (savePassword && CredentialsProvider.credentials.type == Provider.Password) {
                     try {
                         window.localStorage.setItem(
                             "username",
