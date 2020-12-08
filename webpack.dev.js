@@ -85,7 +85,7 @@ module.exports = smp.wrap(
                 VERSION: JSON.stringify(require("./package.json").version),
                 MODE: JSON.stringify("DEV"),
                 DEFAULT_BASEPATH: JSON.stringify(publicPath),
-                DEFAULT_APIPATH: JSON.stringify("/")
+                DEFAULT_APIPATH: JSON.stringify("http://localhost:5000/")
             }),
             new HtmlWebpackPlugin({
                 title: "TG Server Control Panel v0.4.0",
