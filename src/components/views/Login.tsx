@@ -165,7 +165,7 @@ export default withRouter(
                         key={OAuthProvider.TGForums}>
                         <img
                             src="https://cdn.discordapp.com/attachments/484170915253321734/785966334952341584/tglogo-white.svg"
-                            style={{ maxHeight: 16 + "px" }}></img>
+                            style={{ maxHeight: "16px" }}></img>
                         <br />
                         <FormattedMessage id="login.tgforums" />
                     </Button>
@@ -179,7 +179,7 @@ export default withRouter(
                         key={OAuthProvider.Keycloak}>
                         <img
                             src="https://github.com/keycloak/keycloak-misc/raw/master/logo/keycloak_icon_64px.png"
-                            style={{ maxHeight: 16 + "px" }}></img>
+                            style={{ maxHeight: "16px" }}></img>
                         <br />
                         <FormattedMessage id="login.keycloak" />
                     </Button>
