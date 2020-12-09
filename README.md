@@ -1,4 +1,4 @@
-# /TG/station-Server Control Panel aka "webpanel"
+# TGS Webpanel 
 
 React web app to control TGS
 
