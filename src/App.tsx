@@ -45,7 +45,7 @@ interface InnerState {
 }
 
 class InnerApp extends React.Component<InnerProps, InnerState> {
-    constructor(props: InnerProps) {
+    public constructor(props: InnerProps) {
         super(props);
 
         this.state = {};
