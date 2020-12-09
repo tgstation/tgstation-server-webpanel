@@ -1,6 +1,6 @@
 {
-    "name": "Tgstation Server Control Panel",
-    "short_name": "TGS Control Panel",
+    "name": "TGS Webpanel",
+    "short_name": "TGS Webpanel",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
