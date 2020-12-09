@@ -78,7 +78,7 @@ module.exports = smp.wrap(
                 DEFAULT_APIPATH: JSON.stringify("/")
             }),
             new HtmlWebpackPlugin({
-                title: "TG Server Control Panel v0.4.0",
+                title: "TGS Webpanel v" + require("./package.json").version,
                 filename: "index.html",
                 template: "src/index.html"
             })
