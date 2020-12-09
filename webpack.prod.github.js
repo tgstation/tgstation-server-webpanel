@@ -27,7 +27,7 @@ if (profile) {
     };
 }
 
-const publicPath = process.env.TGS_OVERRIDE_DEFAULT_BASEPATH || "/tgstation-server-control-panel//";
+const publicPath = process.env.TGS_OVERRIDE_DEFAULT_BASEPATH || "/tgstation-server-webpanel//";
 
 module.exports = smp.wrap(
     merge(common, {
@@ -80,7 +80,7 @@ module.exports = smp.wrap(
                 DEFAULT_APIPATH: JSON.stringify("https://example.org:5000")
             }),
             new HtmlWebpackPlugin({
-                title: "TG Server Control Panel v0.4.0",
+                title: "TGS Webpanel v" + require("./package.json").version,
                 filename: "index.html",
                 template: "src/index-github.html"
             }),

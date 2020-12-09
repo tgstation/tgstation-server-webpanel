@@ -64,8 +64,8 @@ export default class ErrorAlert extends Component<IProps, IState> {
                         <hr />
                         <ClickToSelect>
                             <code className="bg-darker d-block pre-wrap p-2 pre-scrollable">
-                                {`Control Panel Version: ${VERSION}
-Control Panel Mode: ${MODE}
+                                {`Webpanel Version: ${VERSION}
+Webpanel Mode: ${MODE}
 API Version: ${API_VERSION}
 
 Error Code: ${this.props.error.code}

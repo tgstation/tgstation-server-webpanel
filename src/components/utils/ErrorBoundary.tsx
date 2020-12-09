@@ -44,7 +44,7 @@ class ErrorBoundary extends React.Component<IProps, IState> {
                         </Card.Title>
                         <Card.Text as={"pre"} className="bg-transparent text-danger">
                             <code>
-                                {`Control Panel Version: ${VERSION}\nControl Panel Mode: ${MODE}\nStack trace: ${
+                                {`Webpanel Version: ${VERSION}\Webpanel Mode: ${MODE}\nStack trace: ${
                                     this.state.errorInfo?.componentStack ||
                                     "Unable to get stack info"
                                 }`}
