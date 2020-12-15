@@ -1,24 +1,5 @@
 import { pathToRegexp } from "path-to-regexp";
 
-function getSavedCreds(): string[] | null {
-    let usr: string | null = null;
-    let pwd: string | null = null;
-    try {
-        //private browsing on safari can throw when using storage
-        usr = window.localStorage.getItem("username");
-        pwd = window.localStorage.getItem("password");
-    } catch (e) {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        (() => {})(); //noop
-    }
-
-    if (usr && pwd) {
-        return [usr, pwd];
-    } else {
-        return null;
-    }
-}
-
 function download(filename: string, text: string): void {
     const element = document.createElement("a");
     element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
@@ -47,4 +28,4 @@ function matchesPath(path: string, target: string, exact = false): boolean {
     return pathToRegexp(target, undefined, { end: exact }).test(path);
 }
 
-export { getSavedCreds, download, replaceAll, matchesPath };
+export { download, replaceAll, matchesPath };

@@ -12,7 +12,6 @@ import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus"
 import ServerClient from "../../ApiClient/ServerClient";
 import UserClient from "../../ApiClient/UserClient";
 import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
-import { getSavedCreds } from "../../utils/misc";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -142,15 +141,11 @@ export default withRouter(
             switch (res.code) {
                 case StatusCode.OK: {
                     if (this.state.currentUser) {
-                        const [usr, pwd] = getSavedCreds() || [undefined, undefined];
                         // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
-                        void ServerClient.login(
-                            {
-                                userName: CredentialsProvider.credentials!.userName,
-                                password: this.state.password1
-                            },
-                            !!(usr && pwd)
-                        );
+                        void ServerClient.login({
+                            userName: CredentialsProvider.credentials!.userName,
+                            password: this.state.password1
+                        });
                     }
                     this.props.history.goBack();
                     break;

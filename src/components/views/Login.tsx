@@ -9,7 +9,6 @@ import { withRouter } from "react-router-dom";
 import InternalError from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
-import { getSavedCreds } from "../../utils/misc";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -22,7 +21,6 @@ interface IState {
     validated: boolean;
     username: string;
     password: string;
-    save: boolean;
     error?: InternalError<LoginErrors>;
 }
 
@@ -32,20 +30,11 @@ export default withRouter(
             super(props);
             this.submit = this.submit.bind(this);
 
-            let usr, pwd;
-            if (this.props.prefillLogin) {
-                usr = this.props.prefillLogin;
-                pwd = "";
-            } else {
-                [usr, pwd] = getSavedCreds() || [undefined, undefined];
-            }
-
             this.state = {
                 busy: false,
                 validated: false,
-                username: usr || "",
-                password: pwd || "",
-                save: !!(usr && pwd)
+                username: "",
+                password: ""
             };
         }
 
@@ -54,8 +43,6 @@ export default withRouter(
                 this.setState({ username: event.target.value });
             const handlePwdInput = (event: ChangeEvent<HTMLInputElement>) =>
                 this.setState({ password: event.target.value });
-            const handleSaveInput = (event: ChangeEvent<HTMLInputElement>) =>
-                this.setState({ save: event.target.checked });
 
             if (this.state.busy) {
                 return <Loading text="loading.login" />;
@@ -89,14 +76,6 @@ export default withRouter(
                                 required
                             />
                         </Form.Group>
-                        <Form.Group controlId="save">
-                            <Form.Check
-                                type="checkbox"
-                                label="Save password"
-                                onChange={handleSaveInput}
-                                checked={this.state.save}
-                            />
-                        </Form.Group>
                         <Button type="submit">
                             <FormattedMessage id="login.submit" />
                         </Button>
@@ -110,13 +89,10 @@ export default withRouter(
             this.setState({
                 busy: true
             });
-            const response = await ServerClient.login(
-                {
-                    userName: this.state.username,
-                    password: this.state.password
-                },
-                this.state.save
-            );
+            const response = await ServerClient.login({
+                userName: this.state.username,
+                password: this.state.password
+            });
             if (response.code == StatusCode.ERROR) {
                 this.setState({
                     busy: false,

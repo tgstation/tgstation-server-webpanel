@@ -19,14 +19,12 @@ import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import TranslationFactory from "./translations/TranslationFactory";
-import { getSavedCreds } from "./utils/misc";
 
 interface IState {
     translation?: ITranslation;
     translationError?: string;
     loggedIn: boolean;
     loading: boolean;
-    autoLogin: boolean;
 }
 
 interface IProps {
@@ -36,7 +34,6 @@ interface IProps {
 
 interface InnerProps {
     loading: boolean;
-    autoLogin: boolean;
     loggedIn: boolean;
 }
 
@@ -58,8 +55,6 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                     <Container className="mt-5 mb-5">
                         {this.props.loading ? (
                             <Loading text="loading.app" />
-                        ) : this.props.autoLogin && !this.props.loggedIn ? (
-                            <Loading text="loading.login" />
                         ) : (
                             <Router
                                 loggedIn={this.props.loggedIn}
@@ -91,8 +86,7 @@ class App extends React.Component<IProps, IState> {
 
         this.state = {
             loggedIn: false,
-            loading: true,
-            autoLogin: false
+            loading: true
         };
     }
 
@@ -103,8 +97,7 @@ class App extends React.Component<IProps, IState> {
             void UserClient.getCurrentUser(); //preload the user, we dont particularly care about the content, just that its preloaded
             this.setState({
                 loggedIn: true,
-                loading: false,
-                autoLogin: false
+                loading: false
             });
         });
         ServerClient.on("logout", () => {
@@ -116,35 +109,9 @@ class App extends React.Component<IProps, IState> {
         await this.loadTranslation();
         await ServerClient.initApi();
 
-        const [usr, pwd] = getSavedCreds() || [undefined, undefined];
-
-        const autoLogin = !!(usr && pwd);
-        if (autoLogin) console.log("Logging in with saved credentials");
-
         this.setState({
-            loading: false,
-            autoLogin: autoLogin
+            loading: false
         });
-        if (autoLogin) {
-            const res = await ServerClient.login({ userName: usr!, password: pwd! });
-            if (res.code == StatusCode.ERROR) {
-                this.setState({
-                    autoLogin: false
-                });
-                if (
-                    res.error?.code == ErrorCode.LOGIN_DISABLED ||
-                    res.error?.code == ErrorCode.LOGIN_FAIL
-                ) {
-                    try {
-                        window.localStorage.removeItem("username");
-                        window.localStorage.removeItem("password");
-                    } catch (e) {
-                        // eslint-disable-next-line @typescript-eslint/no-empty-function
-                        (() => {})(); //noop
-                    }
-                }
-            }
-        }
     }
 
     public render(): React.ReactNode {
@@ -156,11 +123,7 @@ class App extends React.Component<IProps, IState> {
             <IntlProvider
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}>
-                <InnerApp
-                    loading={this.state.loading}
-                    autoLogin={this.state.autoLogin}
-                    loggedIn={this.state.loggedIn}
-                />
+                <InnerApp loading={this.state.loading} loggedIn={this.state.loggedIn} />
             </IntlProvider>
         );
     }

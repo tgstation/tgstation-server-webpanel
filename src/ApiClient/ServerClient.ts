@@ -354,8 +354,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     }
 
     public async login(
-        newCreds?: ICredentials,
-        savePassword = false
+        newCreds?: ICredentials
     ): Promise<InternalStatus<Components.Schemas.Token, LoginErrors>> {
         //Shouldn't really happen edge cases
         await this.wait4Init();
@@ -414,23 +413,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
                 // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
                 CredentialsProvider.token = token;
-
-                if (savePassword) {
-                    try {
-                        window.localStorage.setItem(
-                            "username",
-                            CredentialsProvider.credentials.userName
-                        );
-                        window.localStorage.setItem(
-                            "password",
-                            CredentialsProvider.credentials.password
-                        );
-                    } catch (_) {
-                        //Some browsers throw an exception when it cannot save to local storage(private browsing),
-                        // we dont particularly care to inform the user
-                        (() => {})(); //noop
-                    }
-                }
 
                 //LoginHooks are a way of running several async tasks at the same time whenever the user is authenticated,
                 // we cannot use events here as events wait on each listener before proceeding which has a noticable performance
@@ -500,13 +482,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         }
         console.log("Logging out");
         CredentialsProvider.credentials = undefined;
-        try {
-            window.localStorage.removeItem("username");
-            window.localStorage.removeItem("password");
-        } catch (e) {
-            //Some browsers throw an error here, we dont care
-            (() => {})();
-        }
         CredentialsProvider.token = undefined;
         //events to clear the app state as much as possible for the next user
         this.emit("purgeCache");
