@@ -185,49 +185,40 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                             (request.url === "/" || request.url === "") &&
                             request.method === "post"
                         ) {
-                            this.logout();
-                            console.log("Failed to login");
+                            return Promise.resolve(error.response);
+                        }
+
+                        if (this.autoLogin) {
+                            return this.login().then(status => {
+                                switch (status.code) {
+                                    case StatusCode.OK: {
+                                        return this.api!.client.request(error.config);
+                                    }
+                                    case StatusCode.ERROR: {
+                                        this.emit("accessDenied");
+                                        //time to kick out the user
+                                        this.logout();
+                                        const errorobj = new InternalError(
+                                            ErrorCode.HTTP_ACCESS_DENIED,
+                                            {
+                                                void: true
+                                            },
+                                            res
+                                        );
+                                        return Promise.reject(errorobj);
+                                    }
+                                }
+                            });
+                        } else {
+                            this.emit("accessDenied");
                             const errorobj = new InternalError(
-                                ErrorCode.LOGIN_FAIL,
+                                ErrorCode.HTTP_ACCESS_DENIED,
                                 {
                                     void: true
                                 },
                                 res
                             );
                             return Promise.reject(errorobj);
-                        } else {
-                            if (this.autoLogin) {
-                                return this.login().then(status => {
-                                    switch (status.code) {
-                                        case StatusCode.OK: {
-                                            return this.api!.client.request(error.config);
-                                        }
-                                        case StatusCode.ERROR: {
-                                            this.emit("accessDenied");
-                                            //time to kick out the user
-                                            this.logout();
-                                            const errorobj = new InternalError(
-                                                ErrorCode.HTTP_ACCESS_DENIED,
-                                                {
-                                                    void: true
-                                                },
-                                                res
-                                            );
-                                            return Promise.reject(errorobj);
-                                        }
-                                    }
-                                });
-                            } else {
-                                this.emit("accessDenied");
-                                const errorobj = new InternalError(
-                                    ErrorCode.HTTP_ACCESS_DENIED,
-                                    {
-                                        void: true
-                                    },
-                                    res
-                                );
-                                return Promise.reject(errorobj);
-                            }
                         }
                     }
                     case 403: {
@@ -236,16 +227,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                             (request.url === "/" || request.url === "") &&
                             request.method === "post"
                         ) {
-                            this.logout();
-                            console.log("Account disabled");
-                            const errorobj = new InternalError(
-                                ErrorCode.LOGIN_DISABLED,
-                                {
-                                    void: true
-                                },
-                                res
-                            );
-                            return Promise.reject(errorobj);
+                            return Promise.resolve(error.response);
                         } else {
                             this.emit("accessDenied");
                             const errorobj = new InternalError(
@@ -273,17 +255,12 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
                         //Thanks for reusing a global erorr status cyber. Log operations can return 409
                         const request = error.config;
-                        let status: ErrorCode;
                         if (request.url === "/Administration/Logs" && request.method === "get") {
-                            status = ErrorCode.ADMIN_LOGS_IO_ERROR;
-                        } else if (request.url === "/Job" && request.method === "get") {
-                            status = ErrorCode.JOB_INSTANCE_OFFLINE;
-                        } else {
-                            status = ErrorCode.HTTP_DATA_INEGRITY;
+                            return Promise.resolve(error.response);
                         }
 
                         const errorobj = new InternalError(
-                            status,
+                            ErrorCode.HTTP_DATA_INEGRITY,
                             {
                                 errorMessage
                             },
@@ -474,6 +451,34 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 this.emit("loadLoginInfo", res);
 
                 return res;
+            }
+            case 401: {
+                this.logout();
+                console.log("Failed to login");
+                return new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_FAIL>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.LOGIN_FAIL,
+                        {
+                            void: true
+                        },
+                        response
+                    )
+                });
+            }
+            case 403: {
+                this.logout();
+                console.log("Account disabled");
+                return new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_DISABLED>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.LOGIN_DISABLED,
+                        {
+                            void: true
+                        },
+                        response
+                    )
+                });
             }
             default: {
                 return new InternalStatus<Components.Schemas.Token, ErrorCode.UNHANDLED_RESPONSE>({

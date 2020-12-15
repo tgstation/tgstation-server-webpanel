@@ -27,7 +27,7 @@ export type UpdateErrors =
 
 export type LogsErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
 
-export type LogErrors = GenericErrors;
+export type LogErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
 
 export default new (class AdminClient extends TypedEmitter<IEvents> {
     private _cachedAdminInfo?: InternalStatus<Components.Schemas.Administration, ErrorCode.OK>;
@@ -283,10 +283,17 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                     payload: response.data as Components.Schemas.LogFile[]
                 });
             }
-            /*case 409: {
-                //not handled here as its a global error but instead handled in the interceptor as a snowflaky response, thanks for using 409 for two things cyber.
-
-            }*/
+            case 409: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_LOGS_IO_ERROR,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
             default: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
@@ -323,9 +330,17 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                     payload: response.data as Components.Schemas.LogFile
                 });
             }
-            /*case 409: {
-                //not handled here as its a global error but instead handled in the interceptor as a snowflaky response, thanks for using 409 for two things cyber.
-            }*/
+            case 409: {
+                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_LOGS_IO_ERROR,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
             default: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,

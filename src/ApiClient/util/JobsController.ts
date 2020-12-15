@@ -20,6 +20,7 @@ import { StatusCode } from "../models/InternalComms/InternalStatus";
 import ServerClient from "../ServerClient";
 import UserClient from "../UserClient";
 import configOptions from "./config";
+import { ErrorCode as TGSErrorCode } from "../generatedcode/_enums";
 
 interface IEvents {
     jobsLoaded: () => unknown;
@@ -179,7 +180,12 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         );
                     }
                 } else {
-                    if (value.error!.code === ErrorCode.JOB_INSTANCE_OFFLINE) {
+                    if (
+                        value.error!.code === ErrorCode.HTTP_DATA_INEGRITY &&
+                        value.error!.originalErrorMessage?.errorCode ===
+                            TGSErrorCode.InstanceOffline
+                    ) {
+                        console.log("[JobsController] Clearing instance as it is now offline");
                         this.setInstance(undefined);
                     }
                     this.errors.push(value.error!);
