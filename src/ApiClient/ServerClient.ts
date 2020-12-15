@@ -399,10 +399,12 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 }
             });
         } catch (stat) {
-            return new InternalStatus<Components.Schemas.Token, GenericErrors>({
+            const res = new InternalStatus<Components.Schemas.Token, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
+            this.emit("loadLoginInfo", res);
+            return res;
         } finally {
             this.loggingIn = false;
         }
@@ -437,7 +439,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             case 401: {
                 this.logout();
                 console.log("Failed to login");
-                return new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_FAIL>({
+                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_FAIL>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_FAIL,
@@ -447,11 +449,13 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
+                this.emit("loadLoginInfo", res);
+                return res;
             }
             case 403: {
                 this.logout();
                 console.log("Account disabled");
-                return new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_DISABLED>({
+                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_DISABLED>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_DISABLED,
@@ -461,9 +465,14 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
+                this.emit("loadLoginInfo", res);
+                return res;
             }
             default: {
-                return new InternalStatus<Components.Schemas.Token, ErrorCode.UNHANDLED_RESPONSE>({
+                const res = new InternalStatus<
+                    Components.Schemas.Token,
+                    ErrorCode.UNHANDLED_RESPONSE
+                >({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,
@@ -471,6 +480,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
+                this.emit("loadLoginInfo", res);
+                return res;
             }
         }
     }
