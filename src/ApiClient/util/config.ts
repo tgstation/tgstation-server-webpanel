@@ -1,5 +1,3 @@
-import ServerClient from "../ServerClient";
-
 export type ConfigValue = number | string | boolean;
 
 export type ConfigOption = BaseConfigOption &
@@ -55,18 +53,7 @@ const configOptions: ConfigMap = {
     apipath: {
         id: "config.apipath",
         type: "str",
-        value: DEFAULT_APIPATH,
-        callback: (old: string, newVal: string): void => {
-            console.log("Reinitializing API");
-            ServerClient.initApi()
-                .then(() => {
-                    console.log("API Reinitialized");
-                })
-                .catch(() => {
-                    //The API failing to initialize is a big nono, start all over again.
-                    window.location.reload();
-                });
-        }
+        value: DEFAULT_APIPATH
     },
     jobpollinactive: {
         id: "config.jobpollinactive",

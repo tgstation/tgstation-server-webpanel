@@ -54,6 +54,19 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 void LoginHooks.runHooks(CredentialsProvider.token);
             }
         });
+
+        //Why is this here? Because otherwise it creates an import loop, grrrrr
+        configOptions.apipath.callback = (): void => {
+            console.log("Reinitializing API");
+            this.initApi()
+                .then(() => {
+                    console.log("API Reinitialized");
+                })
+                .catch(() => {
+                    //The API failing to initialize is a big nono, start all over again.
+                    window.location.reload();
+                });
+        };
     }
 
     //serverInfo

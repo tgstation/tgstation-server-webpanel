@@ -6,8 +6,6 @@ import { hot } from "react-hot-loader/root";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
-import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
-import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
 import LoginHooks from "./ApiClient/util/LoginHooks";

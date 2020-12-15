@@ -7,11 +7,11 @@ import {
     ConfigurationRights,
     DreamDaemonRights,
     DreamMakerRights,
+    ErrorCode as TGSErrorCode,
     InstanceManagerRights,
     InstanceUserRights,
     RepositoryRights,
-    RightsType,
-    ErrorCode as TGSErrorCode
+    RightsType
 } from "../generatedcode/_enums";
 import { Components } from "../generatedcode/_generated";
 import InstanceUserClient from "../InstanceUserClient";
