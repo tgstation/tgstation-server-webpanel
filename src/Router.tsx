@@ -30,7 +30,7 @@ const LoadSpin = (page: string) => (
     </Loading>
 );
 
-const NotFound = loadable(() => import("./components/views/NotFound"), {
+const NotFound = loadable(() => import("./components/utils/NotFound"), {
     fallback: LoadSpin("loading.page.notfound")
 });
 
