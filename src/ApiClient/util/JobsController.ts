@@ -10,7 +10,8 @@ import {
     InstanceManagerRights,
     InstanceUserRights,
     RepositoryRights,
-    RightsType
+    RightsType,
+    ErrorCode as TGSErrorCode
 } from "../generatedcode/_enums";
 import { Components } from "../generatedcode/_generated";
 import InstanceUserClient from "../InstanceUserClient";
@@ -20,7 +21,6 @@ import { StatusCode } from "../models/InternalComms/InternalStatus";
 import ServerClient from "../ServerClient";
 import UserClient from "../UserClient";
 import configOptions from "./config";
-import { ErrorCode as TGSErrorCode } from "../generatedcode/_enums";
 
 interface IEvents {
     jobsLoaded: () => unknown;

@@ -28,6 +28,10 @@ export default new (class ConfigController {
                 break;
         }
 
+        if (option.callback) {
+            // @ts-expect-error Can't be assed to figure this one out
+            option.callback(configOptions[key].value, option.value);
+        }
         configOptions[key].value = option.value;
         //configOptions[key].persist = option.persist;
 
