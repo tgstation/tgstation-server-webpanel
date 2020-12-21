@@ -1,16 +1,18 @@
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
-const webpack = require("webpack");
 const path = require("path");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = function createConfig(prodLike, github = false) {
     const publicPath = process.env.TGS_OVERRIDE_DEFAULT_BASEPATH || (prodLike ? "/app/" : "/");
+    const isDevelopment = !prodLike;
 
     return {
-        mode: prodLike ? "development" : "production",
+        mode: isDevelopment ? "development" : "production",
         devtool: "source-map",
 
         context: __dirname,
@@ -61,12 +63,7 @@ module.exports = function createConfig(prodLike, github = false) {
 
         resolve: {
             extensions: [".ts", ".tsx", ".js"],
-            symlinks: false,
-            alias: !prodLike
-                ? {
-                      "react-dom": "@hot-loader/react-dom"
-                  }
-                : {}
+            symlinks: false
         },
 
         module: {
@@ -132,8 +129,8 @@ module.exports = function createConfig(prodLike, github = false) {
                                         regenerator: false
                                     }
                                 ],*/
-                                "react-hot-loader/babel"
-                            ]
+                                isDevelopment && require.resolve("react-refresh/babel")
+                            ].filter(Boolean)
                         }
                     }
                 },
@@ -183,8 +180,14 @@ module.exports = function createConfig(prodLike, github = false) {
                           }
                       ]
                   })
-                : () => {}
-        ],
+                : undefined,
+            isDevelopment &&
+                new ReactRefreshWebpackPlugin({
+                    overlay: {
+                        sockIntegration: "wds"
+                    }
+                })
+        ].filter(Boolean),
         node: {
             fs: "empty"
         }

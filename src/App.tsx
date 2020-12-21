@@ -2,7 +2,6 @@ import "./App.css";
 
 import * as React from "react";
 import Container from "react-bootstrap/Container";
-import { hot } from "react-hot-loader/root";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
@@ -144,4 +143,4 @@ class App extends React.Component<IProps, IState> {
     }
 }
 
-export default hot(App);
+export default App;
