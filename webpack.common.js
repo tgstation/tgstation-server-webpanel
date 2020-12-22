@@ -123,12 +123,6 @@ module.exports = function createConfig(prodLike, github = false) {
                             ],
                             plugins: [
                                 ["@babel/plugin-proposal-class-properties", { loose: true }],
-                                /*[
-                                    '@babel/plugin-transform-runtime',
-                                    {
-                                        regenerator: false
-                                    }
-                                ],*/
                                 isDevelopment && require.resolve("react-refresh/babel")
                             ].filter(Boolean)
                         }
