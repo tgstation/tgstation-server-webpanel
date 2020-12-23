@@ -49,23 +49,23 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
             <BrowserRouter basename={DEFAULT_BASEPATH}>
                 <ErrorBoundary>
                     <AppNavbar category={this.state.passdownCat} />
-                    <Container className="mt-5 mb-5">
-                        {this.props.loading ? (
+                    {this.props.loading ? (
+                        <Container className="mt-5 mb-5">
                             <Loading text="loading.app" />
-                        ) : (
-                            <Router
-                                loggedIn={this.props.loggedIn}
-                                selectCategory={cat => {
-                                    this.setState({
-                                        passdownCat: {
-                                            name: cat,
-                                            key: Math.random().toString()
-                                        }
-                                    });
-                                }}
-                            />
-                        )}
-                    </Container>
+                        </Container>
+                    ) : (
+                        <Router
+                            loggedIn={this.props.loggedIn}
+                            selectCategory={cat => {
+                                this.setState({
+                                    passdownCat: {
+                                        name: cat,
+                                        key: Math.random().toString()
+                                    }
+                                });
+                            }}
+                        />
+                    )}
                     <JobsList />
                 </ErrorBoundary>
             </BrowserRouter>
