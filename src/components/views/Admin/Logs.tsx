@@ -210,7 +210,7 @@ export default withRouter(
 
                                     return (
                                         //yes hello this shouldnt be nullable apparently
-                                        <tr key={value.name!}>
+                                        <tr key={value.name}>
                                             <td>{index}</td>
                                             <td>{value.name}</td>
                                             <OverlayTrigger
@@ -253,11 +253,12 @@ export default withRouter(
                                                         this.downloadLog(value.name!).catch(
                                                             (e: Error) => {
                                                                 this.addError(
-                                                                    new InternalError<
-                                                                        ErrorCode.APP_FAIL
-                                                                    >(ErrorCode.APP_FAIL, {
-                                                                        jsError: e
-                                                                    })
+                                                                    new InternalError<ErrorCode.APP_FAIL>(
+                                                                        ErrorCode.APP_FAIL,
+                                                                        {
+                                                                            jsError: e
+                                                                        }
+                                                                    )
                                                                 );
                                                             }
                                                         );

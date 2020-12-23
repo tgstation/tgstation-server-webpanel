@@ -106,7 +106,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                 { owner, repo },
                 (response, done) => {
                     return response.data.reduce((result, release) => {
-                        const match = /tgstation-server-v([\d.]+)/.exec(release.name);
+                        const match = /tgstation-server-v([\d.]+)/.exec(release.name || "");
                         if (!match) return result;
                         if (match[1][0] !== "4") return result;
 
@@ -125,7 +125,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
 
                         result.push({
                             version,
-                            body: release.body,
+                            body: release.body || "",
                             current: version === current,
                             old
                         });
