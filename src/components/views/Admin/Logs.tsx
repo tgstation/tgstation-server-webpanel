@@ -238,9 +238,7 @@ export default withRouter(
                                                         <td {...triggerHandler}>
                                                             <span
                                                                 ref={
-                                                                    ref as React.Ref<
-                                                                        HTMLSpanElement
-                                                                    >
+                                                                    ref as React.Ref<HTMLSpanElement>
                                                                 }>
                                                                 <FormattedRelativeTime
                                                                     value={logdiff}
@@ -272,11 +270,12 @@ export default withRouter(
                                                             this.downloadLog(value.name!).catch(
                                                                 (e: Error) => {
                                                                     this.addError(
-                                                                        new InternalError<
-                                                                            ErrorCode.APP_FAIL
-                                                                        >(ErrorCode.APP_FAIL, {
-                                                                            jsError: e
-                                                                        })
+                                                                        new InternalError<ErrorCode.APP_FAIL>(
+                                                                            ErrorCode.APP_FAIL,
+                                                                            {
+                                                                                jsError: e
+                                                                            }
+                                                                        )
                                                                     );
                                                                 }
                                                             );
