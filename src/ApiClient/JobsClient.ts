@@ -3,7 +3,7 @@ import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
 
-export type listJobsErrors = GenericErrors | ErrorCode.JOB_INSTANCE_OFFLINE;
+export type listJobsErrors = GenericErrors;
 export type getJobErrors = GenericErrors | ErrorCode.JOB_JOB_NOT_FOUND;
 export type deleteJobErrors =
     | GenericErrors
@@ -22,7 +22,7 @@ export default new (class JobsClient {
         } catch (stat) {
             return new InternalStatus<Components.Schemas.Job[], listJobsErrors>({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors | ErrorCode.JOB_INSTANCE_OFFLINE>
+                error: stat as InternalError<GenericErrors>
             });
         }
 

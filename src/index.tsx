@@ -20,6 +20,13 @@ import initIcons from "./utils/icolibrary";
 initIcons();
 ConfigController.loadconfig();
 
+//I can't be assed to remember the default admin password
+document.addEventListener("keydown", function (event) {
+    if (event.key == "L" && event.ctrlKey && event.shiftKey) {
+        alert("ISolemlySwearToDeleteTheDataDirectory");
+    }
+});
+
 const rootNode = document.getElementById("root") as HTMLElement;
 const appTsx = (
     <React.StrictMode>

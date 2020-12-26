@@ -18,9 +18,6 @@ export default new (class InstanceUserClient extends TypedEmitter<IEvents> {
         number,
         InternalStatus<Components.Schemas.InstanceUser, ErrorCode.OK>
     > = new Map<number, InternalStatus<Components.Schemas.InstanceUser, ErrorCode.OK>>();
-    public get cachedInstanceUser() {
-        return this._cachedInstanceUser;
-    }
 
     private loadingInstanceUserInfo: Map<number, boolean> = new Map<number, boolean>();
 

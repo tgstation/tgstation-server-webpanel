@@ -42,6 +42,10 @@ export interface AppRoute {
     category?: string;
     //if this is the main button in the category
     catleader?: boolean;
+
+    ///Misc
+    //Should we not wrap this component in a <Container>?
+    noContainer?: boolean;
 }
 
 function adminRight(right: AdministrationRights) {
@@ -296,7 +300,9 @@ const AppRoutes = asElementTypesAppRoute({
         visibleNavbar: true,
         homeIcon: undefined,
 
-        category: "admin"
+        category: "admin",
+
+        noContainer: true
     },
     passwd: {
         name: "routes.passwd",

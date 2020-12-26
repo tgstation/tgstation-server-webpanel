@@ -15,7 +15,7 @@ export default class NotFound extends React.Component {
                     </Card.Title>
                     <Card.Text as={"pre"} className="bg-transparent text-danger">
                         <code>
-                            {`Control Panel Version: ${VERSION}\nControl Panel Mode: ${MODE}\nCurrent route: ${window.location.toString()}`}
+                            {`Webpanel Version: ${VERSION}\nWebpanel Mode: ${MODE}\nCurrent route: ${window.location.toString()}`}
                         </code>
                     </Card.Text>
                 </Card.Body>
