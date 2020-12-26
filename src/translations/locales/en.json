@@ -151,6 +151,10 @@
     "view.instance.jobs.title": "Job list",
     "view.instance.jobs.error": "An error occured",
     "view.instance.moving": "[MOVING INSTANCE...]",
+    "view.instance.config.instancesettings": "Instance Settings",
+    "view.instance.config.instanceusers": "Instance Users",
+    "view.instance.config.chatbots": "Chat Bots",
+    "view.instance.config.noinstance": "No instance. Perhaps an error occured.",
     "perms.admin": "Administration Permissions",
     "perms.admin.writeusers": "Edit Users",
     "perms.admin.writeusers.desc": "Ability to edit users, if View Users is granted, all users can be edited, otherwise, only the current user can be edited",
@@ -215,5 +219,6 @@
     "loading.user.save": "Saving user information...",
     "loading.user.create": "Creating user...",
     "loading.instance.list": "Loading instance list...",
-    "loading.instance.jobs.list": "Loading job list..."
+    "loading.instance.jobs.list": "Loading job list...",
+    "loading.instance": "Loading instance..."
 }

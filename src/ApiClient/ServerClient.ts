@@ -2,6 +2,7 @@ import { AxiosError, AxiosResponse, OpenAPIClientAxios } from "openapi-client-ax
 import { Document } from "openapi-client-axios/types/client";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
+import { ErrorCode as TGSErrorCode } from "./generatedcode/_enums";
 import { Client, Components } from "./generatedcode/_generated";
 import { ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
@@ -42,6 +43,10 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     private api?: OpenAPIClientAxios; //api object, handles sending requests and configuring things
     private initialized = false;
     private loadingServerInfo = false;
+
+    //fired when something returns error code 90(instance offline)
+    //Starts as a no-op but gets get by routes.ts
+    public clearInstance: (instance: number) => void = () => {};
 
     public constructor() {
         super();
@@ -113,9 +118,20 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             val => val,
             (error: AxiosError): Promise<AxiosResponse> => {
                 //THIS IS SNOWFLAKE KEKW
-                const snowflake = (error as unknown) as InternalError<ErrorCode.NO_APIPATH>;
+                const snowflake = (error as unknown) as InternalError<ErrorCode>;
                 if (snowflake?.code === ErrorCode.NO_APIPATH) {
                     return Promise.reject(snowflake);
+                }
+
+                if (error.response?.status) {
+                    const attempt = (error.response.data as unknown) as Partial<{
+                        errorCode: TGSErrorCode;
+                    }>;
+                    if (attempt?.errorCode === TGSErrorCode.InstanceOffline) {
+                        // This is a bad and assumes the request has the Instance header set which it might not have set, worst case senario the instance doesnt get cleared
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                        this.clearInstance(error.config.headers.Instance);
+                    }
                 }
 
                 if (
