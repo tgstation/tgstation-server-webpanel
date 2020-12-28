@@ -27,13 +27,7 @@
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true
   },
-  "exclude": [
-    "node_modules",
-    "build",
-    "dist",
-    "src/ApiClient/generatedcode"
-  ],
   "include": [
-    "src"
+    "src/**/*"
   ]
 }
