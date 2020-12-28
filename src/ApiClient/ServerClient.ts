@@ -2,6 +2,7 @@ import { AxiosError, AxiosResponse, OpenAPIClientAxios } from "openapi-client-ax
 import { Document } from "openapi-client-axios/types/client";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
+import { API_VERSION, VERSION } from "../definitions/constants";
 import { ErrorCode as TGSErrorCode } from "./generatedcode/_enums";
 import { Client, Components } from "./generatedcode/_generated";
 import { ICredentials } from "./models/ICredentials";

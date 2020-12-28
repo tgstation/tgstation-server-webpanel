@@ -3,6 +3,6 @@
   <component name="TypeScriptCompiler">
     <option name="enableServiceForProjectsWithoutConfig" value="false" />
     <option name="recompileOnChanges" value="true" />
-    <option name="scopeName" value="All Changed Files" />
+    <option name="scopeName" value="src" />
   </component>
 </project>
