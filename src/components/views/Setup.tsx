@@ -157,7 +157,7 @@ export default injectIntl(
                         </h1>
 
                         <div className="align-middle">
-                            {this.state.step >= 2 ? (
+                            {this.state.step !== 4 ? (
                                 <Button
                                     variant="danger"
                                     className="mx-1"
@@ -178,7 +178,7 @@ export default injectIntl(
                                     <FormattedMessage id="view.setup.quit" />
                                 </Button>
                             ) : null}
-                            {this.state.step === 4 ? (
+                            {this.state.step !== 4 ? (
                                 <Button
                                     className="mx-1"
                                     onClick={() => {
