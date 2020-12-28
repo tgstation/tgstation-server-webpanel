@@ -5,7 +5,7 @@
       <option name="arguments" value="prettier $FilePath$ -w" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
-      <option name="exitCodeBehavior" value="ALWAYS" />
+      <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="tsx" />
       <option name="immediateSync" value="true" />
       <option name="name" value="Prettier (.tsx)" />
@@ -25,7 +25,7 @@
       <option name="arguments" value="prettier $FilePath$ -w" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
-      <option name="exitCodeBehavior" value="ALWAYS" />
+      <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="ts" />
       <option name="immediateSync" value="true" />
       <option name="name" value="Prettier (.ts)" />
@@ -45,7 +45,7 @@
       <option name="arguments" value="prettier $FilePath$ -w" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
-      <option name="exitCodeBehavior" value="ALWAYS" />
+      <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="jsx" />
       <option name="immediateSync" value="true" />
       <option name="name" value="Prettier (.jsx)" />
@@ -65,7 +65,7 @@
       <option name="arguments" value="prettier $FilePath$ -w" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
-      <option name="exitCodeBehavior" value="ALWAYS" />
+      <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="js" />
       <option name="immediateSync" value="true" />
       <option name="name" value="Prettier (.js)" />
