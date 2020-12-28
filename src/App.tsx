@@ -13,12 +13,12 @@ import AppNavbar from "./components/AppNavbar";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
+import { DEFAULT_BASEPATH, MODE } from "./definitions/constants";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import TranslationFactory from "./translations/TranslationFactory";
 import { AppRoutes } from "./utils/routes";
-import { DEFAULT_BASEPATH, MODE } from "./definitions/constants";
 
 interface IState {
     translation?: ITranslation;

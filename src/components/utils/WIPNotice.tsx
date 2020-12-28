@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import { FormattedMessage } from "react-intl";
+
 import { MODE, VERSION } from "../../definitions/constants";
 
 export default class WIPNotice extends React.Component {

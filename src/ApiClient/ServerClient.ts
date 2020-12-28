@@ -2,6 +2,7 @@ import { AxiosError, AxiosResponse, OpenAPIClientAxios } from "openapi-client-ax
 import { Document } from "openapi-client-axios/types/client";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
+import { API_VERSION, VERSION } from "../definitions/constants";
 import { Client, Components } from "./generatedcode/_generated";
 import { ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
@@ -9,7 +10,6 @@ import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatu
 import configOptions from "./util/config";
 import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
-import { API_VERSION, VERSION } from "../definitions/constants";
 
 interface IEvents {
     //self explainatory
