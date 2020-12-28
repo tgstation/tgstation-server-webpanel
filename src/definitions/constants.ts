@@ -4,8 +4,14 @@ declare const MODE: string;
 declare const DEFAULT_BASEPATH: string;
 declare const DEFAULT_APIPATH: string;
 
-export { API_VERSION as API_VERSION };
-export { VERSION as VERSION };
-export { MODE as MODE };
-export { DEFAULT_BASEPATH as DEFAULT_BASEPATH };
-export { DEFAULT_APIPATH as DEFAULT_APIPATH };
+const _API_VERSION = API_VERSION;
+const _VERSION = VERSION;
+const _MODE = MODE;
+const _DEFAULT_BASEPATH = DEFAULT_BASEPATH;
+const _DEFAULT_APIPATH = DEFAULT_APIPATH;
+
+export { _API_VERSION as API_VERSION };
+export { _VERSION as VERSION };
+export { _MODE as MODE };
+export { _DEFAULT_BASEPATH as DEFAULT_BASEPATH };
+export { _DEFAULT_APIPATH as DEFAULT_APIPATH };
