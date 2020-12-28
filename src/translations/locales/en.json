@@ -110,6 +110,8 @@
     "generic.path": "Path",
     "generic.select": "Select",
     "generic.instance": "Instance",
+    "generic.wip": "Work In Progress!",
+    "generic.wip.desc": "The TGS webpanel is still a work in progress. The feature you are trying to use is not yet available. Until it becomes available, please use the TGS desktop client at ",
     "view.setup.navigationblock": "Navigation has been disabled for the duration of the setup.",
     "view.setup.title": "Step By Step Setup Wizard",
     "view.setup.quit": "Quit Setup",

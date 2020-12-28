@@ -3,8 +3,9 @@ import "./App.css";
 import * as React from "react";
 import Container from "react-bootstrap/Container";
 import { IntlProvider } from "react-intl";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Redirect } from "react-router-dom";
 
+import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
 import LoginHooks from "./ApiClient/util/LoginHooks";
@@ -16,6 +17,7 @@ import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import TranslationFactory from "./translations/TranslationFactory";
+import { AppRoutes } from "./utils/routes";
 
 interface IState {
     translation?: ITranslation;
@@ -36,6 +38,7 @@ interface InnerProps {
 
 interface InnerState {
     passdownCat?: { name: string; key: string };
+    redirectSetup?: boolean;
 }
 
 class InnerApp extends React.Component<InnerProps, InnerState> {
@@ -44,9 +47,48 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
 
         this.state = {};
     }
+
+    public componentDidMount() {
+        //I can't be assed to remember the default admin password
+        document.addEventListener("keydown", function (event) {
+            if (event.key == "L" && event.ctrlKey && event.shiftKey) {
+                //alert("ISolemlySwearToDeleteTheDataDirectory");
+                void ServerClient.login({
+                    userName: "admin",
+                    password: "ISolemlySwearToDeleteTheDataDirectory"
+                });
+            }
+        });
+
+        if (MODE === "DEV") {
+            void ServerClient.login({
+                userName: "admin",
+                password: "ISolemlySwearToDeleteTheDataDirectory"
+            });
+        } else {
+            void this.tryLoginDefault();
+        }
+    }
+
+    private async tryLoginDefault(): Promise<void> {
+        const response = await ServerClient.login({
+            userName: "admin",
+            password: "ISolemlySwearToDeleteTheDataDirectory"
+        });
+
+        if (response.code === StatusCode.OK) {
+            this.setState({
+                redirectSetup: true
+            });
+        }
+    }
+
     public render(): React.ReactNode {
         return (
             <BrowserRouter basename={DEFAULT_BASEPATH}>
+                {this.state.redirectSetup ? (
+                    <Redirect to={AppRoutes.setup.link || AppRoutes.setup.route} />
+                ) : null}
                 <ErrorBoundary>
                     <AppNavbar category={this.state.passdownCat} />
                     {this.props.loading ? (
