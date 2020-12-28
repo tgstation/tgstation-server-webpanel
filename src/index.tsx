@@ -1,5 +1,5 @@
 //definition files
-import "./definitions/scss.d";
+import "./scss.d";
 import "./definitions/constants";
 //css
 import "./styles/dark.scss";
