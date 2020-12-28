@@ -1,3 +1,5 @@
+import { DEFAULT_APIPATH } from "../../definitions/constants";
+
 export type ConfigValue = number | string | boolean;
 
 export type ConfigOption = BaseConfigOption &

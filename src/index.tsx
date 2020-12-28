@@ -1,6 +1,6 @@
 //definition files
 import "./definitions/scss.d";
-import "./definitions/globals.d";
+import "./definitions/constants";
 //css
 import "./styles/dark.scss";
 //polyfills

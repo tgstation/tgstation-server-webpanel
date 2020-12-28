@@ -9,6 +9,7 @@ import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatu
 import configOptions from "./util/config";
 import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
+import { API_VERSION, VERSION } from "../definitions/constants";
 
 interface IEvents {
     //self explainatory

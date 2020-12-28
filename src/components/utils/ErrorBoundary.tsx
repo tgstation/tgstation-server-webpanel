@@ -3,6 +3,7 @@ import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
+import { MODE, VERSION } from "../../definitions/constants";
 
 interface IProps extends RouteComponentProps {}
 interface IState {

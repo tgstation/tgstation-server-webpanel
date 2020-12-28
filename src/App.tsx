@@ -18,6 +18,7 @@ import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import TranslationFactory from "./translations/TranslationFactory";
 import { AppRoutes } from "./utils/routes";
+import { DEFAULT_BASEPATH, MODE } from "./definitions/constants";
 
 interface IState {
     translation?: ITranslation;

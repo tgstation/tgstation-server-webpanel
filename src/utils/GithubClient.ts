@@ -7,6 +7,7 @@ import { TypedEmitter } from "tiny-typed-emitter/lib";
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import configOptions from "../ApiClient/util/config";
+import { VERSION } from "../definitions/constants";
 
 export interface TGSVersion {
     version: string;
