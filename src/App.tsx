@@ -3,9 +3,8 @@ import "./App.css";
 import * as React from "react";
 import Container from "react-bootstrap/Container";
 import { IntlProvider } from "react-intl";
-import { BrowserRouter, Redirect } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
-import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
 import LoginHooks from "./ApiClient/util/LoginHooks";
@@ -13,12 +12,11 @@ import AppNavbar from "./components/AppNavbar";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
-import { DEFAULT_BASEPATH, MODE } from "./definitions/constants";
+import { DEFAULT_BASEPATH } from "./definitions/constants";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import TranslationFactory from "./translations/TranslationFactory";
-import { AppRoutes } from "./utils/routes";
 
 interface IState {
     translation?: ITranslation;
