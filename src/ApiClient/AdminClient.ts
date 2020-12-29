@@ -268,7 +268,10 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_ListLogs();
+            response = await ServerClient.apiClient!.AdministrationController_ListLogs({
+                pageSize: 100,
+                page: 0
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -280,7 +283,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.LogFile[]
+                    payload: (response.data as Components.Schemas.PaginatedLogFile)!.content
                 });
             }
             case 409: {
