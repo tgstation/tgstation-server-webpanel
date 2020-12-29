@@ -5,6 +5,7 @@ import Container from "react-bootstrap/Container";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
+import { CredentialsType } from "./ApiClient/models/ICredentials";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
 import LoginHooks from "./ApiClient/util/LoginHooks";
@@ -52,6 +53,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
             if (event.key == "L" && event.ctrlKey && event.shiftKey) {
                 //alert("ISolemlySwearToDeleteTheDataDirectory");
                 void ServerClient.login({
+                    type: CredentialsType.Password,
                     userName: "admin",
                     password: "ISolemlySwearToDeleteTheDataDirectory"
                 });
