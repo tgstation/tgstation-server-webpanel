@@ -39,7 +39,6 @@ interface InnerProps {
 
 interface InnerState {
     passdownCat?: { name: string; key: string };
-    redirectSetup?: boolean;
 }
 
 class InnerApp extends React.Component<InnerProps, InnerState> {
@@ -60,36 +59,11 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                 });
             }
         });
-
-        if (MODE === "DEV") {
-            void ServerClient.login({
-                userName: "admin",
-                password: "ISolemlySwearToDeleteTheDataDirectory"
-            });
-        } else {
-            void this.tryLoginDefault();
-        }
-    }
-
-    private async tryLoginDefault(): Promise<void> {
-        const response = await ServerClient.login({
-            userName: "admin",
-            password: "ISolemlySwearToDeleteTheDataDirectory"
-        });
-
-        if (response.code === StatusCode.OK) {
-            this.setState({
-                redirectSetup: true
-            });
-        }
     }
 
     public render(): React.ReactNode {
         return (
             <BrowserRouter basename={DEFAULT_BASEPATH}>
-                {this.state.redirectSetup ? (
-                    <Redirect to={AppRoutes.setup.link || AppRoutes.setup.route} />
-                ) : null}
                 <ErrorBoundary>
                     <AppNavbar category={this.state.passdownCat} />
                     {this.props.loading ? (
