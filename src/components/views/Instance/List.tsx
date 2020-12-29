@@ -8,7 +8,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { InstanceManagerRights } from "../../../ApiClient/generatedcode/_enums";
 import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
-import InstanceUserClient from "../../../ApiClient/InstanceUserClient";
+import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
@@ -69,22 +69,21 @@ export default withRouter(
                     const modifiedinstance = instance as Instance;
                     if (instance.online) {
                         work.push(
-                            InstanceUserClient.getCurrentInstanceUser(instance.id).then(
-                                instanceuser => {
-                                    if (instanceuser.code == StatusCode.OK) {
-                                        modifiedinstance.canAccess = true;
-                                    } else {
-                                        modifiedinstance.canAccess = false;
-                                        if (
-                                            instanceuser.error!.code !==
-                                            ErrorCode.HTTP_ACCESS_DENIED
-                                        ) {
-                                            this.addError(instanceuser.error!);
-                                        }
+                            InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                                instance.id
+                            ).then(permissionset => {
+                                if (permissionset.code == StatusCode.OK) {
+                                    modifiedinstance.canAccess = true;
+                                } else {
+                                    modifiedinstance.canAccess = false;
+                                    if (
+                                        permissionset.error!.code !== ErrorCode.HTTP_ACCESS_DENIED
+                                    ) {
+                                        this.addError(permissionset.error!);
                                     }
-                                    modifiedlist.push(modifiedinstance);
                                 }
-                            )
+                                modifiedlist.push(modifiedinstance);
+                            })
                         );
                     } else {
                         modifiedinstance.canAccess = false;
