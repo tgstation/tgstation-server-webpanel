@@ -10,6 +10,7 @@ import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatu
 import configOptions from "./util/config";
 import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
+import ErrorMessage = Components.Schemas.ErrorMessage;
 
 interface IEvents {
     //self explainatory
@@ -34,7 +35,9 @@ export type LoginErrors =
     | GenericErrors
     | ErrorCode.LOGIN_DISABLED
     | ErrorCode.LOGIN_FAIL
-    | ErrorCode.LOGIN_NOCREDS;
+    | ErrorCode.LOGIN_NOCREDS
+    | ErrorCode.LOGIN_RATELIMIT;
+
 export type ServerInfoErrors = GenericErrors;
 
 export default new (class ServerClient extends TypedEmitter<IEvents> {
@@ -408,12 +411,18 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await this.apiClient!.HomeController_CreateToken(null, null, {
-                auth: {
-                    username: CredentialsProvider.credentials.userName,
-                    password: CredentialsProvider.credentials.password
+            response = await this.apiClient!.HomeController_CreateToken(
+                {
+                    OAuthProvider: (undefined as unknown) as string
+                },
+                null,
+                {
+                    auth: {
+                        username: CredentialsProvider.credentials.userName,
+                        password: CredentialsProvider.credentials.password
+                    }
                 }
-            });
+            );
         } catch (stat) {
             const res = new InternalStatus<Components.Schemas.Token, GenericErrors>({
                 code: StatusCode.ERROR,
@@ -482,6 +491,24 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
+                this.emit("loadLoginInfo", res);
+                return res;
+            }
+            case 429: {
+                this.logout();
+                console.log("rate limited");
+                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_RATELIMIT>(
+                    {
+                        code: StatusCode.ERROR,
+                        error: new InternalError(
+                            ErrorCode.LOGIN_RATELIMIT,
+                            {
+                                errorMessage: response.data as ErrorMessage
+                            },
+                            response
+                        )
+                    }
+                );
                 this.emit("loadLoginInfo", res);
                 return res;
             }

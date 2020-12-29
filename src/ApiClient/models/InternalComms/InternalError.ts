@@ -44,6 +44,7 @@ export enum ErrorCode {
     LOGIN_FAIL = "error.login.bad_user_pass", //void
     LOGIN_NOCREDS = "error.login.no_creds", //void
     LOGIN_DISABLED = "error.login.user_disabled", //void
+    LOGIN_RATELIMIT = "error.login.rate_limit", //errmessage
 
     //User errors
     USER_NO_SYS_IDENT = "error.user.no_sys_ident", //errmessage
