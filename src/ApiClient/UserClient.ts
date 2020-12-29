@@ -178,7 +178,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         let response;
         try {
             response = await ServerClient.apiClient!.UserController_List({
-                page: 0,
+                page: 1,
                 pageSize: 100
             });
         } catch (stat) {

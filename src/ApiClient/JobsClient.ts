@@ -20,7 +20,7 @@ export default new (class JobsClient {
         try {
             response = await ServerClient.apiClient!.JobController_Read({
                 Instance: instanceid,
-                page: 0,
+                page: 1,
                 pageSize: 100
             });
         } catch (stat) {

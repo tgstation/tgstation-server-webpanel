@@ -17,7 +17,7 @@ export default new (class InstanceClient {
         try {
             response = await ServerClient.apiClient!.InstanceController_List({
                 pageSize: 100,
-                page: 0
+                page: 1
             });
         } catch (stat) {
             return new InternalStatus({

@@ -269,7 +269,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
         try {
             response = await ServerClient.apiClient!.AdministrationController_ListLogs({
                 pageSize: 100,
-                page: 0
+                page: 1
             });
         } catch (stat) {
             return new InternalStatus({
