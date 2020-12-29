@@ -9,10 +9,10 @@ import { Redirect, withRouter } from "react-router-dom";
 import InternalError from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
-import ErrorAlert from "../utils/ErrorAlert";
-import Loading from "../utils/Loading";
 import { MODE } from "../../definitions/constants";
 import { AppRoutes } from "../../utils/routes";
+import ErrorAlert from "../utils/ErrorAlert";
+import Loading from "../utils/Loading";
 
 interface IProps extends RouteComponentProps {
     prefillLogin?: string;
