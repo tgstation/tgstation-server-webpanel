@@ -4,13 +4,15 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
-import { withRouter } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 
 import InternalError from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
+import { MODE } from "../../definitions/constants";
+import { AppRoutes } from "../../utils/routes";
 
 interface IProps extends RouteComponentProps {
     prefillLogin?: string;
@@ -22,6 +24,7 @@ interface IState {
     username: string;
     password: string;
     error?: InternalError<LoginErrors>;
+    redirectSetup?: boolean;
 }
 
 export default withRouter(
@@ -38,6 +41,30 @@ export default withRouter(
             };
         }
 
+        public componentDidMount() {
+            if (MODE === "DEV") {
+                void ServerClient.login({
+                    userName: "admin",
+                    password: "ISolemlySwearToDeleteTheDataDirectory"
+                });
+            } else {
+                void this.tryLoginDefault();
+            }
+        }
+
+        private async tryLoginDefault(): Promise<void> {
+            const response = await ServerClient.login({
+                userName: "admin",
+                password: "ISolemlySwearToDeleteTheDataDirectory"
+            });
+
+            if (response.code === StatusCode.OK) {
+                this.setState({
+                    redirectSetup: true
+                });
+            }
+        }
+
         public render(): ReactNode {
             const handleUsrInput = (event: ChangeEvent<HTMLInputElement>) =>
                 this.setState({ username: event.target.value });
@@ -46,6 +73,10 @@ export default withRouter(
 
             if (this.state.busy) {
                 return <Loading text="loading.login" />;
+            }
+
+            if (this.state.redirectSetup) {
+                return <Redirect to={AppRoutes.setup.link || AppRoutes.setup.route} />;
             }
             return (
                 <Form validated={this.state.validated} onSubmit={this.submit}>
