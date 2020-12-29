@@ -69,6 +69,7 @@
     "error.app": "An error occured in the application",
     "error.job.not_found": "The specified job could not be found",
     "error.job.complete": "Unable to delete the job, perhaps it already completed",
+    "error.transfer.not_available": "Unable to transfer file as it is no longer or never was valid",
     "error.instance.no_db_entity": "The database entity for the requested instance could not be retrieved. The instance was likely detached",
     "error.api.empty": "No description available",
     "error.no_apipath": "No API path set, set an API path on the configuration page.",

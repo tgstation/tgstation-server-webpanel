@@ -19,7 +19,8 @@ export type GenericErrors =
     | ErrorCode.HTTP_ACCESS_DENIED
     | ErrorCode.HTTP_NOT_ACCEPTABLE
     | ErrorCode.OK
-    | ErrorCode.NO_APIPATH;
+    | ErrorCode.NO_APIPATH
+    | ErrorCode.APP_FAIL;
 
 export enum ErrorCode {
     OK = 'Isnt displayed but is used as an "error" when everything is ok', //void
@@ -60,6 +61,9 @@ export enum ErrorCode {
     //Job errors
     JOB_JOB_NOT_FOUND = "error.job.not_found", //errmessage
     JOB_JOB_COMPLETE = "error.job.complete", //void
+
+    //Transfer errors
+    TRANSFER_NOT_AVAILABLE = "error.transfer.not_available", //errmessage
 
     //Instance errors
     INSTANCE_NO_DB_ENTITY = "error.instance.no_db_entity" //errmessage

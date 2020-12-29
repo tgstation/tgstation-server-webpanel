@@ -348,7 +348,7 @@ export default withRouter(
                                                     <Tooltip
                                                         id={`${this.state.user.name}-tooltip-createdby`}>
                                                         <FormattedMessage id="generic.userid" />
-                                                        {this.state.user.createdBy!.id}
+                                                        {this.state.user.createdBy.id}
                                                     </Tooltip>
                                                 }>
                                                 {({ ref, ...triggerHandler }) => (
@@ -357,7 +357,7 @@ export default withRouter(
                                                         {...triggerHandler}>
                                                         <span
                                                             ref={ref as React.Ref<HTMLSpanElement>}>
-                                                            {this.state.user!.createdBy!.name}
+                                                            {this.state.user!.createdBy.name}
                                                         </span>
                                                     </Col>
                                                 )}

@@ -301,7 +301,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as InstancePermissionSetRights;
                     return !!(
-                        InstancePermissionSet.payload!.InstancePermissionSetRights! & required
+                        InstancePermissionSet.payload!.instancePermissionSetRights! & required
                     );
                 } else {
                     errors.push(InstancePermissionSet.error!);

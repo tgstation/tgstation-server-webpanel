@@ -10,7 +10,6 @@ import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatu
 import configOptions from "./util/config";
 import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
-import ErrorMessage = Components.Schemas.ErrorMessage;
 
 interface IEvents {
     //self explainatory
@@ -503,7 +502,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         error: new InternalError(
                             ErrorCode.LOGIN_RATELIMIT,
                             {
-                                errorMessage: response.data as ErrorMessage
+                                errorMessage: response.data as Components.Schemas.ErrorMessage
                             },
                             response
                         )

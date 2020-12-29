@@ -177,7 +177,10 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserController_List();
+            response = await ServerClient.apiClient!.UserController_List({
+                page: 0,
+                pageSize: 100
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -187,7 +190,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as Components.Schemas.User[]).sort(
+                const payload = (response.data as Components.Schemas.PaginatedUser)!.content.sort(
                     (a, b) => a.id! - b.id!
                 );
 

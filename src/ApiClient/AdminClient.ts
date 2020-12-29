@@ -190,7 +190,6 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
         let response;
         try {
             response = await ServerClient.apiClient!.AdministrationController_Update(null, {
-                windowsHost: true,
                 newVersion,
                 latestVersion: null,
                 trackedRepositoryUrl: null

@@ -185,7 +185,7 @@ export default withRouter(
                                 <FormattedMessage id="view.admin.hostos" />
                                 <FontAwesomeIcon
                                     fixedWidth
-                                    icon={this.state.adminInfo.windowsHost ? faWindows : faLinux}
+                                    icon={this.state.serverInfo.windowsHost ? faWindows : faLinux}
                                 />
                             </h3>
                             <h5 className="text-secondary">
