@@ -189,13 +189,13 @@ export default withRouter(
                                             overlay={
                                                 <Tooltip id={`${value.name}-tooltip-createdby`}>
                                                     <FormattedMessage id="generic.userid" />
-                                                    {value.createdBy!.id}
+                                                    {value.createdBy.id}
                                                 </Tooltip>
                                             }>
                                             {({ ref, ...triggerHandler }) => (
                                                 <td {...triggerHandler}>
                                                     <span ref={ref as React.Ref<HTMLSpanElement>}>
-                                                        {value.createdBy!.name}
+                                                        {value.createdBy.name}
                                                     </span>
                                                 </td>
                                             )}

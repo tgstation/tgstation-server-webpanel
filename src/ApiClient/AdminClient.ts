@@ -1,9 +1,11 @@
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import { Components } from "./generatedcode/_generated";
+import { DownloadedLog } from "./models/DownloadedLog";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
+import TransferClient, { DownloadErrors } from "./TransferClient";
 
 interface IEvents {
     loadAdminInfo: (
@@ -311,7 +313,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
 
     public async getLog(
         logName: string
-    ): Promise<InternalStatus<Components.Schemas.LogFile, LogErrors>> {
+    ): Promise<InternalStatus<DownloadedLog, LogErrors | DownloadErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -327,10 +329,25 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
         }
         switch (response.status) {
             case 200: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.LogFile
-                });
+                const contents = await TransferClient.Download(
+                    (response.data as Components.Schemas.LogFile).fileTicket!
+                );
+                if (contents.code === StatusCode.OK) {
+                    //Object.assign() is a funky function but all it does is copy everything from the second object to the first object
+                    const temp: DownloadedLog = Object.assign(
+                        { content: contents.payload! },
+                        response.data as Components.Schemas.LogFile
+                    );
+                    return new InternalStatus({
+                        code: StatusCode.OK,
+                        payload: temp
+                    });
+                } else {
+                    return new InternalStatus({
+                        code: StatusCode.ERROR,
+                        error: contents.error!
+                    });
+                }
             }
             case 409: {
                 const errorMessage = response.data as Components.Schemas.ErrorMessage;
