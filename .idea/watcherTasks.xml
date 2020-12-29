@@ -3,7 +3,7 @@
   <component name="ProjectTasksOptions">
     <TaskOptions isEnabled="true">
       <option name="arguments" value="prettier $FilePath$ -w" />
-      <option name="checkSyntaxErrors" value="true" />
+      <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="tsx" />
@@ -23,7 +23,7 @@
     </TaskOptions>
     <TaskOptions isEnabled="true">
       <option name="arguments" value="prettier $FilePath$ -w" />
-      <option name="checkSyntaxErrors" value="true" />
+      <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="ts" />
@@ -43,7 +43,7 @@
     </TaskOptions>
     <TaskOptions isEnabled="true">
       <option name="arguments" value="prettier $FilePath$ -w" />
-      <option name="checkSyntaxErrors" value="true" />
+      <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="jsx" />
@@ -63,7 +63,7 @@
     </TaskOptions>
     <TaskOptions isEnabled="true">
       <option name="arguments" value="prettier $FilePath$ -w" />
-      <option name="checkSyntaxErrors" value="true" />
+      <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="js" />
