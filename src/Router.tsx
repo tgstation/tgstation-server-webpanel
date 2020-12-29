@@ -1,6 +1,7 @@
 import loadable, { LoadableComponent } from "@loadable/component";
 import { Component, ReactNode } from "react";
 import * as React from "react";
+import Container from "react-bootstrap/Container";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { Route, Switch, withRouter } from "react-router-dom";
@@ -30,7 +31,7 @@ const LoadSpin = (page: string) => (
     </Loading>
 );
 
-const NotFound = loadable(() => import("./components/views/NotFound"), {
+const NotFound = loadable(() => import("./components/utils/NotFound"), {
     fallback: LoadSpin("loading.page.notfound")
 });
 
@@ -119,13 +120,25 @@ export default withRouter(
                                         Comp = this.state.components.get(route.name)!;
                                     }
 
-                                    //@ts-expect-error //i cant for the life of me make this shit work so it has to stay like this.
-                                    return <Comp {...props} />;
+                                    const WrapperComponent = route.noContainer
+                                        ? React.Fragment
+                                        : Container;
+
+                                    return (
+                                        <WrapperComponent className="mt-5 mb-5">
+                                            {/*//@ts-expect-error //i cant for the life of me make this shit work so it has to stay like this.*/}
+                                            <Comp {...props} />
+                                        </WrapperComponent>
+                                    );
                                 }}
                             />
                         );
                     })}
-                    <Route key="notfound">{this.props.loggedIn ? <NotFound /> : <Login />}</Route>
+                    <Container className="mt-5 mb-5">
+                        <Route key="notfound">
+                            {this.props.loggedIn ? <NotFound /> : <Login />}
+                        </Route>
+                    </Container>
                 </Switch>
             );
         }

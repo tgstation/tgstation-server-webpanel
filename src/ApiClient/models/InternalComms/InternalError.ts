@@ -61,7 +61,6 @@ export enum ErrorCode {
     //Job errors
     JOB_JOB_NOT_FOUND = "error.job.not_found", //errmessage
     JOB_JOB_COMPLETE = "error.job.complete", //void
-    JOB_INSTANCE_OFFLINE = "error.job.instance_offline", //errmessage
 
     //Instance errors
     INSTANCE_NO_DB_ENTITY = "error.instance.no_db_entity" //errmessage
@@ -95,11 +94,13 @@ export default class InternalError<T extends ErrorCode> {
     public readonly code: T;
     public readonly desc?: Desc;
     public readonly extendedInfo: string;
+    public readonly originalErrorMessage?: Components.Schemas.ErrorMessage;
 
     public constructor(code: T, addon: allAddons, origin?: AxiosResponse) {
         this.code = code;
         if ("errorMessage" in addon) {
             const err = addon.errorMessage;
+            this.originalErrorMessage = err;
             this.desc = {
                 type: DescType.TEXT,
                 desc:

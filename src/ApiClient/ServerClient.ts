@@ -2,6 +2,7 @@ import { AxiosError, AxiosResponse, OpenAPIClientAxios } from "openapi-client-ax
 import { Document } from "openapi-client-axios/types/client";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
+import { API_VERSION, VERSION } from "../definitions/constants";
 import { Client, Components } from "./generatedcode/_generated";
 import { CredentialsType, ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
@@ -25,6 +26,8 @@ interface IEvents {
     purgeCache: () => void;
     //internal event, queues logins
     loadLoginInfo: (loginInfo: InternalStatus<Components.Schemas.Token, LoginErrors>) => void;
+    //internal event fired for wait4Token(), external things should be using LoginHooks#LoginSuccess or a login hook
+    tokenAvailable: (token: Components.Schemas.Token) => void;
 }
 
 export type LoginErrors =
@@ -56,6 +59,19 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 void LoginHooks.runHooks(CredentialsProvider.token);
             }
         });
+
+        //Why is this here? Because otherwise it creates an import loop, grrrrr
+        configOptions.apipath.callback = (): void => {
+            console.log("Reinitializing API");
+            this.initApi()
+                .then(() => {
+                    console.log("API Reinitialized");
+                })
+                .catch(() => {
+                    //The API failing to initialize is a big nono, start all over again.
+                    window.location.reload();
+                });
+        };
     }
 
     //serverInfo
@@ -187,49 +203,40 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                             (request.url === "/" || request.url === "") &&
                             request.method === "post"
                         ) {
-                            this.logout();
-                            console.log("Failed to login");
+                            return Promise.resolve(error.response);
+                        }
+
+                        if (this.autoLogin) {
+                            return this.login().then(status => {
+                                switch (status.code) {
+                                    case StatusCode.OK: {
+                                        return this.api!.client.request(error.config);
+                                    }
+                                    case StatusCode.ERROR: {
+                                        this.emit("accessDenied");
+                                        //time to kick out the user
+                                        this.logout();
+                                        const errorobj = new InternalError(
+                                            ErrorCode.HTTP_ACCESS_DENIED,
+                                            {
+                                                void: true
+                                            },
+                                            res
+                                        );
+                                        return Promise.reject(errorobj);
+                                    }
+                                }
+                            });
+                        } else {
+                            this.emit("accessDenied");
                             const errorobj = new InternalError(
-                                ErrorCode.LOGIN_FAIL,
+                                ErrorCode.HTTP_ACCESS_DENIED,
                                 {
                                     void: true
                                 },
                                 res
                             );
                             return Promise.reject(errorobj);
-                        } else {
-                            if (this.autoLogin) {
-                                return this.login().then(status => {
-                                    switch (status.code) {
-                                        case StatusCode.OK: {
-                                            return this.api!.client.request(error.config);
-                                        }
-                                        case StatusCode.ERROR: {
-                                            this.emit("accessDenied");
-                                            //time to kick out the user
-                                            this.logout();
-                                            const errorobj = new InternalError(
-                                                ErrorCode.HTTP_ACCESS_DENIED,
-                                                {
-                                                    void: true
-                                                },
-                                                res
-                                            );
-                                            return Promise.reject(errorobj);
-                                        }
-                                    }
-                                });
-                            } else {
-                                this.emit("accessDenied");
-                                const errorobj = new InternalError(
-                                    ErrorCode.HTTP_ACCESS_DENIED,
-                                    {
-                                        void: true
-                                    },
-                                    res
-                                );
-                                return Promise.reject(errorobj);
-                            }
                         }
                     }
                     case 403: {
@@ -238,16 +245,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                             (request.url === "/" || request.url === "") &&
                             request.method === "post"
                         ) {
-                            this.logout();
-                            console.log("Account disabled");
-                            const errorobj = new InternalError(
-                                ErrorCode.LOGIN_DISABLED,
-                                {
-                                    void: true
-                                },
-                                res
-                            );
-                            return Promise.reject(errorobj);
+                            return Promise.resolve(error.response);
                         } else {
                             this.emit("accessDenied");
                             const errorobj = new InternalError(
@@ -275,17 +273,12 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
                         //Thanks for reusing a global erorr status cyber. Log operations can return 409
                         const request = error.config;
-                        let status: ErrorCode;
                         if (request.url === "/Administration/Logs" && request.method === "get") {
-                            status = ErrorCode.ADMIN_LOGS_IO_ERROR;
-                        } else if (request.url === "/Job" && request.method === "get") {
-                            status = ErrorCode.JOB_INSTANCE_OFFLINE;
-                        } else {
-                            status = ErrorCode.HTTP_DATA_INEGRITY;
+                            return Promise.resolve(error.response);
                         }
 
                         const errorobj = new InternalError(
-                            status,
+                            ErrorCode.HTTP_DATA_INEGRITY,
                             {
                                 errorMessage
                             },
@@ -372,15 +365,14 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 resolve(CredentialsProvider.token);
                 return;
             }
-            LoginHooks.on("loginSuccess", token => {
+            this.on("tokenAvailable", token => {
                 resolve(token);
             });
         });
     }
 
     public async login(
-        newCreds?: ICredentials,
-        savePassword = false
+        newCreds?: ICredentials
     ): Promise<InternalStatus<Components.Schemas.Token, LoginErrors>> {
         //Shouldn't really happen edge cases
         await this.wait4Init();
@@ -442,10 +434,12 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 });
             }
         } catch (stat) {
-            return new InternalStatus<Components.Schemas.Token, GenericErrors>({
+            const res = new InternalStatus<Components.Schemas.Token, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
+            this.emit("loadLoginInfo", res);
+            return res;
         } finally {
             this.loggingIn = false;
         }
@@ -456,26 +450,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
                 // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
                 CredentialsProvider.token = token;
-
-                if (
-                    savePassword &&
-                    CredentialsProvider.credentials.type == CredentialsType.Password
-                ) {
-                    try {
-                        window.localStorage.setItem(
-                            "username",
-                            CredentialsProvider.credentials.userName
-                        );
-                        window.localStorage.setItem(
-                            "password",
-                            CredentialsProvider.credentials.password
-                        );
-                    } catch (_) {
-                        //Some browsers throw an exception when it cannot save to local storage(private browsing),
-                        // we dont particularly care to inform the user
-                        (() => {})(); //noop
-                    }
-                }
+                this.emit("tokenAvailable", token);
 
                 //LoginHooks are a way of running several async tasks at the same time whenever the user is authenticated,
                 // we cannot use events here as events wait on each listener before proceeding which has a noticable performance
@@ -497,8 +472,43 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
                 return res;
             }
+            case 401: {
+                this.logout();
+                console.log("Failed to login");
+                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_FAIL>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.LOGIN_FAIL,
+                        {
+                            void: true
+                        },
+                        response
+                    )
+                });
+                this.emit("loadLoginInfo", res);
+                return res;
+            }
+            case 403: {
+                this.logout();
+                console.log("Account disabled");
+                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_DISABLED>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.LOGIN_DISABLED,
+                        {
+                            void: true
+                        },
+                        response
+                    )
+                });
+                this.emit("loadLoginInfo", res);
+                return res;
+            }
             default: {
-                return new InternalStatus<Components.Schemas.Token, ErrorCode.UNHANDLED_RESPONSE>({
+                const res = new InternalStatus<
+                    Components.Schemas.Token,
+                    ErrorCode.UNHANDLED_RESPONSE
+                >({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,
@@ -506,6 +516,8 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         response
                     )
                 });
+                this.emit("loadLoginInfo", res);
+                return res;
             }
         }
     }
@@ -517,13 +529,6 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         }
         console.log("Logging out");
         CredentialsProvider.credentials = undefined;
-        try {
-            window.localStorage.removeItem("username");
-            window.localStorage.removeItem("password");
-        } catch (e) {
-            //Some browsers throw an error here, we dont care
-            (() => {})();
-        }
         CredentialsProvider.token = undefined;
         //events to clear the app state as much as possible for the next user
         this.emit("purgeCache");

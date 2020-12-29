@@ -1,3 +1,5 @@
+import { DEFAULT_APIPATH } from "../../definitions/constants";
+
 export type ConfigValue = number | string | boolean;
 
 export type ConfigOption = BaseConfigOption &
@@ -10,23 +12,28 @@ export interface BaseConfigOption {
 export interface NumConfigOption extends BaseConfigOption {
     type: "num";
     value: number;
+    callback?: (oldValue: number, newValue: number) => void;
 }
 export interface StrConfigOption extends BaseConfigOption {
     type: "str";
     value: string;
+    callback?: (oldValue: string, newValue: string) => void;
 }
 export interface PwdConfigOption extends BaseConfigOption {
     type: "pwd";
     value: string;
+    callback?: (oldValue: string, newValue: string) => void;
 }
 export interface BoolConfigOption extends BaseConfigOption {
     type: "bool";
     value: boolean;
+    callback?: (oldValue: boolean, newValue: boolean) => void;
 }
 export interface EnumConfigOption extends BaseConfigOption {
     type: "enum";
     possibleValues: Record<string, string>;
     value: string;
+    callback?: (oldValue: string, newValue: string) => void;
 }
 
 export type ConfigMap = {

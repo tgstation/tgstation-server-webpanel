@@ -6,7 +6,7 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
-import { withRouter } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 
 import { OAuthProvider } from "../../ApiClient/generatedcode/_enums";
 import { Components } from "../../ApiClient/generatedcode/_generated";
@@ -14,7 +14,7 @@ import { CredentialsType, ICredentials } from "../../ApiClient/models/ICredentia
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
-import { getSavedCreds } from "../../utils/misc";
+import { MODE } from "../../definitions/constants";
 import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
@@ -29,8 +29,8 @@ interface IState {
     validated: boolean;
     username: string;
     password: string;
-    save: boolean;
     error?: InternalError<LoginErrors>;
+    redirectSetup?: boolean;
 }
 
 export default withRouter(
@@ -40,21 +40,36 @@ export default withRouter(
             this.submit = this.submit.bind(this);
             this.performOAuth = this.performOAuth.bind(this);
 
-            let usr, pwd;
-            if (this.props.prefillLogin) {
-                usr = this.props.prefillLogin;
-                pwd = "";
-            } else {
-                [usr, pwd] = getSavedCreds() || [undefined, undefined];
-            }
-
             this.state = {
                 busy: false,
                 validated: false,
-                username: usr || "",
-                password: pwd || "",
-                save: !!(usr && pwd)
+                username: "",
+                password: ""
             };
+        }
+
+        public componentDidMount() {
+            if (MODE === "DEV") {
+                void ServerClient.login({
+                    userName: "admin",
+                    password: "ISolemlySwearToDeleteTheDataDirectory"
+                });
+            } else {
+                void this.tryLoginDefault();
+            }
+        }
+
+        private async tryLoginDefault(): Promise<void> {
+            const response = await ServerClient.login({
+                userName: "admin",
+                password: "ISolemlySwearToDeleteTheDataDirectory"
+            });
+
+            if (response.code === StatusCode.OK) {
+                this.setState({
+                    redirectSetup: true
+                });
+            }
         }
 
         public render(): ReactNode {
@@ -62,11 +77,13 @@ export default withRouter(
                 this.setState({ username: event.target.value });
             const handlePwdInput = (event: ChangeEvent<HTMLInputElement>) =>
                 this.setState({ password: event.target.value });
-            const handleSaveInput = (event: ChangeEvent<HTMLInputElement>) =>
-                this.setState({ save: event.target.checked });
 
             if (this.state.busy) {
                 return <Loading text="loading.login" />;
+            }
+
+            if (this.state.redirectSetup) {
+                return <Redirect to={AppRoutes.setup.link || AppRoutes.setup.route} />;
             }
             return (
                 <Fragment>
@@ -75,7 +92,7 @@ export default withRouter(
                             <ErrorAlert
                                 error={this.state.error}
                                 onClose={() => this.setState({ error: undefined })}
-                            />
+                            />{" "}
                             <Form.Group controlId="username">
                                 <Form.Label>
                                     <FormattedMessage id="login.username" />

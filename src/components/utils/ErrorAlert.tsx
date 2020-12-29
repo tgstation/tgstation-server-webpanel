@@ -9,6 +9,7 @@ import InternalError, {
     DescType,
     ErrorCode
 } from "../../ApiClient/models/InternalComms/InternalError";
+import { API_VERSION, MODE, VERSION } from "../../definitions/constants";
 
 interface IProps {
     error: InternalError<ErrorCode> | undefined;
