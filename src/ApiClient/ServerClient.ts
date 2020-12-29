@@ -27,6 +27,8 @@ interface IEvents {
     purgeCache: () => void;
     //internal event, queues logins
     loadLoginInfo: (loginInfo: InternalStatus<Components.Schemas.Token, LoginErrors>) => void;
+    //internal event fired for wait4Token(), external things should be using LoginHooks#LoginSuccess or a login hook
+    tokenAvailable: (token: Components.Schemas.Token) => void;
 }
 
 export type LoginErrors =
@@ -377,7 +379,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 resolve(CredentialsProvider.token);
                 return;
             }
-            LoginHooks.on("loginSuccess", token => {
+            this.on("tokenAvailable", token => {
                 resolve(token);
             });
         });
@@ -445,6 +447,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
                 // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
                 CredentialsProvider.token = token;
+                this.emit("tokenAvailable", token);
 
                 //LoginHooks are a way of running several async tasks at the same time whenever the user is authenticated,
                 // we cannot use events here as events wait on each listener before proceeding which has a noticable performance
