@@ -117,7 +117,7 @@
     "tgs_api_example_url": {
         "desc": "Fetches a swagger json from a remote url",
         "type": "url",
-        "value": "https//example.org/swagger.json"
+        "value": "https://example.org/swagger.json"
     },
     "tgs_api_example_file": {
         "desc": "Fetches a swagger json from a local file. Can be absolute or relative to the package.json file.",
