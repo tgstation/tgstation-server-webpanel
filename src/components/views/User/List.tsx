@@ -13,6 +13,7 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
+import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
@@ -53,7 +54,8 @@ export default withRouter(
             const response = await UserClient.getCurrentUser();
             if (response.code == StatusCode.OK) {
                 const canList = !!(
-                    response.payload!.administrationRights! & AdministrationRights.ReadUsers
+                    resolvePermissionSet(response.payload!).administrationRights! &
+                    AdministrationRights.ReadUsers
                 );
                 this.setState({
                     canList

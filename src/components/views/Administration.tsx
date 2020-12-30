@@ -18,6 +18,7 @@ import UserClient from "../../ApiClient/UserClient";
 import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
+import { resolvePermissionSet } from "../../utils/misc";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
@@ -111,7 +112,8 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canReboot: !!(
-                        response.payload!.administrationRights! & AdministrationRights.RestartHost
+                        resolvePermissionSet(response.payload!).administrationRights! &
+                        AdministrationRights.RestartHost
                     )
                 });
             }
@@ -123,7 +125,8 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canUpdate: !!(
-                        response.payload!.administrationRights! & AdministrationRights.ChangeVersion
+                        resolvePermissionSet(response.payload!).administrationRights! &
+                        AdministrationRights.ChangeVersion
                     )
                 });
             }
@@ -135,7 +138,8 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canLogs: !!(
-                        response.payload!.administrationRights! & AdministrationRights.DownloadLogs
+                        resolvePermissionSet(response.payload!).administrationRights! &
+                        AdministrationRights.DownloadLogs
                     )
                 });
             }

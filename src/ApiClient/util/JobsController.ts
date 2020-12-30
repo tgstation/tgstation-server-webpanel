@@ -21,6 +21,7 @@ import { StatusCode } from "../models/InternalComms/InternalStatus";
 import ServerClient from "../ServerClient";
 import UserClient from "../UserClient";
 import configOptions from "./config";
+import { resolvePermissionSet } from "../../utils/misc";
 
 interface IEvents {
     jobsLoaded: () => unknown;
@@ -218,7 +219,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 const userInfo = await UserClient.getCurrentUser();
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as AdministrationRights;
-                    return !!(userInfo.payload!.administrationRights! & required);
+                    return !!(
+                        resolvePermissionSet(userInfo.payload!).administrationRights! & required
+                    );
                 } else {
                     errors.push(userInfo.error!);
                     return false;
@@ -228,7 +231,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 const userInfo = await UserClient.getCurrentUser();
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as InstanceManagerRights;
-                    return !!(userInfo.payload!.instanceManagerRights! & required);
+                    return !!(
+                        resolvePermissionSet(userInfo.payload!).instanceManagerRights! & required
+                    );
                 } else {
                     errors.push(userInfo.error!);
                     return false;

@@ -24,6 +24,7 @@ import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComm
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
 import { GlobalObjects } from "../../../utils/globalObjects";
+import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
@@ -93,11 +94,12 @@ export default withRouter(
             if (currentuser.code == StatusCode.OK) {
                 this.setState({
                     canEdit: !!(
-                        currentuser.payload!.administrationRights! & AdministrationRights.WriteUsers
+                        resolvePermissionSet(currentuser.payload!).administrationRights! &
+                        AdministrationRights.WriteUsers
                     ),
                     canEditOwnPassword:
                         !!(
-                            currentuser.payload!.administrationRights! &
+                            resolvePermissionSet(currentuser.payload!).administrationRights! &
                             AdministrationRights.EditOwnPassword
                         ) && currentuser.payload!.id! === userid
                 });
@@ -134,7 +136,9 @@ export default withRouter(
                 //we dont care about nothing
                 if (key == "none") return;
 
-                const currentVal = !!(this.state.user!.administrationRights! & val);
+                const currentVal = !!(
+                    resolvePermissionSet(this.state.user!).administrationRights! & val
+                );
                 this.setState(prevState => {
                     return {
                         permsadmin: {
@@ -157,7 +161,9 @@ export default withRouter(
                 //we dont care about nothing
                 if (key == "none") return;
 
-                const currentVal = !!(this.state.user!.instanceManagerRights! & val);
+                const currentVal = !!(
+                    resolvePermissionSet(this.state.user!).instanceManagerRights! & val
+                );
                 this.setState(prevState => {
                     return {
                         permsinstance: {

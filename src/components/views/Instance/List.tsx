@@ -15,6 +15,7 @@ import UserClient from "../../../ApiClient/UserClient";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
+import { resolvePermissionSet } from "../../../utils/misc";
 
 type Instance = Components.Schemas.Instance & {
     canAccess: boolean;
@@ -108,7 +109,7 @@ export default withRouter(
                 if (userinfo.code === StatusCode.OK) {
                     this.setState({
                         canOnline: !!(
-                            userinfo.payload!.instanceManagerRights! &
+                            resolvePermissionSet(userinfo.payload!).instanceManagerRights! &
                             InstanceManagerRights.SetOnline
                         )
                     });

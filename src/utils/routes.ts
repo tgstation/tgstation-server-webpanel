@@ -5,6 +5,7 @@ import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import JobsController from "../ApiClient/util/JobsController";
+import { resolvePermissionSet } from "./misc";
 
 export interface AppRoute {
     ///Base parameters
@@ -54,7 +55,7 @@ function adminRight(right: AdministrationRights) {
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {
-            return !!(response.payload!.administrationRights! & right);
+            return !!(resolvePermissionSet(response.payload!).administrationRights! & right);
         }
         return false;
     };
@@ -66,7 +67,7 @@ function instanceManagerRight(right: InstanceManagerRights) {
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {
-            return !!(response.payload!.instanceManagerRights! & right);
+            return !!(resolvePermissionSet(response.payload!).instanceManagerRights! & right);
         }
         return false;
     };
