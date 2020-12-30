@@ -190,6 +190,7 @@
     "perms.instance.setchatbotlimit.desc": "Ability to change an instance's maximum amounts of bots",
     "perms.instance.grantpermissions": "Grant All Permissions",
     "perms.instance.grantpermissions.desc": "Ability to grant themselves all permissions on any instance",
+    "perms.group": "Group",
     "config.githubtoken": "Github token",
     "config.githubtoken.desc": "You can supply a private authorization token for github to bypass some rate limiting on the github API.",
     "config.apipath": "TGS API Path",

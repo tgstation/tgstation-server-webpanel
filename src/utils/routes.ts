@@ -216,12 +216,12 @@ const AppRoutes = asElementTypesAppRoute({
     },
     useredit: {
         name: "routes.useredit",
-        route: "/users/edit/:id(\\d+)/:tab?/",
+        route: "/users/edit/user/:id(\\d+)/:tab?/",
 
         //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
         get link(): string {
             return RouteData.selecteduserid !== undefined
-                ? `/users/edit/${RouteData.selecteduserid}/${
+                ? `/users/edit/user/${RouteData.selecteduserid}/${
                       RouteData.selectedusertab !== undefined ? `${RouteData.selectedusertab}/` : ""
                   }`
                 : AppRoutes.userlist.link || AppRoutes.userlist.route;

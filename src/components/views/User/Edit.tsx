@@ -497,11 +497,23 @@ export default withRouter(
                         : 0;
                 }
 
-                const response = await UserClient.editUser(this.state.user!.id!, {
+                if (!this.state.user) {
+                    this.addError(
+                        new InternalError(ErrorCode.APP_FAIL, {
+                            jsError: Error("this.state.user is null in user edit save")
+                        })
+                    );
+                    return;
+                }
+
+                const newset = Object.assign(Object.assign({}, this.state.user.permissionSet), {
                     [enumname == "permsadmin"
-                        ? "administrationRights"
-                        : "instanceManagerRights"]: bitflag
-                } as { administrationRights: AdministrationRights } | { instanceManagerRights: InstanceManagerRights });
+                        ? "AdministrationRights"
+                        : "InstanceManagerRights"]: bitflag
+                } as { AdministrationRights: AdministrationRights } | { InstanceManagerRights: InstanceManagerRights });
+                const response = await UserClient.editUser(this.state.user.id!, {
+                    permissionSet: newset
+                });
                 if (response.code == StatusCode.OK) {
                     this.loadUser(response.payload!);
                 } else {
