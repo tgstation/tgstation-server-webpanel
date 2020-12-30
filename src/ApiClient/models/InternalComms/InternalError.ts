@@ -65,6 +65,8 @@ export enum ErrorCode {
     //Transfer errors
     TRANSFER_NOT_AVAILABLE = "error.transfer.not_available", //errmessage
 
+    GROUP_NOT_FOUND = "error.group.not_found", //errmessage
+
     //Instance errors
     INSTANCE_NO_DB_ENTITY = "error.instance.no_db_entity" //errmessage
 }

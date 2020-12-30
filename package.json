@@ -106,8 +106,8 @@
         "webpack-dev-server": "^3.11.0"
     },
     "tgs_api": {
-        "type": "version",
-        "value": "8.0.0"
+        "type": "file",
+        "value": "src/swagger-8.1.0.json"
     },
     "tgs_api_example_version": {
         "desc": "Fetches a tgs api version from github using the tag name",
@@ -117,7 +117,7 @@
     "tgs_api_example_url": {
         "desc": "Fetches a swagger json from a remote url",
         "type": "url",
-        "value": "https//example.org/swagger.json"
+        "value": "https://example.org/swagger.json"
     },
     "tgs_api_example_file": {
         "desc": "Fetches a swagger json from a local file. Can be absolute or relative to the package.json file.",

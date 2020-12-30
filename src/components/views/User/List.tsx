@@ -130,6 +130,9 @@ export default withRouter(
                                     <FormattedMessage id="generic.details" />
                                 </th>
                                 <th>
+                                    <FormattedMessage id="generic.group" />
+                                </th>
+                                <th>
                                     <FormattedMessage id="generic.created" />
                                 </th>
                                 <th>
@@ -150,25 +153,52 @@ export default withRouter(
                                         <td>{value.id!}</td>
                                         <td>{value.name}</td>
                                         <td>
-                                            {value.systemIdentifier! ? (
-                                                <Badge variant="primary">
+                                            {value.systemIdentifier ? (
+                                                <Badge variant="primary" className="mx-1">
                                                     <FormattedMessage id="generic.system.short" />
                                                 </Badge>
                                             ) : (
-                                                <Badge variant="primary">
+                                                <Badge variant="primary" className="mx-1">
                                                     <FormattedMessage id="generic.tgs" />
                                                 </Badge>
-                                            )}{" "}
-                                            {value.enabled! ? (
-                                                <Badge variant="success">
+                                            )}
+                                            {value.enabled ? (
+                                                <Badge variant="success" className="mx-1">
                                                     <FormattedMessage id="generic.enabled" />
                                                 </Badge>
                                             ) : (
-                                                <Badge variant="danger">
+                                                <Badge variant="danger" className="mx-1">
                                                     <FormattedMessage id="generic.disabled" />
                                                 </Badge>
                                             )}
+                                            {value.group ? (
+                                                <Badge variant="warning" className="mx-1">
+                                                    <FormattedMessage id="generic.grouped" />
+                                                </Badge>
+                                            ) : null}
                                         </td>
+                                        {value.group ? (
+                                            <OverlayTrigger
+                                                overlay={
+                                                    <Tooltip id={`${value.name}-tooltip-group`}>
+                                                        <FormattedMessage
+                                                            id="generic.groupid"
+                                                            values={{ id: value.group.id }}
+                                                        />
+                                                    </Tooltip>
+                                                }>
+                                                {({ ref, ...triggerHandler }) => (
+                                                    <td {...triggerHandler}>
+                                                        <span
+                                                            ref={ref as React.Ref<HTMLSpanElement>}>
+                                                            {value.group!.name}
+                                                        </span>
+                                                    </td>
+                                                )}
+                                            </OverlayTrigger>
+                                        ) : (
+                                            <td />
+                                        )}
                                         <OverlayTrigger
                                             overlay={
                                                 <Tooltip id={`${value.name}-tooltip`}>

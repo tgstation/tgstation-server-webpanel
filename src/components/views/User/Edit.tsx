@@ -28,6 +28,7 @@ import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
+import UserGroupClient from "../../../ApiClient/UserGroupClient";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
@@ -436,6 +437,9 @@ export default withRouter(
                                     title={<FormattedMessage id="perms.instance" />}>
                                     {this.renderPerms("permsinstance", "instance")}
                                 </Tab>
+                                <Tab eventKey="group" title={<FormattedMessage id="perms.group" />}>
+                                    u kinda gay mate
+                                </Tab>
                             </Tabs>
                         </React.Fragment>
                     ) : (
@@ -506,25 +510,62 @@ export default withRouter(
                     return;
                 }
 
-                const newset = Object.assign(Object.assign({}, this.state.user.permissionSet), {
-                    [enumname == "permsadmin"
-                        ? "AdministrationRights"
-                        : "InstanceManagerRights"]: bitflag
-                } as { AdministrationRights: AdministrationRights } | { InstanceManagerRights: InstanceManagerRights });
-                const response = await UserClient.editUser(this.state.user.id!, {
-                    permissionSet: newset
-                });
-                if (response.code == StatusCode.OK) {
-                    this.loadUser(response.payload!);
+                if (this.state.user.group) {
+                    const newset = Object.assign(
+                        Object.assign({}, this.state.user.group.permissionSet),
+                        {
+                            [enumname == "permsadmin"
+                                ? "AdministrationRights"
+                                : "InstanceManagerRights"]: bitflag
+                        } as
+                            | { AdministrationRights: AdministrationRights }
+                            | { InstanceManagerRights: InstanceManagerRights }
+                    ) as Components.Schemas.PermissionSet;
+                    const response = await UserGroupClient.updateGroup(this.state.user.group.id, {
+                        permissionSet: newset
+                    });
+                    if (response.code == StatusCode.OK) {
+                        const response2 = await UserClient.getUser(this.state.user.id!);
+                        if (response2.code == StatusCode.OK) {
+                            this.loadUser(response2.payload!);
+                        } else {
+                            this.addError(response.error!);
+                        }
+                    } else {
+                        this.addError(response.error!);
+                    }
                 } else {
-                    this.addError(response.error!);
+                    const newset = Object.assign(Object.assign({}, this.state.user.permissionSet), {
+                        [enumname == "permsadmin"
+                            ? "AdministrationRights"
+                            : "InstanceManagerRights"]: bitflag
+                    } as { AdministrationRights: AdministrationRights } | { InstanceManagerRights: InstanceManagerRights });
+                    const response = await UserClient.editUser(this.state.user.id!, {
+                        permissionSet: newset
+                    });
+                    if (response.code == StatusCode.OK) {
+                        this.loadUser(response.payload!);
+                    } else {
+                        this.addError(response.error!);
+                    }
                 }
+
                 this.setState({
                     saving: false
                 });
             };
             return (
                 <React.Fragment>
+                    {this.state.user?.group ? (
+                        <Alert variant="warning">
+                            <FormattedMessage
+                                id="perms.group.warning"
+                                values={{
+                                    group: `${this.state.user.group.name} (${this.state.user.group.id})`
+                                }}
+                            />
+                        </Alert>
+                    ) : null}
                     {this.state.canEdit ? (
                         <React.Fragment>
                             <h5>

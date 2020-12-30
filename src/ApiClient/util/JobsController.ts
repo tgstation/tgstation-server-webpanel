@@ -1,5 +1,6 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 
+import { resolvePermissionSet } from "../../utils/misc";
 import {
     AdministrationRights,
     ByondRights,
@@ -21,7 +22,6 @@ import { StatusCode } from "../models/InternalComms/InternalStatus";
 import ServerClient from "../ServerClient";
 import UserClient from "../UserClient";
 import configOptions from "./config";
-import { resolvePermissionSet } from "../../utils/misc";
 
 interface IEvents {
     jobsLoaded: () => unknown;

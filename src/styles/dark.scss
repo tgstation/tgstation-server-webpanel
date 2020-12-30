@@ -211,6 +211,10 @@ $toast-header-background-color: $gray-600;
     }
 }
 
+.alert-warning {
+    font-weight: 600;
+    @include alert-variant(transparentize($warning, 0.5), $warning, $black);
+}
 
 .alert-error {
     @include alert-variant($dark, $danger, $white);
