@@ -42,12 +42,7 @@ export default withRouter(
         }
 
         public componentDidMount() {
-            if (MODE === "DEV") {
-                void ServerClient.login({
-                    userName: "admin",
-                    password: "ISolemlySwearToDeleteTheDataDirectory"
-                });
-            } else {
+            if (MODE === "PROD") {
                 void this.tryLoginDefault();
             }
         }
