@@ -43,27 +43,20 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
     public async editUser(
         id: number,
-        newUser: RequireAtLeastOne<{
-            password: string;
-            enabled: boolean;
-            administrationRights: AdministrationRights;
-            instanceManagerRights: InstanceManagerRights;
-        }>
+        newUser: RequireAtLeastOne<Omit<Components.Schemas.UserUpdate, "id">>
     ): Promise<InternalStatus<Components.Schemas.User, EditUserErrors>> {
         await ServerClient.wait4Init();
-
         let response;
         try {
-            response = await ServerClient.apiClient!.UserController_Update(null, {
-                //@ts-expect-error // name is set as non nullable despite being nullable
-                name: undefined,
-                id: id,
-                //@ts-expect-error // password is set as non nullable despite being nullable
-                password: newUser.password,
-                enabled: newUser.enabled,
-                administrationRights: newUser.administrationRights,
-                instanceManagerRights: newUser.instanceManagerRights
-            });
+            response = await ServerClient.apiClient!.UserController_Update(
+                null,
+                Object.assign(
+                    {
+                        id: id
+                    },
+                    newUser
+                ) as Components.Schemas.UserUpdate
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -177,7 +170,10 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserController_List();
+            response = await ServerClient.apiClient!.UserController_List({
+                page: 1,
+                pageSize: 100
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -187,7 +183,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as Components.Schemas.User[]).sort(
+                const payload = (response.data as Components.Schemas.PaginatedUser)!.content.sort(
                     (a, b) => a.id! - b.id!
                 );
 

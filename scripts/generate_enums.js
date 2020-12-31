@@ -7,7 +7,8 @@ for (const [name, schema] of Object.entries(swagger.components.schemas)) {
     for (let i = 0; i < schema.enum.length; i++) {
         const name = schema["x-enum-varnames"][i]; //sets the name
         const value = schema["enum"][i]; //sets the value
-        console.log(`   ${name} = ${value}${i < schema.enum.length - 1 ? "," : ""}`); //outputs to console
+        const quote = typeof (value) === 'string' ? '"' : "";
+        console.log(`   ${name} = ${quote}${value}${quote}${i < schema.enum.length - 1 ? "," : ""}`); //outputs to console
     }
     console.log(`}\n`); //creates a newline
 }

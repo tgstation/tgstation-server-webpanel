@@ -15,7 +15,10 @@ export default new (class InstanceClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_List();
+            response = await ServerClient.apiClient!.InstanceController_List({
+                pageSize: 100,
+                page: 1
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -25,7 +28,7 @@ export default new (class InstanceClient {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as Components.Schemas.Instance[]).sort(
+                const payload = (response.data as Components.Schemas.PaginatedInstance)!.content.sort(
                     (a, b) => a.id - b.id
                 );
 

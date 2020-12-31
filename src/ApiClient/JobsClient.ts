@@ -11,14 +11,18 @@ export type deleteJobErrors =
     | ErrorCode.JOB_JOB_COMPLETE;
 
 export default new (class JobsClient {
-    public async listJobs(
+    public async listActiveJobs(
         instanceid: number
     ): Promise<InternalStatus<Components.Schemas.Job[], listJobsErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!.JobController_Read({ Instance: instanceid });
+            response = await ServerClient.apiClient!.JobController_Read({
+                Instance: instanceid,
+                page: 1,
+                pageSize: 100
+            });
         } catch (stat) {
             return new InternalStatus<Components.Schemas.Job[], listJobsErrors>({
                 code: StatusCode.ERROR,
@@ -30,7 +34,7 @@ export default new (class JobsClient {
             case 200: {
                 return new InternalStatus<Components.Schemas.Job[], listJobsErrors>({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.Job[]
+                    payload: (response.data as Components.Schemas.PaginatedJob)!.content
                 });
             }
             default: {

@@ -15,6 +15,7 @@ import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/I
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
 import UserClient from "../../ApiClient/UserClient";
+import { resolvePermissionSet } from "../../utils/misc";
 import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
@@ -111,7 +112,8 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canReboot: !!(
-                        response.payload!.administrationRights! & AdministrationRights.RestartHost
+                        resolvePermissionSet(response.payload!).administrationRights! &
+                        AdministrationRights.RestartHost
                     )
                 });
             }
@@ -123,7 +125,8 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canUpdate: !!(
-                        response.payload!.administrationRights! & AdministrationRights.ChangeVersion
+                        resolvePermissionSet(response.payload!).administrationRights! &
+                        AdministrationRights.ChangeVersion
                     )
                 });
             }
@@ -135,7 +138,8 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canLogs: !!(
-                        response.payload!.administrationRights! & AdministrationRights.DownloadLogs
+                        resolvePermissionSet(response.payload!).administrationRights! &
+                        AdministrationRights.DownloadLogs
                     )
                 });
             }
@@ -185,7 +189,7 @@ export default withRouter(
                                 <FormattedMessage id="view.admin.hostos" />
                                 <FontAwesomeIcon
                                     fixedWidth
-                                    icon={this.state.adminInfo.windowsHost ? faWindows : faLinux}
+                                    icon={this.state.serverInfo.windowsHost ? faWindows : faLinux}
                                 />
                             </h3>
                             <h5 className="text-secondary">

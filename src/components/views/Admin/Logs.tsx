@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 
 import AdminClient from "../../../ApiClient/AdminClient";
 import { Components } from "../../../ApiClient/generatedcode/_generated";
+import { DownloadedLog } from "../../../ApiClient/models/DownloadedLog";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import { download } from "../../../utils/misc";
@@ -25,7 +26,7 @@ interface LogEntry {
 }
 
 interface Log {
-    logFile: Components.Schemas.LogFile;
+    logFile: DownloadedLog;
     entries: LogEntry[];
 }
 
@@ -60,7 +61,7 @@ export default withRouter(
                         );
                         let match;
                         const entries: LogEntry[] = [];
-                        while ((match = regex.exec(atob(res.payload!.content!))) !== null) {
+                        while ((match = regex.exec(res.payload!.content)) !== null) {
                             entries.push({
                                 time: match[1],
                                 content: match[2]
@@ -113,7 +114,7 @@ export default withRouter(
             const res = await AdminClient.getLog(name);
             switch (res.code) {
                 case StatusCode.OK: {
-                    download(name, atob(res.payload!.content!));
+                    download(name, res.payload!.content);
                     break;
                 }
                 case StatusCode.ERROR: {
@@ -159,7 +160,7 @@ export default withRouter(
                                 onClick={() => {
                                     download(
                                         this.props.match.params.name!,
-                                        atob(this.state.viewedLog!.logFile.content!)
+                                        this.state.viewedLog!.logFile.content
                                     );
                                 }}>
                                 <FormattedMessage id="generic.download" />
