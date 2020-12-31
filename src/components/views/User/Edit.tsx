@@ -1,10 +1,13 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { FormEvent } from "react";
 import Alert from "react-bootstrap/Alert";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Row from "react-bootstrap/Row";
@@ -23,12 +26,12 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
+import UserGroupClient from "../../../ApiClient/UserGroupClient";
 import { GlobalObjects } from "../../../utils/globalObjects";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
-import UserGroupClient from "../../../ApiClient/UserGroupClient";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
@@ -39,10 +42,13 @@ interface IState {
     saving: boolean;
     permsadmin: { [key: string]: Permission };
     permsinstance: { [key: string]: Permission };
+    canRead: boolean;
     canEdit: boolean;
     //override for if its the current user and it can edit its own password
     canEditOwnPassword: boolean;
     tab: string;
+    groups: Components.Schemas.UserGroup[];
+    createGroupName: string;
 }
 
 interface Permission {
@@ -55,15 +61,21 @@ export default withRouter(
         public constructor(props: IProps) {
             super(props);
 
+            this.createGroup = this.createGroup.bind(this);
+            this.changeGroup = this.changeGroup.bind(this);
+
             this.state = {
                 errors: [],
                 loading: true,
                 saving: false,
                 permsadmin: {},
                 permsinstance: {},
+                canRead: false,
                 canEdit: false,
                 canEditOwnPassword: false,
-                tab: props.match.params.tab || "info"
+                tab: props.match.params.tab || "info",
+                groups: [],
+                createGroupName: ""
             };
 
             RouteData.selecteduserid = parseInt(props.match.params.id);
@@ -91,6 +103,7 @@ export default withRouter(
                     break;
                 }
             }
+
             const currentuser = await UserClient.getCurrentUser();
             if (currentuser.code == StatusCode.OK) {
                 this.setState({
@@ -98,16 +111,40 @@ export default withRouter(
                         resolvePermissionSet(currentuser.payload!).administrationRights! &
                         AdministrationRights.WriteUsers
                     ),
+                    canRead: !!(
+                        resolvePermissionSet(currentuser.payload!).administrationRights! &
+                        AdministrationRights.ReadUsers
+                    ),
                     canEditOwnPassword:
                         !!(
                             resolvePermissionSet(currentuser.payload!).administrationRights! &
                             AdministrationRights.EditOwnPassword
-                        ) && currentuser.payload!.id! === userid
+                        ) && currentuser.payload!.id! === userid,
+                    groups: currentuser.payload!.group
+                        ? [Object.assign({ users: [] }, currentuser.payload!.group)]
+                        : []
                 });
+            } else {
+                this.addError(currentuser.error!);
             }
+
+            await this.loadGroups();
+
             this.setState({
                 loading: false
             });
+        }
+
+        private async loadGroups() {
+            if (!this.state.canRead) return;
+            const groups = await UserGroupClient.listGroups();
+            if (groups.code === StatusCode.OK) {
+                this.setState({
+                    groups: groups.payload!
+                });
+            } else {
+                this.addError(groups.error!);
+            }
         }
 
         private loadUser(user: Components.Schemas.User) {
@@ -244,23 +281,28 @@ export default withRouter(
                                 ""
                             )}
                             {this.state.user.systemIdentifier ? (
-                                <Badge variant="primary">
+                                <Badge variant="primary" className="mx-1">
                                     <FormattedMessage id="generic.system.short" />
                                 </Badge>
                             ) : (
-                                <Badge variant="primary">
+                                <Badge variant="primary" className="mx-1">
                                     <FormattedMessage id="generic.tgs" />
                                 </Badge>
-                            )}{" "}
+                            )}
                             {this.state.user.enabled ? (
-                                <Badge variant="success">
+                                <Badge variant="success" className="mx-1">
                                     <FormattedMessage id="generic.enabled" />
                                 </Badge>
                             ) : (
-                                <Badge variant="danger">
+                                <Badge variant="danger" className="mx-1">
                                     <FormattedMessage id="generic.disabled" />
                                 </Badge>
                             )}
+                            {this.state.user.group ? (
+                                <Badge variant="warning" className="mx-1">
+                                    <FormattedMessage id="generic.grouped" />
+                                </Badge>
+                            ) : null}
                             <h3 className="text-capitalize">{this.state.user.name}</h3>
                             <Button
                                 as={Link}
@@ -438,7 +480,7 @@ export default withRouter(
                                     {this.renderPerms("permsinstance", "instance")}
                                 </Tab>
                                 <Tab eventKey="group" title={<FormattedMessage id="perms.group" />}>
-                                    u kinda gay mate
+                                    {this.renderGroups()}
                                 </Tab>
                             </Tabs>
                         </React.Fragment>
@@ -447,6 +489,233 @@ export default withRouter(
                     )}
                 </div>
             );
+        }
+
+        private renderGroups(): React.ReactNode {
+            //We can't use addError() here because that would trigger a rerender which would call this again and add another error and so on
+            if (!this.state.user || !this.state.groups) {
+                return (
+                    <ErrorAlert
+                        error={
+                            new InternalError(ErrorCode.APP_FAIL, {
+                                jsError: Error("Assertion failed, user or group is null")
+                            })
+                        }
+                    />
+                );
+            }
+
+            return (
+                <div>
+                    {!this.state.canRead ? (
+                        <Alert className="clearfix" variant="error">
+                            <FormattedMessage id="perms.group.cantlist" />
+                        </Alert>
+                    ) : null}
+                    <h3 className="mb-3">
+                        <FormattedMessage id="perms.group.current" />
+                        {this.state.user.group ? (
+                            this.state.user.group.name
+                        ) : (
+                            <FormattedMessage id="perms.group.none" />
+                        )}
+                    </h3>
+                    <div onChange={this.changeGroup}>
+                        <InputGroup
+                            className="justify-content-center mb-3"
+                            as="label"
+                            htmlFor={
+                                "group_none" /*notice the underscore, the normal groups use a dash, this prevents conflict with groups named "none"*/
+                            }>
+                            <InputGroup.Prepend>
+                                <InputGroup.Radio
+                                    id={"group_none"}
+                                    name="group"
+                                    defaultChecked={this.state.user.group?.id === undefined}
+                                    disabled={!this.state.canEdit}
+                                />
+                            </InputGroup.Prepend>
+                            <InputGroup.Append className="w-40 overflow-auto">
+                                <InputGroup.Text className="flex-fill">
+                                    <FormattedMessage id="perms.group.none" />
+                                </InputGroup.Text>
+                            </InputGroup.Append>
+                        </InputGroup>
+                        {this.state.groups.map(group => {
+                            return (
+                                <InputGroup
+                                    className="justify-content-center mb-1"
+                                    as="label"
+                                    htmlFor={"group-" + group.id.toString()}
+                                    key={group.id}>
+                                    <InputGroup.Prepend>
+                                        <InputGroup.Radio
+                                            id={"group-" + group.id.toString()}
+                                            name="group"
+                                            defaultChecked={this.state.user!.group?.id === group.id}
+                                            disabled={!this.state.canEdit}
+                                        />
+                                    </InputGroup.Prepend>
+                                    <InputGroup.Append className="w-40 overflow-auto">
+                                        <InputGroup.Text className="flex-fill">
+                                            <span>{group.name}</span>
+                                            <div className="text-right ml-auto">
+                                                <FormattedMessage
+                                                    id="generic.numusers"
+                                                    values={{
+                                                        count: this.state.canRead
+                                                            ? group.users?.length
+                                                            : "???"
+                                                    }}
+                                                />
+                                            </div>
+                                        </InputGroup.Text>
+                                        <OverlayTrigger
+                                            overlay={
+                                                <Tooltip id={`${group.id}-tooltip`}>
+                                                    <FormattedMessage id="perms.group.delete.warning" />
+                                                </Tooltip>
+                                            }
+                                            show={
+                                                (!group.users?.length || !this.state.canEdit) &&
+                                                group.id !== this.state.user!.group?.id
+                                                    ? false
+                                                    : undefined
+                                            }>
+                                            {({ ref, ...triggerHandler }) => (
+                                                <Button
+                                                    variant="danger"
+                                                    className="text-darker"
+                                                    disabled={
+                                                        !!group.users?.length ||
+                                                        !this.state.canEdit ||
+                                                        group.id === this.state.user!.group?.id
+                                                    }
+                                                    onClick={() => void this.deleteGroup(group.id)}
+                                                    {...triggerHandler}>
+                                                    <div ref={ref as React.Ref<HTMLDivElement>}>
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </div>
+                                                </Button>
+                                            )}
+                                        </OverlayTrigger>
+                                    </InputGroup.Append>
+                                </InputGroup>
+                            );
+                        })}
+                    </div>
+                    {/*<hr />
+                    <h4 className="mt-3">
+                        <FormattedMessage id="perms.group.create" />
+                    </h4>*/}
+                    <InputGroup className="justify-content-center mb-1 mt-5">
+                        <InputGroup.Prepend>
+                            <Button
+                                variant="primary"
+                                onClick={this.createGroup}
+                                disabled={
+                                    !this.state.canEdit || !this.state.createGroupName.length
+                                }>
+                                <FontAwesomeIcon icon={faPlus} />
+                            </Button>
+                        </InputGroup.Prepend>
+                        <FormControl
+                            className="w-40 overflow-auto flex-grow-0"
+                            value={this.state.createGroupName}
+                            onChange={event => {
+                                this.setState({
+                                    createGroupName: event.target.value
+                                });
+                            }}
+                            disabled={!this.state.canEdit}
+                        />
+                    </InputGroup>
+                </div>
+            );
+        }
+
+        private async changeGroup(e: FormEvent<HTMLDivElement>) {
+            if (!this.state.user) {
+                this.addError(
+                    new InternalError(ErrorCode.APP_FAIL, {
+                        jsError: Error("this.state.user is null in changegroup")
+                    })
+                );
+                return;
+            }
+
+            this.setState({
+                loading: true
+            });
+            const id = (e.target as HTMLInputElement).id;
+            if (id === "group_none") {
+                const response = await UserClient.editUser(this.state.user.id!, {
+                    permissionSet: resolvePermissionSet(this.state.user)
+                });
+                if (response.code === StatusCode.OK) {
+                    await this.loadGroups();
+                    this.loadUser(response.payload!);
+                } else {
+                    this.addError(response.error!);
+                }
+            } else {
+                const realID = parseInt(id.substr(6));
+                const response = await UserClient.editUser(this.state.user.id!, {
+                    group: {
+                        id: realID
+                    } as Components.Schemas.ShallowUserGroup
+                });
+                if (response.code === StatusCode.OK) {
+                    await this.loadGroups();
+                    this.loadUser(response.payload!);
+                } else {
+                    this.addError(response.error!);
+                }
+            }
+            this.setState({
+                loading: false
+            });
+        }
+
+        private async deleteGroup(id: number) {
+            this.setState({
+                loading: true
+            });
+            const response = await UserGroupClient.deleteGroup(id);
+            if (response.code === StatusCode.OK) {
+                this.setState(prev => {
+                    return {
+                        groups: prev.groups.filter(group => group.id !== id)
+                    };
+                });
+            } else {
+                this.addError(response.error!);
+            }
+            this.setState({
+                loading: false
+            });
+        }
+
+        private async createGroup() {
+            this.setState({
+                loading: true
+            });
+            const response = await UserGroupClient.createGroup(
+                this.state.createGroupName,
+                resolvePermissionSet(this.state.user!)
+            );
+            if (response.code === StatusCode.OK) {
+                this.setState(prev => {
+                    return {
+                        groups: prev.groups.concat([response.payload!])
+                    };
+                });
+            } else {
+                this.addError(response.error!);
+            }
+            this.setState({
+                loading: false
+            });
         }
 
         private renderPerms(

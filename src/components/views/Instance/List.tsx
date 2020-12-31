@@ -12,10 +12,10 @@ import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSe
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
+import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
-import { resolvePermissionSet } from "../../../utils/misc";
 
 type Instance = Components.Schemas.Instance & {
     canAccess: boolean;

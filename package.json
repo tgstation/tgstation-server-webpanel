@@ -107,7 +107,7 @@
     },
     "tgs_api": {
         "type": "file",
-        "value": "src/swagger-8.1.0.json"
+        "value": "src/swagger-8.1.1.json"
     },
     "tgs_api_example_version": {
         "desc": "Fetches a tgs api version from github using the tag name",

@@ -15,10 +15,10 @@ import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/I
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
 import UserClient from "../../ApiClient/UserClient";
+import { resolvePermissionSet } from "../../utils/misc";
 import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
-import { resolvePermissionSet } from "../../utils/misc";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
