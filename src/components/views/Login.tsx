@@ -4,13 +4,12 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
-import { Redirect, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 import InternalError from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
 import { MODE } from "../../definitions/constants";
-import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -70,9 +69,9 @@ export default withRouter(
                 return <Loading text="loading.login" />;
             }
 
-            if (this.state.redirectSetup) {
+            /*if (this.state.redirectSetup) {
                 return <Redirect to={AppRoutes.setup.link || AppRoutes.setup.route} />;
-            }
+            }*/
             return (
                 <Form validated={this.state.validated} onSubmit={this.submit}>
                     <Col className="mx-auto" lg={5} md={8}>
