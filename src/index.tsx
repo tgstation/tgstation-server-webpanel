@@ -20,6 +20,18 @@ import initIcons from "./utils/icolibrary";
 initIcons();
 ConfigController.loadconfig();
 
+//At some point, the webpanel had the ability to save passwords, this is however,
+// insecure as compromised webhosts can lead to code being served from an untrusted source,
+// leaking the saved password. Makes sure it's not there anymore
+try {
+    window.localStorage.removeItem("username");
+    window.sessionStorage.removeItem("username");
+    window.localStorage.removeItem("password");
+    window.sessionStorage.removeItem("password");
+} catch {
+    (() => {})();
+}
+
 const rootNode = document.getElementById("root") as HTMLElement;
 const appTsx = (
     <React.StrictMode>

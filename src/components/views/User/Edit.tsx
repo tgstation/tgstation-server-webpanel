@@ -543,11 +543,7 @@ export default withRouter(
                         </InputGroup>
                         {this.state.groups.map(group => {
                             return (
-                                <InputGroup
-                                    className="justify-content-center mb-1"
-                                    as="label"
-                                    htmlFor={"group-" + group.id.toString()}
-                                    key={group.id}>
+                                <InputGroup className="justify-content-center mb-1" key={group.id}>
                                     <InputGroup.Prepend>
                                         <InputGroup.Radio
                                             id={"group-" + group.id.toString()}
@@ -557,7 +553,10 @@ export default withRouter(
                                         />
                                     </InputGroup.Prepend>
                                     <InputGroup.Append className="w-40 overflow-auto">
-                                        <InputGroup.Text className="flex-fill">
+                                        <InputGroup.Text
+                                            className="flex-fill"
+                                            as="label"
+                                            htmlFor={"group-" + group.id.toString()}>
                                             <span>{group.name}</span>
                                             <div className="text-right ml-auto">
                                                 <FormattedMessage

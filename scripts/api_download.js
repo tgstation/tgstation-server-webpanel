@@ -14,6 +14,13 @@ switch (pkg.tgs_api.type) {
             pkg.tgs_api.value +
             "/swagger.json",
             function (response) {
+                if(response.statusCode >= 400) {
+                    console.error("============================");
+                    console.error("|| Unable to download API ||");
+                    console.error("============================");
+                    console.error();
+                    process.exitCode = 1;
+                }
                 response.pipe(file);
             }
         );
@@ -23,6 +30,13 @@ switch (pkg.tgs_api.type) {
         https.get(
             pkg.tgs_api.value,
             function (response) {
+                if(response.statusCode >= 400) {
+                    console.error("============================");
+                    console.error("|| Unable to download API ||");
+                    console.error("============================");
+                    console.error();
+                    process.exitCode = 1;
+                }
                 response.pipe(file);
             }
         );
