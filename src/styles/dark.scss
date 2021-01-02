@@ -17,6 +17,12 @@ $theme-colors: (
     "background": #212529,
     "darker": darken(#212529, 5%)
 );
+$theme-colors: map-merge(
+        $theme-colors,
+        (
+            "darkblue": rgba(scale-color(map-get($theme-colors, "primary"), $lightness: -20%), 1)
+        )
+);
 
 $sizes: (
     40: 40%
