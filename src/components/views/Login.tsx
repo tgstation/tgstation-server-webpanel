@@ -6,7 +6,7 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
-import { Redirect, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 import tgicon from "../../../images/tglogo-white.svg";
 import { OAuthProvider } from "../../ApiClient/generatedcode/_enums";
@@ -16,7 +16,6 @@ import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/I
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
 import { MODE } from "../../definitions/constants";
-import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -50,12 +49,7 @@ export default withRouter(
         }
 
         public componentDidMount() {
-            if (MODE === "DEV") {
-                void ServerClient.login({
-                    userName: "admin",
-                    password: "ISolemlySwearToDeleteTheDataDirectory"
-                });
-            } else {
+            if (MODE === "PROD") {
                 void this.tryLoginDefault();
             }
         }
@@ -83,9 +77,9 @@ export default withRouter(
                 return <Loading text="loading.login" />;
             }
 
-            if (this.state.redirectSetup) {
+            /*if (this.state.redirectSetup) {
                 return <Redirect to={AppRoutes.setup.link || AppRoutes.setup.route} />;
-            }
+            }*/
             return (
                 <Fragment>
                     <Form validated={this.state.validated} onSubmit={this.submit}>

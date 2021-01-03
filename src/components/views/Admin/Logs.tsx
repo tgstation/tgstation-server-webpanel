@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 
 import AdminClient from "../../../ApiClient/AdminClient";
 import { Components } from "../../../ApiClient/generatedcode/_generated";
+import { DownloadedLog } from "../../../ApiClient/models/DownloadedLog";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import { AppRoutes } from "../../../utils/routes";
@@ -24,7 +25,7 @@ interface LogEntry {
 }
 
 interface Log {
-    logFile: Components.Schemas.LogFile;
+    logFile: DownloadedLog;
     entries: LogEntry[];
 }
 
@@ -65,7 +66,7 @@ export default withRouter(
                         );
                         let match;
                         const entries: LogEntry[] = [];
-                        while ((match = regex.exec(atob(res.payload!.content!))) !== null) {
+                        while ((match = regex.exec(res.payload!.content)) !== null) {
                             entries.push({
                                 time: match[1],
                                 content: match[2]
@@ -119,12 +120,7 @@ export default withRouter(
             const res = await AdminClient.getLog(name);
             switch (res.code) {
                 case StatusCode.OK: {
-                    this.addError(
-                        new InternalError<ErrorCode.APP_FAIL>(ErrorCode.APP_FAIL, {
-                            jsError: new Error("FILE TRANSFERS NOT IMPLEMENTED")
-                        })
-                    );
-                    // download(name, atob(res.payload!.content!));
+                    download(name, res.payload!.content);
                     break;
                 }
                 case StatusCode.ERROR: {
@@ -173,11 +169,10 @@ export default withRouter(
                                             jsError: new Error("FILE TRANSFERS NOT IMPLEMENTED")
                                         })
                                     );
-                                    /*
                                     download(
                                         this.props.match.params.name!,
-                                        atob(this.state.viewedLog!.logFile.content!)
-                                    );*/
+                                        this.state.viewedLog!.logFile.content
+                                    );
                                 }}>
                                 <FormattedMessage id="generic.download" />
                             </Button>
@@ -255,7 +250,9 @@ export default withRouter(
                                                         <td {...triggerHandler}>
                                                             <span
                                                                 ref={
-                                                                    ref as React.Ref<HTMLSpanElement>
+                                                                    ref as React.Ref<
+                                                                        HTMLSpanElement
+                                                                    >
                                                                 }>
                                                                 <FormattedRelativeTime
                                                                     value={logdiff}
@@ -287,12 +284,11 @@ export default withRouter(
                                                             this.downloadLog(value.name!).catch(
                                                                 (e: Error) => {
                                                                     this.addError(
-                                                                        new InternalError<ErrorCode.APP_FAIL>(
-                                                                            ErrorCode.APP_FAIL,
-                                                                            {
-                                                                                jsError: e
-                                                                            }
-                                                                        )
+                                                                        new InternalError<
+                                                                            ErrorCode.APP_FAIL
+                                                                        >(ErrorCode.APP_FAIL, {
+                                                                            jsError: e
+                                                                        })
                                                                     );
                                                                 }
                                                             );

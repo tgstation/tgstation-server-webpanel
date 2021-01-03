@@ -150,7 +150,7 @@ module.exports = function createConfig(prodLike, github = false) {
             }),
             new ForkTsCheckerWebpackPlugin(),
             new webpack.DefinePlugin({
-                API_VERSION: JSON.stringify(require("./package.json").tgs_api_version),
+                API_VERSION: JSON.stringify(require("./src/ApiClient/generatedcode/swagger.json").info.version),
                 VERSION: JSON.stringify(
                     github ? process.env.GITHUB_SHA : require("./package.json").version
                 ),

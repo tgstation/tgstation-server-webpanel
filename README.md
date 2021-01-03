@@ -20,7 +20,7 @@ last 3 safari version
 3) Run `npm install`
 
 # Development
-To run a test server, make sure you have ran `npm install` beforehand to install dependencies then simply run `npm start`, the first build may take anywhere from a dozen of seconds to 2 minutes depending on your machine but subsequent changes to the file system will get picked up by the dev server and those will usually be built much faster. The app will hot swap unloaded components but it cannot swap mounted components, they need to be unmounted first, usually this means you will have to click the age in the navbar again to refresh
+To run a test server, make sure you have ran `npm install` beforehand to install dependencies then simply run `npm start`, the first build may take anywhere from a dozen of seconds to 2 minutes depending on your machine but subsequent changes to the file system will get picked up by the dev server and those will usually be built much faster. The app will hot swap components.
 
 Make sure to run `npm install` again if you pull in new changes from the repo
 

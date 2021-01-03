@@ -1,5 +1,6 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 
+import { resolvePermissionSet } from "../../utils/misc";
 import {
     AdministrationRights,
     ByondRights,
@@ -9,12 +10,12 @@ import {
     DreamMakerRights,
     ErrorCode as TGSErrorCode,
     InstanceManagerRights,
-    InstanceUserRights,
+    InstancePermissionSetRights,
     RepositoryRights,
     RightsType
 } from "../generatedcode/_enums";
 import { Components } from "../generatedcode/_generated";
-import InstanceUserClient from "../InstanceUserClient";
+import InstancePermissionSetClient from "../InstancePermissionSetClient";
 import JobsClient, { getJobErrors, listJobsErrors } from "../JobsClient";
 import InternalError, { ErrorCode } from "../models/InternalComms/InternalError";
 import { StatusCode } from "../models/InternalComms/InternalStatus";
@@ -97,7 +98,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         this.errors = [];
 
         //now since this is async, it still possible that a single fire gets done after the new loop started, theres no really much that can be done about it
-        JobsClient.listJobs(this._instance)
+        JobsClient.listActiveJobs(this._instance)
             .then(async value => {
                 //this check is here because the request itself is async and could return after
                 // the loop is terminated, we dont want to contaminate the jobs of an instance
@@ -218,7 +219,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 const userInfo = await UserClient.getCurrentUser();
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as AdministrationRights;
-                    return !!(userInfo.payload!.administrationRights! & required);
+                    return !!(
+                        resolvePermissionSet(userInfo.payload!).administrationRights! & required
+                    );
                 } else {
                     errors.push(userInfo.error!);
                     return false;
@@ -228,93 +231,97 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 const userInfo = await UserClient.getCurrentUser();
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as InstanceManagerRights;
-                    return !!(userInfo.payload!.instanceManagerRights! & required);
+                    return !!(
+                        resolvePermissionSet(userInfo.payload!).instanceManagerRights! & required
+                    );
                 } else {
                     errors.push(userInfo.error!);
                     return false;
                 }
             }
             case RightsType.Byond: {
-                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     this._instance
                 );
-                if (instanceUser.code === StatusCode.OK) {
+                if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ByondRights;
-                    return !!(instanceUser.payload!.byondRights! & required);
+                    return !!(InstancePermissionSet.payload!.byondRights! & required);
                 } else {
-                    errors.push(instanceUser.error!);
+                    errors.push(InstancePermissionSet.error!);
                     return false;
                 }
             }
             case RightsType.ChatBots: {
-                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     this._instance
                 );
-                if (instanceUser.code === StatusCode.OK) {
+                if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ChatBotRights;
-                    return !!(instanceUser.payload!.chatBotRights! & required);
+                    return !!(InstancePermissionSet.payload!.chatBotRights! & required);
                 } else {
-                    errors.push(instanceUser.error!);
+                    errors.push(InstancePermissionSet.error!);
                     return false;
                 }
             }
             case RightsType.Configuration: {
-                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     this._instance
                 );
-                if (instanceUser.code === StatusCode.OK) {
+                if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ConfigurationRights;
-                    return !!(instanceUser.payload!.configurationRights! & required);
+                    return !!(InstancePermissionSet.payload!.configurationRights! & required);
                 } else {
-                    errors.push(instanceUser.error!);
+                    errors.push(InstancePermissionSet.error!);
                     return false;
                 }
             }
             case RightsType.DreamDaemon: {
-                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     this._instance
                 );
-                if (instanceUser.code === StatusCode.OK) {
+                if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamDaemonRights;
-                    return !!(instanceUser.payload!.dreamDaemonRights! & required);
+                    return !!(InstancePermissionSet.payload!.dreamDaemonRights! & required);
                 } else {
-                    errors.push(instanceUser.error!);
+                    errors.push(InstancePermissionSet.error!);
                     return false;
                 }
             }
             case RightsType.DreamMaker: {
-                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     this._instance
                 );
-                if (instanceUser.code === StatusCode.OK) {
+                if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamMakerRights;
-                    return !!(instanceUser.payload!.dreamMakerRights! & required);
+                    return !!(InstancePermissionSet.payload!.dreamMakerRights! & required);
                 } else {
-                    errors.push(instanceUser.error!);
+                    errors.push(InstancePermissionSet.error!);
                     return false;
                 }
             }
-            case RightsType.InstanceUser: {
-                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+            case RightsType.InstancePermissionSet: {
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     this._instance
                 );
-                if (instanceUser.code === StatusCode.OK) {
-                    const required = job.cancelRight as InstanceUserRights;
-                    return !!(instanceUser.payload!.instanceUserRights! & required);
+                if (InstancePermissionSet.code === StatusCode.OK) {
+                    const required = job.cancelRight as InstancePermissionSetRights;
+                    return !!(
+                        InstancePermissionSet.payload!.instancePermissionSetRights! & required
+                    );
                 } else {
-                    errors.push(instanceUser.error!);
+                    errors.push(InstancePermissionSet.error!);
                     return false;
                 }
             }
             case RightsType.Repository: {
-                const instanceUser = await InstanceUserClient.getCurrentInstanceUser(
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     this._instance
                 );
-                if (instanceUser.code === StatusCode.OK) {
+                if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as RepositoryRights;
-                    return !!(instanceUser.payload!.repositoryRights! & required);
+                    return !!(InstancePermissionSet.payload!.repositoryRights! & required);
                 } else {
-                    errors.push(instanceUser.error!);
+                    errors.push(InstancePermissionSet.error!);
                     return false;
                 }
             }
