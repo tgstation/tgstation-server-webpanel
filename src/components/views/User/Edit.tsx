@@ -567,54 +567,70 @@ export default withRouter(
                                                 newOAuthConnections
                                             });
                                         }}>
-                                        <FormattedMessage id="view.user.edit.oauth.provider.discord">
-                                            {txt => (
-                                                <option
-                                                    value={OAuthProvider.Discord}
-                                                    selected={
-                                                        oAuthConnection.provider ===
-                                                        OAuthProvider.Discord
-                                                    }>
-                                                    {txt}
-                                                </option>
-                                            )}
-                                        </FormattedMessage>
-                                        <FormattedMessage id="view.user.edit.oauth.provider.github">
-                                            {txt => (
-                                                <option
-                                                    value={OAuthProvider.GitHub}
-                                                    selected={
-                                                        oAuthConnection.provider ===
-                                                        OAuthProvider.GitHub
-                                                    }>
-                                                    {txt}
-                                                </option>
-                                            )}
-                                        </FormattedMessage>
-                                        <FormattedMessage id="view.user.edit.oauth.provider.tgforums">
-                                            {txt => (
-                                                <option
-                                                    value={OAuthProvider.TGForums}
-                                                    selected={
-                                                        oAuthConnection.provider ===
-                                                        OAuthProvider.TGForums
-                                                    }>
-                                                    {txt}
-                                                </option>
-                                            )}
-                                        </FormattedMessage>
-                                        <FormattedMessage id="view.user.edit.oauth.provider.keycloak">
-                                            {txt => (
-                                                <option
-                                                    value={OAuthProvider.Keycloak}
-                                                    selected={
-                                                        oAuthConnection.provider ===
-                                                        OAuthProvider.Keycloak
-                                                    }>
-                                                    {txt}
-                                                </option>
-                                            )}
-                                        </FormattedMessage>
+                                        {oAuthProviderInfos.Discord != null ? (
+                                            <FormattedMessage id="view.user.edit.oauth.provider.discord">
+                                                {txt => (
+                                                    <option
+                                                        value={OAuthProvider.Discord}
+                                                        selected={
+                                                            oAuthConnection.provider ===
+                                                            OAuthProvider.Discord
+                                                        }>
+                                                        {txt}
+                                                    </option>
+                                                )}
+                                            </FormattedMessage>
+                                        ) : (
+                                            ""
+                                        )}
+                                        {oAuthProviderInfos.GitHub != null ? (
+                                            <FormattedMessage id="view.user.edit.oauth.provider.github">
+                                                {txt => (
+                                                    <option
+                                                        value={OAuthProvider.GitHub}
+                                                        selected={
+                                                            oAuthConnection.provider ===
+                                                            OAuthProvider.GitHub
+                                                        }>
+                                                        {txt}
+                                                    </option>
+                                                )}
+                                            </FormattedMessage>
+                                        ) : (
+                                            ""
+                                        )}
+                                        {oAuthProviderInfos.TGForums != null ? (
+                                            <FormattedMessage id="view.user.edit.oauth.provider.tgforums">
+                                                {txt => (
+                                                    <option
+                                                        value={OAuthProvider.TGForums}
+                                                        selected={
+                                                            oAuthConnection.provider ===
+                                                            OAuthProvider.TGForums
+                                                        }>
+                                                        {txt}
+                                                    </option>
+                                                )}
+                                            </FormattedMessage>
+                                        ) : (
+                                            ""
+                                        )}
+                                        {oAuthProviderInfos.Keycloak != null ? (
+                                            <FormattedMessage id="view.user.edit.oauth.provider.keycloak">
+                                                {txt => (
+                                                    <option
+                                                        value={OAuthProvider.Keycloak}
+                                                        selected={
+                                                            oAuthConnection.provider ===
+                                                            OAuthProvider.Keycloak
+                                                        }>
+                                                        {txt}
+                                                    </option>
+                                                )}
+                                            </FormattedMessage>
+                                        ) : (
+                                            ""
+                                        )}
                                     </select>
                                 </InputGroup.Prepend>
                                 <InputGroup.Append className="w-40 overflow-auto">
