@@ -48,6 +48,8 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
     }
 
     public componentDidMount() {
+        if (MODE !== "DEV") return;
+
         //I can't be assed to remember the default admin password
         document.addEventListener("keydown", function (event) {
             if (event.key == "L" && event.ctrlKey && event.shiftKey) {
@@ -59,13 +61,6 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                 });
             }
         });
-
-        if (MODE === "DEV") {
-            void ServerClient.login({
-                userName: "admin",
-                password: "ISolemlySwearToDeleteTheDataDirectory"
-            });
-        }
     }
 
     public render(): React.ReactNode {
