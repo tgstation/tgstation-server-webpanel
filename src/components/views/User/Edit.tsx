@@ -40,7 +40,8 @@ interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     user?: Components.Schemas.User;
-    newOAuthConnections?: Components.Schemas.OAuthConnection[] | null;
+    serverinfo?: Components.Schemas.ServerInformation;
+    newOAuthConnections: Components.Schemas.OAuthConnection[];
     loading: boolean;
     saving: boolean;
     permsadmin: { [key: string]: Permission };
@@ -78,7 +79,8 @@ export default withRouter(
                 canEditOwnPassword: false,
                 tab: props.match.params.tab || "info",
                 groups: [],
-                createGroupName: ""
+                createGroupName: "",
+                newOAuthConnections: []
             };
 
             RouteData.selecteduserid = parseInt(props.match.params.id);
@@ -131,6 +133,15 @@ export default withRouter(
                 this.addError(currentuser.error!);
             }
 
+            const serverinfo = await ServerClient.getServerInfo();
+            if (currentuser.code == StatusCode.OK) {
+                this.setState({
+                    serverinfo: serverinfo.payload!
+                });
+            } else {
+                this.addError(serverinfo.error!);
+            }
+
             await this.loadGroups();
 
             this.setState({
@@ -153,7 +164,7 @@ export default withRouter(
         private loadUser(user: Components.Schemas.User) {
             this.setState({
                 user,
-                newOAuthConnections: null
+                newOAuthConnections: user.oAuthConnections ? Array.from(user.oAuthConnections) : []
             });
             this.loadEnums();
         }
@@ -497,18 +508,16 @@ export default withRouter(
         }
 
         private renderOAuth(): React.ReactNode {
-            const oAuthProviderInfos = ServerClient.serverInfo?.payload?.oAuthProviderInfos;
+            const oAuthProviderInfos = this.state.serverinfo?.oAuthProviderInfos;
             const currentOAuthConnections =
                 this.state.newOAuthConnections || this.state.user?.oAuthConnections;
             if (
                 this.state.user?.name.toLowerCase() === "admin" || // admin user can't have OAuthConnections
                 currentOAuthConnections == null ||
-                (oAuthProviderInfos?.Discord == null &&
-                    oAuthProviderInfos?.GitHub == null &&
-                    oAuthProviderInfos?.Keycloak == null &&
-                    oAuthProviderInfos?.TGForums == null)
+                !oAuthProviderInfos ||
+                !Object.keys(oAuthProviderInfos).length
             )
-                return <div />;
+                return null;
 
             const save = async () => {
                 this.setState({
@@ -525,7 +534,7 @@ export default withRouter(
                 }
 
                 const response = await UserClient.editUser(this.state.user.id!, {
-                    oAuthConnections: this.state.newOAuthConnections!
+                    oAuthConnections: this.state.newOAuthConnections
                 });
                 if (response.code == StatusCode.OK) {
                     this.loadUser(response.payload!);
@@ -538,8 +547,6 @@ export default withRouter(
                 });
             };
 
-            let connectionIndex = 0;
-            let newOAuthConnections = [...currentOAuthConnections];
             return (
                 <Tab
                     eventKey="oauth"
@@ -548,129 +555,100 @@ export default withRouter(
                         <FormattedMessage id="view.user.edit.oauth.current" />
                     </h3>
                     <div>
-                        {newOAuthConnections.map(oAuthConnection => (
-                            <InputGroup
-                                className="justify-content-center mb-1"
-                                key={`oauthconnection-${++connectionIndex}`}>
-                                <InputGroup.Prepend>
-                                    <InputGroup.Text as="label">
-                                        <span>
-                                            <FormattedMessage id="view.user.edit.oauth.provider" />
-                                        </span>
-                                    </InputGroup.Text>
-                                    <select
+                        {this.state.newOAuthConnections.map((oAuthConnection, idx) => (
+                            <div className="justify-content-center d-flex" key={idx}>
+                                <InputGroup className="w-75 mb-1">
+                                    <InputGroup.Prepend>
+                                        <InputGroup.Text>
+                                            <span>
+                                                <FormattedMessage id="view.user.edit.oauth.provider" />
+                                            </span>
+                                        </InputGroup.Text>
+                                    </InputGroup.Prepend>
+                                    <Form.Control
+                                        className="flex-grow-1 flex-md-grow-0 w-50 w-md-auto "
+                                        as="select"
+                                        custom
                                         disabled={!this.state.canEdit}
                                         onChange={event => {
-                                            oAuthConnection.provider = event.target
-                                                .value as OAuthProvider;
-                                            this.setState({
-                                                newOAuthConnections
+                                            const provider = event.target.value as OAuthProvider;
+                                            this.setState(prev => {
+                                                return {
+                                                    newOAuthConnections: prev.newOAuthConnections.map(
+                                                        (val, idx2) => {
+                                                            if (idx2 !== idx) return val;
+                                                            return {
+                                                                ...val,
+                                                                provider: provider
+                                                            };
+                                                        }
+                                                    )
+                                                };
                                             });
                                         }}>
-                                        {oAuthProviderInfos.Discord != null ? (
-                                            <FormattedMessage id="view.user.edit.oauth.provider.discord">
-                                                {txt => (
-                                                    <option
-                                                        value={OAuthProvider.Discord}
-                                                        selected={
-                                                            oAuthConnection.provider ===
-                                                            OAuthProvider.Discord
-                                                        }>
-                                                        {txt}
-                                                    </option>
-                                                )}
-                                            </FormattedMessage>
-                                        ) : (
-                                            ""
-                                        )}
-                                        {oAuthProviderInfos.GitHub != null ? (
-                                            <FormattedMessage id="view.user.edit.oauth.provider.github">
-                                                {txt => (
-                                                    <option
-                                                        value={OAuthProvider.GitHub}
-                                                        selected={
-                                                            oAuthConnection.provider ===
-                                                            OAuthProvider.GitHub
-                                                        }>
-                                                        {txt}
-                                                    </option>
-                                                )}
-                                            </FormattedMessage>
-                                        ) : (
-                                            ""
-                                        )}
-                                        {oAuthProviderInfos.TGForums != null ? (
-                                            <FormattedMessage id="view.user.edit.oauth.provider.tgforums">
-                                                {txt => (
-                                                    <option
-                                                        value={OAuthProvider.TGForums}
-                                                        selected={
-                                                            oAuthConnection.provider ===
-                                                            OAuthProvider.TGForums
-                                                        }>
-                                                        {txt}
-                                                    </option>
-                                                )}
-                                            </FormattedMessage>
-                                        ) : (
-                                            ""
-                                        )}
-                                        {oAuthProviderInfos.Keycloak != null ? (
-                                            <FormattedMessage id="view.user.edit.oauth.provider.keycloak">
-                                                {txt => (
-                                                    <option
-                                                        value={OAuthProvider.Keycloak}
-                                                        selected={
-                                                            oAuthConnection.provider ===
-                                                            OAuthProvider.Keycloak
-                                                        }>
-                                                        {txt}
-                                                    </option>
-                                                )}
-                                            </FormattedMessage>
-                                        ) : (
-                                            ""
-                                        )}
-                                    </select>
-                                </InputGroup.Prepend>
-                                <InputGroup.Append className="w-40 overflow-auto">
-                                    <InputGroup.Text
-                                        as="label"
-                                        htmlFor={`connection-${connectionIndex}`}>
-                                        <span>
-                                            <FormattedMessage id="view.user.edit.oauth.id" />
-                                        </span>
+                                        {Object.keys(oAuthProviderInfos).map(key => {
+                                            return (
+                                                <FormattedMessage
+                                                    key={key}
+                                                    id={`view.user.edit.oauth.provider.${key.toLowerCase()}`}>
+                                                    {txt => (
+                                                        <option
+                                                            value={key}
+                                                            selected={
+                                                                oAuthConnection.provider === key
+                                                            }>
+                                                            {txt}
+                                                        </option>
+                                                    )}
+                                                </FormattedMessage>
+                                            );
+                                        })}
+                                    </Form.Control>
+                                    <InputGroup.Text className="rounded-0">
+                                        <FormattedMessage id="view.user.edit.oauth.id" />
                                     </InputGroup.Text>
                                     <FormControl
-                                        className="w-40 overflow-auto flex-grow-0"
+                                        className=""
                                         value={oAuthConnection.externalUserId}
                                         onChange={event => {
-                                            oAuthConnection.externalUserId = event.target.value;
-                                            this.setState({
-                                                newOAuthConnections
+                                            const externalUserId = event.target.value;
+                                            this.setState(prev => {
+                                                return {
+                                                    newOAuthConnections: prev.newOAuthConnections.map(
+                                                        (val, idx2) => {
+                                                            if (idx2 !== idx) return val;
+                                                            return {
+                                                                ...val,
+                                                                externalUserId: externalUserId
+                                                            };
+                                                        }
+                                                    )
+                                                };
                                             });
                                         }}
                                         disabled={!this.state.canEdit}
                                     />
-                                    <Button
-                                        variant="danger"
-                                        className="text-darker"
-                                        hidden={!this.state.canEdit}
-                                        onClick={() => {
-                                            newOAuthConnections = newOAuthConnections.splice(
-                                                connectionIndex,
-                                                1
-                                            );
-                                            this.setState({
-                                                newOAuthConnections
-                                            });
-                                        }}>
-                                        <div>
-                                            <FontAwesomeIcon icon={faTrash} />
-                                        </div>
-                                    </Button>
-                                </InputGroup.Append>
-                            </InputGroup>
+                                    <InputGroup.Append className="">
+                                        <Button
+                                            variant="danger"
+                                            className="text-darker"
+                                            hidden={!this.state.canEdit}
+                                            onClick={() => {
+                                                this.setState(prev => {
+                                                    return {
+                                                        newOAuthConnections: prev.newOAuthConnections.filter(
+                                                            (val, idx2) => idx !== idx2
+                                                        )
+                                                    };
+                                                });
+                                            }}>
+                                            <div>
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </div>
+                                        </Button>
+                                    </InputGroup.Append>
+                                </InputGroup>
+                            </div>
                         ))}
                     </div>
                     {this.state.canEdit ? (
@@ -678,12 +656,16 @@ export default withRouter(
                             <Button
                                 className="mr-2"
                                 onClick={() => {
-                                    newOAuthConnections.push({
-                                        provider: OAuthProvider.GitHub,
-                                        externalUserId: ""
-                                    });
-                                    this.setState({
-                                        newOAuthConnections
+                                    this.setState(prev => {
+                                        return {
+                                            newOAuthConnections: [
+                                                ...prev.newOAuthConnections,
+                                                {
+                                                    provider: OAuthProvider.GitHub,
+                                                    externalUserId: ""
+                                                }
+                                            ]
+                                        };
                                     });
                                 }}>
                                 <FormattedMessage id="view.user.edit.oauth.add" />
@@ -691,10 +673,23 @@ export default withRouter(
                             <Button
                                 onClick={save}
                                 variant="success"
-                                hidden={this.state.newOAuthConnections == null}
-                                disabled={newOAuthConnections.some(
-                                    x => x.externalUserId.trim().length === 0
-                                )}>
+                                disabled={
+                                    this.state.newOAuthConnections.some(
+                                        x => x.externalUserId.trim().length === 0
+                                    ) ||
+                                    //If all values match up, and the lenght is the same, there has been no change, disable the button
+                                    (this.state.newOAuthConnections.every(
+                                        (val, idx) =>
+                                            val.externalUserId ===
+                                                (this.state.user?.oAuthConnections || [])[idx]
+                                                    ?.externalUserId &&
+                                            val.provider ===
+                                                (this.state.user?.oAuthConnections || [])[idx]
+                                                    ?.provider
+                                    ) &&
+                                        this.state.newOAuthConnections.length ===
+                                            this.state.user?.oAuthConnections?.length)
+                                }>
                                 <FormattedMessage id="generic.savepage" />
                             </Button>
                         </div>
