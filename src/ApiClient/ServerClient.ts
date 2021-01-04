@@ -419,17 +419,18 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         let response;
         try {
             if (CredentialsProvider.credentials.type == CredentialsType.Password)
-            response = await this.apiClient!.HomeController_CreateToken(
-                {
-                    OAuthProvider: (undefined as unknown) as string
-                },
-                null,
-                {
-                    auth: {
-                        username: CredentialsProvider.credentials.userName,
-                        password: CredentialsProvider.credentials.password
+                response = await this.apiClient!.HomeController_CreateToken(
+                    {
+                        OAuthProvider: (undefined as unknown) as string
+                    },
+                    null,
+                    {
+                        auth: {
+                            username: CredentialsProvider.credentials.userName,
+                            password: CredentialsProvider.credentials.password
+                        }
                     }
-                });
+                );
             else {
                 // @ts-expect-error alex fix pls
                 response = await this.apiClient!.HomeController_CreateToken(null, null, {
