@@ -20,11 +20,13 @@ import { Link } from "react-router-dom";
 
 import {
     AdministrationRights,
-    InstanceManagerRights
+    InstanceManagerRights,
+    OAuthProvider
 } from "../../../ApiClient/generatedcode/_enums";
 import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import ServerClient from "../../../ApiClient/ServerClient";
 import UserClient from "../../../ApiClient/UserClient";
 import UserGroupClient from "../../../ApiClient/UserGroupClient";
 import { GlobalObjects } from "../../../utils/globalObjects";
@@ -38,6 +40,7 @@ interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     user?: Components.Schemas.User;
+    newOAuthConnections?: Components.Schemas.OAuthConnection[] | null;
     loading: boolean;
     saving: boolean;
     permsadmin: { [key: string]: Permission };
@@ -149,7 +152,8 @@ export default withRouter(
 
         private loadUser(user: Components.Schemas.User) {
             this.setState({
-                user
+                user,
+                newOAuthConnections: null
             });
             this.loadEnums();
         }
@@ -482,12 +486,206 @@ export default withRouter(
                                 <Tab eventKey="group" title={<FormattedMessage id="perms.group" />}>
                                     {this.renderGroups()}
                                 </Tab>
+                                {this.renderOAuth()}
                             </Tabs>
                         </React.Fragment>
                     ) : (
                         ""
                     )}
                 </div>
+            );
+        }
+
+        private renderOAuth(): React.ReactNode {
+            const oAuthProviderInfos = ServerClient.serverInfo?.payload?.oAuthProviderInfos;
+            const currentOAuthConnections =
+                this.state.newOAuthConnections || this.state.user?.oAuthConnections;
+            if (
+                this.state.user?.name.toLowerCase() === "admin" || // admin user can't have OAuthConnections
+                currentOAuthConnections == null ||
+                (oAuthProviderInfos?.Discord == null &&
+                    oAuthProviderInfos?.GitHub == null &&
+                    oAuthProviderInfos?.Keycloak == null &&
+                    oAuthProviderInfos?.TGForums == null)
+            )
+                return <div />;
+
+            const save = async () => {
+                this.setState({
+                    saving: true
+                });
+
+                if (!this.state.user) {
+                    this.addError(
+                        new InternalError(ErrorCode.APP_FAIL, {
+                            jsError: Error("this.state.user is null in user edit save")
+                        })
+                    );
+                    return;
+                }
+
+                const response = await UserClient.editUser(this.state.user.id!, {
+                    oAuthConnections: this.state.newOAuthConnections!
+                });
+                if (response.code == StatusCode.OK) {
+                    this.loadUser(response.payload!);
+                } else {
+                    this.addError(response.error!);
+                }
+
+                this.setState({
+                    saving: false
+                });
+            };
+
+            let connectionIndex = 0;
+            let newOAuthConnections = [...currentOAuthConnections];
+            return (
+                <Tab
+                    eventKey="oauth"
+                    title={<FormattedMessage id="view.user.edit.oauth.connections" />}>
+                    <h3 className="mb-3">
+                        <FormattedMessage id="view.user.edit.oauth.current" />
+                    </h3>
+                    <div>
+                        {newOAuthConnections.map(oAuthConnection => (
+                            <InputGroup
+                                className="justify-content-center mb-1"
+                                key={`oauthconnection-${++connectionIndex}`}>
+                                <InputGroup.Prepend>
+                                    <InputGroup.Text as="label">
+                                        <span>
+                                            <FormattedMessage id="view.user.edit.oauth.provider" />
+                                        </span>
+                                    </InputGroup.Text>
+                                    <select
+                                        disabled={!this.state.canEdit}
+                                        onChange={event => {
+                                            oAuthConnection.provider = event.target
+                                                .value as OAuthProvider;
+                                            this.setState({
+                                                newOAuthConnections
+                                            });
+                                        }}>
+                                        <FormattedMessage id="view.user.edit.oauth.provider.discord">
+                                            {txt => (
+                                                <option
+                                                    value={OAuthProvider.Discord}
+                                                    selected={
+                                                        oAuthConnection.provider ===
+                                                        OAuthProvider.Discord
+                                                    }>
+                                                    {txt}
+                                                </option>
+                                            )}
+                                        </FormattedMessage>
+                                        <FormattedMessage id="view.user.edit.oauth.provider.github">
+                                            {txt => (
+                                                <option
+                                                    value={OAuthProvider.GitHub}
+                                                    selected={
+                                                        oAuthConnection.provider ===
+                                                        OAuthProvider.GitHub
+                                                    }>
+                                                    {txt}
+                                                </option>
+                                            )}
+                                        </FormattedMessage>
+                                        <FormattedMessage id="view.user.edit.oauth.provider.tgforums">
+                                            {txt => (
+                                                <option
+                                                    value={OAuthProvider.TGForums}
+                                                    selected={
+                                                        oAuthConnection.provider ===
+                                                        OAuthProvider.TGForums
+                                                    }>
+                                                    {txt}
+                                                </option>
+                                            )}
+                                        </FormattedMessage>
+                                        <FormattedMessage id="view.user.edit.oauth.provider.keycloak">
+                                            {txt => (
+                                                <option
+                                                    value={OAuthProvider.Keycloak}
+                                                    selected={
+                                                        oAuthConnection.provider ===
+                                                        OAuthProvider.Keycloak
+                                                    }>
+                                                    {txt}
+                                                </option>
+                                            )}
+                                        </FormattedMessage>
+                                    </select>
+                                </InputGroup.Prepend>
+                                <InputGroup.Append className="w-40 overflow-auto">
+                                    <InputGroup.Text
+                                        as="label"
+                                        htmlFor={`connection-${connectionIndex}`}>
+                                        <span>
+                                            <FormattedMessage id="view.user.edit.oauth.id" />
+                                        </span>
+                                    </InputGroup.Text>
+                                    <FormControl
+                                        className="w-40 overflow-auto flex-grow-0"
+                                        value={oAuthConnection.externalUserId}
+                                        onChange={event => {
+                                            oAuthConnection.externalUserId = event.target.value;
+                                            this.setState({
+                                                newOAuthConnections
+                                            });
+                                        }}
+                                        disabled={!this.state.canEdit}
+                                    />
+                                    <Button
+                                        variant="danger"
+                                        className="text-darker"
+                                        hidden={!this.state.canEdit}
+                                        onClick={() => {
+                                            newOAuthConnections = newOAuthConnections.splice(
+                                                connectionIndex,
+                                                1
+                                            );
+                                            this.setState({
+                                                newOAuthConnections
+                                            });
+                                        }}>
+                                        <div>
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </div>
+                                    </Button>
+                                </InputGroup.Append>
+                            </InputGroup>
+                        ))}
+                    </div>
+                    {this.state.canEdit ? (
+                        <div className="text-center mt-3">
+                            <Button
+                                className="mr-2"
+                                onClick={() => {
+                                    newOAuthConnections.push({
+                                        provider: OAuthProvider.GitHub,
+                                        externalUserId: ""
+                                    });
+                                    this.setState({
+                                        newOAuthConnections
+                                    });
+                                }}>
+                                <FormattedMessage id="view.user.edit.oauth.add" />
+                            </Button>
+                            <Button
+                                onClick={save}
+                                variant="success"
+                                hidden={this.state.newOAuthConnections == null}
+                                disabled={newOAuthConnections.some(
+                                    x => x.externalUserId.trim().length === 0
+                                )}>
+                                <FormattedMessage id="generic.savepage" />
+                            </Button>
+                        </div>
+                    ) : (
+                        ""
+                    )}
+                </Tab>
             );
         }
 

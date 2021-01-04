@@ -8,6 +8,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
+import keycloakicon from "../../../images/keycloak_icon_64px.png";
 import tgicon from "../../../images/tglogo-white.svg";
 import { OAuthProvider } from "../../ApiClient/generatedcode/_enums";
 import { Components } from "../../ApiClient/generatedcode/_generated";
@@ -179,9 +180,7 @@ export default withRouter(
                     <Button
                         onClick={() => this.performOAuth(OAuthProvider.Keycloak)}
                         key={OAuthProvider.Keycloak}>
-                        <img
-                            src="https://github.com/keycloak/keycloak-misc/raw/master/logo/keycloak_icon_64px.png"
-                            style={{ maxHeight: "16px" }}></img>
+                        <img src={keycloakicon} style={{ maxHeight: "16px" }}></img>
                         <br />
                         <FormattedMessage id="login.keycloak" />
                     </Button>

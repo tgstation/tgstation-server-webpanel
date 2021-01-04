@@ -103,6 +103,14 @@ module.exports = function createConfig(prodLike, github = false) {
                     loader: "svg-loader"
                 },
                 {
+                    test: /\.(png|jpe?g|gif)$/i,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                        },
+                    ],
+                },
+                {
                     test: /\.[jt]sx?$/,
                     exclude: /node_modules/,
                     use: {
