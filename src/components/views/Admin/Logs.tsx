@@ -55,12 +55,6 @@ export default withRouter(
 
                 switch (res.code) {
                     case StatusCode.OK: {
-                        this.addError(
-                            new InternalError<ErrorCode.APP_FAIL>(ErrorCode.APP_FAIL, {
-                                jsError: new Error("FILE TRANSFERS NOT IMPLEMENTED")
-                            })
-                        );
-                        /*
                         const regex = RegExp(
                             /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7}[-+]\d{2}:\d{2})\s+(.*?)(?=(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7}[-+]\d{2}:\d{2}|$))/,
                             "gs"
@@ -79,7 +73,6 @@ export default withRouter(
                                 entries: entries
                             }
                         });
-                        */
                         break;
                     }
                     case StatusCode.ERROR: {
@@ -165,11 +158,6 @@ export default withRouter(
                             </Button>
                             <Button
                                 onClick={() => {
-                                    this.addError(
-                                        new InternalError<ErrorCode.APP_FAIL>(ErrorCode.APP_FAIL, {
-                                            jsError: new Error("FILE TRANSFERS NOT IMPLEMENTED")
-                                        })
-                                    );
                                     download(
                                         this.props.match.params.name!,
                                         this.state.viewedLog!.logFile.content
