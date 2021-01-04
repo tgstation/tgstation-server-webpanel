@@ -12,7 +12,6 @@ import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/I
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
 import UserClient from "../../ApiClient/UserClient";
-import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -145,7 +144,7 @@ export default withRouter(
                         // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
                         void ServerClient.login({
                             type: CredentialsType.Password,
-                            userName: CredentialsProvider.credentials!.userName,
+                            userName: this.state.user!.name,
                             password: this.state.password1
                         });
                     }

@@ -56,7 +56,6 @@ export default withRouter(
 
             this.state = {
                 loading: false,
-                routes: null,
                 components: components
             };
         }

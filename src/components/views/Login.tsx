@@ -16,6 +16,7 @@ import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/I
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
 import { MODE } from "../../definitions/constants";
+import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -48,14 +49,27 @@ export default withRouter(
             };
         }
 
-        public componentDidMount() {
+        public async componentDidMount() {
+            if (await this.completeOAuthLogin()) return;
+
             if (MODE === "PROD") {
-                void this.tryLoginDefault();
+                await this.tryLoginDefault();
             }
+
+            const info = await ServerClient.getServerInfo();
+            if (info.code === StatusCode.OK)
+                this.setState({
+                    serverInformation: info.payload!
+                });
+            else
+                this.setState({
+                    error: info.error
+                });
         }
 
         private async tryLoginDefault(): Promise<void> {
             const response = await ServerClient.login({
+                type: CredentialsType.Password,
                 userName: "admin",
                 password: "ISolemlySwearToDeleteTheDataDirectory"
             });
@@ -110,14 +124,6 @@ export default withRouter(
                                     required
                                 />
                             </Form.Group>
-                            <Form.Group controlId="save">
-                                <Form.Check
-                                    type="checkbox"
-                                    label="Save password"
-                                    onChange={handleSaveInput}
-                                    checked={this.state.save}
-                                />
-                            </Form.Group>
                             <Button type="submit">
                                 <FormattedMessage id="login.submit" />
                             </Button>
@@ -126,20 +132,6 @@ export default withRouter(
                     {this.renderOAuthButtons()}
                 </Fragment>
             );
-        }
-
-        public async componentDidMount(): Promise<void> {
-            if (await this.completeOAuthLogin()) return;
-
-            const info = await ServerClient.getServerInfo();
-            if (info.code === StatusCode.OK)
-                this.setState({
-                    serverInformation: info.payload!
-                });
-            else
-                this.setState({
-                    error: info.error
-                });
         }
 
         private renderOAuthButtons(): ReactNode {
@@ -403,7 +395,7 @@ export default withRouter(
                 busy: true
             });
 
-            const response = await ServerClient.login(credentials, this.state.save);
+            const response = await ServerClient.login(credentials);
             if (response.code == StatusCode.ERROR) {
                 this.setState({
                     busy: false,

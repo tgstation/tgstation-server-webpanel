@@ -13,6 +13,7 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import { DownloadedLog } from "../../../ApiClient/models/DownloadedLog";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import { download } from "../../../utils/misc";
 import { AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
@@ -250,9 +251,7 @@ export default withRouter(
                                                         <td {...triggerHandler}>
                                                             <span
                                                                 ref={
-                                                                    ref as React.Ref<
-                                                                        HTMLSpanElement
-                                                                    >
+                                                                    ref as React.Ref<HTMLSpanElement>
                                                                 }>
                                                                 <FormattedRelativeTime
                                                                     value={logdiff}
@@ -284,11 +283,12 @@ export default withRouter(
                                                             this.downloadLog(value.name!).catch(
                                                                 (e: Error) => {
                                                                     this.addError(
-                                                                        new InternalError<
-                                                                            ErrorCode.APP_FAIL
-                                                                        >(ErrorCode.APP_FAIL, {
-                                                                            jsError: e
-                                                                        })
+                                                                        new InternalError<ErrorCode.APP_FAIL>(
+                                                                            ErrorCode.APP_FAIL,
+                                                                            {
+                                                                                jsError: e
+                                                                            }
+                                                                        )
                                                                     );
                                                                 }
                                                             );
