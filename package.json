@@ -29,7 +29,7 @@
         "@octokit/request-error": "^2.0.4",
         "@octokit/rest": "^18.0.12",
         "@octokit/types": "^5.5.0",
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "babel-loader": "^8.2.2",
         "bootstrap": "^4.5.3",
         "fs-extra": "^9.0.1",
