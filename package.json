@@ -29,7 +29,7 @@
         "@octokit/request-error": "^2.0.4",
         "@octokit/rest": "^18.0.12",
         "@octokit/types": "^5.5.0",
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "babel-loader": "^8.2.2",
         "bootstrap": "^4.5.3",
         "fs-extra": "^9.0.1",
@@ -47,6 +47,7 @@
     },
     "scripts": {
         "generate_api": "npm run patch && npm run download_api && npm run generate_enums && npm run typegen",
+        "preinstall": "npx npm-force-resolutions",
         "postinstall": "npm run generate_api",
         "start": "npx webpack-dev-server --config webpack.dev.js",
         "build": "npx webpack --config webpack.prod.js",
@@ -90,6 +91,7 @@
         "fork-ts-checker-webpack-plugin": "^5.2.1",
         "html-webpack-plugin": "^4.5.0",
         "node-sass": "^4.14.1",
+        "npm-force-resolutions": "0.0.3",
         "openapi-client-axios-typegen": "1.1.0",
         "postcss-loader": "^3.0.0",
         "prettier": "^2.2.1",
@@ -146,5 +148,8 @@
         "@formatjs/intl-relativetimeformat/locale-data/en",
         "@formatjs/intl-pluralrules/polyfill",
         "@formatjs/intl-pluralrules/locale-data/en"
-    ]
+    ],
+    "resolutions": {
+        "axios": "0.21.1"
+    }
 }
