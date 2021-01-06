@@ -12,12 +12,12 @@ import { Components } from "../ApiClient/generatedcode/_generated";
 import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/InternalError";
 import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
 import UserClient from "../ApiClient/UserClient";
+import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import { matchesPath } from "../utils/misc";
 import RouteController from "../utils/RouteController";
 import { AppCategories, AppRoute, AppRoutes } from "../utils/routes";
 import ErrorAlert from "./utils/ErrorAlert";
-import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 
 interface IProps extends RouteComponentProps {
     category?: {
