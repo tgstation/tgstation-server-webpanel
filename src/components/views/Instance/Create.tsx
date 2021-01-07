@@ -54,7 +54,7 @@ export default withRouter(
                     loading: false,
                     serverInformation,
                     validPathIndex: serverInformation.validInstancePaths != null ? 0 : undefined,
-                    validated: this.validatePath()
+                    validated: this.validate()
                 });
             }
         }
@@ -88,7 +88,8 @@ export default withRouter(
                                     onChange={event => {
                                         const instanceName = event.target.value;
                                         this.setState({
-                                            instanceName
+                                            instanceName,
+                                            validated: this.validate(instanceName)
                                         });
                                     }}
                                     value={this.state.instanceName}
@@ -113,7 +114,6 @@ export default withRouter(
                                                 className="flex-grow-1 flex-md-grow-0 w-50 w-md-auto"
                                                 as="select"
                                                 custom
-                                                readOnly
                                                 onChange={event => {
                                                     this.setState({
                                                         validPathIndex: parseInt(event.target.value)
@@ -142,7 +142,7 @@ export default withRouter(
                                             const instancePath = event.target.value;
                                             this.setState({
                                                 instancePath,
-                                                validated: this.validatePath(instancePath)
+                                                validated: this.validate(null, instancePath)
                                             });
                                         }}
                                         value={this.state.instancePath}
@@ -154,7 +154,7 @@ export default withRouter(
                                     <Tooltip id="create-instance-path-tooltip">
                                         <FormattedMessage
                                             id={
-                                                this.validatePath()
+                                                this.validate()
                                                     ? "view.instance.create.submit.invalid.name"
                                                     : "view.instance.create.submit.invalid.path"
                                             }
@@ -179,7 +179,10 @@ export default withRouter(
             );
         }
 
-        private validatePath(instancePathParam?: string): boolean {
+        private validate(instanceNameParam?: string | null, instancePathParam?: string): boolean {
+            const instanceName = instanceNameParam || this.state.instancePath || "";
+            if (instanceName.trim().length === 0) return false;
+
             let instancePath = instancePathParam || this.state.instancePath || "";
             if (this.state.validPathIndex != null) {
                 instancePath =
@@ -192,8 +195,8 @@ export default withRouter(
             const isWindows = this.state.serverInformation?.windowsHost || true; // who knows?
             const isGenerallyValidPath = !isWindows
                 ? instancePath.startsWith("/") && !instancePath.includes("//")
-                : /^[a-zA-Z]:[\\\/]/.test(instancePath) &&
-                  [
+                : /^[a-zA-Z]:[\\/]/.test(instancePath) &&
+                  ![
                       "//",
                       "\\\\",
                       "/\\",
@@ -205,7 +208,7 @@ export default withRouter(
                       "?",
                       "*",
                       ":"
-                  ].some(invalidSequence => instancePath.includes(invalidSequence));
+                  ].some(invalidSequence => instancePath.substr(2).includes(invalidSequence));
             return (
                 isGenerallyValidPath &&
                 // if there are no valid paths or our path starts with one of them followed by nothing or a path separator
