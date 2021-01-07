@@ -93,6 +93,21 @@ const AppRoutes = asElementTypesAppRoute({
         category: "home",
         catleader: true
     },
+    instancecreate: {
+        name: "routes.instancecreate",
+        route: "/instances/create",
+        file: "Instance/Create",
+
+        loose: false,
+        navbarLoose: false,
+
+        isAuthorized: instanceManagerRight(InstanceManagerRights.Create),
+
+        visibleNavbar: false,
+
+        category: "instance",
+        catleader: false
+    },
     instancelist: {
         name: "routes.instancelist",
         route: "/instances/",

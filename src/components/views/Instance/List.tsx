@@ -1,6 +1,8 @@
 import React, { CSSProperties, ReactNode } from "react";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
+import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
+import Tooltip from "react-bootstrap/esm/Tooltip";
 import Table from "react-bootstrap/Table";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
@@ -28,6 +30,7 @@ interface IState {
     //isnt directly used but is used to make react rerender when the selected insance is changed
     instanceid?: number;
     canOnline: boolean;
+    canCreate: boolean;
 }
 interface IProps extends RouteComponentProps {}
 
@@ -46,7 +49,8 @@ export default withRouter(
                 instances: [],
                 errors: [],
                 instanceid: actualid,
-                canOnline: false
+                canOnline: false,
+                canCreate: false
             };
         }
 
@@ -107,11 +111,11 @@ export default withRouter(
 
             await UserClient.getCurrentUser().then(userinfo => {
                 if (userinfo.code === StatusCode.OK) {
+                    const instanceManagerRights = resolvePermissionSet(userinfo.payload!)
+                        .instanceManagerRights!;
                     this.setState({
-                        canOnline: !!(
-                            resolvePermissionSet(userinfo.payload!).instanceManagerRights! &
-                            InstanceManagerRights.SetOnline
-                        )
+                        canOnline: !!(instanceManagerRights & InstanceManagerRights.SetOnline),
+                        canCreate: !!(instanceManagerRights & InstanceManagerRights.Create)
                     });
                 } else {
                     this.addError(userinfo.error!);
@@ -262,6 +266,7 @@ export default withRouter(
                                     </tr>
                                 );
                             })}
+                            {this.renderAddInstance()}
                         </tbody>
                     </Table>
                     <div className="align-middle">
@@ -308,6 +313,41 @@ export default withRouter(
                         </Button>
                     </div>
                 </div>
+            );
+        }
+
+        private renderAddInstance(): React.ReactNode {
+            return (
+                <tr>
+                    <td className="align-middle" colSpan={6}>
+                        <OverlayTrigger
+                            overlay={
+                                <Tooltip id="create-instance-tooltip">
+                                    <FormattedMessage id="perms.instance.create.warning" />
+                                </Tooltip>
+                            }
+                            show={this.state.canCreate ? false : undefined}>
+                            {({ ref, ...triggerHandler }) => (
+                                <Button
+                                    ref={ref}
+                                    className="mx-1"
+                                    variant="success"
+                                    onClick={() => {
+                                        this.props.history.push(
+                                            AppRoutes.instancecreate.link ||
+                                                AppRoutes.instancecreate.route
+                                        );
+                                    }}
+                                    disabled={!this.state.canCreate}
+                                    {...triggerHandler}>
+                                    <div>
+                                        <FormattedMessage id="routes.instancecreate" />
+                                    </div>
+                                </Button>
+                            )}
+                        </OverlayTrigger>
+                    </td>
+                </tr>
             );
         }
     }
