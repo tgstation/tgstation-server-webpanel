@@ -35,7 +35,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         super();
         this.getCurrentUser = this.getCurrentUser.bind(this);
 
-        LoginHooks.addHook(this.getCurrentUser);
+        LoginHooks.addHook(() => this.getCurrentUser());
         ServerClient.on("purgeCache", () => {
             this._cachedUser = undefined;
         });
@@ -103,9 +103,11 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         }
     }
 
-    public async getCurrentUser(): Promise<InternalStatus<Components.Schemas.User, GenericErrors>> {
+    public async getCurrentUser(
+        bypassCache?: boolean
+    ): Promise<InternalStatus<Components.Schemas.User, GenericErrors>> {
         await ServerClient.wait4Init();
-        if (this._cachedUser) {
+        if (this._cachedUser && !bypassCache) {
             return this._cachedUser;
         }
 

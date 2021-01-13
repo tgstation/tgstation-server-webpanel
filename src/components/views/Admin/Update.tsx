@@ -17,6 +17,7 @@ import GithubClient, { TGSVersion } from "../../../utils/GithubClient";
 import { AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
+import UserClient from "../../../ApiClient/UserClient";
 
 interface IProps
     extends RouteComponentProps<{
@@ -195,7 +196,7 @@ export default withRouter(
                     // i need that timer to be async
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                     window.setInterval(async () => {
-                        const response = await ServerClient.getServerInfo(undefined, true);
+                        const response = await UserClient.getCurrentUser(true);
                         switch (response.code) {
                             //we wait until we get an error which means either it rebooted and our creds are bullshit, or we rebooted and the api is different
                             //in both cases, we should reboot
