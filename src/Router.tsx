@@ -17,7 +17,7 @@ import { AppRoute } from "./utils/routes";
 
 interface IState {
     loading: boolean;
-    routes?: Array<AppRoute>;
+    routes: Array<AppRoute>;
     components: Map<string, LoadableComponent<unknown>>;
 }
 interface IProps extends RouteComponentProps {
@@ -56,29 +56,26 @@ export default withRouter(
 
             this.state = {
                 loading: false,
+                routes: RouteController.getImmediateRoutes(false),
                 components: components
             };
         }
 
-        public async componentDidMount() {
+        public componentDidMount() {
             RouteController.on("refreshAll", routes => {
                 this.setState({
                     routes
                 });
             });
 
-            this.setState({
-                routes: await RouteController.getRoutes(false)
-            });
-
             this.props.history.listen(location => {
                 void this.listener(location.pathname);
             });
-            await this.listener(this.props.location.pathname);
+            this.listener(this.props.location.pathname);
         }
 
-        private async listener(location: string) {
-            const routes = await RouteController.getRoutes(false);
+        private listener(location: string) {
+            const routes = RouteController.getImmediateRoutes(false);
             for (const route of routes) {
                 if (route.category && route.navbarLoose && matchesPath(location, route.route)) {
                     this.props.selectCategory(route.category);
@@ -91,54 +88,48 @@ export default withRouter(
             return (
                 <ErrorBoundary>
                     <Reload>
-                        <div>{this.renderSwitch()}</div>
-                    </Reload>
-                </ErrorBoundary>
-            );
-        }
-
-        private renderSwitch(): ReactNode {
-            if (!this.state.routes) return <Loading text="loading.app" />;
-
-            return (
-                <Switch>
-                    {this.state.routes.map(route => {
-                        if (!route.loginless && !this.props.loggedIn) return;
-
-                        return (
-                            <Route
-                                exact={!route.loose}
-                                path={route.route}
-                                key={route.name}
-                                render={props => {
-                                    let Comp;
-
-                                    if (!route.cachedAuth) {
-                                        Comp = AccessDenied;
-                                    } else {
-                                        Comp = this.state.components.get(route.name)!;
-                                    }
-
-                                    const WrapperComponent = route.noContainer
-                                        ? React.Fragment
-                                        : Container;
+                        <div>
+                            <Switch>
+                                {this.state.routes.map(route => {
+                                    if (!route.loginless && !this.props.loggedIn) return;
 
                                     return (
-                                        <WrapperComponent className="mt-5 mb-5">
-                                            {/*//@ts-expect-error //i cant for the life of me make this shit work so it has to stay like this.*/}
-                                            <Comp {...props} />
-                                        </WrapperComponent>
+                                        <Route
+                                            exact={!route.loose}
+                                            path={route.route}
+                                            key={route.name}
+                                            render={props => {
+                                                let Comp;
+
+                                                if (!route.cachedAuth) {
+                                                    Comp = AccessDenied;
+                                                } else {
+                                                    Comp = this.state.components.get(route.name)!;
+                                                }
+
+                                                const WrapperComponent = route.noContainer
+                                                    ? React.Fragment
+                                                    : Container;
+
+                                                return (
+                                                    <WrapperComponent className="mt-5 mb-5">
+                                                        {/*//@ts-expect-error //i cant for the life of me make this shit work so it has to stay like this.*/}
+                                                        <Comp {...props} />
+                                                    </WrapperComponent>
+                                                );
+                                            }}
+                                        />
                                     );
-                                }}
-                            />
-                        );
-                    })}
-                    <Container className="mt-5 mb-5">
-                        <Route key="notfound">
-                            {this.props.loggedIn ? <NotFound /> : <Login />}
-                        </Route>
-                    </Container>
-                </Switch>
+                                })}
+                                <Container className="mt-5 mb-5">
+                                    <Route key="notfound">
+                                        {this.props.loggedIn ? <NotFound /> : <Login />}
+                                    </Route>
+                                </Container>
+                            </Switch>
+                        </div>
+                    </Reload>
+                </ErrorBoundary>
             );
         }
     }
