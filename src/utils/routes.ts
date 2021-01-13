@@ -86,6 +86,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: false,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -124,6 +125,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -145,6 +147,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -170,6 +173,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -191,6 +195,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -207,6 +212,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         //you can always read your own user
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: "user",
@@ -233,6 +239,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         //you can always read your own user
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -265,6 +272,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: "tools",
@@ -329,6 +337,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         loginless: true,
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: false,
         homeIcon: "cogs"
@@ -343,6 +352,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         loginless: true,
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: false
     },
@@ -356,6 +366,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         loginless: true,
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: false
     }
