@@ -12,6 +12,7 @@ import { Components } from "../ApiClient/generatedcode/_generated";
 import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/InternalError";
 import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
 import UserClient from "../ApiClient/UserClient";
+import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import { matchesPath } from "../utils/misc";
 import RouteController from "../utils/RouteController";
@@ -47,7 +48,7 @@ export default withRouter(
             this.loadUserInformation = this.loadUserInformation.bind(this);
 
             this.state = {
-                loggedIn: false,
+                loggedIn: !!CredentialsProvider.isTokenValid(),
                 routes: [],
                 categories: AppCategories,
                 focusedCategory: this.props.category?.name || ""
@@ -85,6 +86,11 @@ export default withRouter(
             this.setState({
                 routes: await RouteController.getRoutes()
             });
+
+            if (CredentialsProvider.isTokenValid()) {
+                await this.loadServerInformation();
+                await this.loadUserInformation();
+            }
 
             RouteController.on("refresh", routes => {
                 this.setState({
@@ -216,40 +222,47 @@ export default withRouter(
                                                                 <div className="py-2 d-none d-lg-inline">
                                                                     <FontAwesomeIcon icon="angle-right" />
                                                                 </div>
-                                                                {cat.routes.map(val => {
-                                                                    if (val.catleader) return; //we already display this but differently
-                                                                    if (!val.cachedAuth) return;
-                                                                    if (!val.visibleNavbar) return;
+                                                                <Nav className="bg-darkblue mx-1 rounded">
+                                                                    {cat.routes.map(val => {
+                                                                        if (val.catleader) return; //we already display this but differently
+                                                                        if (!val.cachedAuth) return;
+                                                                        if (!val.visibleNavbar)
+                                                                            return;
 
-                                                                    return (
-                                                                        <Nav.Item key={val.name}>
-                                                                            <Nav.Link
-                                                                                onClick={() => {
-                                                                                    this.props.history.push(
-                                                                                        val.link ||
-                                                                                            val.route,
-                                                                                        {
-                                                                                            reload: true
+                                                                        return (
+                                                                            <Nav.Item
+                                                                                key={val.name}>
+                                                                                <Nav.Link
+                                                                                    onClick={() => {
+                                                                                        this.props.history.push(
+                                                                                            val.link ||
+                                                                                                val.route,
+                                                                                            {
+                                                                                                reload: true
+                                                                                            }
+                                                                                        );
+                                                                                    }}
+                                                                                    active={matchesPath(
+                                                                                        this.props
+                                                                                            .location
+                                                                                            .pathname,
+                                                                                        val.route,
+                                                                                        !val.navbarLoose
+                                                                                    )}>
+                                                                                    <FormattedMessage
+                                                                                        id={
+                                                                                            val.name
                                                                                         }
-                                                                                    );
-                                                                                }}
-                                                                                active={matchesPath(
-                                                                                    this.props
-                                                                                        .location
-                                                                                        .pathname,
-                                                                                    val.route,
-                                                                                    !val.navbarLoose
-                                                                                )}>
-                                                                                <FormattedMessage
-                                                                                    id={val.name}
-                                                                                />
-                                                                            </Nav.Link>
-                                                                        </Nav.Item>
-                                                                    );
-                                                                })}
-                                                                <div className="py-2 d-none d-lg-inline">
-                                                                    <FontAwesomeIcon icon="grip-lines-vertical" />
-                                                                </div>
+                                                                                    />
+                                                                                </Nav.Link>
+                                                                            </Nav.Item>
+                                                                        );
+                                                                    })}
+
+                                                                    <div className="py-2 d-none d-lg-inline mr-1">
+                                                                        <FontAwesomeIcon icon="grip-lines-vertical" />
+                                                                    </div>
+                                                                </Nav>
                                                             </Nav>
                                                         </div>
                                                     </CSSTransition>
