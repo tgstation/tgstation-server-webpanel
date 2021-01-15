@@ -15,13 +15,13 @@ import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
+import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 import { MODE } from "../../definitions/constants";
 import KeycloakLogo from "../../images/keycloak_icon_64px.png";
 import TGLogo from "../../images/tglogo-white.svg";
 import { RouteData } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
-import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 
 interface IProps extends RouteComponentProps {
     prefillLogin?: string;
