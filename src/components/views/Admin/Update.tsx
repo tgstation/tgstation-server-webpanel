@@ -13,11 +13,11 @@ import AdminClient from "../../../ApiClient/AdminClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../../ApiClient/ServerClient";
+import UserClient from "../../../ApiClient/UserClient";
 import GithubClient, { TGSVersion } from "../../../utils/GithubClient";
 import { AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
-import UserClient from "../../../ApiClient/UserClient";
 
 interface IProps
     extends RouteComponentProps<{
