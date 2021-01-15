@@ -7,11 +7,11 @@ import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
 import { Components } from "../../ApiClient/generatedcode/_generated";
+import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
 import UserClient from "../../ApiClient/UserClient";
-import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -143,10 +143,12 @@ export default withRouter(
                     if (this.state.currentUser) {
                         // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
                         void ServerClient.login({
-                            userName: CredentialsProvider.credentials!.userName,
+                            type: CredentialsType.Password,
+                            userName: this.state.user!.name,
                             password: this.state.password1
                         });
                     }
+
                     this.props.history.goBack();
                     break;
                 }

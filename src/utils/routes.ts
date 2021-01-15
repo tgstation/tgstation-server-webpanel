@@ -1,6 +1,7 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/_enums";
+import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
@@ -86,6 +87,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: false,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -124,6 +126,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -145,6 +148,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -170,6 +174,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -191,6 +196,7 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -207,6 +213,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         //you can always read your own user
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: "user",
@@ -233,6 +240,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         //you can always read your own user
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -264,7 +272,8 @@ const AppRoutes = asElementTypesAppRoute({
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        isAuthorized: adminRight(AdministrationRights.ChangeVersion),
+        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: "tools",
@@ -329,6 +338,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         loginless: true,
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: false,
         homeIcon: "cogs"
@@ -343,6 +353,21 @@ const AppRoutes = asElementTypesAppRoute({
 
         loginless: true,
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
+
+        visibleNavbar: false
+    },
+    oAuth: {
+        name: "routes.oauth",
+        route: "/oauth/:provider?/",
+        file: "Login",
+
+        loose: true,
+        navbarLoose: false,
+
+        loginless: true,
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
 
         visibleNavbar: false
     }
@@ -412,5 +437,7 @@ export const RouteData = {
     },
     get instanceid(): string | undefined {
         return _instanceid?.toString();
-    }
+    },
+
+    oautherrors: [] as InternalError<ErrorCode>[]
 };

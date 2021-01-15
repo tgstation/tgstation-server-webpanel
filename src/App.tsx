@@ -5,6 +5,7 @@ import Container from "react-bootstrap/Container";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
+import { CredentialsType } from "./ApiClient/models/ICredentials";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
 import LoginHooks from "./ApiClient/util/LoginHooks";
@@ -12,7 +13,7 @@ import AppNavbar from "./components/AppNavbar";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
-import { DEFAULT_BASEPATH, MODE } from "./definitions/constants";
+import { DEFAULT_BASEPATH } from "./definitions/constants";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
@@ -52,18 +53,12 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
             if (event.key == "L" && event.ctrlKey && event.shiftKey) {
                 //alert("ISolemlySwearToDeleteTheDataDirectory");
                 void ServerClient.login({
+                    type: CredentialsType.Password,
                     userName: "admin",
                     password: "ISolemlySwearToDeleteTheDataDirectory"
                 });
             }
         });
-
-        if (MODE === "DEV") {
-            void ServerClient.login({
-                userName: "admin",
-                password: "ISolemlySwearToDeleteTheDataDirectory"
-            });
-        }
     }
 
     public render(): React.ReactNode {
@@ -127,6 +122,7 @@ class App extends React.Component<IProps, IState> {
 
         await this.loadTranslation();
         await ServerClient.initApi();
+        await ServerClient.getServerInfo();
 
         this.setState({
             loading: false

@@ -20,11 +20,13 @@ import { Link } from "react-router-dom";
 
 import {
     AdministrationRights,
-    InstanceManagerRights
+    InstanceManagerRights,
+    OAuthProvider
 } from "../../../ApiClient/generatedcode/_enums";
 import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import ServerClient from "../../../ApiClient/ServerClient";
 import UserClient from "../../../ApiClient/UserClient";
 import UserGroupClient from "../../../ApiClient/UserGroupClient";
 import { GlobalObjects } from "../../../utils/globalObjects";
@@ -38,6 +40,8 @@ interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     user?: Components.Schemas.User;
+    serverinfo?: Components.Schemas.ServerInformation;
+    newOAuthConnections: Components.Schemas.OAuthConnection[];
     loading: boolean;
     saving: boolean;
     permsadmin: { [key: string]: Permission };
@@ -46,6 +50,7 @@ interface IState {
     canEdit: boolean;
     //override for if its the current user and it can edit its own password
     canEditOwnPassword: boolean;
+    canEditOwnOAuth: boolean;
     tab: string;
     groups: Components.Schemas.UserGroup[];
     createGroupName: string;
@@ -73,9 +78,11 @@ export default withRouter(
                 canRead: false,
                 canEdit: false,
                 canEditOwnPassword: false,
+                canEditOwnOAuth: false,
                 tab: props.match.params.tab || "info",
                 groups: [],
-                createGroupName: ""
+                createGroupName: "",
+                newOAuthConnections: []
             };
 
             RouteData.selecteduserid = parseInt(props.match.params.id);
@@ -120,12 +127,26 @@ export default withRouter(
                             resolvePermissionSet(currentuser.payload!).administrationRights! &
                             AdministrationRights.EditOwnPassword
                         ) && currentuser.payload!.id! === userid,
+                    canEditOwnOAuth:
+                        !!(
+                            resolvePermissionSet(currentuser.payload!).administrationRights! &
+                            AdministrationRights.EditOwnOAuthConnections
+                        ) && currentuser.payload!.id! === userid,
                     groups: currentuser.payload!.group
                         ? [Object.assign({ users: [] }, currentuser.payload!.group)]
                         : []
                 });
             } else {
                 this.addError(currentuser.error!);
+            }
+
+            const serverinfo = await ServerClient.getServerInfo();
+            if (currentuser.code == StatusCode.OK) {
+                this.setState({
+                    serverinfo: serverinfo.payload!
+                });
+            } else {
+                this.addError(serverinfo.error!);
             }
 
             await this.loadGroups();
@@ -149,7 +170,8 @@ export default withRouter(
 
         private loadUser(user: Components.Schemas.User) {
             this.setState({
-                user
+                user,
+                newOAuthConnections: user.oAuthConnections ? Array.from(user.oAuthConnections) : []
             });
             this.loadEnums();
         }
@@ -240,11 +262,7 @@ export default withRouter(
 
                 RouteData.selectedusertab = newkey;
                 if (!GlobalObjects.setupMode) {
-                    window.history.pushState(
-                        null,
-                        window.document.title,
-                        AppRoutes.useredit.link || AppRoutes.useredit.route
-                    );
+                    this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
                 }
                 this.setState({
                     tab: newkey
@@ -482,12 +500,208 @@ export default withRouter(
                                 <Tab eventKey="group" title={<FormattedMessage id="perms.group" />}>
                                     {this.renderGroups()}
                                 </Tab>
+                                {this.renderOAuth()}
                             </Tabs>
                         </React.Fragment>
                     ) : (
                         ""
                     )}
                 </div>
+            );
+        }
+
+        private renderOAuth(): React.ReactNode {
+            const oAuthProviderInfos = this.state.serverinfo?.oAuthProviderInfos;
+            const currentOAuthConnections =
+                this.state.newOAuthConnections || this.state.user?.oAuthConnections;
+            if (
+                this.state.user?.name.toLowerCase() === "admin" || // admin user can't have OAuthConnections
+                currentOAuthConnections == null ||
+                !oAuthProviderInfos ||
+                !Object.keys(oAuthProviderInfos).length
+            )
+                return null;
+
+            const save = async () => {
+                this.setState({
+                    saving: true
+                });
+
+                if (!this.state.user) {
+                    this.addError(
+                        new InternalError(ErrorCode.APP_FAIL, {
+                            jsError: Error("this.state.user is null in user edit save")
+                        })
+                    );
+                    return;
+                }
+
+                const response = await UserClient.editUser(this.state.user.id!, {
+                    oAuthConnections: this.state.newOAuthConnections
+                });
+                if (response.code == StatusCode.OK) {
+                    this.loadUser(response.payload!);
+                } else {
+                    this.addError(response.error!);
+                }
+
+                this.setState({
+                    saving: false
+                });
+            };
+
+            const canEditOauth = this.state.canEdit || this.state.canEditOwnOAuth;
+
+            return (
+                <Tab
+                    eventKey="oauth"
+                    title={<FormattedMessage id="view.user.edit.oauth.connections" />}>
+                    <h3 className="mb-3">
+                        <FormattedMessage id="view.user.edit.oauth.current" />
+                    </h3>
+                    <div>
+                        {this.state.newOAuthConnections.map((oAuthConnection, idx) => (
+                            <div className="justify-content-center d-flex" key={idx}>
+                                <InputGroup className="w-75 mb-1">
+                                    <InputGroup.Prepend>
+                                        <InputGroup.Text>
+                                            <span>
+                                                <FormattedMessage id="view.user.edit.oauth.provider" />
+                                            </span>
+                                        </InputGroup.Text>
+                                    </InputGroup.Prepend>
+                                    <Form.Control
+                                        className="flex-grow-1 flex-md-grow-0 w-50 w-md-auto "
+                                        as="select"
+                                        custom
+                                        disabled={!canEditOauth}
+                                        onChange={event => {
+                                            const provider = event.target.value as OAuthProvider;
+                                            this.setState(prev => {
+                                                return {
+                                                    newOAuthConnections: prev.newOAuthConnections.map(
+                                                        (val, idx2) => {
+                                                            if (idx2 !== idx) return val;
+                                                            return {
+                                                                ...val,
+                                                                provider: provider
+                                                            };
+                                                        }
+                                                    )
+                                                };
+                                            });
+                                        }}>
+                                        {Object.keys(oAuthProviderInfos).map(key => {
+                                            return (
+                                                <FormattedMessage
+                                                    key={key}
+                                                    id={`view.user.edit.oauth.provider.${key.toLowerCase()}`}>
+                                                    {txt => (
+                                                        <option
+                                                            value={key}
+                                                            selected={
+                                                                oAuthConnection.provider === key
+                                                            }>
+                                                            {txt}
+                                                        </option>
+                                                    )}
+                                                </FormattedMessage>
+                                            );
+                                        })}
+                                    </Form.Control>
+                                    <InputGroup.Text className="rounded-0">
+                                        <FormattedMessage id="view.user.edit.oauth.id" />
+                                    </InputGroup.Text>
+                                    <FormControl
+                                        className=""
+                                        value={oAuthConnection.externalUserId}
+                                        onChange={event => {
+                                            const externalUserId = event.target.value;
+                                            this.setState(prev => {
+                                                return {
+                                                    newOAuthConnections: prev.newOAuthConnections.map(
+                                                        (val, idx2) => {
+                                                            if (idx2 !== idx) return val;
+                                                            return {
+                                                                ...val,
+                                                                externalUserId: externalUserId
+                                                            };
+                                                        }
+                                                    )
+                                                };
+                                            });
+                                        }}
+                                        disabled={!canEditOauth}
+                                    />
+                                    <InputGroup.Append className="">
+                                        <Button
+                                            variant="danger"
+                                            className="text-darker"
+                                            hidden={!canEditOauth}
+                                            onClick={() => {
+                                                this.setState(prev => {
+                                                    return {
+                                                        newOAuthConnections: prev.newOAuthConnections.filter(
+                                                            (val, idx2) => idx !== idx2
+                                                        )
+                                                    };
+                                                });
+                                            }}>
+                                            <div>
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </div>
+                                        </Button>
+                                    </InputGroup.Append>
+                                </InputGroup>
+                            </div>
+                        ))}
+                    </div>
+                    {canEditOauth ? (
+                        <div className="text-center mt-3">
+                            <Button
+                                className="mr-2"
+                                onClick={() => {
+                                    this.setState(prev => {
+                                        return {
+                                            newOAuthConnections: [
+                                                ...prev.newOAuthConnections,
+                                                {
+                                                    provider: OAuthProvider.GitHub,
+                                                    externalUserId: ""
+                                                }
+                                            ]
+                                        };
+                                    });
+                                }}>
+                                <FormattedMessage id="view.user.edit.oauth.add" />
+                            </Button>
+                            <Button
+                                onClick={save}
+                                variant="success"
+                                disabled={
+                                    this.state.newOAuthConnections.some(
+                                        x => x.externalUserId.trim().length === 0
+                                    ) ||
+                                    //If all values match up, and the lenght is the same, there has been no change, disable the button
+                                    (this.state.newOAuthConnections.every(
+                                        (val, idx) =>
+                                            val.externalUserId ===
+                                                (this.state.user?.oAuthConnections || [])[idx]
+                                                    ?.externalUserId &&
+                                            val.provider ===
+                                                (this.state.user?.oAuthConnections || [])[idx]
+                                                    ?.provider
+                                    ) &&
+                                        this.state.newOAuthConnections.length ===
+                                            this.state.user?.oAuthConnections?.length)
+                                }>
+                                <FormattedMessage id="generic.savepage" />
+                            </Button>
+                        </div>
+                    ) : (
+                        ""
+                    )}
+                </Tab>
             );
         }
 

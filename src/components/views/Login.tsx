@@ -1,3 +1,6 @@
+import { faDiscord } from "@fortawesome/free-brands-svg-icons/faDiscord";
+import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, FormEvent, ReactNode } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -6,10 +9,17 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
-import InternalError from "../../ApiClient/models/InternalComms/InternalError";
+import { OAuthProvider } from "../../ApiClient/generatedcode/_enums";
+import { Components } from "../../ApiClient/generatedcode/_generated";
+import { CredentialsType } from "../../ApiClient/models/ICredentials";
+import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
-import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
+import ServerClient from "../../ApiClient/ServerClient";
+import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 import { MODE } from "../../definitions/constants";
+import KeycloakLogo from "../../images/keycloak_icon_64px.png";
+import TGLogo from "../../images/tglogo-white.svg";
+import { RouteData } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -22,9 +32,19 @@ interface IState {
     validated: boolean;
     username: string;
     password: string;
-    error?: InternalError<LoginErrors>;
+    errors: Array<InternalError<ErrorCode> | undefined>;
     redirectSetup?: boolean;
+    serverInfo?: Components.Schemas.ServerInformation;
 }
+
+export type NormalOauth = { provider: Exclude<OAuthProvider, OAuthProvider.TGForums>; url: string };
+export type TGSnowflakeOauth = {
+    provider: OAuthProvider.TGForums;
+    state: string;
+    url: string;
+};
+export type StoredOAuthData = NormalOauth | TGSnowflakeOauth;
+export type OAuthStateStorage = Record<string, StoredOAuthData>;
 
 export default withRouter(
     class Login extends React.Component<IProps, IState> {
@@ -32,22 +52,40 @@ export default withRouter(
             super(props);
             this.submit = this.submit.bind(this);
 
+            console.log(RouteData.oautherrors);
+
             this.state = {
-                busy: false,
+                busy: true,
                 validated: false,
                 username: "",
-                password: ""
+                password: "",
+                errors: Array.from(RouteData.oautherrors)
             };
         }
 
-        public componentDidMount() {
+        public async componentDidMount() {
             if (MODE === "PROD") {
+                // noinspection ES6MissingAwait
                 void this.tryLoginDefault();
+            }
+
+            const serverInfo = await ServerClient.getServerInfo();
+            if (serverInfo.code == StatusCode.OK) {
+                this.setState({
+                    busy: false,
+                    serverInfo: serverInfo.payload!
+                });
+            } else {
+                this.addError(serverInfo.error!);
+                this.setState({
+                    busy: false
+                });
             }
         }
 
         private async tryLoginDefault(): Promise<void> {
             const response = await ServerClient.login({
+                type: CredentialsType.Password,
                 userName: "admin",
                 password: "ISolemlySwearToDeleteTheDataDirectory"
             });
@@ -59,26 +97,66 @@ export default withRouter(
             }
         }
 
+        private addError(error: InternalError<ErrorCode>): void {
+            this.setState(prevState => {
+                const errors = Array.from(prevState.errors);
+                errors.push(error);
+                return {
+                    errors
+                };
+            });
+        }
+
         public render(): ReactNode {
             const handleUsrInput = (event: ChangeEvent<HTMLInputElement>) =>
                 this.setState({ username: event.target.value });
             const handlePwdInput = (event: ChangeEvent<HTMLInputElement>) =>
                 this.setState({ password: event.target.value });
 
-            if (this.state.busy) {
+            if (this.state.busy || CredentialsProvider.isTokenValid()) {
                 return <Loading text="loading.login" />;
             }
 
             /*if (this.state.redirectSetup) {
                 return <Redirect to={AppRoutes.setup.link || AppRoutes.setup.route} />;
             }*/
+
+            const providers: Record<OAuthProvider, React.ReactNode> = {
+                [OAuthProvider.GitHub]: (
+                    <FontAwesomeIcon icon={faGithub} style={{ width: "1.2em" }} />
+                ),
+                [OAuthProvider.Discord]: (
+                    <FontAwesomeIcon icon={faDiscord} style={{ width: "1.2em" }} />
+                ),
+                [OAuthProvider.TGForums]: (
+                    <img src={TGLogo} alt="tglogo" style={{ width: "1.2em" }} />
+                ),
+                [OAuthProvider.Keycloak]: (
+                    <img src={KeycloakLogo} alt="keycloaklogo" style={{ width: "1.2em" }} />
+                )
+            };
+
             return (
                 <Form validated={this.state.validated} onSubmit={this.submit}>
                     <Col className="mx-auto" lg={5} md={8}>
-                        <ErrorAlert
-                            error={this.state.error}
-                            onClose={() => this.setState({ error: undefined })}
-                        />
+                        {this.state.errors.map((err, index) => {
+                            if (!err) return;
+                            return (
+                                <ErrorAlert
+                                    key={index}
+                                    error={err}
+                                    onClose={() =>
+                                        this.setState(prev => {
+                                            const newarr = Array.from(prev.errors);
+                                            newarr[index] = undefined;
+                                            return {
+                                                errors: newarr
+                                            };
+                                        })
+                                    }
+                                />
+                            );
+                        })}
                         <Form.Group controlId="username">
                             <Form.Label>
                                 <FormattedMessage id="login.username" />
@@ -104,9 +182,107 @@ export default withRouter(
                         <Button type="submit">
                             <FormattedMessage id="login.submit" />
                         </Button>
+                        <hr />
+                        <div className="d-flex justify-content-center">
+                            <div className="d-flex flex-column align-items-stretch">
+                                {Object.keys(this.state.serverInfo?.oAuthProviderInfos || {}).map(
+                                    provider => (
+                                        <Button
+                                            className="text-left my-1"
+                                            key={provider}
+                                            onClick={() =>
+                                                this.startOAuth(provider as OAuthProvider)
+                                            }>
+                                            {providers[provider as OAuthProvider]}
+                                            <span className="ml-2">
+                                                <FormattedMessage
+                                                    id="login.oauth"
+                                                    values={{ provider }}
+                                                />
+                                            </span>
+                                        </Button>
+                                    )
+                                )}
+                            </div>
+                        </div>
                     </Col>
                 </Form>
             );
+        }
+
+        private async startOAuth(provider: OAuthProvider): Promise<void> {
+            if (!this.state.serverInfo) {
+                this.addError(
+                    new InternalError(ErrorCode.APP_FAIL, {
+                        jsError: Error("serverInfo is null in startOAuth")
+                    })
+                );
+                return;
+            }
+
+            const stateArray = new Uint8Array(10);
+            window.crypto.getRandomValues(stateArray);
+            const state = Array.from(stateArray, dec => dec.toString(16).padStart(2, "0")).join("");
+
+            let url: string | undefined = undefined;
+
+            const e = encodeURIComponent;
+
+            switch (provider) {
+                case OAuthProvider.Discord: {
+                    url = `https://discord.com/api/oauth2/authorize?response_type=code&client_id=${e(
+                        this.state.serverInfo.oAuthProviderInfos!.Discord.clientId!
+                    )}&scope=identify&state=${e(state)}&redirect_uri=${e(
+                        this.state.serverInfo.oAuthProviderInfos!.Discord.redirectUri!
+                    )}`;
+                    break;
+                }
+                case OAuthProvider.GitHub: {
+                    url = `https://github.com/login/oauth/authorize?client_id=${e(
+                        this.state.serverInfo.oAuthProviderInfos!.GitHub.clientId!
+                    )}&redirect_uri=${e(
+                        this.state.serverInfo.oAuthProviderInfos!.GitHub.redirectUri!
+                    )}&state=${e(state)}&allow_signup=false`;
+                    break;
+                }
+                case OAuthProvider.Keycloak: {
+                    url = `${this.state.serverInfo.oAuthProviderInfos!.Keycloak
+                        .serverUrl!}/protocol/openid-connect/auth?response_type=code&client_id=${e(
+                        this.state.serverInfo.oAuthProviderInfos!.Keycloak.clientId!
+                    )}&scope=openid&state=${e(state)}&redirect_uri=${e(
+                        this.state.serverInfo.oAuthProviderInfos!.Keycloak.redirectUri!
+                    )}`;
+                    break;
+                }
+                case OAuthProvider.TGForums: {
+                    url = `https://tgstation13.org/phpBB/oauth.php?session_public_token=${e(
+                        this.state.serverInfo.oAuthProviderInfos!.TGForums.clientId!
+                    )}`;
+                    break;
+                }
+            }
+
+            const oauthdata = JSON.parse(
+                window.sessionStorage.getItem("oauth") || "{}"
+            ) as OAuthStateStorage;
+            if (provider === OAuthProvider.TGForums) {
+                oauthdata["tgforums"] = {
+                    provider: provider,
+                    url: this.props.location.pathname,
+                    state: this.state.serverInfo.oAuthProviderInfos!.TGForums.clientId!
+                };
+            } else {
+                oauthdata[state] = {
+                    provider: provider,
+                    url: this.props.location.pathname
+                };
+            }
+
+            window.sessionStorage.setItem("oauth", JSON.stringify(oauthdata));
+
+            window.location.href = url;
+
+            return new Promise(resolve => resolve());
         }
 
         private async submit(event: FormEvent<HTMLFormElement>) {
@@ -115,14 +291,15 @@ export default withRouter(
                 busy: true
             });
             const response = await ServerClient.login({
+                type: CredentialsType.Password,
                 userName: this.state.username,
                 password: this.state.password
             });
             if (response.code == StatusCode.ERROR) {
                 this.setState({
-                    busy: false,
-                    error: response.error
+                    busy: false
                 });
+                this.addError(response.error!);
             } else {
                 if (this.props.postLoginAction) {
                     this.props.postLoginAction();

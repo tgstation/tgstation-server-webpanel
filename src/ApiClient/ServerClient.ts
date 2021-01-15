@@ -4,7 +4,7 @@ import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import { API_VERSION, VERSION } from "../definitions/constants";
 import { Client, Components } from "./generatedcode/_generated";
-import { ICredentials } from "./models/ICredentials";
+import { CredentialsType, ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import configOptions from "./util/config";
@@ -35,6 +35,7 @@ export type LoginErrors =
     | ErrorCode.LOGIN_DISABLED
     | ErrorCode.LOGIN_FAIL
     | ErrorCode.LOGIN_NOCREDS
+    | ErrorCode.LOGIN_BAD_OAUTH
     | ErrorCode.LOGIN_RATELIMIT;
 
 export type ServerInfoErrors = GenericErrors;
@@ -129,7 +130,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 //This applies the authorization header, it will wait however long it needs until
                 // theres a token available. It obviously won't wait for a token before sending the request
                 // if its currently sending a request to the login endpoint...
-                if (!((value.url === "/" || value.url === "") && value.method === "post")) {
+                if (!(value.url === "/" || value.url === "")) {
                     const tok = await this.wait4Token();
                     (value.headers as { [key: string]: string })["Authorization"] =
                         "Bearer " + tok.bearer!;
@@ -381,12 +382,18 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         //Newcreds is optional, if its missing its going to try to reuse the last used credentials,
         // if newCreds exists, its going to use newCreds
+        let oauthAutoLogin = false;
         if (newCreds) {
             CredentialsProvider.credentials = newCreds;
+        } else if (CredentialsProvider.credentials?.type === CredentialsType.OAuth) {
+            // autologin doesn't work with OAuth
+            this.logout();
+            oauthAutoLogin = true;
         }
 
         //This is thrown if you try to reuse the last credentials without actually having last used credentials
-        if (!CredentialsProvider.credentials)
+        //or you let an oauth login expire
+        if (oauthAutoLogin || !CredentialsProvider.credentials)
             return new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_NOCREDS>({
                 code: StatusCode.ERROR,
                 error: new InternalError(ErrorCode.LOGIN_NOCREDS, { void: true })
@@ -410,18 +417,32 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
         let response;
         try {
-            response = await this.apiClient!.HomeController_CreateToken(
-                {
-                    OAuthProvider: (undefined as unknown) as string
-                },
-                null,
-                {
-                    auth: {
-                        username: CredentialsProvider.credentials.userName,
-                        password: CredentialsProvider.credentials.password
+            if (CredentialsProvider.credentials.type == CredentialsType.Password)
+                response = await this.apiClient!.HomeController_CreateToken(
+                    {
+                        OAuthProvider: (undefined as unknown) as string
+                    },
+                    null,
+                    {
+                        auth: {
+                            username: CredentialsProvider.credentials.userName,
+                            password: CredentialsProvider.credentials.password
+                        }
                     }
-                }
-            );
+                );
+            else {
+                response = await this.apiClient!.HomeController_CreateToken(
+                    {
+                        OAuthProvider: CredentialsProvider.credentials.provider
+                    },
+                    null,
+                    {
+                        headers: {
+                            Authorization: `OAuth ${CredentialsProvider.credentials.token}`
+                        }
+                    }
+                );
+            }
         } catch (stat) {
             const res = new InternalStatus<Components.Schemas.Token, GenericErrors>({
                 code: StatusCode.ERROR,
