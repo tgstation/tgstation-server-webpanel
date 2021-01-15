@@ -1,6 +1,7 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/_enums";
+import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
@@ -436,5 +437,7 @@ export const RouteData = {
     },
     get instanceid(): string | undefined {
         return _instanceid?.toString();
-    }
+    },
+
+    oautherrors: [] as InternalError<ErrorCode>[]
 };

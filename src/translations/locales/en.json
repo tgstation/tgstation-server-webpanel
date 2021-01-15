@@ -41,7 +41,7 @@
     "error.unhandled_response.desc": "The application received an unexpected response",
     "error.unhandled_global_response.desc": "The application received an unexpected global response",
     "error.login.no_creds.desc": "Attempted to login without any credentials",
-    "error.login.bad_oauth": "An error occurred while processing an OAuth request",
+    "error.login.bad_oauth": "An error occurred while logging in using OAuth",
     "error.login.bad_user_pass.desc": "Invalid credentials!",
     "error.login.user_disabled.desc": "This user account is disabled",
     "error.user.no_sys_ident.desc": "This system user was not found",

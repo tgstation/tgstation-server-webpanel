@@ -4,13 +4,14 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
-import { withRouter } from "react-router-dom";
+import { Route, withRouter } from "react-router-dom";
 
 import { CredentialsType } from "../../ApiClient/models/ICredentials";
-import InternalError from "../../ApiClient/models/InternalComms/InternalError";
+import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
-import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
+import ServerClient from "../../ApiClient/ServerClient";
 import { MODE } from "../../definitions/constants";
+import { RouteData } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -23,7 +24,7 @@ interface IState {
     validated: boolean;
     username: string;
     password: string;
-    error?: InternalError<LoginErrors>;
+    errors: Array<InternalError<ErrorCode> | undefined>;
     redirectSetup?: boolean;
 }
 
@@ -33,11 +34,14 @@ export default withRouter(
             super(props);
             this.submit = this.submit.bind(this);
 
+            console.log(RouteData.oautherrors);
+
             this.state = {
                 busy: false,
                 validated: false,
                 username: "",
-                password: ""
+                password: "",
+                errors: RouteData.oautherrors
             };
         }
 
@@ -61,6 +65,16 @@ export default withRouter(
             }
         }
 
+        private addError(error: InternalError<ErrorCode>): void {
+            this.setState(prevState => {
+                const errors = Array.from(prevState.errors);
+                errors.push(error);
+                return {
+                    errors
+                };
+            });
+        }
+
         public render(): ReactNode {
             const handleUsrInput = (event: ChangeEvent<HTMLInputElement>) =>
                 this.setState({ username: event.target.value });
@@ -77,10 +91,24 @@ export default withRouter(
             return (
                 <Form validated={this.state.validated} onSubmit={this.submit}>
                     <Col className="mx-auto" lg={5} md={8}>
-                        <ErrorAlert
-                            error={this.state.error}
-                            onClose={() => this.setState({ error: undefined })}
-                        />
+                        {this.state.errors.map((err, index) => {
+                            if (!err) return;
+                            return (
+                                <ErrorAlert
+                                    key={index}
+                                    error={err}
+                                    onClose={() =>
+                                        this.setState(prev => {
+                                            const newarr = Array.from(prev.errors);
+                                            newarr[index] = undefined;
+                                            return {
+                                                errors: newarr
+                                            };
+                                        })
+                                    }
+                                />
+                            );
+                        })}
                         <Form.Group controlId="username">
                             <Form.Label>
                                 <FormattedMessage id="login.username" />
@@ -123,9 +151,9 @@ export default withRouter(
             });
             if (response.code == StatusCode.ERROR) {
                 this.setState({
-                    busy: false,
-                    error: response.error
+                    busy: false
                 });
+                this.addError(response.error!);
             } else {
                 if (this.props.postLoginAction) {
                     this.props.postLoginAction();
