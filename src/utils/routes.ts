@@ -272,7 +272,7 @@ const AppRoutes = asElementTypesAppRoute({
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        isAuthorized: adminRight(AdministrationRights.ChangeVersion),
         cachedAuth: true,
 
         visibleNavbar: true,

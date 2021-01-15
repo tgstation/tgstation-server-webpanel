@@ -36,7 +36,6 @@ export type LoginErrors =
     | ErrorCode.LOGIN_FAIL
     | ErrorCode.LOGIN_NOCREDS
     | ErrorCode.LOGIN_BAD_OAUTH
-    | ErrorCode.LOGIN_NO_SESSION_STORAGE
     | ErrorCode.LOGIN_RATELIMIT;
 
 export type ServerInfoErrors = GenericErrors;
@@ -432,13 +431,17 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                     }
                 );
             else {
-                // @ts-expect-error alex fix pls
-                response = await this.apiClient!.HomeController_CreateToken(null, null, {
-                    headers: {
-                        OAuthProvider: CredentialsProvider.credentials.provider,
-                        Authorization: `OAuth ${CredentialsProvider.credentials.token}`
+                response = await this.apiClient!.HomeController_CreateToken(
+                    {
+                        OAuthProvider: CredentialsProvider.credentials.provider
+                    },
+                    null,
+                    {
+                        headers: {
+                            Authorization: `OAuth ${CredentialsProvider.credentials.token}`
+                        }
                     }
-                });
+                );
             }
         } catch (stat) {
             const res = new InternalStatus<Components.Schemas.Token, GenericErrors>({

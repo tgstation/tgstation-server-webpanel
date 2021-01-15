@@ -1,19 +1,25 @@
 import loadable, { LoadableComponent } from "@loadable/component";
-import { Component, ReactNode } from "react";
 import * as React from "react";
+import { Component, ReactNode } from "react";
 import Container from "react-bootstrap/Container";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { Route, Switch, withRouter } from "react-router-dom";
 
+import { OAuthProvider } from "./ApiClient/generatedcode/_enums";
+import { CredentialsType } from "./ApiClient/models/ICredentials";
+import InternalError, { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
+import ServerClient from "./ApiClient/ServerClient";
 import AccessDenied from "./components/utils/AccessDenied";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import Loading from "./components/utils/Loading";
 import Reload from "./components/utils/Reload";
-import Login from "./components/views/Login";
+import Login, { OAuthStateStorage } from "./components/views/Login";
+import { MODE } from "./definitions/constants";
 import { matchesPath } from "./utils/misc";
 import RouteController from "./utils/RouteController";
-import { AppRoute } from "./utils/routes";
+import { AppRoute, RouteData } from "./utils/routes";
 
 interface IState {
     loading: boolean;
@@ -55,13 +61,13 @@ export default withRouter(
             });
 
             this.state = {
-                loading: false,
+                loading: !!new URLSearchParams(window.location.search).get("state"),
                 routes: RouteController.getImmediateRoutes(false),
                 components: components
             };
         }
 
-        public componentDidMount() {
+        public async componentDidMount() {
             RouteController.on("refreshAll", routes => {
                 this.setState({
                     routes
@@ -72,6 +78,66 @@ export default withRouter(
                 void this.listener(location.pathname);
             });
             this.listener(this.props.location.pathname);
+
+            const URLSearch = new URLSearchParams(window.location.search);
+            const state = URLSearch.get("state");
+            if (!state) {
+                this.setState({
+                    loading: false
+                });
+                return;
+            }
+
+            if (MODE === "PROD") {
+                window.history.replaceState(null, document.title, window.location.pathname);
+            }
+
+            const oauthdata = JSON.parse(
+                window.sessionStorage.getItem("oauth") || "{}"
+            ) as OAuthStateStorage;
+
+            const oauthstate = oauthdata[state];
+            if (!oauthstate) {
+                return this.setErrorAndEnd(
+                    new InternalError(ErrorCode.LOGIN_BAD_OAUTH, {
+                        jsError: Error(`State(${state}) cannot be resolved to a provider.`)
+                    })
+                );
+            }
+
+            let code = URLSearch.get("code");
+            if (oauthstate.provider === OAuthProvider.TGForums) {
+                code = oauthstate.state;
+            }
+
+            if (!code) {
+                return this.setErrorAndEnd(
+                    new InternalError(ErrorCode.LOGIN_BAD_OAUTH, {
+                        jsError: Error(`Code not found.`)
+                    })
+                );
+            }
+            this.props.history.replace(oauthstate.url);
+
+            const response = await ServerClient.login({
+                type: CredentialsType.OAuth,
+                provider: oauthstate.provider,
+                token: code
+            });
+            if (response.code === StatusCode.OK) {
+                this.setState({
+                    loading: false
+                });
+            } else {
+                return this.setErrorAndEnd(response.error!);
+            }
+        }
+
+        private setErrorAndEnd(error: InternalError<ErrorCode>) {
+            RouteData.oautherrors = [error];
+            this.setState({
+                loading: false
+            });
         }
 
         private listener(location: string) {
@@ -85,6 +151,10 @@ export default withRouter(
         }
 
         public render(): ReactNode {
+            if (this.state.loading) {
+                return <Loading text="loading.app" />;
+            }
+
             return (
                 <ErrorBoundary>
                     <Reload>
