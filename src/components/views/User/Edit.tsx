@@ -255,11 +255,7 @@ export default withRouter(
 
                 RouteData.selectedusertab = newkey;
                 if (!GlobalObjects.setupMode) {
-                    window.history.pushState(
-                        null,
-                        window.document.title,
-                        AppRoutes.useredit.link || AppRoutes.useredit.route
-                    );
+                    this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
                 }
                 this.setState({
                     tab: newkey
