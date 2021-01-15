@@ -50,6 +50,7 @@ interface IState {
     canEdit: boolean;
     //override for if its the current user and it can edit its own password
     canEditOwnPassword: boolean;
+    canEditOwnOAuth: boolean;
     tab: string;
     groups: Components.Schemas.UserGroup[];
     createGroupName: string;
@@ -77,6 +78,7 @@ export default withRouter(
                 canRead: false,
                 canEdit: false,
                 canEditOwnPassword: false,
+                canEditOwnOAuth: false,
                 tab: props.match.params.tab || "info",
                 groups: [],
                 createGroupName: "",
@@ -124,6 +126,11 @@ export default withRouter(
                         !!(
                             resolvePermissionSet(currentuser.payload!).administrationRights! &
                             AdministrationRights.EditOwnPassword
+                        ) && currentuser.payload!.id! === userid,
+                    canEditOwnOAuth:
+                        !!(
+                            resolvePermissionSet(currentuser.payload!).administrationRights! &
+                            AdministrationRights.EditOwnOAuthConnections
                         ) && currentuser.payload!.id! === userid,
                     groups: currentuser.payload!.group
                         ? [Object.assign({ users: [] }, currentuser.payload!.group)]
@@ -543,6 +550,8 @@ export default withRouter(
                 });
             };
 
+            const canEditOauth = this.state.canEdit || this.state.canEditOwnOAuth;
+
             return (
                 <Tab
                     eventKey="oauth"
@@ -565,7 +574,7 @@ export default withRouter(
                                         className="flex-grow-1 flex-md-grow-0 w-50 w-md-auto "
                                         as="select"
                                         custom
-                                        disabled={!this.state.canEdit}
+                                        disabled={!canEditOauth}
                                         onChange={event => {
                                             const provider = event.target.value as OAuthProvider;
                                             this.setState(prev => {
@@ -622,13 +631,13 @@ export default withRouter(
                                                 };
                                             });
                                         }}
-                                        disabled={!this.state.canEdit}
+                                        disabled={!canEditOauth}
                                     />
                                     <InputGroup.Append className="">
                                         <Button
                                             variant="danger"
                                             className="text-darker"
-                                            hidden={!this.state.canEdit}
+                                            hidden={!canEditOauth}
                                             onClick={() => {
                                                 this.setState(prev => {
                                                     return {
@@ -647,7 +656,7 @@ export default withRouter(
                             </div>
                         ))}
                     </div>
-                    {this.state.canEdit ? (
+                    {canEditOauth ? (
                         <div className="text-center mt-3">
                             <Button
                                 className="mr-2"
