@@ -6,6 +6,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
+import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { LoginErrors } from "../../ApiClient/ServerClient";
@@ -48,6 +49,7 @@ export default withRouter(
 
         private async tryLoginDefault(): Promise<void> {
             const response = await ServerClient.login({
+                type: CredentialsType.Password,
                 userName: "admin",
                 password: "ISolemlySwearToDeleteTheDataDirectory"
             });
@@ -115,6 +117,7 @@ export default withRouter(
                 busy: true
             });
             const response = await ServerClient.login({
+                type: CredentialsType.Password,
                 userName: this.state.username,
                 password: this.state.password
             });
