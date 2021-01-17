@@ -1,9 +1,11 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { CSSProperties, ReactNode } from "react";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
-import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
-import Tooltip from "react-bootstrap/esm/Tooltip";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
+import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
@@ -266,10 +268,10 @@ export default withRouter(
                                     </tr>
                                 );
                             })}
-                            {this.renderAddInstance()}
                         </tbody>
                     </Table>
                     <div className="align-middle">
+                        <div className="mb-4">{this.renderAddInstance()}</div>
                         <Button
                             className="mx-1"
                             onClick={() => {
@@ -318,36 +320,32 @@ export default withRouter(
 
         private renderAddInstance(): React.ReactNode {
             return (
-                <tr>
-                    <td className="align-middle" colSpan={6}>
-                        <OverlayTrigger
-                            overlay={
-                                <Tooltip id="create-instance-tooltip">
-                                    <FormattedMessage id="perms.instance.create.warning" />
-                                </Tooltip>
-                            }
-                            show={this.state.canCreate ? false : undefined}>
-                            {({ ref, ...triggerHandler }) => (
-                                <Button
-                                    ref={ref}
-                                    className="mx-1"
-                                    variant="success"
-                                    onClick={() => {
-                                        this.props.history.push(
-                                            AppRoutes.instancecreate.link ||
-                                                AppRoutes.instancecreate.route
-                                        );
-                                    }}
-                                    disabled={!this.state.canCreate}
-                                    {...triggerHandler}>
-                                    <div>
-                                        <FormattedMessage id="routes.instancecreate" />
-                                    </div>
-                                </Button>
-                            )}
-                        </OverlayTrigger>
-                    </td>
-                </tr>
+                <OverlayTrigger
+                    overlay={
+                        <Tooltip id="create-instance-tooltip">
+                            <FormattedMessage id="perms.instance.create.warning" />
+                        </Tooltip>
+                    }
+                    show={this.state.canCreate ? false : undefined}>
+                    {({ ref, ...triggerHandler }) => (
+                        <Button
+                            ref={ref}
+                            className="mx-1"
+                            variant="success"
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.instancecreate.link || AppRoutes.instancecreate.route
+                                );
+                            }}
+                            disabled={!this.state.canCreate}
+                            {...triggerHandler}>
+                            <div>
+                                <FontAwesomeIcon className="mr-2" icon={faPlus} />
+                                <FormattedMessage id="routes.instancecreate" />
+                            </div>
+                        </Button>
+                    )}
+                </OverlayTrigger>
             );
         }
     }

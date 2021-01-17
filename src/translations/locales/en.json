@@ -158,8 +158,6 @@
     "view.instance.create.path": "Path on Server",
     "view.instance.create.path.prefix": "Prefix:",
     "view.instance.create.submit": "Create Instance",
-    "view.instance.create.submit.invalid.name": "The instance needs a name",
-    "view.instance.create.submit.invalid.path": "The path for the instance is invalid",
     "view.instance.list.title": "Instance List",
     "view.instance.list.set.online": "Set Online",
     "view.instance.list.set.offline": "Set Offline",

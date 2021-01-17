@@ -1,10 +1,8 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/esm/Col";
-import Form from "react-bootstrap/esm/Form";
-import InputGroup from "react-bootstrap/esm/InputGroup";
-import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
-import Tooltip from "react-bootstrap/esm/Tooltip";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
@@ -19,12 +17,11 @@ import Loading from "../../utils/Loading";
 
 interface IState {
     loading: boolean;
-    validated: boolean;
-    error?: InternalError<ErrorCode>;
+    errors: Array<InternalError<ErrorCode> | undefined>;
     instanceName?: string;
     instancePath?: string;
     serverInformation?: Components.Schemas.ServerInformation;
-    validPathIndex?: number;
+    prefix?: string;
 }
 
 interface IProps extends RouteComponentProps {}
@@ -35,26 +32,37 @@ export default withRouter(
             super(props);
             this.state = {
                 loading: true,
-                validated: false
+                errors: []
             };
 
             this.submit = this.submit.bind(this);
         }
 
+        private addError(error: InternalError<ErrorCode>): void {
+            this.setState(prevState => {
+                const errors = Array.from(prevState.errors);
+                errors.push(error);
+                return {
+                    errors
+                };
+            });
+        }
+
         public async componentDidMount() {
             const serverInformationStatus = await ServerClient.getServerInfo();
-            if (serverInformationStatus.code !== StatusCode.OK)
+            if (serverInformationStatus.code !== StatusCode.OK) {
                 this.setState({
-                    loading: false,
-                    error: serverInformationStatus.error
+                    loading: false
                 });
-            else {
+                this.addError(serverInformationStatus.error!);
+            } else {
                 const serverInformation = serverInformationStatus.payload!;
                 this.setState({
                     loading: false,
                     serverInformation,
-                    validPathIndex: serverInformation.validInstancePaths != null ? 0 : undefined,
-                    validated: this.validate()
+                    prefix: serverInformation.validInstancePaths?.length
+                        ? serverInformation.validInstancePaths[0]
+                        : undefined
                 });
             }
         }
@@ -65,19 +73,32 @@ export default withRouter(
             }
 
             const validInstancePaths = this.state.serverInformation?.validInstancePaths;
-            let validPathIndex = 0;
             return (
                 <div className="text-center">
+                    {this.state.errors.map((err, index) => {
+                        if (!err) return;
+                        return (
+                            <ErrorAlert
+                                key={index}
+                                error={err}
+                                onClose={() =>
+                                    this.setState(prev => {
+                                        const newarr = Array.from(prev.errors);
+                                        newarr[index] = undefined;
+                                        return {
+                                            errors: newarr
+                                        };
+                                    })
+                                }
+                            />
+                        );
+                    })}
                     <h3>
                         <FormattedMessage id="view.instance.create.title" />
                     </h3>
                     <Form onSubmit={this.submit}>
                         <Col className="mx-auto" lg={5} md={8}>
-                            <ErrorAlert
-                                error={this.state.error}
-                                onClose={() => this.setState({ error: undefined })}
-                            />
-                            <Form.Group controlId="username">
+                            <Form.Group controlId="name">
                                 <Form.Label>
                                     <h5>
                                         <FormattedMessage id="view.instance.create.name" />
@@ -88,46 +109,44 @@ export default withRouter(
                                     onChange={event => {
                                         const instanceName = event.target.value;
                                         this.setState({
-                                            instanceName,
-                                            validated: this.validate(instanceName)
+                                            instanceName
                                         });
                                     }}
                                     value={this.state.instanceName}
                                     required
                                 />
                             </Form.Group>
-                            <Form.Group controlId="password">
+                            <Form.Group controlId="path">
                                 <Form.Label>
                                     <h5>
                                         <FormattedMessage id="view.instance.create.path" />
                                     </h5>
                                 </Form.Label>
-                                <InputGroup className="w-75 mb-1">
+                                <InputGroup className="mb-1">
                                     {validInstancePaths != null ? (
-                                        <InputGroup.Prepend>
+                                        <InputGroup.Prepend className="flex-grow-1 flex-grow-md-0">
                                             <InputGroup.Text>
                                                 <span>
                                                     <FormattedMessage id="view.instance.create.path.prefix" />
                                                 </span>
                                             </InputGroup.Text>
                                             <Form.Control
-                                                className="flex-grow-1 flex-md-grow-0 w-50 w-md-auto"
+                                                className="rounded-0 flex-grow-1 flex-grow-md-0 flex-shrink-0 flex-shrink-md-1 w-auto"
                                                 as="select"
                                                 custom
+                                                required
                                                 onChange={event => {
                                                     this.setState({
-                                                        validPathIndex: parseInt(event.target.value)
+                                                        prefix: event.target.value
                                                     });
                                                 }}>
                                                 {validInstancePaths.map(validPath => {
-                                                    const currentPathIndex = validPathIndex++;
                                                     return (
                                                         <option
-                                                            key={`validpath-${currentPathIndex}`}
-                                                            value={currentPathIndex}
+                                                            key={validPath}
+                                                            value={validPath}
                                                             selected={
-                                                                this.state.validPathIndex ==
-                                                                currentPathIndex
+                                                                this.state.prefix == validPath
                                                             }>
                                                             {validPath}/
                                                         </option>
@@ -138,99 +157,35 @@ export default withRouter(
                                     ) : null}
                                     <Form.Control
                                         type="text"
+                                        className="flex-grow-1 w-100 w-md-auto"
+                                        required
                                         onChange={event => {
                                             const instancePath = event.target.value;
                                             this.setState({
-                                                instancePath,
-                                                validated: this.validate(null, instancePath)
+                                                instancePath
                                             });
                                         }}
                                         value={this.state.instancePath}
                                     />
                                 </InputGroup>
                             </Form.Group>
-                            <OverlayTrigger
-                                overlay={
-                                    <Tooltip id="create-instance-path-tooltip">
-                                        <FormattedMessage
-                                            id={
-                                                this.validate()
-                                                    ? "view.instance.create.submit.invalid.name"
-                                                    : "view.instance.create.submit.invalid.path"
-                                            }
-                                        />
-                                    </Tooltip>
-                                }
-                                show={this.state.validated ? false : undefined}>
-                                {({ ref, ...triggerHandler }) => (
-                                    <Button
-                                        type="submit"
-                                        variant="success"
-                                        disabled={!this.state.validated}
-                                        ref={ref}
-                                        {...triggerHandler}>
-                                        <FormattedMessage id="view.instance.create.submit" />
-                                    </Button>
-                                )}
-                            </OverlayTrigger>
+                            <Button type="submit" variant="success">
+                                <FormattedMessage id="view.instance.create.submit" />
+                            </Button>
                         </Col>
                     </Form>
                 </div>
             );
         }
 
-        private validate(instanceNameParam?: string | null, instancePathParam?: string): boolean {
-            const instanceName = instanceNameParam || this.state.instancePath || "";
-            if (instanceName.trim().length === 0) return false;
-
-            let instancePath = instancePathParam || this.state.instancePath || "";
-            if (this.state.validPathIndex != null) {
-                instancePath =
-                    this.state.serverInformation!.validInstancePaths![this.state.validPathIndex] +
-                    "/" +
-                    instancePath;
-            }
-
-            const validInstancePaths = this.state.serverInformation?.validInstancePaths;
-            const isWindows = this.state.serverInformation?.windowsHost || true; // who knows?
-            const isGenerallyValidPath = !isWindows
-                ? instancePath.startsWith("/") && !instancePath.includes("//")
-                : /^[a-zA-Z]:[\\/]/.test(instancePath) &&
-                  ![
-                      "//",
-                      "\\\\",
-                      "/\\",
-                      "\\/",
-                      '"',
-                      "<",
-                      ">",
-                      "|",
-                      "?",
-                      "*",
-                      ":"
-                  ].some(invalidSequence => instancePath.substr(2).includes(invalidSequence));
-            return (
-                isGenerallyValidPath &&
-                // if there are no valid paths or our path starts with one of them followed by nothing or a path separator
-                (!validInstancePaths ||
-                    validInstancePaths.some(
-                        validPath =>
-                            instancePath.startsWith(validPath) &&
-                            (instancePath.length == validPath.length ||
-                                instancePath.charAt(validPath.length) === "/" ||
-                                (isWindows && instancePath.charAt(validPath.length) === "\\"))
-                    ))
-            );
-        }
-
         private async submit() {
-            let instancePath = this.state.instancePath!;
-            if (this.state.validPathIndex != null) {
-                instancePath =
-                    this.state.serverInformation!.validInstancePaths![this.state.validPathIndex] +
-                    "/" +
-                    instancePath;
+            //The required attribute should prevent this from ever happening but id rather not fuck over someone
+            if (!this.state.instancePath) {
+                return;
             }
+
+            const instancePath =
+                (this.state.prefix ? this.state.prefix + "/" : "") + this.state.instancePath;
 
             this.setState({
                 loading: true
@@ -244,9 +199,9 @@ export default withRouter(
 
             if (result.code === StatusCode.ERROR) {
                 this.setState({
-                    loading: false,
-                    error: result.error
+                    loading: false
                 });
+                this.addError(result.error!);
 
                 return;
             }
