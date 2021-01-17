@@ -4,6 +4,7 @@ import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatu
 import ServerClient from "./ServerClient";
 
 export type ListInstancesErrors = GenericErrors;
+export type CreateInstanceErrors = GenericErrors;
 export type EditInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
 export type GetInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
 
@@ -78,6 +79,50 @@ export default new (class InstanceClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.INSTANCE_NO_DB_ENTITY, {
+                        errorMessage: response.data as Components.Schemas.ErrorMessage
+                    })
+                });
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async createInstance(
+        instance: Components.Schemas.Instance
+    ): Promise<InternalStatus<Components.Schemas.Instance, CreateInstanceErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.InstanceController_Create(null, instance);
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+        switch (response.status) {
+            case 200:
+            case 201: {
+                const instance = response.data as Components.Schemas.Instance;
+
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: instance
+                });
+            }
+            case 409:
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.HTTP_DATA_INEGRITY, {
                         errorMessage: response.data as Components.Schemas.ErrorMessage
                     })
                 });

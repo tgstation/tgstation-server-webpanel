@@ -1,7 +1,11 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { CSSProperties, ReactNode } from "react";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
+import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
@@ -28,6 +32,7 @@ interface IState {
     //isnt directly used but is used to make react rerender when the selected insance is changed
     instanceid?: number;
     canOnline: boolean;
+    canCreate: boolean;
 }
 interface IProps extends RouteComponentProps {}
 
@@ -46,7 +51,8 @@ export default withRouter(
                 instances: [],
                 errors: [],
                 instanceid: actualid,
-                canOnline: false
+                canOnline: false,
+                canCreate: false
             };
         }
 
@@ -107,11 +113,11 @@ export default withRouter(
 
             await UserClient.getCurrentUser().then(userinfo => {
                 if (userinfo.code === StatusCode.OK) {
+                    const instanceManagerRights = resolvePermissionSet(userinfo.payload!)
+                        .instanceManagerRights!;
                     this.setState({
-                        canOnline: !!(
-                            resolvePermissionSet(userinfo.payload!).instanceManagerRights! &
-                            InstanceManagerRights.SetOnline
-                        )
+                        canOnline: !!(instanceManagerRights & InstanceManagerRights.SetOnline),
+                        canCreate: !!(instanceManagerRights & InstanceManagerRights.Create)
                     });
                 } else {
                     this.addError(userinfo.error!);
@@ -265,6 +271,7 @@ export default withRouter(
                         </tbody>
                     </Table>
                     <div className="align-middle">
+                        <div className="mb-4">{this.renderAddInstance()}</div>
                         <Button
                             className="mx-1"
                             onClick={() => {
@@ -308,6 +315,37 @@ export default withRouter(
                         </Button>
                     </div>
                 </div>
+            );
+        }
+
+        private renderAddInstance(): React.ReactNode {
+            return (
+                <OverlayTrigger
+                    overlay={
+                        <Tooltip id="create-instance-tooltip">
+                            <FormattedMessage id="perms.instance.create.warning" />
+                        </Tooltip>
+                    }
+                    show={this.state.canCreate ? false : undefined}>
+                    {({ ref, ...triggerHandler }) => (
+                        <Button
+                            ref={ref}
+                            className="mx-1"
+                            variant="success"
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.instancecreate.link || AppRoutes.instancecreate.route
+                                );
+                            }}
+                            disabled={!this.state.canCreate}
+                            {...triggerHandler}>
+                            <div>
+                                <FontAwesomeIcon className="mr-2" icon={faPlus} />
+                                <FormattedMessage id="routes.instancecreate" />
+                            </div>
+                        </Button>
+                    )}
+                </OverlayTrigger>
             );
         }
     }
