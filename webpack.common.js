@@ -6,8 +6,9 @@ const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const JSONManifestPlugin = require("./webpack-plugin");
 
-module.exports = function createConfig(prodLike, github = false) {
+module.exports = function createConfig(prodLike) {
     const publicPath = process.env.TGS_OVERRIDE_DEFAULT_BASEPATH || (prodLike ? "/app/" : "/");
     const isDevelopment = !prodLike;
 
@@ -152,32 +153,23 @@ module.exports = function createConfig(prodLike, github = false) {
                 ]
             }),
             new ForkTsCheckerWebpackPlugin(),
+            //process.env.GITHUB_SHA : require("./package.json").version
             new webpack.DefinePlugin({
                 API_VERSION: JSON.stringify(require("./src/ApiClient/generatedcode/swagger.json").info.version),
-                VERSION: JSON.stringify(
-                    github ? process.env.GITHUB_SHA : require("./package.json").version
-                ),
-                MODE: JSON.stringify(prodLike ? (github ? "PROD-GITHUB" : "PROD") : "DEV"),
-                DEFAULT_BASEPATH: JSON.stringify(publicPath),
-                DEFAULT_APIPATH: JSON.stringify(
-                    prodLike ? (github ? "https://example.org:5000" : "http://localhost:5000/") : ""
-                )
+                VERSION: JSON.stringify(require("./package.json").version),
+                MODE: JSON.stringify(prodLike ? "PROD" : "DEV"),
+                //todo: fix
+                DEFAULT_BASEPATH: JSON.stringify(prodLike ? "/" : publicPath),
+                DEFAULT_APIPATH: JSON.stringify(prodLike ? "http://localhost:5000/" : "")
             }),
             new HtmlWebpackPlugin({
                 title: "TGS Webpanel v" + require("./package.json").version,
                 filename: "index.html",
-                template: github ? "src/index-github.html" : "src/index.html"
+                template: "src/index.html",
+                inject: false,
+                //todo: fix this
+                publicPath: "/"
             }),
-            github
-                ? new CopyPlugin({
-                      patterns: [
-                          {
-                              from: "src/404.html",
-                              toType: "dir"
-                          }
-                      ]
-                  })
-                : undefined,
             isDevelopment &&
                 new ReactRefreshWebpackPlugin({
                     overlay: {
