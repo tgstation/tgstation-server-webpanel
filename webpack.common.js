@@ -157,17 +157,14 @@ module.exports = function createConfig(prodLike) {
                 API_VERSION: JSON.stringify(require("./src/ApiClient/generatedcode/swagger.json").info.version),
                 VERSION: JSON.stringify(require("./package.json").version),
                 MODE: JSON.stringify(prodLike ? "PROD" : "DEV"),
-                //todo: fix
-                DEFAULT_BASEPATH: JSON.stringify(prodLike ? "/" : publicPath),
+                DEFAULT_BASEPATH: JSON.stringify(publicPath),
                 DEFAULT_APIPATH: JSON.stringify(prodLike ? "http://localhost:5000/" : "")
             }),
             new HtmlWebpackPlugin({
                 title: "TGS Webpanel v" + require("./package.json").version,
                 filename: "index.html",
                 template: "src/index.html",
-                inject: false,
-                //todo: fix this
-                publicPath: "/"
+                inject: true
             }),
             isDevelopment &&
                 new ReactRefreshWebpackPlugin({
