@@ -6,7 +6,6 @@ const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const JSONManifestPlugin = require("./webpack-plugin");
 
 module.exports = function createConfig(prodLike) {
     const publicPath = process.env.TGS_OVERRIDE_DEFAULT_BASEPATH || (prodLike ? "/app/" : "/");
