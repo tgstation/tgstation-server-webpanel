@@ -54,7 +54,7 @@ export default withRouter(
             const response = await UserClient.getCurrentUser();
             if (response.code == StatusCode.OK) {
                 const canList = !!(
-                    resolvePermissionSet(response.payload!).administrationRights! &
+                    resolvePermissionSet(response.payload).administrationRights! &
                     AdministrationRights.ReadUsers
                 );
                 this.setState({
@@ -66,22 +66,22 @@ export default withRouter(
                     switch (res.code) {
                         case StatusCode.OK: {
                             this.setState({
-                                users: res.payload!
+                                users: res.payload
                             });
                             break;
                         }
                         case StatusCode.ERROR: {
-                            this.addError(res.error!);
+                            this.addError(res.error);
                         }
                     }
                 } else {
                     //if we cant list users, add our own user to the list
                     this.setState({
-                        users: [response.payload!]
+                        users: [response.payload]
                     });
                 }
             } else {
-                this.addError(response.error!);
+                this.addError(response.error);
             }
             this.setState({
                 loading: false

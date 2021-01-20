@@ -62,12 +62,12 @@ export default withRouter(
 
             switch (res.code) {
                 case StatusCode.ERROR: {
-                    this.addError(res.error!);
+                    this.addError(res.error);
                     break;
                 }
                 case StatusCode.OK: {
                     this.setState({
-                        serverInfo: res.payload!
+                        serverInfo: res.payload
                     });
                     break;
                 }
@@ -121,9 +121,9 @@ export default withRouter(
             });
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
-                this.props.postCreateAction!(user.payload!, this.props.history);
+                this.props.postCreateAction!(user.payload, this.props.history);
             } else {
-                this.addError(user.error!);
+                this.addError(user.error);
                 this.setState({
                     creating: false
                 });
@@ -145,9 +145,9 @@ export default withRouter(
             });
             // noinspection DuplicatedCode
             if (user.code == StatusCode.OK) {
-                this.props.postCreateAction!(user.payload!, this.props.history);
+                this.props.postCreateAction!(user.payload, this.props.history);
             } else {
-                this.addError(user.error!);
+                this.addError(user.error);
                 this.setState({
                     creating: false
                 });

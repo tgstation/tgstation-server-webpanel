@@ -54,9 +54,9 @@ export default withRouter(
                 this.setState({
                     loading: false
                 });
-                this.addError(serverInformationStatus.error!);
+                this.addError(serverInformationStatus.error);
             } else {
-                const serverInformation = serverInformationStatus.payload!;
+                const serverInformation = serverInformationStatus.payload;
                 this.setState({
                     loading: false,
                     serverInformation,
@@ -201,12 +201,12 @@ export default withRouter(
                 this.setState({
                     loading: false
                 });
-                this.addError(result.error!);
+                this.addError(result.error);
 
                 return;
             }
 
-            RouteData.instanceid = result.payload!.id.toString();
+            RouteData.instanceid = result.payload.id.toString();
 
             this.props.history.push(AppRoutes.instancelist.link || AppRoutes.instancelist.route);
         }

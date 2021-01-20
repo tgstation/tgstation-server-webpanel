@@ -86,10 +86,10 @@ export default withRouter(
 
             switch (adminInfo.code) {
                 case StatusCode.ERROR: {
-                    return this.addError(adminInfo.error!);
+                    return this.addError(adminInfo.error);
                 }
                 case StatusCode.OK: {
-                    const url = adminInfo.payload!.trackedRepositoryUrl!;
+                    const url = adminInfo.payload.trackedRepositoryUrl!;
                     const matcher = /https?:\/\/(github\.com)\/(.*?)\/(.*)/;
                     const results = matcher.exec(url);
 
@@ -118,23 +118,23 @@ export default withRouter(
                     const serverInfo = await ServerClient.getServerInfo();
                     switch (serverInfo.code) {
                         case StatusCode.ERROR: {
-                            return this.addError(serverInfo.error!);
+                            return this.addError(serverInfo.error);
                         }
                         case StatusCode.OK: {
                             const versionInfo = await GithubClient.getVersions({
                                 owner: results[2],
                                 repo: results[3],
-                                current: serverInfo.payload!.version!,
+                                current: serverInfo.payload.version!,
                                 all: !!this.props.match.params.all
                             });
                             console.log("Version info: ", versionInfo);
                             switch (versionInfo.code) {
                                 case StatusCode.ERROR: {
-                                    return this.addError(adminInfo.error!);
+                                    return this.addError(versionInfo.error);
                                 }
                                 case StatusCode.OK: {
                                     this.setState({
-                                        versions: versionInfo.payload!
+                                        versions: versionInfo.payload
                                     });
                                 }
                             }
@@ -188,7 +188,7 @@ export default withRouter(
 
             switch (response.code) {
                 case StatusCode.ERROR: {
-                    this.addError(response.error!);
+                    this.addError(response.error);
                     break;
                 }
                 case StatusCode.OK: {

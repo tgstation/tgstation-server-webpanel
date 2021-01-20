@@ -107,14 +107,14 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (loopid !== this.currentLoop) return;
 
                 if (value.code === StatusCode.OK) {
-                    for (const job of value.payload!) {
+                    for (const job of value.payload) {
                         this.jobs.set(job.id, job);
                     }
 
                     //we check all jobs we have locally against the active jobs we got in the reply so
                     // we can query jobs which we didnt get informed about manually
                     const localids = Array.from(this.jobs, ([, job]) => job.id);
-                    const remoteids = value.payload!.map(job => job.id);
+                    const remoteids = value.payload.map(job => job.id);
 
                     const manualids = localids.filter(x => !remoteids.includes(x));
 
@@ -125,9 +125,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                                 if (loopid !== this.currentLoop) return;
 
                                 if (status.code === StatusCode.OK) {
-                                    this.jobs.set(id, status.payload!);
+                                    this.jobs.set(id, status.payload);
                                 } else {
-                                    this.errors.push(status.error!);
+                                    this.errors.push(status.error);
                                 }
                             })
                         );
@@ -145,9 +145,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                                 JobsClient.getJob(this._instance!, job.id).then(progressedjob => {
                                     if (loopid !== this.currentLoop) return;
                                     if (progressedjob.code === StatusCode.OK) {
-                                        job.progress = progressedjob.payload!.progress;
+                                        job.progress = progressedjob.payload.progress;
                                     } else {
-                                        this.errors.push(progressedjob.error!);
+                                        this.errors.push(progressedjob.error);
                                     }
                                 })
                             );
@@ -175,21 +175,20 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     } else {
                         window.setTimeout(
                             () => this.loop(loopid),
-                            (value.payload!.length
+                            (value.payload.length
                                 ? (configOptions.jobpollactive.value as number)
                                 : (configOptions.jobpollinactive.value as number)) * 1000
                         );
                     }
                 } else {
                     if (
-                        value.error!.code === ErrorCode.HTTP_DATA_INEGRITY &&
-                        value.error!.originalErrorMessage?.errorCode ===
-                            TGSErrorCode.InstanceOffline
+                        value.error.code === ErrorCode.HTTP_DATA_INEGRITY &&
+                        value.error.originalErrorMessage?.errorCode === TGSErrorCode.InstanceOffline
                     ) {
                         console.log("[JobsController] Clearing instance as it is now offline");
                         this.setInstance(undefined);
                     }
-                    this.errors.push(value.error!);
+                    this.errors.push(value.error);
                     window.setTimeout(() => this.loop(loopid), 10000);
                 }
 
@@ -220,10 +219,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as AdministrationRights;
                     return !!(
-                        resolvePermissionSet(userInfo.payload!).administrationRights! & required
+                        resolvePermissionSet(userInfo.payload).administrationRights! & required
                     );
                 } else {
-                    errors.push(userInfo.error!);
+                    errors.push(userInfo.error);
                     return false;
                 }
             }
@@ -232,10 +231,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as InstanceManagerRights;
                     return !!(
-                        resolvePermissionSet(userInfo.payload!).instanceManagerRights! & required
+                        resolvePermissionSet(userInfo.payload).instanceManagerRights! & required
                     );
                 } else {
-                    errors.push(userInfo.error!);
+                    errors.push(userInfo.error);
                     return false;
                 }
             }
@@ -245,9 +244,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ByondRights;
-                    return !!(InstancePermissionSet.payload!.byondRights! & required);
+                    return !!(InstancePermissionSet.payload.byondRights! & required);
                 } else {
-                    errors.push(InstancePermissionSet.error!);
+                    errors.push(InstancePermissionSet.error);
                     return false;
                 }
             }
@@ -257,9 +256,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ChatBotRights;
-                    return !!(InstancePermissionSet.payload!.chatBotRights! & required);
+                    return !!(InstancePermissionSet.payload.chatBotRights! & required);
                 } else {
-                    errors.push(InstancePermissionSet.error!);
+                    errors.push(InstancePermissionSet.error);
                     return false;
                 }
             }
@@ -269,9 +268,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ConfigurationRights;
-                    return !!(InstancePermissionSet.payload!.configurationRights! & required);
+                    return !!(InstancePermissionSet.payload.configurationRights! & required);
                 } else {
-                    errors.push(InstancePermissionSet.error!);
+                    errors.push(InstancePermissionSet.error);
                     return false;
                 }
             }
@@ -281,9 +280,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamDaemonRights;
-                    return !!(InstancePermissionSet.payload!.dreamDaemonRights! & required);
+                    return !!(InstancePermissionSet.payload.dreamDaemonRights! & required);
                 } else {
-                    errors.push(InstancePermissionSet.error!);
+                    errors.push(InstancePermissionSet.error);
                     return false;
                 }
             }
@@ -293,9 +292,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamMakerRights;
-                    return !!(InstancePermissionSet.payload!.dreamMakerRights! & required);
+                    return !!(InstancePermissionSet.payload.dreamMakerRights! & required);
                 } else {
-                    errors.push(InstancePermissionSet.error!);
+                    errors.push(InstancePermissionSet.error);
                     return false;
                 }
             }
@@ -306,10 +305,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as InstancePermissionSetRights;
                     return !!(
-                        InstancePermissionSet.payload!.instancePermissionSetRights! & required
+                        InstancePermissionSet.payload.instancePermissionSetRights! & required
                     );
                 } else {
-                    errors.push(InstancePermissionSet.error!);
+                    errors.push(InstancePermissionSet.error);
                     return false;
                 }
             }
@@ -319,9 +318,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as RepositoryRights;
-                    return !!(InstancePermissionSet.payload!.repositoryRights! & required);
+                    return !!(InstancePermissionSet.payload.repositoryRights! & required);
                 } else {
-                    errors.push(InstancePermissionSet.error!);
+                    errors.push(InstancePermissionSet.error);
                     return false;
                 }
             }
@@ -354,7 +353,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (deleteInfo.code === StatusCode.OK) {
                     return true;
                 } else {
-                    onError(deleteInfo.error!);
+                    onError(deleteInfo.error);
                     return false;
                 }
             }

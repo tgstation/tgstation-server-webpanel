@@ -335,7 +335,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 if (contents.code === StatusCode.OK) {
                     //Object.assign() is a funky function but all it does is copy everything from the second object to the first object
                     const temp: DownloadedLog = Object.assign(
-                        { content: contents.payload! },
+                        { content: contents.payload },
                         response.data as Components.Schemas.LogFile
                     );
                     return new InternalStatus({
@@ -345,7 +345,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 } else {
                     return new InternalStatus({
                         code: StatusCode.ERROR,
-                        error: contents.error!
+                        error: contents.error
                     });
                 }
             }

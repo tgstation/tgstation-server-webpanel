@@ -18,7 +18,7 @@ interface IEvents {
     accessDenied: () => void;
     //fired when the server info is first loaded
     loadServerInfo: (
-        serverInfo: InternalStatus<Components.Schemas.ServerInformation, GenericErrors>
+        serverInfo: InternalStatus<Components.Schemas.ServerInformation, ServerInfoErrors>
     ) => void;
     //fired when the api is loaded from the json file and loaded
     initialized: () => void;

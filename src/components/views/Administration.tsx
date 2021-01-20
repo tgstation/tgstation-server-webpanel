@@ -112,7 +112,7 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canReboot: !!(
-                        resolvePermissionSet(response.payload!).administrationRights! &
+                        resolvePermissionSet(response.payload).administrationRights! &
                         AdministrationRights.RestartHost
                     )
                 });
@@ -125,7 +125,7 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canUpdate: !!(
-                        resolvePermissionSet(response.payload!).administrationRights! &
+                        resolvePermissionSet(response.payload).administrationRights! &
                         AdministrationRights.ChangeVersion
                     )
                 });
@@ -138,7 +138,7 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canLogs: !!(
-                        resolvePermissionSet(response.payload!).administrationRights! &
+                        resolvePermissionSet(response.payload).administrationRights! &
                         AdministrationRights.DownloadLogs
                     )
                 });

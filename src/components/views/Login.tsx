@@ -73,10 +73,10 @@ export default withRouter(
             if (serverInfo.code == StatusCode.OK) {
                 this.setState({
                     busy: false,
-                    serverInfo: serverInfo.payload!
+                    serverInfo: serverInfo.payload
                 });
             } else {
-                this.addError(serverInfo.error!);
+                this.addError(serverInfo.error);
                 this.setState({
                     busy: false
                 });
@@ -299,7 +299,7 @@ export default withRouter(
                 this.setState({
                     busy: false
                 });
-                this.addError(response.error!);
+                this.addError(response.error);
             } else {
                 if (this.props.postLoginAction) {
                     this.props.postLoginAction();
