@@ -61,7 +61,7 @@ export default withRouter(
                         );
                         let match;
                         const entries: LogEntry[] = [];
-                        while ((match = regex.exec(res.payload!.content)) !== null) {
+                        while ((match = regex.exec(res.payload.content)) !== null) {
                             entries.push({
                                 time: match[1],
                                 content: match[2]
@@ -69,14 +69,14 @@ export default withRouter(
                         }
                         this.setState({
                             viewedLog: {
-                                logFile: res.payload!,
+                                logFile: res.payload,
                                 entries: entries
                             }
                         });
                         break;
                     }
                     case StatusCode.ERROR: {
-                        this.addError(res.error!);
+                        this.addError(res.error);
                         break;
                     }
                 }
@@ -86,12 +86,12 @@ export default withRouter(
             switch (response.code) {
                 case StatusCode.OK: {
                     this.setState({
-                        logs: response.payload!
+                        logs: response.payload
                     });
                     break;
                 }
                 case StatusCode.ERROR: {
-                    this.addError(response.error!);
+                    this.addError(response.error);
                     break;
                 }
             }
@@ -114,11 +114,11 @@ export default withRouter(
             const res = await AdminClient.getLog(name);
             switch (res.code) {
                 case StatusCode.OK: {
-                    download(name, res.payload!.content);
+                    download(name, res.payload.content);
                     break;
                 }
                 case StatusCode.ERROR: {
-                    this.addError(res.error!);
+                    this.addError(res.error);
                     break;
                 }
             }

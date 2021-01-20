@@ -72,7 +72,7 @@ export default withRouter(
 
             if (instancelist.code == StatusCode.OK) {
                 const work: Array<Promise<void>> = [];
-                for (const instance of instancelist.payload!) {
+                for (const instance of instancelist.payload) {
                     const modifiedinstance = instance as Instance;
                     if (instance.online) {
                         work.push(
@@ -83,10 +83,8 @@ export default withRouter(
                                     modifiedinstance.canAccess = true;
                                 } else {
                                     modifiedinstance.canAccess = false;
-                                    if (
-                                        permissionset.error!.code !== ErrorCode.HTTP_ACCESS_DENIED
-                                    ) {
-                                        this.addError(permissionset.error!);
+                                    if (permissionset.error.code !== ErrorCode.HTTP_ACCESS_DENIED) {
+                                        this.addError(permissionset.error);
                                     }
                                 }
                                 modifiedlist.push(modifiedinstance);
@@ -104,7 +102,7 @@ export default withRouter(
                     instances: modifiedlist.sort((a, b) => a.id - b.id)
                 });
             } else {
-                this.addError(instancelist.error!);
+                this.addError(instancelist.error);
             }
         }
 
@@ -113,14 +111,14 @@ export default withRouter(
 
             await UserClient.getCurrentUser().then(userinfo => {
                 if (userinfo.code === StatusCode.OK) {
-                    const instanceManagerRights = resolvePermissionSet(userinfo.payload!)
+                    const instanceManagerRights = resolvePermissionSet(userinfo.payload)
                         .instanceManagerRights!;
                     this.setState({
                         canOnline: !!(instanceManagerRights & InstanceManagerRights.SetOnline),
                         canCreate: !!(instanceManagerRights & InstanceManagerRights.Create)
                     });
                 } else {
-                    this.addError(userinfo.error!);
+                    this.addError(userinfo.error);
                 }
             });
 
@@ -141,7 +139,7 @@ export default withRouter(
             if (instanceedit.code === StatusCode.OK) {
                 await this.loadInstances();
             } else {
-                this.addError(instanceedit.error!);
+                this.addError(instanceedit.error);
             }
         }
 

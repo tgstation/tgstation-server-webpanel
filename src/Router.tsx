@@ -129,7 +129,7 @@ export default withRouter(
                     loading: false
                 });
             } else {
-                return this.setErrorAndEnd(response.error!);
+                return this.setErrorAndEnd(response.error);
             }
         }
 

@@ -50,12 +50,12 @@ export default withRouter(
 
             switch (res.code) {
                 case StatusCode.ERROR: {
-                    this.addError(res.error!);
+                    this.addError(res.error);
                     break;
                 }
                 case StatusCode.OK: {
                     this.setState({
-                        serverInfo: res.payload!
+                        serverInfo: res.payload
                     });
                     break;
                 }
@@ -67,9 +67,9 @@ export default withRouter(
                 if (this.props.match.params.id) {
                     id = parseInt(this.props.match.params.id);
                 } else {
-                    id = cuser.payload!.id!;
+                    id = cuser.payload.id!;
                 }
-                if (id === cuser.payload!.id!) {
+                if (id === cuser.payload.id!) {
                     this.setState({
                         currentUser: true
                     });
@@ -78,16 +78,16 @@ export default withRouter(
                 this.setState({
                     loading: false
                 });
-                return this.addError(cuser.error!);
+                return this.addError(cuser.error);
             }
 
             const user = await UserClient.getUser(id);
             if (user.code == StatusCode.OK) {
                 this.setState({
-                    user: user.payload!
+                    user: user.payload
                 });
             } else {
-                this.addError(user.error!);
+                this.addError(user.error);
             }
 
             this.setState({
@@ -153,7 +153,7 @@ export default withRouter(
                     break;
                 }
                 case StatusCode.ERROR: {
-                    this.addError(res.error!);
+                    this.addError(res.error);
                     //we only unset it here because its going to get redirected anyways
                     this.setState({
                         pwdload: false

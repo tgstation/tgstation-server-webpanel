@@ -10,6 +10,7 @@ import CSSTransition from "react-transition-group/CSSTransition";
 
 import { Components } from "../ApiClient/generatedcode/_generated";
 import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
 import UserClient from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
@@ -27,10 +28,10 @@ interface IProps extends RouteComponentProps {
 }
 
 interface IState {
-    currentUser?: Components.Schemas.User;
-    serverInformation?: Components.Schemas.ServerInformation;
-    userNameError?: InternalError<GenericErrors>;
-    serverInfoError?: InternalError<ServerInfoErrors>;
+    currentUser: Components.Schemas.User | null;
+    serverInformation: Components.Schemas.ServerInformation | null;
+    userNameError: InternalError<GenericErrors> | null;
+    serverInfoError: InternalError<ServerInfoErrors> | null;
     loggedIn: boolean;
     //so we dont actually use the routes but it allows us to make react update the component
     routes: AppRoute[];
@@ -51,7 +52,11 @@ export default withRouter(
                 loggedIn: !!CredentialsProvider.isTokenValid(),
                 routes: [],
                 categories: AppCategories,
-                focusedCategory: this.props.category?.name || ""
+                focusedCategory: this.props.category?.name || "",
+                serverInfoError: null,
+                userNameError: null,
+                currentUser: null,
+                serverInformation: null
             };
         }
 
@@ -59,16 +64,18 @@ export default withRouter(
         //well you see, this component never gets normally unloaded so i dont give a fuck!
         public async componentDidMount(): Promise<void> {
             LoginHooks.addHook(this.loadServerInformation);
-            ServerClient.on("loadServerInfo", serverInfo => {
+            ServerClient.on("loadServerInfo", info => {
                 this.setState({
-                    serverInformation: serverInfo.payload
+                    serverInformation: info.code == StatusCode.OK ? info.payload : null,
+                    serverInfoError: info.code == StatusCode.ERROR ? info.error : null
                 });
             });
 
             LoginHooks.addHook(this.loadUserInformation);
             UserClient.on("loadUserInfo", user => {
                 this.setState({
-                    currentUser: user.payload
+                    currentUser: user.code == StatusCode.OK ? user.payload : null,
+                    userNameError: user.code == StatusCode.ERROR ? user.error : null
                 });
             });
 
@@ -419,16 +426,16 @@ export default withRouter(
         private async loadServerInformation(): Promise<void> {
             const info = await ServerClient.getServerInfo();
             this.setState({
-                serverInformation: info.payload,
-                serverInfoError: info.error
+                serverInformation: info.code == StatusCode.OK ? info.payload : null,
+                serverInfoError: info.code == StatusCode.ERROR ? info.error : null
             });
         }
 
         private async loadUserInformation(): Promise<void> {
             const response = await UserClient.getCurrentUser();
             this.setState({
-                currentUser: response.payload,
-                userNameError: response.error
+                currentUser: response.code == StatusCode.OK ? response.payload : null,
+                userNameError: response.code == StatusCode.ERROR ? response.error : null
             });
         }
     }

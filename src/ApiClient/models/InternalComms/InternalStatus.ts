@@ -5,34 +5,27 @@ export enum StatusCode {
     ERROR
 }
 
-declare interface argsErr<Codes extends ErrorCode> {
+export interface InternalStatusErr<Codes extends ErrorCode> {
     code: StatusCode.ERROR;
     error: InternalError<Codes>;
 }
 
-declare interface argsOk<T> {
+export interface InternalStatusOK<T> {
     code: StatusCode.OK;
     payload: T;
 }
 
-declare type args<T, Codes extends ErrorCode> = argsErr<Codes> | argsOk<T>;
+type InternalStatus<T, Codes extends ErrorCode> = InternalStatusOK<T> | InternalStatusErr<Codes>;
 
-class InternalStatus<T, Codes extends ErrorCode> {
-    public code: StatusCode;
-    public payload?: T;
-    public error?: InternalError<Codes>;
-
-    public constructor(args: args<T, Codes>) {
-        this.code = args.code;
-        switch (args.code) {
-            case StatusCode.OK:
-                this.payload = args.payload;
-                break;
-            case StatusCode.ERROR:
-                this.error = args.error;
-                break;
-        }
-    }
-}
+const InternalStatus = (function InternalStatus<T, Codes extends ErrorCode>(
+    this: InternalStatus<T, Codes>,
+    args: InternalStatus<T, Codes>
+): Readonly<InternalStatus<T, Codes>> {
+    return Object.freeze(Object.assign({}, args));
+} as unknown) as {
+    new <T, Codes extends ErrorCode>(args: InternalStatus<T, Codes>): Readonly<
+        InternalStatus<T, Codes>
+    >;
+};
 
 export default InternalStatus;

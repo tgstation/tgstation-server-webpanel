@@ -102,11 +102,11 @@ export default withRouter(
             const response = await UserClient.getUser(userid);
             switch (response.code) {
                 case StatusCode.ERROR: {
-                    this.addError(response.error!);
+                    this.addError(response.error);
                     break;
                 }
                 case StatusCode.OK: {
-                    this.loadUser(response.payload!);
+                    this.loadUser(response.payload);
                     break;
                 }
             }
@@ -115,38 +115,38 @@ export default withRouter(
             if (currentuser.code == StatusCode.OK) {
                 this.setState({
                     canEdit: !!(
-                        resolvePermissionSet(currentuser.payload!).administrationRights! &
+                        resolvePermissionSet(currentuser.payload).administrationRights! &
                         AdministrationRights.WriteUsers
                     ),
                     canRead: !!(
-                        resolvePermissionSet(currentuser.payload!).administrationRights! &
+                        resolvePermissionSet(currentuser.payload).administrationRights! &
                         AdministrationRights.ReadUsers
                     ),
                     canEditOwnPassword:
                         !!(
-                            resolvePermissionSet(currentuser.payload!).administrationRights! &
+                            resolvePermissionSet(currentuser.payload).administrationRights! &
                             AdministrationRights.EditOwnPassword
-                        ) && currentuser.payload!.id! === userid,
+                        ) && currentuser.payload.id! === userid,
                     canEditOwnOAuth:
                         !!(
-                            resolvePermissionSet(currentuser.payload!).administrationRights! &
+                            resolvePermissionSet(currentuser.payload).administrationRights! &
                             AdministrationRights.EditOwnOAuthConnections
-                        ) && currentuser.payload!.id! === userid,
-                    groups: currentuser.payload!.group
-                        ? [Object.assign({ users: [] }, currentuser.payload!.group)]
+                        ) && currentuser.payload.id! === userid,
+                    groups: currentuser.payload.group
+                        ? [Object.assign({ users: [] }, currentuser.payload.group)]
                         : []
                 });
             } else {
-                this.addError(currentuser.error!);
+                this.addError(currentuser.error);
             }
 
             const serverinfo = await ServerClient.getServerInfo();
-            if (currentuser.code == StatusCode.OK) {
+            if (serverinfo.code == StatusCode.OK) {
                 this.setState({
-                    serverinfo: serverinfo.payload!
+                    serverinfo: serverinfo.payload
                 });
             } else {
-                this.addError(serverinfo.error!);
+                this.addError(serverinfo.error);
             }
 
             await this.loadGroups();
@@ -161,10 +161,10 @@ export default withRouter(
             const groups = await UserGroupClient.listGroups();
             if (groups.code === StatusCode.OK) {
                 this.setState({
-                    groups: groups.payload!
+                    groups: groups.payload
                 });
             } else {
-                this.addError(groups.error!);
+                this.addError(groups.error);
             }
         }
 
@@ -464,9 +464,9 @@ export default withRouter(
                                                             }
                                                         );
                                                         if (response.code == StatusCode.OK) {
-                                                            this.loadUser(response.payload!);
+                                                            this.loadUser(response.payload);
                                                         } else {
-                                                            this.addError(response.error!);
+                                                            this.addError(response.error);
                                                         }
 
                                                         this.setState({
@@ -540,9 +540,9 @@ export default withRouter(
                     oAuthConnections: this.state.newOAuthConnections
                 });
                 if (response.code == StatusCode.OK) {
-                    this.loadUser(response.payload!);
+                    this.loadUser(response.payload);
                 } else {
-                    this.addError(response.error!);
+                    this.addError(response.error);
                 }
 
                 this.setState({
@@ -867,9 +867,9 @@ export default withRouter(
                 });
                 if (response.code === StatusCode.OK) {
                     await this.loadGroups();
-                    this.loadUser(response.payload!);
+                    this.loadUser(response.payload);
                 } else {
-                    this.addError(response.error!);
+                    this.addError(response.error);
                 }
             } else {
                 const realID = parseInt(id.substr(6));
@@ -880,9 +880,9 @@ export default withRouter(
                 });
                 if (response.code === StatusCode.OK) {
                     await this.loadGroups();
-                    this.loadUser(response.payload!);
+                    this.loadUser(response.payload);
                 } else {
-                    this.addError(response.error!);
+                    this.addError(response.error);
                 }
             }
             this.setState({
@@ -902,7 +902,7 @@ export default withRouter(
                     };
                 });
             } else {
-                this.addError(response.error!);
+                this.addError(response.error);
             }
             this.setState({
                 loading: false
@@ -920,11 +920,11 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState(prev => {
                     return {
-                        groups: prev.groups.concat([response.payload!])
+                        groups: prev.groups.concat([response.payload])
                     };
                 });
             } else {
-                this.addError(response.error!);
+                this.addError(response.error);
             }
             this.setState({
                 loading: false
@@ -1009,12 +1009,12 @@ export default withRouter(
                     if (response.code == StatusCode.OK) {
                         const response2 = await UserClient.getUser(this.state.user.id!);
                         if (response2.code == StatusCode.OK) {
-                            this.loadUser(response2.payload!);
+                            this.loadUser(response2.payload);
                         } else {
-                            this.addError(response.error!);
+                            this.addError(response2.error);
                         }
                     } else {
-                        this.addError(response.error!);
+                        this.addError(response.error);
                     }
                 } else {
                     const newset = Object.assign(Object.assign({}, this.state.user.permissionSet), {
@@ -1026,9 +1026,9 @@ export default withRouter(
                         permissionSet: newset
                     });
                     if (response.code == StatusCode.OK) {
-                        this.loadUser(response.payload!);
+                        this.loadUser(response.payload);
                     } else {
-                        this.addError(response.error!);
+                        this.addError(response.error);
                     }
                 }
 
