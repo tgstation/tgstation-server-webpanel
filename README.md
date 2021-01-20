@@ -4,7 +4,6 @@ React web app to control TGS
 
 |    CI Badges |                                                                                                             |
 |--------------|-------------------------------------------------------------------------------------------------------------|
-| Live Website | ![Node.js CD](https://github.com/tgstation/tgstation-server-control-panel/workflows/Node.js%20CD/badge.svg) |
 | Linting      | ![Node.js CI](https://github.com/tgstation/tgstation-server-control-panel/workflows/Node.js%20CI/badge.svg) |
 
 # Currently supported browsers:
