@@ -666,7 +666,9 @@ export default withRouter(
                                             newOAuthConnections: [
                                                 ...prev.newOAuthConnections,
                                                 {
-                                                    provider: OAuthProvider.GitHub,
+                                                    provider: Object.keys(
+                                                        oAuthProviderInfos
+                                                    )[0] as OAuthProvider,
                                                     externalUserId: ""
                                                 }
                                             ]
