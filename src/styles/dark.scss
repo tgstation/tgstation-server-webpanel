@@ -357,3 +357,7 @@ $toast-header-background-color: $gray-600;
         background: rgba($gray-800, 0.2);
     }
 }
+
+.dropdown-item, .dropdown-item:hover, .dropdown-item:focus {
+    color: #fff;
+}

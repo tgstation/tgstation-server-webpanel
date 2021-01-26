@@ -28,7 +28,7 @@
     "navbar.user_error": "Error loading current user",
     "navbar.server_error": "Error loading server information",
     "navbar.home": "Home",
-    "navbar.purgecache": "Purge client cache",
+    "navbar.purgecache": "Purge Client Cache",
     "navbar.refresh": "Refresh",
     "navbar.logout": "Logout",
     "app.job.started": "Started: ",
