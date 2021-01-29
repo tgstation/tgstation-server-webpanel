@@ -6,9 +6,10 @@ const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const JSONManifestPlugin = require("./webpack-plugin");
 
-module.exports = function createConfig(prodLike) {
-    const publicPath = process.env.TGS_OVERRIDE_DEFAULT_BASEPATH || (prodLike ? "/app/" : "/");
+module.exports = function createConfig(prodLike, github) {
+    const publicPath = process.env.TGS_WEBPANEL_GITHUB_PATH || (prodLike ? "/app/" : "/");
     const isDevelopment = !prodLike;
 
     return {
@@ -23,7 +24,7 @@ module.exports = function createConfig(prodLike) {
 
         output: {
             publicPath: publicPath,
-            filename: `[name]${prodLike ? ".[contenthash]" : ""}.js`,
+            filename: `[name]${prodLike ? ".[hash]" : ""}.js`,
             path: path.resolve(__dirname, "dist")
         },
 
@@ -152,26 +153,28 @@ module.exports = function createConfig(prodLike) {
                 ]
             }),
             new ForkTsCheckerWebpackPlugin(),
-            //process.env.GITHUB_SHA : require("./package.json").version
             new webpack.DefinePlugin({
                 API_VERSION: JSON.stringify(require("./src/ApiClient/generatedcode/swagger.json").info.version),
-                VERSION: JSON.stringify(require("./package.json").version),
-                MODE: JSON.stringify(prodLike ? "PROD" : "DEV"),
-                DEFAULT_BASEPATH: JSON.stringify(publicPath),
-                DEFAULT_APIPATH: JSON.stringify(prodLike ? "http://localhost:5000/" : "")
+                VERSION: github ? process.env.GITHUB_SHA : JSON.stringify(require("./package.json").version),
+                MODE: JSON.stringify(prodLike ? (github ? "GITHUB" : "PROD") : "DEV"),
+                //The basepath remains /app because its for the router which is located at /app/
+                DEFAULT_BASEPATH: JSON.stringify(github ? "/app/" : publicPath),
+                DEFAULT_APIPATH: JSON.stringify(prodLike ? "" : "http://localhost:5000/")
             }),
             new HtmlWebpackPlugin({
                 title: "TGS Webpanel v" + require("./package.json").version,
                 filename: "index.html",
                 template: "src/index.html",
-                inject: true
+                inject: false,
+                publicPath: github ? process.env.TGS_WEBPANEL_GITHUB_PATH : prodLike ? "/app/" : "/"
             }),
             isDevelopment &&
                 new ReactRefreshWebpackPlugin({
                     overlay: {
                         sockIntegration: "wds"
                     }
-                })
+                }),
+            new JSONManifestPlugin({version: require("./package.json").version })
         ].filter(Boolean),
         node: {
             fs: "empty"

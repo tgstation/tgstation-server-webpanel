@@ -1,0 +1,5 @@
+{
+    "description": "First off, this description field is ignored by the webpanel. With that out of the way, here's roughly how the channel system works: It operates using two json files, channel.json which is generated from TGS at runtime to instruct the webpanel where to find the code and webpanelmanifest.json which details the entrypoints aka what files it needs to load. This file contains a special 'webpack' value instead of the channel url which displays a warning on prod mode as it means TGS failed to serve the file and its serving a fallback.",
+    "formatVersion": 1,
+    "channel": "http://localhost:3000/tgstation-server-webpanel/1.0"
+}

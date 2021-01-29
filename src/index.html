@@ -40,12 +40,33 @@
     </head>
     <body>
         <div id="root"></div>
+        <script>
+            fetch("<%= htmlWebpackPlugin.files.publicPath %>channel.json").then(e => {
+                e.json().then(channel => {
+                    channel = channel.channel;
 
-        <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
-        <script
-            type="application/javascript"
-            src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"
-        ></script>
-        <% } %>
+                    if(channel === "webpack") {
+                        channel = "/";
+                        window.loadedChannelFromWebpack = true;
+                    }
+
+                    if(!channel.endsWith("/")) {
+                        channel = channel + "/";
+                    }
+
+                    fetch(channel + "webpanelmanifest.json").then(e => {
+                        e.json().then(data => {
+                            console.log(data);
+
+                            for(const entry of data.entries) {
+                                const scripttag = document.createElement("script");
+                                scripttag.src = channel + entry;
+                                document.body.append(scripttag);
+                            }
+                        })
+                    });
+                })
+            })
+        </script>
     </body>
 </html>
