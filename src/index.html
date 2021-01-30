@@ -41,32 +41,37 @@
     <body>
         <div id="root"></div>
         <script>
-            fetch("<%= htmlWebpackPlugin.files.publicPath %>channel.json").then(e => {
-                e.json().then(channel => {
-                    channel = channel.channel;
+            const handler = (e) => alert("An error has occured within the webpanel bootstraper: \n" + e)
+            try {
+                fetch("<%= htmlWebpackPlugin.files.publicPath %>channel.json").then(e => {
+                    e.json().then(channel => {
+                        channel = channel.channel;
 
-                    if(channel === "webpack") {
-                        channel = "/";
-                        window.loadedChannelFromWebpack = true;
-                    }
+                        if (channel === "webpack") {
+                            channel = "<%= htmlWebpackPlugin.files.publicPath %>";
+                            window.loadedChannelFromWebpack = true;
+                        }
 
-                    if(!channel.endsWith("/")) {
-                        channel = channel + "/";
-                    }
+                        if (!channel.endsWith("/")) {
+                            channel = channel + "/";
+                        }
 
-                    fetch(channel + "webpanelmanifest.json").then(e => {
-                        e.json().then(data => {
-                            console.log(data);
+                        fetch(channel + "webpanelmanifest.json").then(e => {
+                            e.json().then(data => {
+                                console.log(data);
 
-                            for(const entry of data.entries) {
-                                const scripttag = document.createElement("script");
-                                scripttag.src = channel + entry;
-                                document.body.append(scripttag);
-                            }
-                        })
-                    });
+                                for (const entry of data.entries) {
+                                    const scripttag = document.createElement("script");
+                                    scripttag.src = channel + entry;
+                                    document.body.append(scripttag);
+                                }
+                            }).catch(handler)
+                        });
+                    }).catch(handler)
                 })
-            })
+            }catch (e) {
+                handler(e)
+            }
         </script>
     </body>
 </html>
