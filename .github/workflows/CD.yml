@@ -37,7 +37,7 @@ jobs:
               run: |
                   export WEBPANEL_VERSION=$(node -pe "require('./package.json').version")
                   rm -rf $HOME/webpanellive/webpanel/$WEBPANEL_VERSION/*
-                  cp ./dist/* $HOME/webpanellive/webpanel/$WEBPANEL_VERSION -R
+                  cp ./dist $HOME/webpanellive/webpanel/$WEBPANEL_VERSION -R
 
             - name: Deploy to Github
               run: |
