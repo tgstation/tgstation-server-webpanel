@@ -24,7 +24,7 @@ module.exports = function createConfig(prodLike, github) {
 
         output: {
             publicPath: publicPath,
-            filename: `[name]${prodLike ? ".[hash]" : ""}.js`,
+            filename: `[name]${prodLike ? ".[contenthash]" : ""}.js`,
             path: path.resolve(__dirname, "dist")
         },
 

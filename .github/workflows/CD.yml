@@ -1,0 +1,45 @@
+on:
+    push:
+        branches:
+            - next
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Use Node.js
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 14.x
+
+            - run: npm ci
+
+            - run: npm run build-github
+
+            #Safety against pushing broken code
+            - name: Run ESLint
+              uses: stefanoeb/eslint-action@1.0.2
+              with:
+                  files: ./src
+
+            - name: Create workdir
+              run: |
+                  git workdir add $HOME/webpanellive live
+                  touch $HOME/webpanellive/.nojekyll
+
+            - name: Copy files
+              run: |
+                  export WEBPANEL_VERSION=$(node -pe "require('./package.json').version")
+                  rm -r $HOME/webpanellive/webpanel/$WEBPANEL_VERSION/*
+                  cp ./dist/* $HOME/webpanellive/webpanel/$WEBPANEL_VERSION -R
+
+            - name: Deploy to Github
+              run: |
+                  cd $HOME/webpanellive
+                  git add *
+                  git commit -m "Update webpanel"
+                  git pull --rebase origin live
+                  git push origin live

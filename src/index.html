@@ -43,30 +43,38 @@
         <script>
             const handler = (e) => alert("An error has occured within the webpanel bootstraper: \n" + e)
             try {
+                function loadChannel(channel) {
+                    if (channel === "webpack") {
+                        channel = "<%= htmlWebpackPlugin.files.publicPath %>";
+                        window.loadedChannelFromWebpack = true;
+                    }
+
+                    if (!channel.endsWith("/")) {
+                        channel = channel + "/";
+                    }
+
+                    fetch(channel + "webpanelmanifest.json").then(e => {
+                        e.json().then(data => {
+                            console.log(data);
+
+                            for (const entry of data.entries) {
+                                const scripttag = document.createElement("script");
+                                scripttag.src = channel + entry;
+                                document.body.append(scripttag);
+                            }
+                        }).catch(handler)
+                    }).catch((e) => {
+                        if(channel !== "<%= htmlWebpackPlugin.files.publicPath %>" && confirm("The webpanel has failed to load from github. Press OK to load the webpanel from the fallback.")) {
+                            loadChannel("<%= htmlWebpackPlugin.files.publicPath %>");
+                        } else {
+                            handler(e);
+                        }
+                    });
+                }
+
                 fetch("<%= htmlWebpackPlugin.files.publicPath %>channel.json").then(e => {
                     e.json().then(channel => {
-                        channel = channel.channel;
-
-                        if (channel === "webpack") {
-                            channel = "<%= htmlWebpackPlugin.files.publicPath %>";
-                            window.loadedChannelFromWebpack = true;
-                        }
-
-                        if (!channel.endsWith("/")) {
-                            channel = channel + "/";
-                        }
-
-                        fetch(channel + "webpanelmanifest.json").then(e => {
-                            e.json().then(data => {
-                                console.log(data);
-
-                                for (const entry of data.entries) {
-                                    const scripttag = document.createElement("script");
-                                    scripttag.src = channel + entry;
-                                    document.body.append(scripttag);
-                                }
-                            }).catch(handler)
-                        });
+                        loadChannel(channel.channel)
                     }).catch(handler)
                 })
             }catch (e) {
