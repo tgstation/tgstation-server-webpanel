@@ -36,7 +36,6 @@ jobs:
             - name: Copy files
               run: |
                   export WEBPANEL_VERSION=$(node -pe "require('./package.json').version")
-                  rm -rf $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
                   mkdir -p $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
                   cp ./dist/* $HOME/webpanellive/webpanel/$WEBPANEL_VERSION -R
 
