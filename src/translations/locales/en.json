@@ -179,6 +179,10 @@
     "view.instance.jobs.title": "Job list",
     "view.instance.jobs.error": "An error occured",
     "view.instance.moving": "[MOVING INSTANCE...]",
+    "view.instance.config.instancesettings": "Instance Settings",
+    "view.instance.config.instanceusers": "Instance Users",
+    "view.instance.config.chatbots": "Chat Bots",
+    "view.instance.config.noinstance": "No instance. Perhaps an error occured.",
     "view.info.client": "Client Info",
     "view.info.server": "Server Info",
     "view.info.swarm": "Swarm Info",
@@ -265,5 +269,6 @@
     "loading.user.save": "Saving user information...",
     "loading.user.create": "Creating user...",
     "loading.instance.list": "Loading instance list...",
-    "loading.instance.jobs.list": "Loading job list..."
+    "loading.instance.jobs.list": "Loading job list...",
+    "loading.instance": "Loading instance..."
 }

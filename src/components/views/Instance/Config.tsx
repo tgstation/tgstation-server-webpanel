@@ -11,10 +11,10 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import { GlobalObjects } from "../../../utils/globalObjects";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
-import { GlobalObjects } from "../../../utils/globalObjects";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
@@ -71,10 +71,10 @@ export default withRouter(
             const response = await InstanceClient.getInstance(parseInt(this.props.match.params.id));
             if (response.code === StatusCode.OK) {
                 this.setState({
-                    instance: response.payload!
+                    instance: response.payload
                 });
             } else {
-                this.addError(response.error!);
+                this.addError(response.error);
             }
             this.setState({
                 loading: false
