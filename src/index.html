@@ -45,7 +45,7 @@
                 function loadChannel(channel) {
                     try {
                         const handler = (e) => {
-                            if (channel !== "<%= htmlWebpackPlugin.files.publicPath %>" && confirm("The webpanel has failed to load from github, this may be due to a misconfiguration. Press OK to load the webpanel from the fallback.")) {
+                            if (channel !== "<%= htmlWebpackPlugin.files.publicPath %>" && confirm("The webpanel has failed to load from github, this may be due to a misconfiguration. Press OK to load the webpanel from the fallback. Error: \n" + e)) {
                                 loadChannel("<%= htmlWebpackPlugin.files.publicPath %>");
                             } else {
                                 alert("An error has occured within the webpanel bootstraper: \n" + e)
