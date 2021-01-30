@@ -27,7 +27,7 @@ jobs:
 
             - name: Create workdir
               run: |
-                  git worktree add $HOME/webpanellive live
+                  git worktree add $HOME/webpanellive origin/live
                   touch $HOME/webpanellive/.nojekyll
 
             - name: Copy files
