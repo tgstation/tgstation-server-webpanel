@@ -328,20 +328,36 @@ export default withRouter(
         private renderUser(): React.ReactNode {
             if (!this.state.loggedIn)
                 return (
-                    <Button
-                        onClick={() => {
-                            this.props.history.push(
-                                AppRoutes.config.link || AppRoutes.config.route,
-                                { reload: true }
-                            );
-                        }}
-                        variant={
-                            this.state.serverInfoError || this.state.userNameError
-                                ? "danger"
-                                : "primary"
-                        }>
-                        <FontAwesomeIcon icon="cogs" />
-                    </Button>
+                    <React.Fragment>
+                        <Button
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.config.link || AppRoutes.config.route,
+                                    { reload: true }
+                                );
+                            }}
+                            variant={
+                                this.state.serverInfoError || this.state.userNameError
+                                    ? "danger"
+                                    : "primary"
+                            }>
+                            <FontAwesomeIcon icon="cogs" />
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.info.link || AppRoutes.info.route,
+                                    { reload: true }
+                                );
+                            }}
+                            variant={
+                                this.state.serverInfoError || this.state.userNameError
+                                    ? "danger"
+                                    : "primary"
+                            }>
+                            <FontAwesomeIcon icon="info-circle" />
+                        </Button>
+                    </React.Fragment>
                 );
 
             return (

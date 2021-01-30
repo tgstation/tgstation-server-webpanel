@@ -181,6 +181,8 @@
     "view.instance.moving": "[MOVING INSTANCE...]",
     "view.info.client": "Client Info",
     "view.info.server": "Server Info",
+    "view.info.swarm": "Swarm Info",
+    "view.info.controller": "[CONTROLLER]",
     "view.info.version": "Version: ",
     "view.info.httpapiversion": "HTTP API Version: ",
     "view.info.dmapiversion": "DM API Version: ",
