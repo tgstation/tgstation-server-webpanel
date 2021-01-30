@@ -53,6 +53,7 @@
         "build": "npx webpack --config webpack.prod.js",
         "msbuild": "npm run build && node scripts/msbuild.js",
         "build-dev": "npx webpack --config webpack.dev.js",
+        "build-github": "npx webpack --config webpack.github.js",
         "lint": "eslint ./src --max-warnings=0",
         "lint-fix": "eslint --fix ./src --max-warnings=0",
         "patch": "node scripts/patcher/patch.js",
