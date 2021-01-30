@@ -8,6 +8,7 @@ import { faGripLinesVertical } from "@fortawesome/free-solid-svg-icons/faGripLin
 import { faHdd } from "@fortawesome/free-solid-svg-icons/faHdd";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faInfo } from "@fortawesome/free-solid-svg-icons/faInfo";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { faKey } from "@fortawesome/free-solid-svg-icons/faKey";
 import { faPen } from "@fortawesome/free-solid-svg-icons/faPen";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
@@ -42,6 +43,7 @@ export default function (): void {
         faPen,
         faGithub,
         faDiscord,
-        faTrash
+        faTrash,
+        faInfoCircle
     );
 }

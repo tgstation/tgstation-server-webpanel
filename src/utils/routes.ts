@@ -385,6 +385,24 @@ const AppRoutes = asElementTypesAppRoute({
         cachedAuth: true,
 
         visibleNavbar: false
+    },
+    info: {
+        name: "routes.info",
+        route: "/info",
+        file: "Info",
+
+        loose: false,
+        navbarLoose: false,
+
+        loginless: true,
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
+
+        visibleNavbar: true,
+        homeIcon: "info-circle",
+
+        category: undefined,
+        catleader: false
     }
 });
 

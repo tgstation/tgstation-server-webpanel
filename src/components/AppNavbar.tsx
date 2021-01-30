@@ -377,6 +377,15 @@ export default withRouter(
                             <Dropdown.Item
                                 onClick={() => {
                                     this.props.history.push(
+                                        AppRoutes.info.link || AppRoutes.info.route,
+                                        { reload: true }
+                                    );
+                                }}>
+                                <FormattedMessage id="routes.info" />
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                onClick={() => {
+                                    this.props.history.push(
                                         AppRoutes.config.link || AppRoutes.config.route,
                                         { reload: true }
                                     );
