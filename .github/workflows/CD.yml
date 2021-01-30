@@ -1,3 +1,5 @@
+name: Deploy code
+
 on:
     push:
         branches:
