@@ -188,7 +188,14 @@ const AppRoutes = asElementTypesAppRoute({
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        isAuthorized: instanceManagerRight(
+            InstanceManagerRights.Relocate |
+                InstanceManagerRights.Rename |
+                InstanceManagerRights.SetAutoUpdate |
+                InstanceManagerRights.SetConfiguration |
+                InstanceManagerRights.SetOnline |
+                InstanceManagerRights.SetChatBotLimit
+        ),
         cachedAuth: true,
 
         visibleNavbar: true,

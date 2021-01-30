@@ -3,6 +3,9 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { Components } from "../../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
+import UserClient from "../../../../ApiClient/UserClient";
+import { resolvePermissionSet } from "../../../../utils/misc";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import Loading from "../../../utils/Loading";
 
@@ -13,6 +16,7 @@ interface IProps extends RouteComponentProps {
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;
+    selfPermissionSet?: Components.Schemas.PermissionSet;
 }
 
 export default withRouter(
@@ -24,6 +28,17 @@ export default withRouter(
                 loading: false,
                 errors: []
             };
+        }
+
+        public async componentDidMount() {
+            const response = await UserClient.getCurrentUser();
+            if (response.code === StatusCode.OK) {
+                this.setState({
+                    selfPermissionSet: resolvePermissionSet(response.payload)
+                });
+            } else {
+                this.addError(response.error);
+            }
         }
 
         private addError(error: InternalError<ErrorCode>): void {
@@ -61,9 +76,6 @@ export default withRouter(
                             />
                         );
                     })}
-                    hey!
-                    {JSON.stringify(this.props.instance)}
-                    <a onClick={() => this.props.loadInstance()}>Test</a>
                 </div>
             );
         }
