@@ -43,15 +43,15 @@
         <script>
             try {
                 function loadChannel(channel) {
-                    try {
-                        const handler = (e) => {
-                            if (channel !== "<%= htmlWebpackPlugin.files.publicPath %>" && confirm("The webpanel has failed to load from github, this may be due to a misconfiguration. Press OK to load the webpanel from the fallback. Error: \n" + e)) {
-                                loadChannel("<%= htmlWebpackPlugin.files.publicPath %>");
-                            } else {
-                                alert("An error has occured within the webpanel bootstraper: \n" + e)
-                            }
+                    const handler = (e) => {
+                        if (channel !== "<%= htmlWebpackPlugin.files.publicPath %>" && confirm("The webpanel has failed to load from " + channel + ", this may be due to a misconfiguration. Press OK to load the webpanel from the fallback. Error: \n" + e)) {
+                            loadChannel("<%= htmlWebpackPlugin.files.publicPath %>");
+                        } else {
+                            alert("An error has occured within the webpanel bootstraper: \n" + e)
                         }
+                    }
 
+                    try {
                         if (channel === "webpack") {
                             channel = "<%= htmlWebpackPlugin.files.publicPath %>";
                             window.loadedChannelFromWebpack = true;
@@ -81,7 +81,11 @@
                     e.json().then(channel => {
                         loadChannel(channel.channel)
                     }).catch((e) => {
-                        alert("An error has occured within the webpanel bootstraper: \n" + e)
+                        if(confirm("An error has occured within the webpanel bootstraper. Press OK to load the webpanel from the fallback. Error:\n" + e)) {
+                            loadChannel("<%= htmlWebpackPlugin.files.publicPath %>");
+                        } else {
+                            alert("An error has occured within the webpanel bootstraper: \n" + e)
+                        }
                     })
                 })
             }catch (e) {
