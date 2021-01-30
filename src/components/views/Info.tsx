@@ -164,7 +164,7 @@ export default class Info extends React.Component<IProps, IState> {
                                         <tr>
                                             <td>
                                                 <h4 className="mr-3">
-                                                    <FormattedMessage id="view.info.oauth" y />
+                                                    <FormattedMessage id="view.info.oauth" />
                                                 </h4>
                                             </td>
                                             <td>
