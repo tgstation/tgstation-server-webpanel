@@ -19,6 +19,14 @@ interface IState {
     selfPermissionSet?: Components.Schemas.PermissionSet;
 }
 
+interface FieldProps {
+    property: keyof Components.S
+}
+interface FieldState {}
+
+class Field extends React.Component<FieldProps, FieldState>
+
+
 export default withRouter(
     class InstanceSettings extends React.Component<IProps, IState> {
         public constructor(props: IProps) {
