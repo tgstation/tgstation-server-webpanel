@@ -148,7 +148,10 @@ module.exports = function createConfig(prodLike, github) {
                 patterns: [
                     {
                         from: "public",
-                        toType: "dir"
+                        toType: "dir",
+                        globOptions: {
+                            ignore: prodLike ? ["**/channel.json"] : []
+                        }
                     }
                 ]
             }),
