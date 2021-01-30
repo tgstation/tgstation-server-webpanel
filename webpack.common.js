@@ -161,7 +161,7 @@ module.exports = function createConfig(prodLike, github) {
                 DEFAULT_BASEPATH: JSON.stringify(github ? "/app/" : publicPath),
                 DEFAULT_APIPATH: JSON.stringify(prodLike ? "" : "http://localhost:5000/")
             }),
-            new HtmlWebpackPlugin({
+            github ? false : new HtmlWebpackPlugin({
                 title: "TGS Webpanel v" + require("./package.json").version,
                 filename: "index.html",
                 template: "src/index.html",
