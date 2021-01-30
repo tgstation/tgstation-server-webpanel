@@ -47,4 +47,4 @@ jobs:
                   git add *
                   git commit -m "Update webpanel"
                   git pull --rebase origin live
-                  git push origin live
+                  git push origin HEAD:live
