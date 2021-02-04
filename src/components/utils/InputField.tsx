@@ -69,6 +69,7 @@ export default class InputField extends React.Component<IProps, IState> {
                                     currentValue: event.target.selectedOptions[0].value
                                 });
                             }}
+                            disabled={this.props.disabled}
                             defaultValue={this.props.defaultValue}>
                             {Object.values(this.props.enum)
                                 .filter(val => isNaN(parseInt(val as string)))
