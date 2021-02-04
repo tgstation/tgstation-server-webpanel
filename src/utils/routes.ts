@@ -188,7 +188,7 @@ const AppRoutes = asElementTypesAppRoute({
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        isAuthorized: () => Promise.resolve(true),
         cachedAuth: true,
 
         visibleNavbar: true,
