@@ -1,7 +1,7 @@
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
-import ServerClient from "./ServerClient";
+import ServerClient, { RequireAtLeastOne } from "./ServerClient";
 
 export type ListInstancesErrors = GenericErrors;
 export type CreateInstanceErrors = GenericErrors;
@@ -52,13 +52,16 @@ export default new (class InstanceClient {
     }
 
     public async editInstance(
-        instance: Components.Schemas.Instance
+        instance: RequireAtLeastOne<Components.Schemas.Instance>
     ): Promise<InternalStatus<Components.Schemas.Instance, EditInstanceErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_Update(null, instance);
+            response = await ServerClient.apiClient!.InstanceController_Update(
+                null,
+                instance as Components.Schemas.Instance
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

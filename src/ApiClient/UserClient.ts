@@ -4,7 +4,7 @@ import { AdministrationRights, InstanceManagerRights } from "./generatedcode/_en
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
-import ServerClient from "./ServerClient";
+import ServerClient, { RequireAtLeastOne } from "./ServerClient";
 import LoginHooks from "./util/LoginHooks";
 
 interface IEvents {
@@ -14,13 +14,6 @@ interface IEvents {
 export type EditUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type GetUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type CreateUserErrors = GenericErrors | ErrorCode.USER_NO_SYS_IDENT;
-
-//https://stackoverflow.com/questions/40510611/typescript-interface-require-one-of-two-properties-to-exist
-//name describes what it does, makes the passed type only require 1 property, the others being optional
-type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<T, Exclude<keyof T, Keys>> &
-    {
-        [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
-    }[Keys];
 
 export default new (class UserClient extends TypedEmitter<IEvents> {
     private _cachedUser?: InternalStatus<Components.Schemas.User, ErrorCode.OK>;

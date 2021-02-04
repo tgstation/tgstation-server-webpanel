@@ -11,10 +11,13 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import UserClient from "../../../ApiClient/UserClient";
 import { GlobalObjects } from "../../../utils/globalObjects";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
+import { resolvePermissionSet } from "../../../utils/misc";
+import WIPNotice from "../../utils/WIPNotice";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
@@ -23,6 +26,7 @@ interface IState {
     loading: boolean;
     errors: Array<InternalError<ErrorCode> | undefined>;
     tab: string;
+    currentUser?: Components.Schemas.User;
 }
 
 export default withRouter(
@@ -50,8 +54,21 @@ export default withRouter(
             }
         }
 
-        public componentDidMount() {
-            this.loadInstance().catch(e => console.error(e));
+        public async componentDidMount() {
+            this.setState({
+                loading: true
+            });
+
+            const response = await UserClient.getCurrentUser();
+            if (response.code === StatusCode.OK) {
+                this.setState({
+                    currentUser: response.payload
+                });
+            } else {
+                this.addError(response.error);
+            }
+
+            await this.loadInstance();
         }
 
         private addError(error: InternalError<ErrorCode>): void {
@@ -150,10 +167,11 @@ export default withRouter(
                         <Tab
                             eventKey="settings"
                             title={<FormattedMessage id="view.instance.config.instancesettings" />}>
-                            {this.state.instance ? (
+                            {this.state.instance && this.state.currentUser ? (
                                 <InstanceSettings
                                     instance={this.state.instance}
                                     loadInstance={this.loadInstance}
+                                    selfPermissionSet={resolvePermissionSet(this.state.currentUser)}
                                 />
                             ) : (
                                 <FormattedMessage id="view.instance.config.noinstance" />
@@ -162,12 +180,12 @@ export default withRouter(
                         <Tab
                             eventKey="users"
                             title={<FormattedMessage id="view.instance.config.instanceusers" />}>
-                            {this.state.tab === "users" ? "ysers " : ""}
+                            <WIPNotice />
                         </Tab>
                         <Tab
                             eventKey="chatbots"
                             title={<FormattedMessage id="view.instance.config.chatbots" />}>
-                            {this.state.tab === "chatbots" ? "boys will chat" : ""}
+                            <WIPNotice />
                         </Tab>
                     </Tabs>
                 </div>
