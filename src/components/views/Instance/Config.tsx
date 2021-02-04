@@ -13,10 +13,10 @@ import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComm
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
 import { GlobalObjects } from "../../../utils/globalObjects";
+import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
-import { resolvePermissionSet } from "../../../utils/misc";
 import WIPNotice from "../../utils/WIPNotice";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
