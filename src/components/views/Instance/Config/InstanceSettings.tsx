@@ -22,6 +22,7 @@ interface IProps extends RouteComponentProps {
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;
+    editLock: boolean;
 }
 
 export default withRouter(
@@ -31,6 +32,7 @@ export default withRouter(
 
             this.state = {
                 loading: false,
+                editLock: false,
                 errors: []
             };
         }
@@ -76,6 +78,12 @@ export default withRouter(
                 return this.props.selfPermissionSet.instanceManagerRights! & flag;
             };
 
+            const setEditLock = (value: boolean) => {
+                this.setState({
+                    editLock: value
+                });
+            };
+
             return (
                 <div className="text-center">
                     {this.state.errors.map((err, index) => {
@@ -105,6 +113,8 @@ export default withRouter(
                             this.editInstance({ name: newval });
                         }}
                         disabled={!checkIMFlag(InstanceManagerRights.Rename)}
+                        setEditLock={setEditLock}
+                        editLock={this.state.editLock}
                     />
                     <InputField
                         name="instance.path"
@@ -114,6 +124,8 @@ export default withRouter(
                             this.editInstance({ path: newval });
                         }}
                         disabled={!checkIMFlag(InstanceManagerRights.Relocate)}
+                        setEditLock={setEditLock}
+                        editLock={this.state.editLock}
                     />
                     <InputField
                         name="instance.chatbotlimit"
@@ -123,6 +135,8 @@ export default withRouter(
                             this.editInstance({ chatBotLimit: newval });
                         }}
                         disabled={!checkIMFlag(InstanceManagerRights.SetChatBotLimit)}
+                        setEditLock={setEditLock}
+                        editLock={this.state.editLock}
                     />
                     <InputField
                         name="instance.autoupdate"
@@ -134,6 +148,8 @@ export default withRouter(
                             });
                         }}
                         disabled={!checkIMFlag(InstanceManagerRights.SetAutoUpdate)}
+                        setEditLock={setEditLock}
+                        editLock={this.state.editLock}
                     />
                     <InputField
                         name="instance.filemode"
@@ -147,6 +163,8 @@ export default withRouter(
                             });
                         }}
                         disabled={!checkIMFlag(InstanceManagerRights.SetConfiguration)}
+                        setEditLock={setEditLock}
+                        editLock={this.state.editLock}
                     />
                 </div>
             );

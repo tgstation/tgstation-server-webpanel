@@ -12,6 +12,8 @@ interface IState {
 type IProps = {
     name: string;
     disabled?: boolean;
+    setEditLock?: (value: boolean) => void;
+    editLock?: boolean;
 } & (
     | {
           name: string;
@@ -65,11 +67,27 @@ export default class InputField extends React.Component<IProps, IState> {
                         <select
                             className={`flex-fill mb-0 ${changed ? "font-weight-bold" : ""}`}
                             onChange={event => {
+                                if (this.props.setEditLock) {
+                                    if (
+                                        changed &&
+                                        event.target.selectedOptions[0].value ===
+                                            this.props.defaultValue
+                                    ) {
+                                        this.props.setEditLock(false);
+                                    } else if (
+                                        !changed &&
+                                        event.target.selectedOptions[0].value !==
+                                            this.props.defaultValue
+                                    ) {
+                                        this.props.setEditLock(true);
+                                    }
+                                }
+
                                 this.setState({
                                     currentValue: event.target.selectedOptions[0].value
                                 });
                             }}
-                            disabled={this.props.disabled}
+                            disabled={this.props.disabled || (!changed && this.props.editLock)}
                             defaultValue={this.props.defaultValue}>
                             {Object.values(this.props.enum)
                                 .filter(val => isNaN(parseInt(val as string)))
@@ -95,12 +113,26 @@ export default class InputField extends React.Component<IProps, IState> {
                                 className="m-auto"
                                 label=""
                                 onChange={event => {
+                                    if (this.props.setEditLock) {
+                                        if (
+                                            changed &&
+                                            event.currentTarget.checked === this.props.defaultValue
+                                        ) {
+                                            this.props.setEditLock(false);
+                                        } else if (
+                                            !changed &&
+                                            event.currentTarget.checked !== this.props.defaultValue
+                                        ) {
+                                            this.props.setEditLock(true);
+                                        }
+                                    }
+
                                     this.setState({
                                         currentValue: event.currentTarget.checked
                                     });
                                 }}
                                 checked={this.state.currentValue as boolean}
-                                disabled={this.props.disabled}
+                                disabled={this.props.disabled || (!changed && this.props.editLock)}
                             />
                         </label>
                     ) : (
@@ -109,18 +141,25 @@ export default class InputField extends React.Component<IProps, IState> {
                             type={this.props.type === "num" ? "number" : "text"}
                             className={`flex-fill mb-0 ${changed ? "font-weight-bold" : ""}`}
                             onChange={event => {
-                                if (this.props.type == "num") {
-                                    this.setState({
-                                        currentValue: parseInt(event.currentTarget.value)
-                                    });
-                                } else {
-                                    this.setState({
-                                        currentValue: event.currentTarget.value
-                                    });
+                                const newValue =
+                                    this.props.type == "num"
+                                        ? parseInt(event.currentTarget.value)
+                                        : event.currentTarget.value;
+
+                                if (this.props.setEditLock) {
+                                    if (changed && newValue === this.props.defaultValue) {
+                                        this.props.setEditLock(false);
+                                    } else if (!changed && newValue !== this.props.defaultValue) {
+                                        this.props.setEditLock(true);
+                                    }
                                 }
+
+                                this.setState({
+                                    currentValue: newValue
+                                });
                             }}
                             value={this.state.currentValue as string | number}
-                            disabled={this.props.disabled}
+                            disabled={this.props.disabled || (!changed && this.props.editLock)}
                         />
                     )}
                     <React.Fragment>
@@ -134,6 +173,10 @@ export default class InputField extends React.Component<IProps, IState> {
                                     : {}
                             }
                             onClick={() => {
+                                if (this.props.setEditLock) {
+                                    this.props.setEditLock(false);
+                                }
+
                                 this.setState({
                                     currentValue: this.props.defaultValue
                                 });
