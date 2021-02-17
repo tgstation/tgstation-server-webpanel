@@ -231,7 +231,7 @@ export default withRouter(
                                                 <td>{value.name}</td>
                                                 <OverlayTrigger
                                                     overlay={
-                                                        <Tooltip id={`${value.name!}-tooltip`}>
+                                                        <Tooltip id={`${value.name}-tooltip`}>
                                                             {logdate.toLocaleString()}
                                                         </Tooltip>
                                                     }>
@@ -257,7 +257,7 @@ export default withRouter(
                                                             this.props.history.push(
                                                                 (AppRoutes.admin_logs.link ||
                                                                     AppRoutes.admin_logs.route) +
-                                                                    value.name! +
+                                                                    value.name +
                                                                     "/",
                                                                 {
                                                                     reload: true
@@ -268,7 +268,7 @@ export default withRouter(
                                                     </Button>
                                                     <Button
                                                         onClick={() => {
-                                                            this.downloadLog(value.name!).catch(
+                                                            this.downloadLog(value.name).catch(
                                                                 (e: Error) => {
                                                                     this.addError(
                                                                         new InternalError<ErrorCode.APP_FAIL>(

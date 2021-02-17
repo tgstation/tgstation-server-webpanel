@@ -112,7 +112,7 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canReboot: !!(
-                        resolvePermissionSet(response.payload).administrationRights! &
+                        resolvePermissionSet(response.payload).administrationRights &
                         AdministrationRights.RestartHost
                     )
                 });
@@ -125,7 +125,7 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canUpdate: !!(
-                        resolvePermissionSet(response.payload).administrationRights! &
+                        resolvePermissionSet(response.payload).administrationRights &
                         AdministrationRights.ChangeVersion
                     )
                 });
@@ -138,7 +138,7 @@ export default withRouter(
             if (response.code === StatusCode.OK) {
                 this.setState({
                     canLogs: !!(
-                        resolvePermissionSet(response.payload).administrationRights! &
+                        resolvePermissionSet(response.payload).administrationRights &
                         AdministrationRights.DownloadLogs
                     )
                 });
@@ -194,32 +194,32 @@ export default withRouter(
                             </h3>
                             <h5 className="text-secondary">
                                 <FormattedMessage id="view.admin.remote" />
-                                <a href={this.state.adminInfo.trackedRepositoryUrl!}>
-                                    {this.state.adminInfo.trackedRepositoryUrl!}
+                                <a href={this.state.adminInfo.trackedRepositoryUrl}>
+                                    {this.state.adminInfo.trackedRepositoryUrl}
                                 </a>
                             </h5>
                             <h3 className="text-secondary">
                                 <FormattedMessage id="view.admin.version.current" />
                                 <span
                                     className={
-                                        this.state.serverInfo.version! <
-                                        this.state.adminInfo.latestVersion!
+                                        this.state.serverInfo.version <
+                                        this.state.adminInfo.latestVersion
                                             ? "text-danger"
                                             : ""
                                     }>
-                                    {this.state.serverInfo.version!}
+                                    {this.state.serverInfo.version}
                                 </span>
                             </h3>
                             <h3 className="text-secondary">
                                 <FormattedMessage id="view.admin.version.latest" />
                                 <span
                                     className={
-                                        this.state.serverInfo.version! <
-                                        this.state.adminInfo.latestVersion!
+                                        this.state.serverInfo.version <
+                                        this.state.adminInfo.latestVersion
                                             ? "text-danger"
                                             : ""
                                     }>
-                                    {this.state.adminInfo.latestVersion!}
+                                    {this.state.adminInfo.latestVersion}
                                 </span>
                             </h3>
                             <hr />

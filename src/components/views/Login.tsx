@@ -231,32 +231,32 @@ export default withRouter(
             switch (provider) {
                 case OAuthProvider.Discord: {
                     url = `https://discord.com/api/oauth2/authorize?response_type=code&client_id=${e(
-                        this.state.serverInfo.oAuthProviderInfos!.Discord.clientId!
+                        this.state.serverInfo.oAuthProviderInfos.Discord.clientId
                     )}&scope=identify&state=${e(state)}&redirect_uri=${e(
-                        this.state.serverInfo.oAuthProviderInfos!.Discord.redirectUri!
+                        this.state.serverInfo.oAuthProviderInfos.Discord.redirectUri
                     )}`;
                     break;
                 }
                 case OAuthProvider.GitHub: {
                     url = `https://github.com/login/oauth/authorize?client_id=${e(
-                        this.state.serverInfo.oAuthProviderInfos!.GitHub.clientId!
+                        this.state.serverInfo.oAuthProviderInfos.GitHub.clientId
                     )}&redirect_uri=${e(
-                        this.state.serverInfo.oAuthProviderInfos!.GitHub.redirectUri!
+                        this.state.serverInfo.oAuthProviderInfos.GitHub.redirectUri
                     )}&state=${e(state)}&allow_signup=false`;
                     break;
                 }
                 case OAuthProvider.Keycloak: {
-                    url = `${this.state.serverInfo.oAuthProviderInfos!.Keycloak
+                    url = `${this.state.serverInfo.oAuthProviderInfos.Keycloak
                         .serverUrl!}/protocol/openid-connect/auth?response_type=code&client_id=${e(
-                        this.state.serverInfo.oAuthProviderInfos!.Keycloak.clientId!
+                        this.state.serverInfo.oAuthProviderInfos.Keycloak.clientId
                     )}&scope=openid&state=${e(state)}&redirect_uri=${e(
-                        this.state.serverInfo.oAuthProviderInfos!.Keycloak.redirectUri!
+                        this.state.serverInfo.oAuthProviderInfos.Keycloak.redirectUri
                     )}`;
                     break;
                 }
                 case OAuthProvider.TGForums: {
                     url = `https://tgstation13.org/phpBB/oauth.php?session_public_token=${e(
-                        this.state.serverInfo.oAuthProviderInfos!.TGForums.clientId!
+                        this.state.serverInfo.oAuthProviderInfos.TGForums.clientId
                     )}`;
                     break;
                 }
@@ -269,7 +269,7 @@ export default withRouter(
                 oauthdata["tgforums"] = {
                     provider: provider,
                     url: this.props.location.pathname,
-                    state: this.state.serverInfo.oAuthProviderInfos!.TGForums.clientId!
+                    state: this.state.serverInfo.oAuthProviderInfos.TGForums.clientId
                 };
             } else {
                 oauthdata[state] = {

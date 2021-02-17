@@ -89,7 +89,7 @@ export default withRouter(
                     return this.addError(adminInfo.error);
                 }
                 case StatusCode.OK: {
-                    const url = adminInfo.payload.trackedRepositoryUrl!;
+                    const url = adminInfo.payload.trackedRepositoryUrl;
                     const matcher = /https?:\/\/(github\.com)\/(.*?)\/(.*)/;
                     const results = matcher.exec(url);
 
@@ -124,7 +124,7 @@ export default withRouter(
                             const versionInfo = await GithubClient.getVersions({
                                 owner: results[2],
                                 repo: results[3],
-                                current: serverInfo.payload.version!,
+                                current: serverInfo.payload.version,
                                 all: !!this.props.match.params.all
                             });
                             console.log("Version info: ", versionInfo);

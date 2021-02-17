@@ -138,7 +138,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 if (!(value.url === "/" || value.url === "")) {
                     const tok = await this.wait4Token();
                     (value.headers as { [key: string]: string })["Authorization"] =
-                        "Bearer " + tok.bearer!;
+                        "Bearer " + tok.bearer;
                 }
                 return value;
             },

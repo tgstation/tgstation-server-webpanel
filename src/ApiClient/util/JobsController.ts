@@ -222,7 +222,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as AdministrationRights;
                     return !!(
-                        resolvePermissionSet(userInfo.payload).administrationRights! & required
+                        resolvePermissionSet(userInfo.payload).administrationRights & required
                     );
                 } else {
                     errors.push(userInfo.error);
@@ -234,7 +234,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as InstanceManagerRights;
                     return !!(
-                        resolvePermissionSet(userInfo.payload).instanceManagerRights! & required
+                        resolvePermissionSet(userInfo.payload).instanceManagerRights & required
                     );
                 } else {
                     errors.push(userInfo.error);
@@ -247,7 +247,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ByondRights;
-                    return !!(InstancePermissionSet.payload.byondRights! & required);
+                    return !!(InstancePermissionSet.payload.byondRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -259,7 +259,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ChatBotRights;
-                    return !!(InstancePermissionSet.payload.chatBotRights! & required);
+                    return !!(InstancePermissionSet.payload.chatBotRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -271,7 +271,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ConfigurationRights;
-                    return !!(InstancePermissionSet.payload.configurationRights! & required);
+                    return !!(InstancePermissionSet.payload.configurationRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -283,7 +283,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamDaemonRights;
-                    return !!(InstancePermissionSet.payload.dreamDaemonRights! & required);
+                    return !!(InstancePermissionSet.payload.dreamDaemonRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -295,7 +295,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamMakerRights;
-                    return !!(InstancePermissionSet.payload.dreamMakerRights! & required);
+                    return !!(InstancePermissionSet.payload.dreamMakerRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -307,9 +307,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as InstancePermissionSetRights;
-                    return !!(
-                        InstancePermissionSet.payload.instancePermissionSetRights! & required
-                    );
+                    return !!(InstancePermissionSet.payload.instancePermissionSetRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -321,7 +319,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as RepositoryRights;
-                    return !!(InstancePermissionSet.payload.repositoryRights! & required);
+                    return !!(InstancePermissionSet.payload.repositoryRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;

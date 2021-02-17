@@ -318,7 +318,7 @@ export default withRouter(
                     <React.Fragment>
                         <FormattedMessage id="generic.appname" />
                         {" v"}
-                        {this.state.serverInformation.version!}
+                        {this.state.serverInformation.version}
                     </React.Fragment>
                 );
 

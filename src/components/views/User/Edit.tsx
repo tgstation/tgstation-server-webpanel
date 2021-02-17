@@ -115,23 +115,23 @@ export default withRouter(
             if (currentuser.code == StatusCode.OK) {
                 this.setState({
                     canEdit: !!(
-                        resolvePermissionSet(currentuser.payload).administrationRights! &
+                        resolvePermissionSet(currentuser.payload).administrationRights &
                         AdministrationRights.WriteUsers
                     ),
                     canRead: !!(
-                        resolvePermissionSet(currentuser.payload).administrationRights! &
+                        resolvePermissionSet(currentuser.payload).administrationRights &
                         AdministrationRights.ReadUsers
                     ),
                     canEditOwnPassword:
                         !!(
-                            resolvePermissionSet(currentuser.payload).administrationRights! &
+                            resolvePermissionSet(currentuser.payload).administrationRights &
                             AdministrationRights.EditOwnPassword
-                        ) && currentuser.payload.id! === userid,
+                        ) && currentuser.payload.id === userid,
                     canEditOwnOAuth:
                         !!(
-                            resolvePermissionSet(currentuser.payload).administrationRights! &
+                            resolvePermissionSet(currentuser.payload).administrationRights &
                             AdministrationRights.EditOwnOAuthConnections
-                        ) && currentuser.payload.id! === userid,
+                        ) && currentuser.payload.id === userid,
                     //TODO: fix the as eventually when cyber tells me what is up with it
                     groups: currentuser.payload.group
                         ? [
@@ -207,7 +207,7 @@ export default withRouter(
                 if (key == "none") return;
 
                 const currentVal = !!(
-                    resolvePermissionSet(this.state.user!).administrationRights! & val
+                    resolvePermissionSet(this.state.user!).administrationRights & val
                 );
                 this.setState(prevState => {
                     return {
@@ -232,7 +232,7 @@ export default withRouter(
                 if (key == "none") return;
 
                 const currentVal = !!(
-                    resolvePermissionSet(this.state.user!).instanceManagerRights! & val
+                    resolvePermissionSet(this.state.user!).instanceManagerRights & val
                 );
                 this.setState(prevState => {
                     return {
@@ -375,7 +375,7 @@ export default withRouter(
                                                 </h5>
                                             </Col>
                                             <Col className="text-capitalize mb-2">
-                                                {this.state.user.enabled!.toString()}
+                                                {this.state.user.enabled.toString()}
                                             </Col>
                                         </Row>
                                         <Row xs={1} md={2}>
@@ -388,7 +388,7 @@ export default withRouter(
                                                 overlay={
                                                     <Tooltip id={`${this.state.user.name}-tooltip`}>
                                                         {new Date(
-                                                            this.state.user.createdAt!
+                                                            this.state.user.createdAt
                                                         ).toLocaleString()}
                                                     </Tooltip>
                                                 }>
@@ -401,7 +401,7 @@ export default withRouter(
                                                             <FormattedRelativeTime
                                                                 value={
                                                                     (new Date(
-                                                                        this.state.user!.createdAt!
+                                                                        this.state.user!.createdAt
                                                                     ).getTime() -
                                                                         Date.now()) /
                                                                     1000
@@ -448,7 +448,7 @@ export default withRouter(
                                                     to={
                                                         (AppRoutes.passwd.link ||
                                                             AppRoutes.passwd.route) +
-                                                        this.state.user.id!.toString()
+                                                        this.state.user.id.toString()
                                                     }>
                                                     <FormattedMessage id="routes.passwd" />
                                                 </Button>
@@ -468,8 +468,8 @@ export default withRouter(
                                                         });
 
                                                         const response = await UserClient.editUser({
-                                                            enabled: !this.state.user!.enabled!,
-                                                            id: this.state.user!.id!
+                                                            enabled: !this.state.user!.enabled,
+                                                            id: this.state.user!.id
                                                         });
                                                         if (response.code == StatusCode.OK) {
                                                             this.loadUser(response.payload);
@@ -545,7 +545,7 @@ export default withRouter(
                 }
 
                 const response = await UserClient.editUser({
-                    id: this.state.user.id!,
+                    id: this.state.user.id,
                     oAuthConnections: this.state.newOAuthConnections
                 });
                 if (response.code == StatusCode.OK) {
@@ -874,7 +874,7 @@ export default withRouter(
             const id = (e.target as HTMLInputElement).id;
             if (id === "group_none") {
                 const response = await UserClient.editUser({
-                    id: this.state.user.id!,
+                    id: this.state.user.id,
                     permissionSet: resolvePermissionSet(this.state.user)
                 });
                 if (response.code === StatusCode.OK) {
@@ -886,7 +886,7 @@ export default withRouter(
             } else {
                 const realID = parseInt(id.substr(6));
                 const response = await UserClient.editUser({
-                    id: this.state.user.id!,
+                    id: this.state.user.id,
                     group: {
                         id: realID
                     } as Components.Schemas.UserGroup
@@ -1021,7 +1021,7 @@ export default withRouter(
                         permissionSet: newset
                     });
                     if (response.code == StatusCode.OK) {
-                        const response2 = await UserClient.getUser(this.state.user.id!);
+                        const response2 = await UserClient.getUser(this.state.user.id);
                         if (response2.code == StatusCode.OK) {
                             this.loadUser(response2.payload);
                         } else {
@@ -1037,7 +1037,7 @@ export default withRouter(
                             : "InstanceManagerRights"]: bitflag
                     } as { AdministrationRights: AdministrationRights } | { InstanceManagerRights: InstanceManagerRights });
                     const response = await UserClient.editUser({
-                        id: this.state.user.id!,
+                        id: this.state.user.id,
                         permissionSet: newset
                     });
                     if (response.code == StatusCode.OK) {
@@ -1058,7 +1058,8 @@ export default withRouter(
                             <FormattedMessage
                                 id="perms.group.warning"
                                 values={{
-                                    group: `${this.state.user.group.name} (${this.state.user.group.id})`
+                                    group: `${this.state.user.group.name} (${this.state.user.group
+                                        .id!})`
                                 }}
                             />
                         </Alert>

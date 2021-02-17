@@ -1,7 +1,7 @@
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
-import ServerClient, { RequireAtLeastOne } from "./ServerClient";
+import ServerClient from "./ServerClient";
 import InstanceUpdateRequest = Components.Schemas.InstanceUpdateRequest;
 
 export type ListInstancesErrors = GenericErrors;
