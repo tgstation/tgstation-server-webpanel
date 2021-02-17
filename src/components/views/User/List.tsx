@@ -54,7 +54,7 @@ export default withRouter(
             const response = await UserClient.getCurrentUser();
             if (response.code == StatusCode.OK) {
                 const canList = !!(
-                    resolvePermissionSet(response.payload).administrationRights! &
+                    resolvePermissionSet(response.payload).administrationRights &
                     AdministrationRights.ReadUsers
                 );
                 this.setState({
@@ -145,12 +145,12 @@ export default withRouter(
                         </thead>
                         <tbody>
                             {this.state.users.map(value => {
-                                const createddate = new Date(value.createdAt!);
+                                const createddate = new Date(value.createdAt);
                                 const createddiff = (createddate.getTime() - Date.now()) / 1000;
 
                                 return (
                                     <tr key={value.id}>
-                                        <td>{value.id!}</td>
+                                        <td>{value.id}</td>
                                         <td>{value.name}</td>
                                         <td>
                                             {value.systemIdentifier ? (
@@ -235,7 +235,7 @@ export default withRouter(
                                         <td className="align-middle p-0">
                                             <Button
                                                 onClick={() => {
-                                                    RouteData.selecteduserid = value.id!;
+                                                    RouteData.selecteduserid = value.id;
                                                     this.props.history.push(
                                                         AppRoutes.useredit.link ||
                                                             AppRoutes.useredit.route
