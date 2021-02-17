@@ -9,7 +9,7 @@ import TransferClient, { DownloadErrors } from "./TransferClient";
 
 interface IEvents {
     loadAdminInfo: (
-        user: InternalStatus<Components.Schemas.Administration, AdminInfoErrors>
+        user: InternalStatus<Components.Schemas.AdministrationResponse, AdminInfoErrors>
     ) => void;
 }
 
@@ -32,7 +32,10 @@ export type LogsErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
 export type LogErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
 
 export default new (class AdminClient extends TypedEmitter<IEvents> {
-    private _cachedAdminInfo?: InternalStatus<Components.Schemas.Administration, ErrorCode.OK>;
+    private _cachedAdminInfo?: InternalStatus<
+        Components.Schemas.AdministrationResponse,
+        ErrorCode.OK
+    >;
     public get cachedAdminInfo() {
         return this._cachedAdminInfo;
     }
@@ -46,7 +49,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
     }
 
     public async getAdminInfo(): Promise<
-        InternalStatus<Components.Schemas.Administration, AdminInfoErrors>
+        InternalStatus<Components.Schemas.AdministrationResponse, AdminInfoErrors>
     > {
         await ServerClient.wait4Init();
         if (this._cachedAdminInfo) {
@@ -56,7 +59,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
         if (this.loadingAdminInfo) {
             return await new Promise(resolve => {
                 const resolver = (
-                    user: InternalStatus<Components.Schemas.Administration, AdminInfoErrors>
+                    user: InternalStatus<Components.Schemas.AdministrationResponse, AdminInfoErrors>
                 ) => {
                     resolve(user);
                     this.removeListener("loadAdminInfo", resolver);
@@ -71,7 +74,10 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
         try {
             response = await ServerClient.apiClient!.AdministrationController_Read();
         } catch (stat) {
-            const res = new InternalStatus<Components.Schemas.Administration, AdminInfoErrors>({
+            const res = new InternalStatus<
+                Components.Schemas.AdministrationResponse,
+                AdminInfoErrors
+            >({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<AdminInfoErrors>
             });
@@ -82,9 +88,12 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const thing = new InternalStatus<Components.Schemas.Administration, ErrorCode.OK>({
+                const thing = new InternalStatus<
+                    Components.Schemas.AdministrationResponse,
+                    ErrorCode.OK
+                >({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.Administration
+                    payload: response.data as Components.Schemas.AdministrationResponse
                 });
 
                 this._cachedAdminInfo = thing;
@@ -93,9 +102,9 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 return thing;
             }
             case 424: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 const thing = new InternalStatus<
-                    Components.Schemas.Administration,
+                    Components.Schemas.AdministrationResponse,
                     ErrorCode.ADMIN_GITHUB_RATE
                 >({
                     code: StatusCode.ERROR,
@@ -110,9 +119,9 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 return thing;
             }
             case 429: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 const thing = new InternalStatus<
-                    Components.Schemas.Administration,
+                    Components.Schemas.AdministrationResponse,
                     ErrorCode.ADMIN_GITHUB_ERROR
                 >({
                     code: StatusCode.ERROR,
@@ -128,7 +137,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
             }
             default: {
                 const res = new InternalStatus<
-                    Components.Schemas.Administration,
+                    Components.Schemas.AdministrationResponse,
                     ErrorCode.UNHANDLED_RESPONSE
                 >({
                     code: StatusCode.ERROR,
@@ -163,7 +172,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 return new InternalStatus({ code: StatusCode.OK, payload: null });
             }
             case 422: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -192,9 +201,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
         let response;
         try {
             response = await ServerClient.apiClient!.AdministrationController_Update(null, {
-                newVersion,
-                latestVersion: null,
-                trackedRepositoryUrl: null
+                newVersion
             });
         } catch (stat) {
             return new InternalStatus({
@@ -208,7 +215,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 return new InternalStatus({ code: StatusCode.OK, payload: null });
             }
             case 410: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -219,7 +226,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 });
             }
             case 422: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -230,7 +237,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 });
             }
             case 424: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_RATE>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -241,7 +248,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 });
             }
             case 429: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_ERROR>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -264,7 +271,9 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
         }
     }
 
-    public async getLogs(): Promise<InternalStatus<Components.Schemas.LogFile[], LogsErrors>> {
+    public async getLogs(): Promise<
+        InternalStatus<Components.Schemas.LogFileResponse[], LogsErrors>
+    > {
         await ServerClient.wait4Init();
 
         let response;
@@ -284,11 +293,11 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as Components.Schemas.PaginatedLogFile)!.content
+                    payload: (response.data as Components.Schemas.PaginatedLogFileResponse)!.content
                 });
             }
             case 409: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -330,13 +339,13 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
         switch (response.status) {
             case 200: {
                 const contents = await TransferClient.Download(
-                    (response.data as Components.Schemas.LogFile).fileTicket!
+                    (response.data as Components.Schemas.LogFileResponse).fileTicket
                 );
                 if (contents.code === StatusCode.OK) {
                     //Object.assign() is a funky function but all it does is copy everything from the second object to the first object
                     const temp: DownloadedLog = Object.assign(
                         { content: contents.payload },
-                        response.data as Components.Schemas.LogFile
+                        response.data as Components.Schemas.LogFileResponse
                     );
                     return new InternalStatus({
                         code: StatusCode.OK,
@@ -350,7 +359,7 @@ export default new (class AdminClient extends TypedEmitter<IEvents> {
                 }
             }
             case 409: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(

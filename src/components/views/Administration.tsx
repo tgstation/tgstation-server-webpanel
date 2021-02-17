@@ -22,8 +22,8 @@ import Loading from "../utils/Loading";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
-    adminInfo?: Components.Schemas.Administration;
-    serverInfo?: Components.Schemas.ServerInformation;
+    adminInfo?: Components.Schemas.AdministrationResponse;
+    serverInfo?: Components.Schemas.ServerInformationResponse;
     error?: InternalError<ErrorCode>;
     busy: boolean;
     canReboot: boolean;

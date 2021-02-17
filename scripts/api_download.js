@@ -1,4 +1,4 @@
-const { https } = require("follow-redirects");
+const { http } = require("follow-redirects");
 const fs = require("fs");
 const path = require("path");
 const pkg = require("../package.json");

@@ -34,7 +34,7 @@ interface IState {
     password: string;
     errors: Array<InternalError<ErrorCode> | undefined>;
     redirectSetup?: boolean;
-    serverInfo?: Components.Schemas.ServerInformation;
+    serverInfo?: Components.Schemas.ServerInformationResponse;
 }
 
 export type NormalOauth = { provider: Exclude<OAuthProvider, OAuthProvider.TGForums>; url: string };

@@ -23,10 +23,10 @@ interface IState {
     password2: string;
     matchError?: boolean;
     lengthError?: boolean;
-    serverInfo?: Components.Schemas.ServerInformation;
+    serverInfo?: Components.Schemas.ServerInformationResponse;
     loading: boolean;
     pwdload?: boolean;
-    user?: Components.Schemas.User;
+    user?: Components.Schemas.UserResponse;
     currentUser?: boolean;
 }
 
@@ -67,9 +67,9 @@ export default withRouter(
                 if (this.props.match.params.id) {
                     id = parseInt(this.props.match.params.id);
                 } else {
-                    id = cuser.payload.id!;
+                    id = cuser.payload.id;
                 }
-                if (id === cuser.payload.id!) {
+                if (id === cuser.payload.id) {
                     this.setState({
                         currentUser: true
                     });
@@ -107,6 +107,15 @@ export default withRouter(
 
         // noinspection DuplicatedCode
         private async submit(event: FormEvent<HTMLFormElement>): Promise<void> {
+            if (!this.state.user) {
+                this.addError(
+                    new InternalError(ErrorCode.APP_FAIL, {
+                        jsError: Error("changepassword submit: this.user is falsy")
+                    })
+                );
+                return;
+            }
+
             event.preventDefault();
             let err = false;
             if (this.state.password1.length < this.state.serverInfo!.minimumPasswordLength) {
@@ -135,8 +144,9 @@ export default withRouter(
                 pwdload: true
             });
 
-            const res = await UserClient.editUser(this.state.user!.id!, {
-                password: this.state.password1
+            const res = await UserClient.editUser({
+                password: this.state.password1,
+                id: this.state.user.id
             });
             switch (res.code) {
                 case StatusCode.OK: {
@@ -144,7 +154,7 @@ export default withRouter(
                         // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
                         void ServerClient.login({
                             type: CredentialsType.Password,
-                            userName: this.state.user!.name,
+                            userName: this.state.user.name,
                             password: this.state.password1
                         });
                     }
@@ -201,7 +211,7 @@ export default withRouter(
                             <React.Fragment>
                                 <h3>
                                     <FormattedMessage id="view.user.passwd.title" />
-                                    {this.state.user.name}({this.state.user.id!})
+                                    {this.state.user.name}({this.state.user.id})
                                 </h3>
                                 <hr />
                                 <Form.Group controlId="password1">

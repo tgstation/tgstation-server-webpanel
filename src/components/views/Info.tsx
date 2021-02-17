@@ -14,7 +14,7 @@ import Loading from "../utils/Loading";
 
 interface IProps {}
 interface IState {
-    serverInfo?: Components.Schemas.ServerInformation;
+    serverInfo?: Components.Schemas.ServerInformationResponse;
     error?: InternalError<ErrorCode>;
 }
 

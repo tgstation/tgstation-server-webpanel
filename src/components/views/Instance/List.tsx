@@ -21,7 +21,7 @@ import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
 
-type Instance = Components.Schemas.Instance & {
+type Instance = Components.Schemas.InstanceResponse & {
     canAccess: boolean;
 };
 
@@ -135,7 +135,7 @@ export default withRouter(
             const instanceedit = await InstanceClient.editInstance(({
                 id: instance.id,
                 online: desiredState
-            } as unknown) as Components.Schemas.Instance);
+            } as unknown) as Components.Schemas.InstanceResponse);
             if (instanceedit.code === StatusCode.OK) {
                 await this.loadInstances();
             } else {

@@ -31,7 +31,7 @@ interface Log {
 }
 
 interface IState {
-    logs: Components.Schemas.LogFile[];
+    logs: Components.Schemas.LogFileResponse[];
     viewedLog?: Log;
     errors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;

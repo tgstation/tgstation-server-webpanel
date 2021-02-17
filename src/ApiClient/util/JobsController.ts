@@ -27,7 +27,7 @@ interface IEvents {
     jobsLoaded: () => unknown;
 }
 
-export type CanCancelJob = Components.Schemas.Job & {
+export type CanCancelJob = Components.Schemas.JobResponse & {
     canCancel?: boolean;
 };
 
@@ -53,10 +53,13 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     private currentLoop: Date = new Date(0);
 
     public errors: InternalError<getJobErrors | listJobsErrors>[] = [];
-    public jobs: Map<number, Components.Schemas.Job> = new Map<number, Components.Schemas.Job>();
+    public jobs: Map<number, Components.Schemas.JobResponse> = new Map<
+        number,
+        Components.Schemas.JobResponse
+    >();
 
     private reset() {
-        this.jobs = new Map<number, Components.Schemas.Job>();
+        this.jobs = new Map<number, Components.Schemas.JobResponse>();
         this.restartLoop();
     }
 

@@ -22,7 +22,7 @@ interface IProps extends RouteComponentProps {}
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
-    users: Components.Schemas.User[];
+    users: Components.Schemas.UserResponse[];
     loading: boolean;
     canList: boolean;
 }

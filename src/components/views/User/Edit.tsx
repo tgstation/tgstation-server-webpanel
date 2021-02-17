@@ -39,8 +39,8 @@ interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
-    user?: Components.Schemas.User;
-    serverinfo?: Components.Schemas.ServerInformation;
+    user?: Components.Schemas.UserResponse;
+    serverinfo?: Components.Schemas.ServerInformationResponse;
     newOAuthConnections: Components.Schemas.OAuthConnection[];
     loading: boolean;
     saving: boolean;
@@ -52,7 +52,7 @@ interface IState {
     canEditOwnPassword: boolean;
     canEditOwnOAuth: boolean;
     tab: string;
-    groups: Components.Schemas.UserGroup[];
+    groups: Components.Schemas.UserGroupResponse[];
     createGroupName: string;
 }
 
@@ -132,8 +132,18 @@ export default withRouter(
                             resolvePermissionSet(currentuser.payload).administrationRights! &
                             AdministrationRights.EditOwnOAuthConnections
                         ) && currentuser.payload.id! === userid,
+                    //TODO: fix the as eventually when cyber tells me what is up with it
                     groups: currentuser.payload.group
-                        ? [Object.assign({ users: [] }, currentuser.payload.group)]
+                        ? [
+                              Object.assign(
+                                  { users: [] },
+                                  currentuser.payload.group as {
+                                      id: number;
+                                      name: string;
+                                      permissionSet: Components.Schemas.PermissionSet;
+                                  }
+                              )
+                          ]
                         : []
                 });
             } else {
@@ -168,7 +178,7 @@ export default withRouter(
             }
         }
 
-        private loadUser(user: Components.Schemas.User) {
+        private loadUser(user: Components.Schemas.UserResponse) {
             this.setState({
                 user,
                 newOAuthConnections: user.oAuthConnections ? Array.from(user.oAuthConnections) : []
@@ -457,12 +467,10 @@ export default withRouter(
                                                             saving: true
                                                         });
 
-                                                        const response = await UserClient.editUser(
-                                                            this.state.user!.id!,
-                                                            {
-                                                                enabled: !this.state.user!.enabled!
-                                                            }
-                                                        );
+                                                        const response = await UserClient.editUser({
+                                                            enabled: !this.state.user!.enabled!,
+                                                            id: this.state.user!.id!
+                                                        });
                                                         if (response.code == StatusCode.OK) {
                                                             this.loadUser(response.payload);
                                                         } else {
@@ -536,7 +544,8 @@ export default withRouter(
                     return;
                 }
 
-                const response = await UserClient.editUser(this.state.user.id!, {
+                const response = await UserClient.editUser({
+                    id: this.state.user.id!,
                     oAuthConnections: this.state.newOAuthConnections
                 });
                 if (response.code == StatusCode.OK) {
@@ -864,7 +873,8 @@ export default withRouter(
             });
             const id = (e.target as HTMLInputElement).id;
             if (id === "group_none") {
-                const response = await UserClient.editUser(this.state.user.id!, {
+                const response = await UserClient.editUser({
+                    id: this.state.user.id!,
                     permissionSet: resolvePermissionSet(this.state.user)
                 });
                 if (response.code === StatusCode.OK) {
@@ -875,10 +885,11 @@ export default withRouter(
                 }
             } else {
                 const realID = parseInt(id.substr(6));
-                const response = await UserClient.editUser(this.state.user.id!, {
+                const response = await UserClient.editUser({
+                    id: this.state.user.id!,
                     group: {
                         id: realID
-                    } as Components.Schemas.ShallowUserGroup
+                    } as Components.Schemas.UserGroup
                 });
                 if (response.code === StatusCode.OK) {
                     await this.loadGroups();
@@ -1005,7 +1016,8 @@ export default withRouter(
                             | { AdministrationRights: AdministrationRights }
                             | { InstanceManagerRights: InstanceManagerRights }
                     ) as Components.Schemas.PermissionSet;
-                    const response = await UserGroupClient.updateGroup(this.state.user.group.id, {
+                    const response = await UserGroupClient.updateGroup({
+                        id: this.state.user.group.id!,
                         permissionSet: newset
                     });
                     if (response.code == StatusCode.OK) {
@@ -1024,7 +1036,8 @@ export default withRouter(
                             ? "AdministrationRights"
                             : "InstanceManagerRights"]: bitflag
                     } as { AdministrationRights: AdministrationRights } | { InstanceManagerRights: InstanceManagerRights });
-                    const response = await UserClient.editUser(this.state.user.id!, {
+                    const response = await UserClient.editUser({
+                        id: this.state.user.id!,
                         permissionSet: newset
                     });
                     if (response.code == StatusCode.OK) {

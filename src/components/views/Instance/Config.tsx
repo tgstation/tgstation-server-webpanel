@@ -22,11 +22,11 @@ import WIPNotice from "../../utils/WIPNotice";
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
 interface IState {
-    instance?: Components.Schemas.Instance;
+    instance?: Components.Schemas.InstanceResponse;
     loading: boolean;
     errors: Array<InternalError<ErrorCode> | undefined>;
     tab: string;
-    currentUser?: Components.Schemas.User;
+    currentUser?: Components.Schemas.UserResponse;
 }
 
 export default withRouter(

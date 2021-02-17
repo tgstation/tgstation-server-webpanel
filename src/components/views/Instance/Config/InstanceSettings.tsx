@@ -9,13 +9,12 @@ import { Components } from "../../../../ApiClient/generatedcode/_generated";
 import InstanceClient from "../../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
-import { RequireAtLeastOne } from "../../../../ApiClient/ServerClient";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import InputField from "../../../utils/InputField";
 import Loading from "../../../utils/Loading";
 
 interface IProps extends RouteComponentProps {
-    instance: Components.Schemas.Instance;
+    instance: Components.Schemas.InstanceResponse;
     loadInstance: () => unknown;
     selfPermissionSet: Components.Schemas.PermissionSet;
 }
@@ -47,7 +46,9 @@ export default withRouter(
             });
         }
 
-        private async _editInstance(instance: RequireAtLeastOne<Components.Schemas.Instance>) {
+        private async _editInstance(
+            instance: Omit<Components.Schemas.InstanceUpdateRequest, "id">
+        ) {
             const response = await InstanceClient.editInstance({
                 ...instance,
                 id: this.props.instance.id
@@ -65,7 +66,7 @@ export default withRouter(
             }
         }
 
-        private editInstance(instance: RequireAtLeastOne<Components.Schemas.Instance>) {
+        private editInstance(instance: Omit<Components.Schemas.InstanceUpdateRequest, "id">) {
             void this._editInstance(instance);
         }
 
@@ -75,7 +76,7 @@ export default withRouter(
             }
 
             const checkIMFlag = (flag: InstanceManagerRights) => {
-                return this.props.selfPermissionSet.instanceManagerRights! & flag;
+                return this.props.selfPermissionSet.instanceManagerRights & flag;
             };
 
             const setEditLock = (value: boolean) => {
@@ -129,7 +130,7 @@ export default withRouter(
                     />
                     <InputField
                         name="instance.chatbotlimit"
-                        defaultValue={this.props.instance.chatBotLimit!}
+                        defaultValue={this.props.instance.chatBotLimit}
                         type="num"
                         onChange={newval => {
                             this.editInstance({ chatBotLimit: newval });
@@ -140,7 +141,7 @@ export default withRouter(
                     />
                     <InputField
                         name="instance.autoupdate"
-                        defaultValue={this.props.instance.autoUpdateInterval!}
+                        defaultValue={this.props.instance.autoUpdateInterval}
                         type="num"
                         onChange={newval => {
                             this.editInstance({
@@ -153,7 +154,7 @@ export default withRouter(
                     />
                     <InputField
                         name="instance.filemode"
-                        defaultValue={ConfigurationType[this.props.instance.configurationType!]}
+                        defaultValue={ConfigurationType[this.props.instance.configurationType]}
                         type="enum"
                         enum={ConfigurationType}
                         onChange={newval => {
