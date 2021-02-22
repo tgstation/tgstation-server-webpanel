@@ -23,20 +23,20 @@ interface IState {
     sysuser: string;
     matchError?: boolean;
     lengthError?: boolean;
-    serverInfo?: Components.Schemas.ServerInformation;
+    serverInfo?: Components.Schemas.ServerInformationResponse;
     loading: boolean;
     creating?: boolean;
     redirect?: boolean;
 }
 interface IProps extends RouteComponentProps {
-    postCreateAction?: (user: Components.Schemas.User, history: LibHistory) => void;
+    postCreateAction?: (user: Components.Schemas.UserResponse, history: LibHistory) => void;
 }
 
 export default withRouter(
     class UserCreate extends React.Component<IProps, IState> {
         public static defaultProps = {
-            postCreateAction: (user: Components.Schemas.User, history: LibHistory) => {
-                RouteData.selecteduserid = user.id!;
+            postCreateAction: (user: Components.Schemas.UserResponse, history: LibHistory) => {
+                RouteData.selecteduserid = user.id;
                 history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
             }
         };

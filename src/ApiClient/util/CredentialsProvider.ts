@@ -6,7 +6,7 @@ import { ICredentials } from "../models/ICredentials";
 //Also contains a function to determine if theres a token here
 export default new (class CredentialsProvider {
     //token
-    public token?: Components.Schemas.Token;
+    public token?: Components.Schemas.TokenResponse;
 
     //credentials
     public credentials?: ICredentials;

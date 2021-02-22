@@ -4,11 +4,11 @@ import { AdministrationRights, InstanceManagerRights } from "./generatedcode/_en
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
-import ServerClient, { RequireAtLeastOne } from "./ServerClient";
+import ServerClient from "./ServerClient";
 import LoginHooks from "./util/LoginHooks";
 
 interface IEvents {
-    loadUserInfo: (user: InternalStatus<Components.Schemas.User, GenericErrors>) => void;
+    loadUserInfo: (user: InternalStatus<Components.Schemas.UserResponse, GenericErrors>) => void;
 }
 
 export type EditUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
@@ -16,7 +16,7 @@ export type GetUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type CreateUserErrors = GenericErrors | ErrorCode.USER_NO_SYS_IDENT;
 
 export default new (class UserClient extends TypedEmitter<IEvents> {
-    private _cachedUser?: InternalStatus<Components.Schemas.User, ErrorCode.OK>;
+    private _cachedUser?: InternalStatus<Components.Schemas.UserResponse, ErrorCode.OK>;
     public get cachedUser() {
         return this._cachedUser;
     }
@@ -35,21 +35,12 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
     }
 
     public async editUser(
-        id: number,
-        newUser: RequireAtLeastOne<Omit<Components.Schemas.UserUpdate, "id">>
-    ): Promise<InternalStatus<Components.Schemas.User, EditUserErrors>> {
+        newUser: Components.Schemas.UserUpdateRequest
+    ): Promise<InternalStatus<Components.Schemas.UserResponse, EditUserErrors>> {
         await ServerClient.wait4Init();
         let response;
         try {
-            response = await ServerClient.apiClient!.UserController_Update(
-                null,
-                Object.assign(
-                    {
-                        id: id
-                    },
-                    newUser
-                ) as Components.Schemas.UserUpdate
-            );
+            response = await ServerClient.apiClient!.UserController_Update(null, newUser);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -61,7 +52,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
             case 200: {
                 const current = await this.getCurrentUser();
                 if (current.code == StatusCode.OK) {
-                    if (current.payload.id! == id) {
+                    if (current.payload.id == newUser.id) {
                         //if we are editing ourselves, clear cached data to reload permissions on the app
                         ServerClient.emit("purgeCache");
                     }
@@ -73,11 +64,11 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
                 }
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.User
+                    payload: response.data as Components.Schemas.UserResponse
                 });
             }
             case 404: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
@@ -98,7 +89,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
     public async getCurrentUser(
         bypassCache?: boolean
-    ): Promise<InternalStatus<Components.Schemas.User, GenericErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.UserResponse, GenericErrors>> {
         await ServerClient.wait4Init();
         if (this._cachedUser && !bypassCache) {
             return this._cachedUser;
@@ -106,7 +97,9 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         if (this.loadingUserInfo) {
             return await new Promise(resolve => {
-                const resolver = (user: InternalStatus<Components.Schemas.User, GenericErrors>) => {
+                const resolver = (
+                    user: InternalStatus<Components.Schemas.UserResponse, GenericErrors>
+                ) => {
                     resolve(user);
                     this.removeListener("loadUserInfo", resolver);
                 };
@@ -120,7 +113,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         try {
             response = await ServerClient.apiClient!.UserController_Read();
         } catch (stat) {
-            const res = new InternalStatus<Components.Schemas.User, GenericErrors>({
+            const res = new InternalStatus<Components.Schemas.UserResponse, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -131,9 +124,9 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const thing = new InternalStatus<Components.Schemas.User, ErrorCode.OK>({
+                const thing = new InternalStatus<Components.Schemas.UserResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.User
+                    payload: response.data as Components.Schemas.UserResponse
                 });
 
                 this._cachedUser = thing;
@@ -143,7 +136,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
             }
             default: {
                 const res = new InternalStatus<
-                    Components.Schemas.User,
+                    Components.Schemas.UserResponse,
                     ErrorCode.UNHANDLED_RESPONSE
                 >({
                     code: StatusCode.ERROR,
@@ -160,7 +153,9 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         }
     }
 
-    public async listUsers(): Promise<InternalStatus<Components.Schemas.User[], GenericErrors>> {
+    public async listUsers(): Promise<
+        InternalStatus<Components.Schemas.UserResponse[], GenericErrors>
+    > {
         await ServerClient.wait4Init();
 
         let response;
@@ -178,8 +173,8 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as Components.Schemas.PaginatedUser)!.content.sort(
-                    (a, b) => a.id! - b.id!
+                const payload = (response.data as Components.Schemas.PaginatedUserResponse)!.content.sort(
+                    (a, b) => a.id - b.id
                 );
 
                 return new InternalStatus({
@@ -202,7 +197,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
 
     public async getUser(
         id: number
-    ): Promise<InternalStatus<Components.Schemas.User, GetUserErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.UserResponse, GetUserErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -219,11 +214,11 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.User
+                    payload: response.data as Components.Schemas.UserResponse
                 });
             }
             case 404: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
@@ -257,7 +252,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
                   instanceManagerRights?: InstanceManagerRights;
                   administrationRights?: AdministrationRights;
               }
-    ): Promise<InternalStatus<Components.Schemas.User, CreateUserErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.UserResponse, CreateUserErrors>> {
         await ServerClient.wait4Init();
 
         if (newuser.enabled === undefined) newuser.enabled = true;
@@ -280,7 +275,7 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
         try {
             response = await ServerClient.apiClient!.UserController_Create(
                 null,
-                newuser as Components.Schemas.UserUpdate
+                newuser as Components.Schemas.UserCreateRequest
             );
         } catch (stat) {
             return new InternalStatus({
@@ -293,11 +288,11 @@ export default new (class UserClient extends TypedEmitter<IEvents> {
             case 201: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.User
+                    payload: response.data as Components.Schemas.UserResponse
                 });
             }
             case 410: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessage;
+                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NO_SYS_IDENT, { errorMessage })

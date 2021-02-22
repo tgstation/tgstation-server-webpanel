@@ -21,7 +21,7 @@ import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
 
-type Instance = Components.Schemas.Instance & {
+type Instance = Components.Schemas.InstanceResponse & {
     canAccess: boolean;
 };
 
@@ -112,7 +112,7 @@ export default withRouter(
             await UserClient.getCurrentUser().then(userinfo => {
                 if (userinfo.code === StatusCode.OK) {
                     const instanceManagerRights = resolvePermissionSet(userinfo.payload)
-                        .instanceManagerRights!;
+                        .instanceManagerRights;
                     this.setState({
                         canOnline: !!(instanceManagerRights & InstanceManagerRights.SetOnline),
                         canCreate: !!(instanceManagerRights & InstanceManagerRights.Create)
@@ -135,7 +135,7 @@ export default withRouter(
             const instanceedit = await InstanceClient.editInstance(({
                 id: instance.id,
                 online: desiredState
-            } as unknown) as Components.Schemas.Instance);
+            } as unknown) as Components.Schemas.InstanceResponse);
             if (instanceedit.code === StatusCode.OK) {
                 await this.loadInstances();
             } else {
@@ -209,7 +209,7 @@ export default withRouter(
                                         <td style={tablecellstyling}>{value.id}</td>
                                         <td style={tablecellstyling}>{value.name}</td>
                                         <td style={tablecellstyling}>
-                                            {value.online! ? (
+                                            {value.online ? (
                                                 <Badge variant="success">
                                                     <FormattedMessage id="generic.online" />
                                                 </Badge>
@@ -228,7 +228,7 @@ export default withRouter(
                                         </td>
                                         <td style={tablecellstyling}>
                                             <FormattedMessage
-                                                id={`view.instance.configmode.${value.configurationType!.toString()}`}
+                                                id={`view.instance.configmode.${value.configurationType.toString()}`}
                                             />
                                         </td>
                                         <td className="align-middle p-1" style={tablecellstyling}>

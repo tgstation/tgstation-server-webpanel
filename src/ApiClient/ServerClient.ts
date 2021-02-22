@@ -18,16 +18,18 @@ interface IEvents {
     accessDenied: () => void;
     //fired when the server info is first loaded
     loadServerInfo: (
-        serverInfo: InternalStatus<Components.Schemas.ServerInformation, ServerInfoErrors>
+        serverInfo: InternalStatus<Components.Schemas.ServerInformationResponse, ServerInfoErrors>
     ) => void;
     //fired when the api is loaded from the json file and loaded
     initialized: () => void;
     //purge all caches
     purgeCache: () => void;
     //internal event, queues logins
-    loadLoginInfo: (loginInfo: InternalStatus<Components.Schemas.Token, LoginErrors>) => void;
+    loadLoginInfo: (
+        loginInfo: InternalStatus<Components.Schemas.TokenResponse, LoginErrors>
+    ) => void;
     //internal event fired for wait4Token(), external things should be using LoginHooks#LoginSuccess or a login hook
-    tokenAvailable: (token: Components.Schemas.Token) => void;
+    tokenAvailable: (token: Components.Schemas.TokenResponse) => void;
 }
 
 export type LoginErrors =
@@ -76,7 +78,10 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     }
 
     //serverInfo
-    private _serverInfo?: InternalStatus<Components.Schemas.ServerInformation, ErrorCode.OK>;
+    private _serverInfo?: InternalStatus<
+        Components.Schemas.ServerInformationResponse,
+        ErrorCode.OK
+    >;
 
     public get serverInfo() {
         return this._serverInfo;
@@ -133,7 +138,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 if (!(value.url === "/" || value.url === "")) {
                     const tok = await this.wait4Token();
                     (value.headers as { [key: string]: string })["Authorization"] =
-                        "Bearer " + tok.bearer!;
+                        "Bearer " + tok.bearer;
                 }
                 return value;
             },
@@ -185,7 +190,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 switch (error.response.status) {
                     //Error code 400: Bad request, show message to user and instruct them to report it as its probably a bug
                     case 400: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_BAD_REQUEST,
                             {
@@ -270,7 +275,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         return Promise.reject(errorobj);
                     }
                     case 409: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
 
                         //Thanks for reusing a global erorr status cyber. Log operations can return 409
                         const request = error.config;
@@ -288,7 +293,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         return Promise.reject(errorobj);
                     }
                     case 426: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_API_MISMATCH,
                             { errorMessage },
@@ -297,7 +302,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         return Promise.reject(errorobj);
                     }
                     case 500: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_SERVER_ERROR,
                             {
@@ -308,7 +313,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                         return Promise.reject(errorobj);
                     }
                     case 501: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessage;
+                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_UNIMPLEMENTED,
                             { errorMessage },
@@ -361,7 +366,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
     //Utility function that returns a promise which resolves with the token whenever theres valid credentials(could be immediatly)
     public wait4Token() {
-        return new Promise<Components.Schemas.Token>(resolve => {
+        return new Promise<Components.Schemas.TokenResponse>(resolve => {
             if (CredentialsProvider.isTokenValid()) {
                 resolve(CredentialsProvider.token);
                 return;
@@ -374,7 +379,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
 
     public async login(
         newCreds?: ICredentials
-    ): Promise<InternalStatus<Components.Schemas.Token, LoginErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.TokenResponse, LoginErrors>> {
         //Shouldn't really happen edge cases
         await this.wait4Init();
 
@@ -394,7 +399,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         //This is thrown if you try to reuse the last credentials without actually having last used credentials
         //or you let an oauth login expire
         if (oauthAutoLogin || !CredentialsProvider.credentials)
-            return new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_NOCREDS>({
+            return new InternalStatus<Components.Schemas.TokenResponse, ErrorCode.LOGIN_NOCREDS>({
                 code: StatusCode.ERROR,
                 error: new InternalError(ErrorCode.LOGIN_NOCREDS, { void: true })
             });
@@ -406,7 +411,9 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         // Basically, make two calls, receive two identical return values, make only one request
         if (this.loggingIn) {
             return await new Promise(resolve => {
-                const resolver = (info: InternalStatus<Components.Schemas.Token, LoginErrors>) => {
+                const resolver = (
+                    info: InternalStatus<Components.Schemas.TokenResponse, LoginErrors>
+                ) => {
                     resolve(info);
                     this.removeListener("loadLoginInfo", resolver);
                 };
@@ -444,7 +451,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 );
             }
         } catch (stat) {
-            const res = new InternalStatus<Components.Schemas.Token, GenericErrors>({
+            const res = new InternalStatus<Components.Schemas.TokenResponse, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -456,7 +463,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         switch (response.status) {
             case 200: {
                 console.log("Login success");
-                const token = response.data as Components.Schemas.Token;
+                const token = response.data as Components.Schemas.TokenResponse;
 
                 // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
                 CredentialsProvider.token = token;
@@ -473,7 +480,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                 // TL;DR; Runs shit when you login
 
                 LoginHooks.runHooks(token);
-                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.OK>({
+                const res = new InternalStatus<Components.Schemas.TokenResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: token
                 });
@@ -485,7 +492,10 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             case 401: {
                 this.logout();
                 console.log("Failed to login");
-                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_FAIL>({
+                const res = new InternalStatus<
+                    Components.Schemas.TokenResponse,
+                    ErrorCode.LOGIN_FAIL
+                >({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_FAIL,
@@ -501,7 +511,10 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             case 403: {
                 this.logout();
                 console.log("Account disabled");
-                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_DISABLED>({
+                const res = new InternalStatus<
+                    Components.Schemas.TokenResponse,
+                    ErrorCode.LOGIN_DISABLED
+                >({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_DISABLED,
@@ -517,24 +530,25 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             case 429: {
                 this.logout();
                 console.log("rate limited");
-                const res = new InternalStatus<Components.Schemas.Token, ErrorCode.LOGIN_RATELIMIT>(
-                    {
-                        code: StatusCode.ERROR,
-                        error: new InternalError(
-                            ErrorCode.LOGIN_RATELIMIT,
-                            {
-                                errorMessage: response.data as Components.Schemas.ErrorMessage
-                            },
-                            response
-                        )
-                    }
-                );
+                const res = new InternalStatus<
+                    Components.Schemas.TokenResponse,
+                    ErrorCode.LOGIN_RATELIMIT
+                >({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.LOGIN_RATELIMIT,
+                        {
+                            errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                        },
+                        response
+                    )
+                });
                 this.emit("loadLoginInfo", res);
                 return res;
             }
             default: {
                 const res = new InternalStatus<
-                    Components.Schemas.Token,
+                    Components.Schemas.TokenResponse,
                     ErrorCode.UNHANDLED_RESPONSE
                 >({
                     code: StatusCode.ERROR,
@@ -564,9 +578,9 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
     }
 
     public async getServerInfo(
-        _token?: Components.Schemas.Token,
+        _token?: Components.Schemas.TokenResponse,
         bypassCache = false
-    ): Promise<InternalStatus<Components.Schemas.ServerInformation, ServerInfoErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.ServerInformationResponse, ServerInfoErrors>> {
         await this.wait4Init();
 
         if (this._serverInfo && !bypassCache) {
@@ -581,7 +595,10 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
                     return;
                 }
                 const resolver = (
-                    info: InternalStatus<Components.Schemas.ServerInformation, GenericErrors>
+                    info: InternalStatus<
+                        Components.Schemas.ServerInformationResponse,
+                        GenericErrors
+                    >
                 ) => {
                     resolve(info);
                     this.removeListener("loadServerInfo", resolver);
@@ -596,7 +613,10 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         try {
             response = await this.apiClient!.HomeController_Home();
         } catch (stat) {
-            const res = new InternalStatus<Components.Schemas.ServerInformation, GenericErrors>({
+            const res = new InternalStatus<
+                Components.Schemas.ServerInformationResponse,
+                GenericErrors
+            >({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -606,9 +626,9 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
         }
         switch (response.status) {
             case 200: {
-                const info = response.data as Components.Schemas.ServerInformation;
+                const info = response.data as Components.Schemas.ServerInformationResponse;
                 const cache = new InternalStatus<
-                    Components.Schemas.ServerInformation,
+                    Components.Schemas.ServerInformationResponse,
                     ErrorCode.OK
                 >({
                     code: StatusCode.OK,
@@ -621,7 +641,7 @@ export default new (class ServerClient extends TypedEmitter<IEvents> {
             }
             default: {
                 const res = new InternalStatus<
-                    Components.Schemas.ServerInformation,
+                    Components.Schemas.ServerInformationResponse,
                     ErrorCode.UNHANDLED_RESPONSE
                 >({
                     code: StatusCode.ERROR,

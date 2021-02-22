@@ -30,7 +30,9 @@ function matchesPath(path: string, target: string, exact = false): boolean {
     return pathToRegexp(target, undefined, { end: exact }).test(path);
 }
 
-function resolvePermissionSet(user: Components.Schemas.User): Components.Schemas.PermissionSet {
+function resolvePermissionSet(
+    user: Components.Schemas.UserResponse
+): Components.Schemas.PermissionSet {
     return (user.permissionSet || user.group?.permissionSet) as Components.Schemas.PermissionSet;
 }
 

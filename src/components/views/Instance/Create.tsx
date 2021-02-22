@@ -20,7 +20,7 @@ interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     instanceName?: string;
     instancePath?: string;
-    serverInformation?: Components.Schemas.ServerInformation;
+    serverInformation?: Components.Schemas.ServerInformationResponse;
     prefix?: string;
 }
 
@@ -193,8 +193,7 @@ export default withRouter(
 
             const result = await InstanceClient.createInstance({
                 name: this.state.instanceName!,
-                path: instancePath,
-                id: 0
+                path: instancePath
             });
 
             if (result.code === StatusCode.ERROR) {
