@@ -1017,7 +1017,7 @@ export default withRouter(
                             | { InstanceManagerRights: InstanceManagerRights }
                     ) as Components.Schemas.PermissionSet;
                     const response = await UserGroupClient.updateGroup({
-                        id: this.state.user.group.id!,
+                        id: this.state.user.group.id,
                         permissionSet: newset
                     });
                     if (response.code == StatusCode.OK) {
@@ -1058,8 +1058,7 @@ export default withRouter(
                             <FormattedMessage
                                 id="perms.group.warning"
                                 values={{
-                                    group: `${this.state.user.group.name} (${this.state.user.group
-                                        .id!})`
+                                    group: `${this.state.user.group.name} (${this.state.user.group.id})`
                                 }}
                             />
                         </Alert>

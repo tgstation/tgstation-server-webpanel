@@ -109,8 +109,8 @@
         "webpack-dev-server": "^3.11.2"
     },
     "tgs_api": {
-        "type": "url",
-        "value": "http://localhost:5000/swagger/v1/swagger.json"
+        "type": "version",
+        "value": "9.0.0"
     },
     "tgs_api_example_version": {
         "desc": "Fetches a tgs api version from github using the tag name",
