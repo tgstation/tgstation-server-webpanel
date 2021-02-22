@@ -2,7 +2,6 @@ import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
-import UserGroupUpdateRequest = Components.Schemas.UserGroupUpdateRequest;
 
 export type UpdateGroupErrors = GenericErrors | ErrorCode.GROUP_NOT_FOUND;
 export type listGroupsErrors = GenericErrors;
@@ -14,7 +13,7 @@ export type DeleteGroupErrors =
 
 export default new (class UserGroupClient {
     public async updateGroup(
-        group: UserGroupUpdateRequest
+        group: Components.Schemas.UserGroupUpdateRequest
     ): Promise<InternalStatus<Components.Schemas.UserGroupResponse, UpdateGroupErrors>> {
         await ServerClient.wait4Init();
 
