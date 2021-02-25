@@ -63,13 +63,7 @@ export default withRouter(
         //mamamia, memory leaks go brrrrrrrrrrrr dont they?
         //well you see, this component never gets normally unloaded so i dont give a fuck!
         public async componentDidMount(): Promise<void> {
-            LoginHooks.addHook(this.loadServerInformation);
-            ServerClient.on("loadServerInfo", info => {
-                this.setState({
-                    serverInformation: info.code == StatusCode.OK ? info.payload : null,
-                    serverInfoError: info.code == StatusCode.ERROR ? info.error : null
-                });
-            });
+            await this.loadServerInformation();
 
             LoginHooks.addHook(this.loadUserInformation);
             UserClient.on("loadUserInfo", user => {
@@ -95,7 +89,6 @@ export default withRouter(
             });
 
             if (CredentialsProvider.isTokenValid()) {
-                await this.loadServerInformation();
                 await this.loadUserInformation();
             }
 
@@ -299,9 +292,6 @@ export default withRouter(
         }
 
         private renderVersion(): React.ReactNode {
-            if (!this.state.loggedIn) {
-                return <FormattedMessage id="generic.appname" />;
-            }
             if (this.state.serverInfoError)
                 return (
                     <div>
