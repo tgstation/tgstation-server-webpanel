@@ -328,6 +328,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
     }
 
+    public register(job: Components.Schemas.JobResponse) {
+        this.jobs.set(job.id, job);
+        this.restartLoop();
+    }
+
     public async cancelOrClear(
         jobid: number,
         onError: (error: InternalError<ErrorCode>) => void

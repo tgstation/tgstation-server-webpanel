@@ -62,6 +62,7 @@ export enum ErrorCode {
     //Job errors
     JOB_JOB_NOT_FOUND = "error.job.not_found", //errmessage
     JOB_JOB_COMPLETE = "error.job.complete", //void
+    JOB_EXPECTED_JOB_MISSING = "error.job.missing", //void
 
     //Transfer errors
     TRANSFER_NOT_AVAILABLE = "error.transfer.not_available", //errmessage

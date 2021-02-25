@@ -75,6 +75,7 @@
     "error.app": "An error occured in the application",
     "error.job.not_found": "The specified job could not be found",
     "error.job.complete": "Unable to delete the job, perhaps it already completed",
+    "error.job.missing": "Expected a job on response, but none was received",
     "error.transfer.not_available": "Unable to transfer file as it is no longer or never was valid",
     "error.instance.no_db_entity": "The database entity for the requested instance could not be retrieved. The instance was likely detached",
     "error.api.empty": "No description available",
@@ -183,6 +184,8 @@
     "view.instance.config.instanceusers": "Instance Users",
     "view.instance.config.chatbots": "Chat Bots",
     "view.instance.config.noinstance": "No instance. Perhaps an error occured.",
+    "view.instance.repo.clone": "Clone Repository",
+    "view.instance.repo.clone.action": "Clone",
     "view.info.client": "Client Info",
     "view.info.server": "Server Info",
     "view.info.swarm": "Swarm Info",
@@ -278,5 +281,10 @@
     "fields.instance.autoupdate": "Autoupdate Interval in minutes (0 to disable)",
     "fields.instance.filemode.Disallowed": "No File Management.",
     "fields.instance.filemode.HostWrite": "Logged in users can edit any file.",
-    "fields.instance.filemode.SystemIdentityWrite": "Users using a system identity can edit files their user has access to."
+    "fields.instance.filemode.SystemIdentityWrite": "Users using a system identity can edit files their user has access to.",
+    "fields.repository.clone_url": "Git Repository URL",
+    "fields.repository.clone_recurse": "Recurse Submodules",
+    "fields.repository.clone_reference": "Branch or Tag to checkout",
+    "fields.repository.access_user": "Username used to authenticate with remote",
+    "fields.repository.access_password": "Access token/password used to authenticate with remote"
 }
