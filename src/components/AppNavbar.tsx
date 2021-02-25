@@ -28,8 +28,8 @@ interface IProps extends RouteComponentProps {
 }
 
 interface IState {
-    currentUser: Components.Schemas.User | null;
-    serverInformation: Components.Schemas.ServerInformation | null;
+    currentUser: Components.Schemas.UserResponse | null;
+    serverInformation: Components.Schemas.ServerInformationResponse | null;
     userNameError: InternalError<GenericErrors> | null;
     serverInfoError: InternalError<ServerInfoErrors> | null;
     loggedIn: boolean;
@@ -318,7 +318,7 @@ export default withRouter(
                     <React.Fragment>
                         <FormattedMessage id="generic.appname" />
                         {" v"}
-                        {this.state.serverInformation.version!}
+                        {this.state.serverInformation.version}
                     </React.Fragment>
                 );
 

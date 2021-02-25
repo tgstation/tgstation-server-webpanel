@@ -4,13 +4,15 @@ import { Components } from "../generatedcode/_generated";
 
 interface IEvents {
     //tasks once the user is fully logged in
-    loginSuccess: (token: Components.Schemas.Token) => void;
+    loginSuccess: (token: Components.Schemas.TokenResponse) => void;
 }
 
 class LoginHooks extends TypedEmitter<IEvents> {
-    private promiseHooks: Set<(token: Components.Schemas.Token) => Promise<unknown>> = new Set();
+    private promiseHooks: Set<
+        (token: Components.Schemas.TokenResponse) => Promise<unknown>
+    > = new Set();
 
-    public runHooks(token: Components.Schemas.Token) {
+    public runHooks(token: Components.Schemas.TokenResponse) {
         console.log("Running login hooks");
         let i = 0;
         const work: Array<Promise<void>> = [];
@@ -40,11 +42,11 @@ class LoginHooks extends TypedEmitter<IEvents> {
             .catch(() => console.error("An error occured while running login hooks"));
     }
 
-    public addHook(hook: (token: Components.Schemas.Token) => Promise<unknown>): void {
+    public addHook(hook: (token: Components.Schemas.TokenResponse) => Promise<unknown>): void {
         this.promiseHooks.add(hook);
     }
 
-    public removeHook(hook: (token: Components.Schemas.Token) => Promise<unknown>): void {
+    public removeHook(hook: (token: Components.Schemas.TokenResponse) => Promise<unknown>): void {
         this.promiseHooks.delete(hook);
     }
 }

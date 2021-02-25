@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - next
+            - api8
 
 jobs:
     deploy:

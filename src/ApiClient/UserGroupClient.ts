@@ -1,14 +1,7 @@
-//https://stackoverflow.com/questions/40510611/typescript-interface-require-one-of-two-properties-to-exist
-//name describes what it does, makes the passed type only require 1 property, the others being optional
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
-
-type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<T, Exclude<keyof T, Keys>> &
-    {
-        [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
-    }[Keys];
 
 export type UpdateGroupErrors = GenericErrors | ErrorCode.GROUP_NOT_FOUND;
 export type listGroupsErrors = GenericErrors;
@@ -20,20 +13,13 @@ export type DeleteGroupErrors =
 
 export default new (class UserGroupClient {
     public async updateGroup(
-        id: number,
-        group: RequireAtLeastOne<Omit<Omit<Components.Schemas.UserGroup, "id">, "users">>
-    ): Promise<InternalStatus<Components.Schemas.UserGroup, UpdateGroupErrors>> {
+        group: Components.Schemas.UserGroupUpdateRequest
+    ): Promise<InternalStatus<Components.Schemas.UserGroupResponse, UpdateGroupErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            //God I hate how awful JS can look sometimes, this creates a copy of the group argument and overrides the id property
-            // on the copy to be the id argument. This is so the argument isn't mutated
-            const requestObj: Components.Schemas.UserGroup = Object.assign(
-                Object.assign({}, group),
-                { id: id }
-            ) as Components.Schemas.UserGroup;
-            response = await ServerClient.apiClient!.UserGroupController_Update(null, requestObj);
+            response = await ServerClient.apiClient!.UserGroupController_Update(null, group);
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -45,14 +31,14 @@ export default new (class UserGroupClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.UserGroup
+                    payload: response.data as Components.Schemas.UserGroupResponse
                 });
             }
             case 410: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.GROUP_NOT_FOUND, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessage
+                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
                     })
                 });
             }
@@ -70,7 +56,7 @@ export default new (class UserGroupClient {
     }
 
     public async listGroups(): Promise<
-        InternalStatus<Components.Schemas.UserGroup[], listGroupsErrors>
+        InternalStatus<Components.Schemas.UserGroupResponse[], listGroupsErrors>
     > {
         await ServerClient.wait4Init();
 
@@ -91,7 +77,8 @@ export default new (class UserGroupClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as Components.Schemas.PaginatedUserGroup)!.content
+                    payload: (response.data as Components.Schemas.PaginatedUserGroupResponse)
+                        .content
                 });
             }
             default: {
@@ -110,7 +97,7 @@ export default new (class UserGroupClient {
     public async createGroup(
         name: string,
         permissionSet?: Components.Schemas.PermissionSet
-    ): Promise<InternalStatus<Components.Schemas.UserGroup, CreateGroupErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.UserGroupResponse, CreateGroupErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -118,7 +105,7 @@ export default new (class UserGroupClient {
             response = await ServerClient.apiClient!.UserGroupController_Create(null, {
                 name: name,
                 permissionSet: permissionSet
-            } as Components.Schemas.UserGroup);
+            } as Components.Schemas.UserGroupCreateRequest);
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -130,7 +117,7 @@ export default new (class UserGroupClient {
             case 201: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.UserGroup
+                    payload: response.data as Components.Schemas.UserGroupResponse
                 });
             }
             default: {
@@ -170,7 +157,7 @@ export default new (class UserGroupClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.GROUP_NOT_EMPTY, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessage
+                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
                     })
                 });
             }
@@ -178,7 +165,7 @@ export default new (class UserGroupClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.GROUP_NOT_FOUND, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessage
+                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
                     })
                 });
             }

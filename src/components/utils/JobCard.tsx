@@ -20,7 +20,7 @@ interface IProps {
 export default class JobCard extends React.Component<IProps, IState> {
     public render(): ReactNode {
         const job = this.props.job;
-        const createddate = new Date(job.startedAt!);
+        const createddate = new Date(job.startedAt);
         const createddiff = (createddate.getTime() - Date.now()) / 1000;
         const variant =
             job.errorCode !== undefined || job.exceptionDetails !== undefined
@@ -71,12 +71,12 @@ export default class JobCard extends React.Component<IProps, IState> {
                         overlay={
                             <Tooltip id={`${job.id}-tooltip-startedby`}>
                                 <FormattedMessage id="generic.userid" />
-                                {job.startedBy!.id}
+                                {job.startedBy.id}
                             </Tooltip>
                         }>
                         {({ ref, ...triggerHandler }) => (
                             <span ref={ref as React.Ref<HTMLSpanElement>} {...triggerHandler}>
-                                {job.startedBy!.name}
+                                {job.startedBy.name}
                             </span>
                         )}
                     </OverlayTrigger>
@@ -117,7 +117,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                                 overlay={
                                     <Tooltip id={`${job.id}-tooltip-createdby`}>
                                         <FormattedMessage id="generic.userid" />
-                                        {job.startedBy!.id}
+                                        {job.startedBy.id}
                                     </Tooltip>
                                 }>
                                 {({ ref, ...triggerHandler }) => (

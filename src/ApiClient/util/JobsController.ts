@@ -27,7 +27,7 @@ interface IEvents {
     jobsLoaded: () => unknown;
 }
 
-export type CanCancelJob = Components.Schemas.Job & {
+export type CanCancelJob = Components.Schemas.JobResponse & {
     canCancel?: boolean;
 };
 
@@ -53,10 +53,13 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     private currentLoop: Date = new Date(0);
 
     public errors: InternalError<getJobErrors | listJobsErrors>[] = [];
-    public jobs: Map<number, Components.Schemas.Job> = new Map<number, Components.Schemas.Job>();
+    public jobs: Map<number, Components.Schemas.JobResponse> = new Map<
+        number,
+        Components.Schemas.JobResponse
+    >();
 
     private reset() {
-        this.jobs = new Map<number, Components.Schemas.Job>();
+        this.jobs = new Map<number, Components.Schemas.JobResponse>();
         this.restartLoop();
     }
 
@@ -219,7 +222,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as AdministrationRights;
                     return !!(
-                        resolvePermissionSet(userInfo.payload).administrationRights! & required
+                        resolvePermissionSet(userInfo.payload).administrationRights & required
                     );
                 } else {
                     errors.push(userInfo.error);
@@ -231,7 +234,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 if (userInfo.code === StatusCode.OK) {
                     const required = job.cancelRight as InstanceManagerRights;
                     return !!(
-                        resolvePermissionSet(userInfo.payload).instanceManagerRights! & required
+                        resolvePermissionSet(userInfo.payload).instanceManagerRights & required
                     );
                 } else {
                     errors.push(userInfo.error);
@@ -244,7 +247,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ByondRights;
-                    return !!(InstancePermissionSet.payload.byondRights! & required);
+                    return !!(InstancePermissionSet.payload.byondRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -256,7 +259,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ChatBotRights;
-                    return !!(InstancePermissionSet.payload.chatBotRights! & required);
+                    return !!(InstancePermissionSet.payload.chatBotRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -268,7 +271,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ConfigurationRights;
-                    return !!(InstancePermissionSet.payload.configurationRights! & required);
+                    return !!(InstancePermissionSet.payload.configurationRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -280,7 +283,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamDaemonRights;
-                    return !!(InstancePermissionSet.payload.dreamDaemonRights! & required);
+                    return !!(InstancePermissionSet.payload.dreamDaemonRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -292,7 +295,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamMakerRights;
-                    return !!(InstancePermissionSet.payload.dreamMakerRights! & required);
+                    return !!(InstancePermissionSet.payload.dreamMakerRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -304,9 +307,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as InstancePermissionSetRights;
-                    return !!(
-                        InstancePermissionSet.payload.instancePermissionSetRights! & required
-                    );
+                    return !!(InstancePermissionSet.payload.instancePermissionSetRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
@@ -318,7 +319,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as RepositoryRights;
-                    return !!(InstancePermissionSet.payload.repositoryRights! & required);
+                    return !!(InstancePermissionSet.payload.repositoryRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;

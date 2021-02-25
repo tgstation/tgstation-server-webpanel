@@ -13,7 +13,7 @@ export type deleteJobErrors =
 export default new (class JobsClient {
     public async listActiveJobs(
         instanceid: number
-    ): Promise<InternalStatus<Components.Schemas.Job[], listJobsErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.JobResponse[], listJobsErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -24,7 +24,7 @@ export default new (class JobsClient {
                 pageSize: 100
             });
         } catch (stat) {
-            return new InternalStatus<Components.Schemas.Job[], listJobsErrors>({
+            return new InternalStatus<Components.Schemas.JobResponse[], listJobsErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -32,13 +32,13 @@ export default new (class JobsClient {
 
         switch (response.status) {
             case 200: {
-                return new InternalStatus<Components.Schemas.Job[], listJobsErrors>({
+                return new InternalStatus<Components.Schemas.JobResponse[], listJobsErrors>({
                     code: StatusCode.OK,
-                    payload: (response.data as Components.Schemas.PaginatedJob)!.content
+                    payload: (response.data as Components.Schemas.PaginatedJobResponse)!.content
                 });
             }
             default: {
-                return new InternalStatus<Components.Schemas.Job[], listJobsErrors>({
+                return new InternalStatus<Components.Schemas.JobResponse[], listJobsErrors>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,
@@ -53,7 +53,7 @@ export default new (class JobsClient {
     public async getJob(
         instanceid: number,
         jobid: number
-    ): Promise<InternalStatus<Components.Schemas.Job, getJobErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.JobResponse, getJobErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -73,14 +73,14 @@ export default new (class JobsClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.Job
+                    payload: response.data as Components.Schemas.JobResponse
                 });
             }
             case 404: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.JOB_JOB_NOT_FOUND, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessage
+                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
                     })
                 });
             }
@@ -100,7 +100,7 @@ export default new (class JobsClient {
     public async deleteJob(
         instanceid: number,
         jobid: number
-    ): Promise<InternalStatus<Components.Schemas.Job, deleteJobErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.JobResponse, deleteJobErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -120,14 +120,14 @@ export default new (class JobsClient {
             case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.Job
+                    payload: response.data as Components.Schemas.JobResponse
                 });
             }
             case 404: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.JOB_JOB_NOT_FOUND, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessage
+                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
                     })
                 });
             }

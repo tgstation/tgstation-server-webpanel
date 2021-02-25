@@ -74,7 +74,7 @@ export enum ErrorCode {
 }
 
 type errorMessage = {
-    errorMessage: Components.Schemas.ErrorMessage;
+    errorMessage: Components.Schemas.ErrorMessageResponse;
 };
 type axiosResponse = {
     axiosResponse: AxiosResponse;
@@ -101,7 +101,7 @@ export default class InternalError<T extends ErrorCode> {
     public readonly code: T;
     public readonly desc?: Desc;
     public readonly extendedInfo: string;
-    public readonly originalErrorMessage?: Components.Schemas.ErrorMessage;
+    public readonly originalErrorMessage?: Components.Schemas.ErrorMessageResponse;
 
     public constructor(code: T, addon: allAddons, origin?: AxiosResponse) {
         this.code = code;

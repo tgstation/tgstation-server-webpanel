@@ -7,7 +7,7 @@ import ServerClient from "./ServerClient";
 
 interface IEvents {
     loadInstancePermissionSet: (
-        user: InternalStatus<Components.Schemas.InstancePermissionSet, GenericErrors>
+        user: InternalStatus<Components.Schemas.InstancePermissionSetResponse, GenericErrors>
     ) => void;
 }
 
@@ -16,8 +16,11 @@ export type getCurrentInstancePermissionSetErrors = GenericErrors;
 export default new (class InstancePermissionSetClient extends TypedEmitter<IEvents> {
     private _cachedInstancePermissionSet: Map<
         number,
-        InternalStatus<Components.Schemas.InstancePermissionSet, ErrorCode.OK>
-    > = new Map<number, InternalStatus<Components.Schemas.InstancePermissionSet, ErrorCode.OK>>();
+        InternalStatus<Components.Schemas.InstancePermissionSetResponse, ErrorCode.OK>
+    > = new Map<
+        number,
+        InternalStatus<Components.Schemas.InstancePermissionSetResponse, ErrorCode.OK>
+    >();
 
     private loadingInstancePermissionSetInfo: Map<number, boolean> = new Map<number, boolean>();
 
@@ -33,7 +36,7 @@ export default new (class InstancePermissionSetClient extends TypedEmitter<IEven
         instanceid: number
     ): Promise<
         InternalStatus<
-            Components.Schemas.InstancePermissionSet,
+            Components.Schemas.InstancePermissionSetResponse,
             getCurrentInstancePermissionSetErrors
         >
     > {
@@ -46,7 +49,10 @@ export default new (class InstancePermissionSetClient extends TypedEmitter<IEven
         if (this.loadingInstancePermissionSetInfo.get(instanceid)) {
             return await new Promise(resolve => {
                 const resolver = (
-                    user: InternalStatus<Components.Schemas.InstancePermissionSet, GenericErrors>
+                    user: InternalStatus<
+                        Components.Schemas.InstancePermissionSetResponse,
+                        GenericErrors
+                    >
                 ) => {
                     resolve(user);
                     this.removeListener("loadInstancePermissionSet", resolver);
@@ -63,12 +69,13 @@ export default new (class InstancePermissionSetClient extends TypedEmitter<IEven
                 Instance: instanceid
             });
         } catch (stat) {
-            const res = new InternalStatus<Components.Schemas.InstancePermissionSet, GenericErrors>(
-                {
-                    code: StatusCode.ERROR,
-                    error: stat as InternalError<GenericErrors>
-                }
-            );
+            const res = new InternalStatus<
+                Components.Schemas.InstancePermissionSetResponse,
+                GenericErrors
+            >({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
             this.emit("loadInstancePermissionSet", res);
             this.loadingInstancePermissionSetInfo.set(instanceid, false);
             return res;
@@ -77,11 +84,11 @@ export default new (class InstancePermissionSetClient extends TypedEmitter<IEven
         switch (response.status) {
             case 200: {
                 const res = new InternalStatus<
-                    Components.Schemas.InstancePermissionSet,
+                    Components.Schemas.InstancePermissionSetResponse,
                     ErrorCode.OK
                 >({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.InstancePermissionSet
+                    payload: response.data as Components.Schemas.InstancePermissionSetResponse
                 });
 
                 this._cachedInstancePermissionSet.set(instanceid, res);
@@ -91,7 +98,7 @@ export default new (class InstancePermissionSetClient extends TypedEmitter<IEven
             }
             default: {
                 const res = new InternalStatus<
-                    Components.Schemas.InstancePermissionSet,
+                    Components.Schemas.InstancePermissionSetResponse,
                     GenericErrors
                 >({
                     code: StatusCode.ERROR,

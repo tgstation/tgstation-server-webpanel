@@ -40,7 +40,7 @@ export default new (class TransferClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessage
+                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
                     })
                 });
             }
