@@ -4,6 +4,8 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import { FormattedMessage } from "react-intl";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 interface IState {
     currentValue: string | boolean | number;
@@ -14,6 +16,7 @@ type IProps = {
     disabled?: boolean;
     setEditLock?: (value: boolean) => void;
     editLock?: boolean;
+    tooltip?: string;
 } & (
     | {
           name: string;
@@ -55,12 +58,37 @@ export default class InputField extends React.Component<IProps, IState> {
         const random = Math.random().toString();
         const changed = this.state.currentValue !== this.props.defaultValue;
 
+        const tooltip = (innerid?: string) => {
+            if (!innerid) return <React.Fragment />;
+
+            return (
+                <Tooltip id={innerid}>
+                    <FormattedMessage id={innerid} />
+                </Tooltip>
+            );
+        };
+
         return (
             <InputGroup>
                 <InputGroup.Prepend className="w-40 flex-grow-1 flex-xl-grow-0 overflow-auto mb-2 mb-xl-0">
-                    <InputGroup.Text className={`flex-fill ${changed ? "font-weight-bold" : ""}`}>
-                        <FormattedMessage id={`fields.${this.props.name}`} />
-                    </InputGroup.Text>
+                    <OverlayTrigger
+                        overlay={tooltip(this.props.tooltip)}
+                        show={this.props.tooltip ? undefined : false}>
+                        {({ ref, ...triggerHandler }) => (
+                            <InputGroup.Text
+                                className={`flex-fill ${changed ? "font-weight-bold" : ""}`}
+                                {...triggerHandler}>
+                                <FormattedMessage id={`fields.${this.props.name}`} />
+                                {this.props.tooltip ? (
+                                    <div
+                                        className={"ml-auto"}
+                                        ref={ref as React.Ref<HTMLDivElement>}>
+                                        <FontAwesomeIcon fixedWidth icon="info" />
+                                    </div>
+                                ) : null}
+                            </InputGroup.Text>
+                        )}
+                    </OverlayTrigger>
                 </InputGroup.Prepend>
                 <div className="flex-grow-1 w-100 w-xl-auto d-flex mb-3 mb-xl-0">
                     {this.props.type === "enum" ? (
