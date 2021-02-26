@@ -3,9 +3,9 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
-import { FormattedMessage } from "react-intl";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import { FormattedMessage } from "react-intl";
 
 interface IState {
     currentValue: string | boolean | number;
