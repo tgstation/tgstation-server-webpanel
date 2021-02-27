@@ -1,6 +1,6 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faCodeBranch, faDownload, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faCogs } from "@fortawesome/free-solid-svg-icons/faCogs";
@@ -46,6 +46,8 @@ export default function (): void {
         faDiscord,
         faTrash,
         faInfoCircle,
-        faDownload
+        faDownload,
+        faCodeBranch,
+        faUpload
     );
 }

@@ -33,6 +33,7 @@ type IProps = {
     | {
           name: string;
           defaultValue: string;
+          password?: boolean;
           onChange: (newvalue: string) => void;
           type: "str";
       }
@@ -166,7 +167,13 @@ export default class InputField extends React.Component<IProps, IState> {
                     ) : (
                         <FormControl
                             custom
-                            type={this.props.type === "num" ? "number" : "text"}
+                            type={
+                                this.props.type === "num"
+                                    ? "number"
+                                    : this.props.password
+                                    ? "password"
+                                    : "text"
+                            }
                             className={`flex-fill mb-0 ${changed ? "font-weight-bold" : ""}`}
                             onChange={event => {
                                 const newValue =

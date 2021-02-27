@@ -128,12 +128,14 @@ const AppRoutes = asElementTypesAppRoute({
     },
     instancecode: {
         name: "routes.instancecode",
-        route: "/instances/code/:id(\\d+)/",
-        file: "Instance/CodeDeployment",
+        route: "/instances/code/:id(\\d+)/:tab?/",
+        file: "Instance/RepositoryManager",
 
         get link(): string {
             return RouteData.instanceid !== undefined
-                ? `/instances/code/${RouteData.instanceid}/`
+                ? `/instances/code/${RouteData.instanceid}/${
+                      RouteData.selectedrepotab !== undefined ? `${RouteData.selectedrepotab}/` : ""
+                  }`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
 
@@ -445,6 +447,7 @@ export const RouteData = {
     selectedusertab: undefined as undefined | string,
 
     selectedinstancetab: undefined as undefined | string,
+    selectedrepotab: undefined as undefined | string,
     _instanceid: undefined as undefined | number,
 
     set instanceid(newval: string | undefined) {
