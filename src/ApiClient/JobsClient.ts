@@ -1,3 +1,4 @@
+import { ApiClient } from "./_base";
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -10,7 +11,7 @@ export type deleteJobErrors =
     | ErrorCode.JOB_JOB_NOT_FOUND
     | ErrorCode.JOB_JOB_COMPLETE;
 
-export default new (class JobsClient {
+export default new (class JobsClient extends ApiClient {
     public async listActiveJobs(
         instanceid: number
     ): Promise<InternalStatus<Components.Schemas.JobResponse[], listJobsErrors>> {

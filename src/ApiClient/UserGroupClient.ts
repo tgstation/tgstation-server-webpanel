@@ -1,3 +1,4 @@
+import { ApiClient } from "./_base";
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -11,7 +12,7 @@ export type DeleteGroupErrors =
     | ErrorCode.GROUP_NOT_FOUND
     | ErrorCode.GROUP_NOT_EMPTY;
 
-export default new (class UserGroupClient {
+export default new (class UserGroupClient extends ApiClient {
     public async updateGroup(
         group: Components.Schemas.UserGroupUpdateRequest
     ): Promise<InternalStatus<Components.Schemas.UserGroupResponse, UpdateGroupErrors>> {

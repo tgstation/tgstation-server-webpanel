@@ -24,7 +24,6 @@ module.exports = class JSONManifestPlugin {
                     return processed.length;
                 }
             };
-            debugger;
         })
     }
 }
