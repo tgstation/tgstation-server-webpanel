@@ -10,9 +10,9 @@ import CSSTransition from "react-transition-group/CSSTransition";
 
 import { Components } from "../ApiClient/generatedcode/_generated";
 import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/InternalError";
-import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
+import InternalStatus, { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
-import UserClient from "../ApiClient/UserClient";
+import UserClient, { GetUserErrors } from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import { matchesPath } from "../utils/misc";
@@ -47,6 +47,11 @@ export default withRouter(
             this.logoutClick = this.logoutClick.bind(this);
             this.loadServerInformation = this.loadServerInformation.bind(this);
             this.loadUserInformation = this.loadUserInformation.bind(this);
+            this.loadServerInfo = this.loadServerInfo.bind(this);
+            this.loadUserInfo = this.loadUserInfo.bind(this);
+            this.loginSuccess = this.loginSuccess.bind(this);
+            this.logout = this.logout.bind(this);
+            this.refresh = this.refresh.bind(this);
 
             this.state = {
                 loggedIn: !!CredentialsProvider.isTokenValid(),
@@ -60,35 +65,49 @@ export default withRouter(
             };
         }
 
-        //mamamia, memory leaks go brrrrrrrrrrrr dont they?
-        //well you see, this component never gets normally unloaded so i dont give a fuck!
+        private loadServerInfo(
+            info: InternalStatus<Components.Schemas.ServerInformationResponse, ServerInfoErrors>
+        ) {
+            this.setState({
+                serverInformation: info.code == StatusCode.OK ? info.payload : null,
+                serverInfoError: info.code == StatusCode.ERROR ? info.error : null
+            });
+        }
+
+        private loadUserInfo(user: InternalStatus<Components.Schemas.UserResponse, GenericErrors>) {
+            this.setState({
+                currentUser: user.code == StatusCode.OK ? user.payload : null,
+                userNameError: user.code == StatusCode.ERROR ? user.error : null
+            });
+        }
+
+        private loginSuccess() {
+            this.setState({
+                loggedIn: true
+            });
+        }
+
+        private logout() {
+            this.setState({
+                loggedIn: false
+            });
+        }
+
+        private refresh(routes: Array<AppRoute>) {
+            this.setState({
+                routes
+            });
+        }
+
         public async componentDidMount(): Promise<void> {
             LoginHooks.addHook(this.loadServerInformation);
-            ServerClient.on("loadServerInfo", info => {
-                this.setState({
-                    serverInformation: info.code == StatusCode.OK ? info.payload : null,
-                    serverInfoError: info.code == StatusCode.ERROR ? info.error : null
-                });
-            });
+            ServerClient.on("loadServerInfo", this.loadServerInfo);
 
             LoginHooks.addHook(this.loadUserInformation);
-            UserClient.on("loadUserInfo", user => {
-                this.setState({
-                    currentUser: user.code == StatusCode.OK ? user.payload : null,
-                    userNameError: user.code == StatusCode.ERROR ? user.error : null
-                });
-            });
+            UserClient.on("loadUserInfo", this.loadUserInfo);
 
-            LoginHooks.on("loginSuccess", () => {
-                this.setState({
-                    loggedIn: true
-                });
-            });
-            ServerClient.on("logout", () => {
-                this.setState({
-                    loggedIn: false
-                });
-            });
+            LoginHooks.on("loginSuccess", this.loginSuccess);
+            ServerClient.on("logout", this.logout);
 
             this.setState({
                 routes: await RouteController.getRoutes()
@@ -99,11 +118,15 @@ export default withRouter(
                 await this.loadUserInformation();
             }
 
-            RouteController.on("refresh", routes => {
-                this.setState({
-                    routes
-                });
-            });
+            RouteController.on("refresh", this.refresh);
+        }
+
+        public componentWillUnmount(): void {
+            ServerClient.removeListener("loadServerInfo", this.loadServerInfo);
+            UserClient.removeListener("loadUserInfo", this.loadUserInfo);
+            LoginHooks.removeListener("loginSuccess", this.loginSuccess);
+            ServerClient.removeListener("logout", this.logout);
+            RouteController.removeListener("refresh", this.refresh);
         }
 
         public componentDidUpdate(prevProps: Readonly<IProps>) {
