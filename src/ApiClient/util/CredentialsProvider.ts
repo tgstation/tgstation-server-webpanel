@@ -1,3 +1,4 @@
+import { MODE } from "../../definitions/constants";
 import { Components } from "../generatedcode/_generated";
 import { ICredentials } from "../models/ICredentials";
 
@@ -19,5 +20,11 @@ export default new (class CredentialsProvider {
                 .bearer /* &&
             (!this.token.expiresAt || new Date(this.token.expiresAt) > new Date(Date.now()))*/
         );
+    }
+
+    public constructor() {
+        if (MODE === "DEV") {
+            window.credentialProvider = this;
+        }
     }
 })();
