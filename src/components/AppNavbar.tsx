@@ -12,7 +12,7 @@ import { Components } from "../ApiClient/generatedcode/_generated";
 import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
-import UserClient, { GetUserErrors } from "../ApiClient/UserClient";
+import UserClient from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import { matchesPath } from "../utils/misc";
