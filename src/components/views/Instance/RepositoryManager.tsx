@@ -627,9 +627,7 @@ export default withRouter(
                 );
 
                 return (
-                    <tr
-                        key={parameters.number}
-                        style={{ backgroundColor: revertButton ? "red" : undefined }}>
+                    <tr style={{ backgroundColor: revertButton ? "red" : undefined }}>
                         <td className="py-1">
                             {additionalInfo?.url ? (
                                 <a
@@ -650,7 +648,9 @@ export default withRouter(
                             {parameters.comment ? (
                                 <span>{parameters.comment}</span>
                             ) : (
-                                <FormattedMessage id="view.instance.repo.test_merging.active.comment.none" />
+                                <b>
+                                    <FormattedMessage id="view.instance.repo.test_merging.active.comment.none" />
+                                </b>
                             )}
                         </td>
                         <td className="py-1">{leftButton}</td>
@@ -692,55 +692,60 @@ export default withRouter(
             return (
                 <React.Fragment>
                     {renderTable(
-                        activeTestMerges
-                            .filter(testMerge =>
-                                this.state.newTestMerges.some(
-                                    parameters =>
-                                        parameters.number === testMerge.number &&
-                                        parameters.targetCommitSha === testMerge.targetCommitSha
+                        <React.Fragment>
+                            {activeTestMerges
+                                .filter(testMerge =>
+                                    this.state.newTestMerges.some(
+                                        parameters =>
+                                            parameters.number === testMerge.number &&
+                                            parameters.targetCommitSha === testMerge.targetCommitSha
+                                    )
                                 )
-                            )
-                            .map(testMerge => {
-                                return renderTr(testMerge, testMerge, true);
-                            }),
+                                .map(testMerge => {
+                                    return renderTr(testMerge, testMerge, true);
+                                })}
+                        </React.Fragment>,
                         "active",
                         true
                     )}
                     {renderTable(
-                        this.state.newTestMerges
-                            .concat(
-                                activeTestMerges.filter(
-                                    activeTestMerge =>
-                                        !this.state.newTestMerges.some(
-                                            parameters =>
-                                                parameters.number === activeTestMerge.number &&
-                                                parameters.targetCommitSha ===
-                                                    activeTestMerge.targetCommitSha
-                                        )
+                        <React.Fragment>
+                            {this.state.newTestMerges
+                                .concat(
+                                    activeTestMerges.filter(
+                                        activeTestMerge =>
+                                            !this.state.newTestMerges.some(
+                                                parameters =>
+                                                    parameters.number === activeTestMerge.number &&
+                                                    parameters.targetCommitSha ===
+                                                        activeTestMerge.targetCommitSha &&
+                                                    parameters.comment === activeTestMerge.comment
+                                            )
+                                    )
                                 )
-                            )
-                            .map(parameters => {
-                                const activeTestMerge = activeTestMerges.find(
-                                    potentialActiveTestMerge =>
-                                        parameters.number === potentialActiveTestMerge.number &&
-                                        parameters.targetCommitSha ===
-                                            potentialActiveTestMerge.targetCommitSha
-                                );
+                                .map(parameters => {
+                                    const activeTestMerge = activeTestMerges.find(
+                                        potentialActiveTestMerge =>
+                                            parameters.number === potentialActiveTestMerge.number &&
+                                            parameters.targetCommitSha ===
+                                                potentialActiveTestMerge.targetCommitSha &&
+                                            parameters.comment === potentialActiveTestMerge.comment
+                                    );
 
-                                if (
-                                    activeTestMerge &&
-                                    this.state.newTestMerges.includes(parameters)
-                                )
-                                    return null;
+                                    if (
+                                        activeTestMerge &&
+                                        this.state.newTestMerges.includes(parameters)
+                                    )
+                                        return null;
 
-                                return renderTr(
-                                    parameters,
-                                    activeTestMerge,
-                                    false,
-                                    !!activeTestMerge
-                                );
-                            })
-                            .filter(x => x),
+                                    return renderTr(
+                                        parameters,
+                                        activeTestMerge,
+                                        false,
+                                        !!activeTestMerge
+                                    );
+                                })}
+                        </React.Fragment>,
                         "pending",
                         false
                     )}
