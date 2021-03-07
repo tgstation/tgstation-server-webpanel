@@ -1,4 +1,10 @@
-import { faCodeBranch, faDownload, faTimes, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+    faCodeBranch,
+    faDownload,
+    faTimes,
+    faUndo,
+    faUpload
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import Button from "react-bootstrap/esm/Button";
@@ -110,9 +116,8 @@ export default withRouter(
             );
 
             if (response.code === StatusCode.OK) {
-                const serverModel = response.payload;
+                this.digestResponse(response.payload);
                 this.setState({
-                    serverModel,
                     newReference: null,
                     newUsername: null,
                     newPassword: null
@@ -334,15 +339,7 @@ export default withRouter(
             }
 
             if (response.code === StatusCode.OK) {
-                const serverModel = response.payload;
-                this.setState({
-                    serverModel,
-                    newTestMerges: []
-                });
-
-                if (response.payload.activeJob) {
-                    JobsController.register(response.payload.activeJob);
-                }
+                this.digestResponse(response.payload);
             } else {
                 this.addError(response.error);
             }
@@ -350,6 +347,27 @@ export default withRouter(
             this.setState({
                 loading: false
             });
+        }
+
+        private digestResponse(serverModel: Components.Schemas.RepositoryResponse) {
+            const activeTestMerges = serverModel.revisionInformation?.activeTestMerges;
+            const newTestMerges: Components.Schemas.TestMergeParameters[] =
+                activeTestMerges?.map(activeTestMerge => {
+                    return {
+                        number: activeTestMerge.number,
+                        comment: activeTestMerge.comment,
+                        targetCommitSha: activeTestMerge.targetCommitSha
+                    };
+                }) || [];
+
+            this.setState({
+                serverModel,
+                newTestMerges
+            });
+
+            if (serverModel.activeJob) {
+                JobsController.register(serverModel.activeJob);
+            }
         }
 
         private checkFlag(flag: RepositoryRights): boolean {
@@ -390,7 +408,7 @@ export default withRouter(
         private renderTestMergeManager(
             model: Components.Schemas.RepositoryResponse
         ): React.ReactNode {
-            let activeTestMergeDisplay: React.ReactNode;
+            let activeTestMergeDisplay: React.ReactNode | null;
             switch (model.remoteGitProvider) {
                 case RemoteGitProvider.GitHub:
                     activeTestMergeDisplay = this.renderGitHubTestMergeAdder(model);
@@ -399,17 +417,285 @@ export default withRouter(
                     activeTestMergeDisplay = this.renderGitLabTestMergeAdder(model);
                     break;
                 default:
-                    activeTestMergeDisplay = this.renderActiveTestMerges(model);
+                    activeTestMergeDisplay = null;
                     break;
             }
 
+            const activeTestMerges = model.revisionInformation?.activeTestMerges || [];
+            const noActiveTestMergesRemovedOrChanged = activeTestMerges.every(activeTestMerge =>
+                this.state.newTestMerges.some(
+                    newTestMerge =>
+                        newTestMerge.number === activeTestMerge.number &&
+                        newTestMerge.targetCommitSha === activeTestMerge.targetCommitSha &&
+                        newTestMerge.comment === activeTestMerge.comment
+                )
+            );
+            const newTestMergesWithoutActiveTestMerges = this.state.newTestMerges.filter(
+                newTestMerge =>
+                    !activeTestMerges.some(
+                        activeTestMerge => activeTestMerge.number === newTestMerge.number
+                    )
+            );
             return (
                 <Tab
                     eventKey="test_merging"
                     title={<FormattedMessage id="view.instance.repo.test_merging" />}>
                     {activeTestMergeDisplay}
                     {this.renderManualTestMergeAdder(model)}
+                    <br />
+                    {this.renderPendingChanges(model)}
+                    <div className="d-flex justify-content-center w-50 mx-auto text-center">
+                        <Button
+                            disabled={
+                                !(
+                                    this.checkFlag(RepositoryRights.MergePullRequest) &&
+                                    this.checkFlag(RepositoryRights.UpdateBranch)
+                                )
+                            }
+                            className="btn mx-3 btn-info w-25"
+                            variant="success"
+                            onClick={() => {
+                                void this.editRepo({
+                                    reference: model.reference,
+                                    updateFromOrigin: true,
+                                    newTestMerges: this.state.newTestMerges
+                                });
+                            }}>
+                            <FormattedMessage id="view.instance.repo.test_merging.apply" />
+                        </Button>
+                        <Button
+                            disabled={
+                                !(
+                                    this.checkFlag(RepositoryRights.MergePullRequest) &&
+                                    this.checkFlag(RepositoryRights.UpdateBranch) &&
+                                    noActiveTestMergesRemovedOrChanged
+                                )
+                            }
+                            className="btn mx-3 btn-info w-25"
+                            variant="success"
+                            onClick={() => {
+                                void this.editRepo({
+                                    updateFromOrigin: true,
+                                    newTestMerges: newTestMergesWithoutActiveTestMerges
+                                });
+                            }}>
+                            <FormattedMessage id="view.instance.repo.test_merging.apply.merge" />
+                        </Button>
+                        <Button
+                            disabled={
+                                !(
+                                    this.checkFlag(RepositoryRights.MergePullRequest) &&
+                                    noActiveTestMergesRemovedOrChanged
+                                )
+                            }
+                            className="btn mx-3 btn-info w-25"
+                            variant="success"
+                            onClick={() => {
+                                void this.editRepo({
+                                    newTestMerges: newTestMergesWithoutActiveTestMerges
+                                });
+                            }}>
+                            <FormattedMessage id="view.instance.repo.test_merging.apply.raw" />
+                        </Button>
+                    </div>
                 </Tab>
+            );
+        }
+
+        private renderPendingChanges(
+            model: Components.Schemas.RepositoryResponse
+        ): React.ReactNode {
+            const activeTestMerges = model.revisionInformation?.activeTestMerges || [];
+
+            const renderTr = (
+                parameters: Components.Schemas.TestMergeParameters,
+                additionalInfo?: Components.Schemas.TestMerge,
+                showMerger?: boolean,
+                revertButton?: boolean
+            ) => {
+                const leftButton = revertButton ? (
+                    <Button
+                        disabled={!this.checkFlag(RepositoryRights.UpdateBranch)}
+                        className="btn mx-3 btn-info w-25"
+                        variant="success"
+                        onClick={() => {
+                            const newPendingTestMerges = this.state.newTestMerges.filter(
+                                oldParameters => parameters.number !== oldParameters.number
+                            );
+                            newPendingTestMerges.push({
+                                number: parameters.number,
+                                targetCommitSha: parameters.targetCommitSha,
+                                comment: parameters.comment
+                            });
+
+                            this.setState({
+                                newTestMerges: newPendingTestMerges
+                            });
+                        }}>
+                        <FontAwesomeIcon className="mr-2" icon={faUndo} />
+                    </Button>
+                ) : (
+                    <React.Fragment>
+                        <Button
+                            disabled={!this.checkFlag(RepositoryRights.UpdateBranch)}
+                            className="btn mx-3 btn-info w-25"
+                            variant="danger"
+                            onClick={() => {
+                                const newPendingTestMerges = this.state.newTestMerges.filter(
+                                    oldParameters => parameters.number !== oldParameters.number
+                                );
+
+                                this.setState({
+                                    newTestMerges: newPendingTestMerges
+                                });
+                            }}>
+                            <FontAwesomeIcon className="mr-2" icon={faTimes} />
+                        </Button>
+                        {parameters.targetCommitSha ? (
+                            <Button
+                                disabled={!this.checkFlag(RepositoryRights.UpdateBranch)}
+                                className="btn mx-3 btn-info w-25"
+                                variant="success"
+                                onClick={() => {
+                                    const newPendingTestMerges = this.state.newTestMerges.filter(
+                                        potential => potential.number !== parameters.number
+                                    );
+                                    newPendingTestMerges.push({
+                                        number: parameters.number,
+                                        // @ts-expect-error: actually a bug in the API definition, LHS should be nullable. https://github.com/tgstation/tgstation-server/issues/1234
+                                        targetCommitSha: null,
+                                        comment: parameters.comment
+                                    });
+
+                                    this.setState({
+                                        newTestMerges: newPendingTestMerges
+                                    });
+                                }}>
+                                <FontAwesomeIcon className="mr-2" icon={faUpload} />
+                            </Button>
+                        ) : null}
+                    </React.Fragment>
+                );
+
+                return (
+                    <tr
+                        key={parameters.number}
+                        style={{ backgroundColor: revertButton ? "red" : undefined }}>
+                        <td className="py-1">
+                            {additionalInfo?.url ? (
+                                <a
+                                    href={additionalInfo.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+                                    #{parameters.number}
+                                </a>
+                            ) : (
+                                <span>#{parameters.number}</span>
+                            )}
+                        </td>
+                        <td className="py-1">{parameters.targetCommitSha || "HEAD"}</td>
+                        {showMerger && additionalInfo?.mergedBy ? (
+                            <td className="py-1">{additionalInfo.mergedBy.name}</td>
+                        ) : null}
+                        <td className="py-1">
+                            {parameters.comment ? (
+                                <span>{parameters.comment}</span>
+                            ) : (
+                                <FormattedMessage id="view.instance.repo.test_merging.active.comment.none" />
+                            )}
+                        </td>
+                        <td className="py-1">{leftButton}</td>
+                    </tr>
+                );
+            };
+
+            const renderTable = (body: React.ReactNode, header: string, showMerger: boolean) => {
+                return (
+                    <React.Fragment>
+                        <br />
+                        <h5>
+                            <FormattedMessage id={`view.instance.repo.test_merging.${header}`} />
+                        </h5>
+                        <Table striped hover variant="dark" className="text-left">
+                            <thead className="bg-dark">
+                                <th>#</th>
+                                <th>
+                                    <FormattedMessage id="view.instance.repo.test_merging.active.sha" />
+                                </th>
+                                {showMerger ? (
+                                    <th>
+                                        <FormattedMessage id="view.instance.repo.test_merging.active.merger" />
+                                    </th>
+                                ) : null}
+                                <th>
+                                    <FormattedMessage id="view.instance.repo.test_merging.active.comment" />
+                                </th>
+                                <th>
+                                    <FormattedMessage id="view.instance.repo.test_merging.active.action" />
+                                </th>
+                            </thead>
+                            <tbody>{body}</tbody>
+                        </Table>
+                    </React.Fragment>
+                );
+            };
+
+            return (
+                <React.Fragment>
+                    {renderTable(
+                        activeTestMerges
+                            .filter(testMerge =>
+                                this.state.newTestMerges.some(
+                                    parameters =>
+                                        parameters.number === testMerge.number &&
+                                        parameters.targetCommitSha === testMerge.targetCommitSha
+                                )
+                            )
+                            .map(testMerge => {
+                                return renderTr(testMerge, testMerge, true);
+                            }),
+                        "active",
+                        true
+                    )}
+                    {renderTable(
+                        this.state.newTestMerges
+                            .concat(
+                                activeTestMerges.filter(
+                                    activeTestMerge =>
+                                        !this.state.newTestMerges.some(
+                                            parameters =>
+                                                parameters.number === activeTestMerge.number &&
+                                                parameters.targetCommitSha ===
+                                                    activeTestMerge.targetCommitSha
+                                        )
+                                )
+                            )
+                            .map(parameters => {
+                                const activeTestMerge = activeTestMerges.find(
+                                    potentialActiveTestMerge =>
+                                        parameters.number === potentialActiveTestMerge.number &&
+                                        parameters.targetCommitSha ===
+                                            potentialActiveTestMerge.targetCommitSha
+                                );
+
+                                if (
+                                    activeTestMerge &&
+                                    this.state.newTestMerges.includes(parameters)
+                                )
+                                    return null;
+
+                                return renderTr(
+                                    parameters,
+                                    activeTestMerge,
+                                    false,
+                                    !!activeTestMerge
+                                );
+                            })
+                            .filter(x => x),
+                        "pending",
+                        false
+                    )}
+                </React.Fragment>
             );
         }
 
@@ -445,7 +731,7 @@ export default withRouter(
                     />
                     <InputField
                         name="repository.test_merge.sha"
-                        defaultValue={this.state.manualTestMergeSha || ""}
+                        defaultValue={this.state.manualTestMergeSha || "HEAD"}
                         type="str"
                         onChange={newval => {
                             void this.setState({ manualTestMergeSha: newval });
@@ -472,7 +758,8 @@ export default withRouter(
 
                             newPendingTestMerges.push({
                                 number: this.state.manualTestMergeNumber!, // this wouldn't fire if this wasn't the case
-                                targetCommitSha: this.state.manualTestMergeSha!, // actually a bug in the API definition, LHS should be nullable. https://github.com/tgstation/tgstation-server/issues/1234
+                                // @ts-expect-error: actually a bug in the API definition, LHS should be nullable. https://github.com/tgstation/tgstation-server/issues/1234
+                                targetCommitSha: this.state.manualTestMergeSha,
                                 comment: this.state.manualTestMergeComment
                             });
 
@@ -485,61 +772,6 @@ export default withRouter(
                         }}>
                         <FormattedMessage id="view.instance.repo.test_merging.manual.add" />
                     </Button>
-                </React.Fragment>
-            );
-        }
-
-        private renderActiveTestMerges(
-            model: Components.Schemas.RepositoryResponse
-        ): React.ReactNode | null {
-            const activeTestMerges = model.revisionInformation?.activeTestMerges;
-            if (!activeTestMerges?.length) return null;
-
-            return (
-                <React.Fragment>
-                    <h5>
-                        <FormattedMessage id="view.instance.repo.test_merging.active" />
-                    </h5>
-                    <br />
-                    <Table striped hover variant="dark" className="text-left">
-                        <thead className="bg-dark">
-                            <th>#</th>
-                            <th>
-                                <FormattedMessage id="view.instance.repo.test_merging.active.sha" />
-                            </th>
-                            <th>
-                                <FormattedMessage id="view.instance.repo.test_merging.active.comment" />
-                            </th>
-                        </thead>
-                        <tbody>
-                            {activeTestMerges.map(testMerge => {
-                                return (
-                                    <tr key={testMerge.number}>
-                                        <td className="py-1">
-                                            {testMerge.url ? (
-                                                <a
-                                                    href={testMerge.url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer">
-                                                    #{testMerge.number}
-                                                </a>
-                                            ) : (
-                                                <span>#{testMerge.number}</span>
-                                            )}
-                                        </td>
-                                        <td className="py-1">{testMerge.targetCommitSha}</td>
-                                        <td className="py-1">
-                                            {testMerge.comment ? (
-                                                <span>{testMerge.comment}</span>
-                                            ) : (
-                                                <FormattedMessage id="view.instance.repo.test_merging.active.comment.none" />
-                                            )}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </Table>
                 </React.Fragment>
             );
         }
