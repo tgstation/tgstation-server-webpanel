@@ -18,6 +18,7 @@ import Tooltip from "react-bootstrap/esm/Tooltip";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
+import DreamMakerClient from "../../../ApiClient/DreamMakerClient";
 import {
     ErrorCode as TGSErrorCode,
     RemoteGitProvider,
@@ -58,6 +59,8 @@ interface IState {
     manualTestMergeSha?: string | null;
     manualTestMergeComment?: string | null;
 
+    deployAfterTestMerges: boolean;
+
     editLock: boolean;
     tab: string;
 }
@@ -77,7 +80,8 @@ export default withRouter(
                 cloneRecurseSubmodules: true,
                 editLock: false,
                 tab: RouteData.selectedrepotab || "info",
-                newTestMerges: []
+                newTestMerges: [],
+                deployAfterTestMerges: true
             };
         }
 
@@ -324,7 +328,10 @@ export default withRouter(
             await this.refresh(true);
         }
 
-        private async editRepo(model?: Components.Schemas.RepositoryUpdateRequest): Promise<void> {
+        private async editRepo(
+            model?: Components.Schemas.RepositoryUpdateRequest,
+            maybeDeployAfter?: boolean
+        ): Promise<void> {
             this.setState({
                 loading: true,
                 errors: []
@@ -340,6 +347,19 @@ export default withRouter(
 
             if (response.code === StatusCode.OK) {
                 this.digestResponse(response.payload);
+
+                if (maybeDeployAfter && this.state.deployAfterTestMerges) {
+                    await new Promise<number>(resolve =>
+                        window.setTimeout(() => resolve(1), 10000)
+                    );
+
+                    const jobResponse = await DreamMakerClient.deploy(instanceId);
+                    if (jobResponse.code === StatusCode.OK) {
+                        JobsController.register(jobResponse.payload);
+                    } else {
+                        this.addError(jobResponse.error);
+                    }
+                }
             } else {
                 this.addError(response.error);
             }
@@ -411,10 +431,10 @@ export default withRouter(
             let activeTestMergeDisplay: React.ReactNode | null;
             switch (model.remoteGitProvider) {
                 case RemoteGitProvider.GitHub:
-                    activeTestMergeDisplay = this.renderGitHubTestMergeAdder(model);
+                    activeTestMergeDisplay = this.renderGitHubTestMergeAdder();
                     break;
                 case RemoteGitProvider.GitLab:
-                    activeTestMergeDisplay = this.renderGitLabTestMergeAdder(model);
+                    activeTestMergeDisplay = this.renderGitLabTestMergeAdder();
                     break;
                 default:
                     activeTestMergeDisplay = null;
@@ -436,12 +456,16 @@ export default withRouter(
                         activeTestMerge => activeTestMerge.number === newTestMerge.number
                     )
             );
+
+            const noChanges =
+                noActiveTestMergesRemovedOrChanged &&
+                newTestMergesWithoutActiveTestMerges.length === 0;
             return (
                 <Tab
                     eventKey="test_merging"
                     title={<FormattedMessage id="view.instance.repo.test_merging" />}>
                     {activeTestMergeDisplay}
-                    {this.renderManualTestMergeAdder(model)}
+                    {this.renderManualTestMergeAdder()}
                     <br />
                     {this.renderPendingChanges(model)}
                     <div className="d-flex justify-content-center w-50 mx-auto text-center">
@@ -455,11 +479,14 @@ export default withRouter(
                             className="btn mx-3 btn-info w-25"
                             variant="success"
                             onClick={() => {
-                                void this.editRepo({
-                                    reference: model.reference,
-                                    updateFromOrigin: true,
-                                    newTestMerges: this.state.newTestMerges
-                                });
+                                void this.editRepo(
+                                    {
+                                        reference: model.reference,
+                                        updateFromOrigin: true,
+                                        newTestMerges: this.state.newTestMerges
+                                    },
+                                    true
+                                );
                             }}>
                             <FormattedMessage id="view.instance.repo.test_merging.apply" />
                         </Button>
@@ -469,15 +496,18 @@ export default withRouter(
                                     this.checkFlag(RepositoryRights.MergePullRequest) &&
                                     this.checkFlag(RepositoryRights.UpdateBranch) &&
                                     noActiveTestMergesRemovedOrChanged
-                                )
+                                ) || noChanges
                             }
                             className="btn mx-3 btn-info w-25"
                             variant="success"
                             onClick={() => {
-                                void this.editRepo({
-                                    updateFromOrigin: true,
-                                    newTestMerges: newTestMergesWithoutActiveTestMerges
-                                });
+                                void this.editRepo(
+                                    {
+                                        updateFromOrigin: true,
+                                        newTestMerges: newTestMergesWithoutActiveTestMerges
+                                    },
+                                    true
+                                );
                             }}>
                             <FormattedMessage id="view.instance.repo.test_merging.apply.merge" />
                         </Button>
@@ -486,19 +516,38 @@ export default withRouter(
                                 !(
                                     this.checkFlag(RepositoryRights.MergePullRequest) &&
                                     noActiveTestMergesRemovedOrChanged
-                                )
+                                ) || noChanges
                             }
                             className="btn mx-3 btn-info w-25"
                             variant="success"
                             onClick={() => {
-                                void this.editRepo({
-                                    newTestMerges: newTestMergesWithoutActiveTestMerges
-                                });
+                                void this.editRepo(
+                                    {
+                                        newTestMerges: newTestMergesWithoutActiveTestMerges
+                                    },
+                                    true
+                                );
                             }}>
                             <FormattedMessage id="view.instance.repo.test_merging.apply.raw" />
                         </Button>
                     </div>
+                    <br />
+                    {this.renderDeployToggle()}
                 </Tab>
+            );
+        }
+
+        private renderDeployToggle(): React.ReactNode {
+            return (
+                <InputField
+                    name="repository.deploy"
+                    tooltip="view.instance.repo.deploy"
+                    defaultValue={this.state.deployAfterTestMerges}
+                    type="bool"
+                    onChange={newval => {
+                        this.setState({ deployAfterTestMerges: newval });
+                    }}
+                />
             );
         }
 
@@ -699,21 +748,15 @@ export default withRouter(
             );
         }
 
-        private renderGitHubTestMergeAdder(
-            model: Components.Schemas.RepositoryResponse
-        ): React.ReactNode {
+        private renderGitHubTestMergeAdder(): React.ReactNode {
             return <WIPNotice />;
         }
 
-        private renderGitLabTestMergeAdder(
-            model: Components.Schemas.RepositoryResponse
-        ): React.ReactNode {
+        private renderGitLabTestMergeAdder(): React.ReactNode {
             return <WIPNotice />;
         }
 
-        private renderManualTestMergeAdder(
-            model: Components.Schemas.RepositoryResponse
-        ): React.ReactNode {
+        private renderManualTestMergeAdder(): React.ReactNode {
             return (
                 <React.Fragment>
                     <br />
@@ -740,7 +783,7 @@ export default withRouter(
                     />
                     <InputField
                         name="repository.test_merge.comment"
-                        tooltip="view.instance.repo.test_merging.comment"
+                        tooltip="view.instance.repo.test_merging.manual.comment"
                         defaultValue={this.state.manualTestMergeComment || ""}
                         type="str"
                         onChange={newval => {
@@ -950,6 +993,7 @@ export default withRouter(
                         setEditLock={setEditLock}
                         editLock={this.state.editLock}
                     />
+                    {this.renderDeployToggle()}
                     <br />
                     <div className="d-flex justify-content-center w-50 mx-auto text-center">
                         <Button
@@ -957,10 +1001,13 @@ export default withRouter(
                             className="btn mx-3 btn-info w-25"
                             variant="success"
                             onClick={() => {
-                                void this.editRepo({
-                                    reference: model.reference,
-                                    updateFromOrigin: true
-                                });
+                                void this.editRepo(
+                                    {
+                                        reference: model.reference,
+                                        updateFromOrigin: true
+                                    },
+                                    true
+                                );
                             }}>
                             <FontAwesomeIcon className="mr-2" icon={faUpload} />
                             <FormattedMessage id="view.instance.repo.update" />
@@ -970,9 +1017,12 @@ export default withRouter(
                             className="btn mx-3 btn-info w-25"
                             variant="success"
                             onClick={() => {
-                                void this.editRepo({
-                                    updateFromOrigin: true
-                                });
+                                void this.editRepo(
+                                    {
+                                        updateFromOrigin: true
+                                    },
+                                    true
+                                );
                             }}>
                             <FontAwesomeIcon className="mr-2" icon={faCodeBranch} />
                             <FormattedMessage id="view.instance.repo.update.merge" />
