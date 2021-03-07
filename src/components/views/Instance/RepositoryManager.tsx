@@ -464,6 +464,8 @@ export default withRouter(
                 <Tab
                     eventKey="test_merging"
                     title={<FormattedMessage id="view.instance.repo.test_merging" />}>
+                    {this.renderDeployToggle()}
+                    <br />
                     {activeTestMergeDisplay}
                     {this.renderManualTestMergeAdder()}
                     <br />
@@ -531,8 +533,6 @@ export default withRouter(
                             <FormattedMessage id="view.instance.repo.test_merging.apply.raw" />
                         </Button>
                     </div>
-                    <br />
-                    {this.renderDeployToggle()}
                 </Tab>
             );
         }
