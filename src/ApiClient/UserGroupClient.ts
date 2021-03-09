@@ -1,3 +1,4 @@
+import { ApiClient } from "./_base";
 //https://stackoverflow.com/questions/40510611/typescript-interface-require-one-of-two-properties-to-exist
 //name describes what it does, makes the passed type only require 1 property, the others being optional
 import { Components } from "./generatedcode/_generated";
@@ -18,7 +19,7 @@ export type DeleteGroupErrors =
     | ErrorCode.GROUP_NOT_FOUND
     | ErrorCode.GROUP_NOT_EMPTY;
 
-export default new (class UserGroupClient {
+export default new (class UserGroupClient extends ApiClient {
     public async updateGroup(
         id: number,
         group: RequireAtLeastOne<Omit<Omit<Components.Schemas.UserGroup, "id">, "users">>

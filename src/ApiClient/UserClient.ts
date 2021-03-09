@@ -1,5 +1,4 @@
-import { TypedEmitter } from "tiny-typed-emitter/lib";
-
+import { ApiClient } from "./_base";
 import { AdministrationRights, InstanceManagerRights } from "./generatedcode/_enums";
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
@@ -15,7 +14,7 @@ export type EditUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type GetUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type CreateUserErrors = GenericErrors | ErrorCode.USER_NO_SYS_IDENT;
 
-export default new (class UserClient extends TypedEmitter<IEvents> {
+export default new (class UserClient extends ApiClient<IEvents> {
     private _cachedUser?: InternalStatus<Components.Schemas.User, ErrorCode.OK>;
     public get cachedUser() {
         return this._cachedUser;

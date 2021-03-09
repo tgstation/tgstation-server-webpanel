@@ -76,6 +76,7 @@
     "error.job.not_found": "The specified job could not be found",
     "error.job.complete": "Unable to delete the job, perhaps it already completed",
     "error.transfer.not_available": "Unable to transfer file as it is no longer or never was valid",
+    "error.transfer.upload_failed": "An error occured while uploading a file",
     "error.instance.no_db_entity": "The database entity for the requested instance could not be retrieved. The instance was likely detached",
     "error.api.empty": "No description available",
     "error.no_apipath": "No API path set, set an API path on the configuration page.",
@@ -124,6 +125,9 @@
     "generic.instance": "Instance",
     "generic.wip": "Work In Progress!",
     "generic.wip.desc": "The TGS webpanel is still a work in progress. The feature you are trying to use is not yet available. Until it becomes available, please use the TGS desktop client at ",
+    "generic.assert.noinstance": "No instance. Perhaps an error occured.",
+    "generic.assert.nouser": "No user. Perhaps an error occured.",
+    "generic.assert.nopermissionset": "No permission set. Perhaps an error occured.",
     "view.setup.navigationblock": "Navigation has been disabled for the duration of the setup.",
     "view.setup.title": "Step By Step Setup Wizard",
     "view.setup.quit": "Quit Setup",
@@ -182,7 +186,10 @@
     "view.instance.config.instancesettings": "Instance Settings",
     "view.instance.config.instanceusers": "Instance Users",
     "view.instance.config.chatbots": "Chat Bots",
-    "view.instance.config.noinstance": "No instance. Perhaps an error occured.",
+    "view.instance.hosting.byond": "BYOND Selector",
+    "view.instance.hosting.byond.add": "Install new BYOND version",
+    "view.instance.hosting.byond.upload": "Upload custom version",
+    "view.instance.hosting.byond.custom": "Uploaded from zip file",
     "view.info.client": "Client Info",
     "view.info.server": "Server Info",
     "view.info.swarm": "Swarm Info",
@@ -280,3 +287,4 @@
     "fields.instance.filemode.HostWrite": "Logged in users can edit any file.",
     "fields.instance.filemode.SystemIdentityWrite": "Users using a system identity can edit files their user has access to."
 }
+

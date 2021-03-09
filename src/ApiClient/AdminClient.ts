@@ -1,5 +1,4 @@
-import { TypedEmitter } from "tiny-typed-emitter/lib";
-
+import { ApiClient } from "./_base";
 import { Components } from "./generatedcode/_generated";
 import { DownloadedLog } from "./models/DownloadedLog";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
@@ -31,7 +30,7 @@ export type LogsErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
 
 export type LogErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
 
-export default new (class AdminClient extends TypedEmitter<IEvents> {
+export default new (class AdminClient extends ApiClient<IEvents> {
     private _cachedAdminInfo?: InternalStatus<Components.Schemas.Administration, ErrorCode.OK>;
     public get cachedAdminInfo() {
         return this._cachedAdminInfo;
