@@ -66,7 +66,7 @@ export default withRouter(
         }
 
         private loadServerInfo(
-            info: InternalStatus<Components.Schemas.ServerInformationResponse, ServerInfoErrors>
+            info: InternalStatus<Components.Schemas.ServerInformation, ServerInfoErrors>
         ) {
             this.setState({
                 serverInformation: info.code == StatusCode.OK ? info.payload : null,
@@ -74,7 +74,7 @@ export default withRouter(
             });
         }
 
-        private loadUserInfo(user: InternalStatus<Components.Schemas.UserResponse, GenericErrors>) {
+        private loadUserInfo(user: InternalStatus<Components.Schemas.User, GenericErrors>) {
             this.setState({
                 currentUser: user.code == StatusCode.OK ? user.payload : null,
                 userNameError: user.code == StatusCode.ERROR ? user.error : null
