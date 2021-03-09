@@ -74,7 +74,10 @@ export default new (class TransferClient extends ApiClient {
                 { ticket: ticket },
                 null,
                 {
-                    data: file
+                    data: file,
+                    headers: {
+                        "Content-Type": "application/octect-stream"
+                    }
                 }
             );
         } catch (e) {
