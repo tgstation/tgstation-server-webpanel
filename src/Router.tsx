@@ -46,6 +46,8 @@ export default withRouter(
         public constructor(props: IProps) {
             super(props);
 
+            this.refreshListener = this.refreshListener.bind(this);
+
             const components = new Map<string, LoadableComponent<unknown>>();
 
             const routes = RouteController.getImmediateRoutes(false);
@@ -67,12 +69,14 @@ export default withRouter(
             };
         }
 
-        public async componentDidMount() {
-            RouteController.on("refreshAll", routes => {
-                this.setState({
-                    routes
-                });
+        private refreshListener(routes: Array<AppRoute>) {
+            this.setState({
+                routes
             });
+        }
+
+        public async componentDidMount() {
+            RouteController.on("refreshAll", this.refreshListener);
 
             this.props.history.listen(location => {
                 void this.listener(location.pathname);
@@ -131,6 +135,10 @@ export default withRouter(
             } else {
                 return this.setErrorAndEnd(response.error);
             }
+        }
+
+        public componentWillUnmount(): void {
+            RouteController.removeListener("refreshAll", this.refreshListener);
         }
 
         private setErrorAndEnd(error: InternalError<ErrorCode>) {

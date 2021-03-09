@@ -8,6 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 import { CredentialsType } from "./ApiClient/models/ICredentials";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
+import CredentialsProvider from "./ApiClient/util/CredentialsProvider";
 import LoginHooks from "./ApiClient/util/LoginHooks";
 import AppNavbar from "./components/AppNavbar";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
@@ -96,29 +97,35 @@ class App extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
 
+        this.finishLogin = this.finishLogin.bind(this);
+        this.finishLogout = this.finishLogout.bind(this);
+
         this.translationFactory = this.props.translationFactory || new TranslationFactory();
 
         this.state = {
-            loggedIn: false,
+            loggedIn: !!CredentialsProvider.isTokenValid(),
             loading: true
         };
     }
 
-    public async componentDidMount(): Promise<void> {
-        LoginHooks.on("loginSuccess", () => {
-            console.log("Logging in");
+    private finishLogin() {
+        console.log("Logging in");
 
-            void UserClient.getCurrentUser(); //preload the user, we dont particularly care about the content, just that its preloaded
-            this.setState({
-                loggedIn: true,
-                loading: false
-            });
+        void UserClient.getCurrentUser(); //preload the user, we dont particularly care about the content, just that its preloaded
+        this.setState({
+            loggedIn: true,
+            loading: false
         });
-        ServerClient.on("logout", () => {
-            this.setState({
-                loggedIn: false
-            });
+    }
+
+    private finishLogout() {
+        this.setState({
+            loggedIn: false
         });
+    }
+    public async componentDidMount(): Promise<void> {
+        LoginHooks.on("loginSuccess", this.finishLogin);
+        ServerClient.on("logout", this.finishLogout);
 
         await this.loadTranslation();
         await ServerClient.initApi();
@@ -127,6 +134,11 @@ class App extends React.Component<IProps, IState> {
         this.setState({
             loading: false
         });
+    }
+
+    public componentWillUnmount(): void {
+        LoginHooks.removeListener("loginSuccess", this.finishLogin);
+        ServerClient.removeListener("logout", this.finishLogout);
     }
 
     public render(): React.ReactNode {

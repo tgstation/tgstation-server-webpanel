@@ -162,7 +162,7 @@ module.exports = function createConfig(prodLike, github) {
                 MODE: JSON.stringify(prodLike ? (github ? "GITHUB" : "PROD") : "DEV"),
                 //The basepath remains /app because its for the router which is located at /app/
                 DEFAULT_BASEPATH: JSON.stringify(github ? "/app/" : publicPath),
-                DEFAULT_APIPATH: JSON.stringify(prodLike ? "" : "http://localhost:5000/")
+                DEFAULT_APIPATH: JSON.stringify(prodLike ? "/" : "http://localhost:5000/")
             }),
             github ? false : new HtmlWebpackPlugin({
                 title: "TGS Webpanel v" + require("./package.json").version,
