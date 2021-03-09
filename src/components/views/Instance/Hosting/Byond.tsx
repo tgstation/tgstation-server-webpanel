@@ -9,13 +9,13 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 
 import ByondClient from "../../../../ApiClient/ByondClient";
+import { ByondRights } from "../../../../ApiClient/generatedcode/_enums";
 import { Components } from "../../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
+import AccessDenied from "../../../utils/AccessDenied";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import Loading from "../../../utils/Loading";
-import { ByondRights } from "../../../../ApiClient/generatedcode/_enums";
-import AccessDenied from "../../../utils/AccessDenied";
 
 interface IProps {
     instance: Components.Schemas.InstanceResponse;
@@ -166,6 +166,7 @@ export default class Byond extends React.Component<IProps, IState> {
                         });
                     }}>
                     {this.state.versions.map(version => {
+                        // noinspection JSBitwiseOperatorUsage
                         return (
                             <InputGroup className="w-25 mb-1 mx-auto d-flex" key={version.version}>
                                 <InputGroup.Prepend>
