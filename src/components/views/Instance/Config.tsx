@@ -37,7 +37,7 @@ export default withRouter(
             this.loadInstance = this.loadInstance.bind(this);
 
             RouteData.instanceid = props.match.params.id;
-            RouteData.selectedinstancetab = props.match.params.tab;
+            RouteData.selectedinstanceconfigtab = props.match.params.tab;
 
             this.state = {
                 tab: props.match.params.tab || "settings",
@@ -108,7 +108,7 @@ export default withRouter(
                 if (!newkey) return;
 
                 RouteData.instanceid = this.props.match.params.id;
-                RouteData.selectedinstancetab = newkey;
+                RouteData.selectedinstanceconfigtab = newkey;
                 if (!GlobalObjects.setupMode) {
                     window.history.pushState(
                         null,
@@ -152,7 +152,7 @@ export default withRouter(
                         <h3>{`${this.state.instance.name} (${this.state.instance.id})`}</h3>
                     ) : (
                         <h3>
-                            <FormattedMessage id="view.instance.config.noinstance" />
+                            <FormattedMessage id="generic.assert.noinstance" />
                         </h3>
                     )}
                     <Button
@@ -174,7 +174,7 @@ export default withRouter(
                                     selfPermissionSet={resolvePermissionSet(this.state.currentUser)}
                                 />
                             ) : (
-                                <FormattedMessage id="view.instance.config.noinstance" />
+                                <FormattedMessage id="generic.assert.noinstance" />
                             )}
                         </Tab>
                         <Tab

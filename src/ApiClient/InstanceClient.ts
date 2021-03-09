@@ -1,3 +1,4 @@
+import { ApiClient } from "./_base";
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -8,7 +9,7 @@ export type CreateInstanceErrors = GenericErrors;
 export type EditInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
 export type GetInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
 
-export default new (class InstanceClient {
+export default new (class InstanceClient extends ApiClient {
     public async listInstances(): Promise<
         InternalStatus<Components.Schemas.InstanceResponse[], ListInstancesErrors>
     > {

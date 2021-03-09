@@ -66,6 +66,7 @@ export enum ErrorCode {
 
     //Transfer errors
     TRANSFER_NOT_AVAILABLE = "error.transfer.not_available", //errmessage
+    UPLOAD_FAILED = "error.transfer.upload_failed", //void
 
     GROUP_NOT_FOUND = "error.group.not_found", //errmessage
     GROUP_NOT_EMPTY = "error.group.not_empty", //errmessage

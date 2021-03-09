@@ -1,5 +1,4 @@
-import { TypedEmitter } from "tiny-typed-emitter";
-
+import { ApiClient } from "./_base";
 import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -13,7 +12,7 @@ interface IEvents {
 
 export type getCurrentInstancePermissionSetErrors = GenericErrors;
 
-export default new (class InstancePermissionSetClient extends TypedEmitter<IEvents> {
+export default new (class InstancePermissionSetClient extends ApiClient<IEvents> {
     private _cachedInstancePermissionSet: Map<
         number,
         InternalStatus<Components.Schemas.InstancePermissionSetResponse, ErrorCode.OK>

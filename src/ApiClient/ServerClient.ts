@@ -1,8 +1,8 @@
 import { AxiosError, AxiosResponse, OpenAPIClientAxios } from "openapi-client-axios";
 import { Document } from "openapi-client-axios/types/client";
-import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import { API_VERSION, VERSION } from "../definitions/constants";
+import { ApiClient } from "./_base";
 import { Client, Components } from "./generatedcode/_generated";
 import { CredentialsType, ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
@@ -42,7 +42,7 @@ export type LoginErrors =
 
 export type ServerInfoErrors = GenericErrors;
 
-export default new (class ServerClient extends TypedEmitter<IEvents> {
+export default new (class ServerClient extends ApiClient<IEvents> {
     private static readonly globalHandledCodes = [400, 401, 403, 406, 409, 426, 500, 501, 503];
 
     //api
