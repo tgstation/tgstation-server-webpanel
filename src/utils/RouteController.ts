@@ -30,6 +30,7 @@ class RouteController extends TypedEmitter<IEvents> {
 
     public constructor() {
         super();
+        window.rtcontroller = this;
         this.refreshRoutes = this.refreshRoutes.bind(this);
 
         LoginHooks.addHook(this.refreshRoutes);
