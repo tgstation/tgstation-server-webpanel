@@ -8,7 +8,7 @@ import TransferClient, { UploadErrors } from "./TransferClient";
 export default new (class ByondClient extends ApiClient {
     public async getActiveVersion(
         instance: number
-    ): Promise<InternalStatus<Components.Schemas.ByondResponse, GenericErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.Byond, GenericErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -25,7 +25,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.ByondResponse
+                    payload: response.data as Components.Schemas.Byond
                 });
             }
             default: {
@@ -43,7 +43,7 @@ export default new (class ByondClient extends ApiClient {
 
     public async listAllVersions(
         instance: number
-    ): Promise<InternalStatus<Components.Schemas.PaginatedByondResponse, GenericErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.PaginatedByond, GenericErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -64,7 +64,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.PaginatedByondResponse
+                    payload: response.data as Components.Schemas.PaginatedByond
                 });
             }
             default: {
@@ -84,7 +84,7 @@ export default new (class ByondClient extends ApiClient {
         instance: number,
         version: string,
         file?: ArrayBuffer
-    ): Promise<InternalStatus<Components.Schemas.ByondInstallResponse, UploadErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.Byond, UploadErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -103,7 +103,7 @@ export default new (class ByondClient extends ApiClient {
         switch (response.status) {
             case 200:
             case 202: {
-                const responseData = response.data as Components.Schemas.ByondInstallResponse;
+                const responseData = response.data as Components.Schemas.Byond;
                 if (responseData.fileTicket) {
                     if (file) {
                         const response2 = await TransferClient.Upload(
@@ -135,7 +135,7 @@ export default new (class ByondClient extends ApiClient {
 
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.ByondInstallResponse
+                    payload: response.data as Components.Schemas.Byond
                 });
             }
             default: {

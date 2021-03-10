@@ -106,7 +106,7 @@ export default new (class TransferClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                        errorMessage: response.data as Components.Schemas.ErrorMessage
                     })
                 });
             }

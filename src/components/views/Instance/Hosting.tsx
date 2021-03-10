@@ -23,12 +23,12 @@ import WIPNotice from "../../utils/WIPNotice";
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
 interface IState {
-    instance?: Components.Schemas.InstanceResponse;
+    instance?: Components.Schemas.Instance;
     loading: boolean;
     errors: Array<InternalError<ErrorCode> | undefined>;
     tab: string;
-    currentUser?: Components.Schemas.UserResponse;
-    currentInstanceUser?: Components.Schemas.InstancePermissionSetResponse;
+    currentUser?: Components.Schemas.User;
+    currentInstanceUser?: Components.Schemas.InstancePermissionSet;
 }
 
 export default withRouter(

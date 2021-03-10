@@ -18,14 +18,14 @@ import ErrorAlert from "../../../utils/ErrorAlert";
 import Loading from "../../../utils/Loading";
 
 interface IProps {
-    instance: Components.Schemas.InstanceResponse;
+    instance: Components.Schemas.Instance;
     selfPermissionSet: Components.Schemas.PermissionSet;
-    selfInstancePermissionSet: Components.Schemas.InstancePermissionSetResponse;
+    selfInstancePermissionSet: Components.Schemas.InstancePermissionSet;
 }
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
-    versions: Components.Schemas.ByondResponse[];
+    versions: Components.Schemas.Byond[];
     activeVersion?: string | null;
     latestVersion: string;
     selectedVersion: string;
@@ -61,7 +61,7 @@ export default class Byond extends React.Component<IProps, IState> {
         const response = await ByondClient.listAllVersions(this.props.instance.id);
         if (response.code === StatusCode.OK) {
             this.setState({
-                versions: response.payload.content
+                versions: response.payload!.content
             });
 
             const response2 = await ByondClient.getActiveVersion(this.props.instance.id);
@@ -107,8 +107,8 @@ export default class Byond extends React.Component<IProps, IState> {
         // noinspection JSBitwiseOperatorUsage
         if (
             !(
-                this.props.selfInstancePermissionSet.byondRights & ByondRights.ListInstalled &&
-                this.props.selfInstancePermissionSet.byondRights & ByondRights.ReadActive
+                this.props.selfInstancePermissionSet.byondRights! & ByondRights.ListInstalled &&
+                this.props.selfInstancePermissionSet.byondRights! & ByondRights.ReadActive
             )
         ) {
             return <AccessDenied />;
@@ -173,7 +173,7 @@ export default class Byond extends React.Component<IProps, IState> {
                                     <InputGroup.Radio
                                         disabled={
                                             !(
-                                                this.props.selfInstancePermissionSet.byondRights &
+                                                this.props.selfInstancePermissionSet.byondRights! &
                                                 ByondRights.InstallOfficialOrChangeActiveVersion
                                             )
                                         }
