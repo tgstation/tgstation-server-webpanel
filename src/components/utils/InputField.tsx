@@ -17,6 +17,7 @@ type IProps = {
     setEditLock?: (value: boolean) => void;
     editLock?: boolean;
     tooltip?: string;
+    instantCommit?: boolean;
 } & (
     | {
           name: string;
@@ -59,6 +60,25 @@ export default class InputField extends React.Component<IProps, IState> {
         const random = Math.random().toString();
         const changed = this.state.currentValue !== this.props.defaultValue;
 
+        const commit = (_value?: string | number | boolean) => {
+            const value = _value || this.state.currentValue;
+
+            switch (this.props.type) {
+                case "str":
+                    this.props.onChange(value as string);
+                    break;
+                case "num":
+                    this.props.onChange(value as number);
+                    break;
+                case "bool":
+                    this.props.onChange(value as boolean);
+                    break;
+                case "enum":
+                    this.props.onChange(value as string);
+                    break;
+            }
+        };
+
         const tooltip = (innerid?: string) => {
             if (!innerid) return <React.Fragment />;
 
@@ -96,7 +116,7 @@ export default class InputField extends React.Component<IProps, IState> {
                         <select
                             className={`flex-fill mb-0 ${changed ? "font-weight-bold" : ""}`}
                             onChange={event => {
-                                if (this.props.setEditLock) {
+                                if (this.props.setEditLock && !this.props.instantCommit) {
                                     if (
                                         changed &&
                                         event.target.selectedOptions[0].value ===
@@ -112,9 +132,13 @@ export default class InputField extends React.Component<IProps, IState> {
                                     }
                                 }
 
-                                this.setState({
-                                    currentValue: event.target.selectedOptions[0].value
-                                });
+                                if (this.props.instantCommit) {
+                                    commit(event.target.selectedOptions[0].value);
+                                } else {
+                                    this.setState({
+                                        currentValue: event.target.selectedOptions[0].value
+                                    });
+                                }
                             }}
                             disabled={this.props.disabled || (!changed && this.props.editLock)}
                             defaultValue={this.props.defaultValue}>
@@ -142,7 +166,7 @@ export default class InputField extends React.Component<IProps, IState> {
                                 className="m-auto"
                                 label=""
                                 onChange={event => {
-                                    if (this.props.setEditLock) {
+                                    if (this.props.setEditLock && !this.props.instantCommit) {
                                         if (
                                             changed &&
                                             event.currentTarget.checked === this.props.defaultValue
@@ -156,9 +180,13 @@ export default class InputField extends React.Component<IProps, IState> {
                                         }
                                     }
 
-                                    this.setState({
-                                        currentValue: event.currentTarget.checked
-                                    });
+                                    if (this.props.instantCommit) {
+                                        commit(event.currentTarget.checked);
+                                    } else {
+                                        this.setState({
+                                            currentValue: event.currentTarget.checked
+                                        });
+                                    }
                                 }}
                                 checked={this.state.currentValue as boolean}
                                 disabled={this.props.disabled || (!changed && this.props.editLock)}
@@ -181,7 +209,7 @@ export default class InputField extends React.Component<IProps, IState> {
                                         ? parseInt(event.currentTarget.value)
                                         : event.currentTarget.value;
 
-                                if (this.props.setEditLock) {
+                                if (this.props.setEditLock && !this.props.instantCommit) {
                                     if (changed && newValue === this.props.defaultValue) {
                                         this.props.setEditLock(false);
                                     } else if (!changed && newValue !== this.props.defaultValue) {
@@ -189,9 +217,13 @@ export default class InputField extends React.Component<IProps, IState> {
                                     }
                                 }
 
-                                this.setState({
-                                    currentValue: newValue
-                                });
+                                if (this.props.instantCommit) {
+                                    commit(newValue);
+                                } else {
+                                    this.setState({
+                                        currentValue: newValue
+                                    });
+                                }
                             }}
                             value={this.state.currentValue as string | number}
                             disabled={this.props.disabled || (!changed && this.props.editLock)}
@@ -230,20 +262,7 @@ export default class InputField extends React.Component<IProps, IState> {
                                     : {}
                             }
                             onClick={() => {
-                                switch (this.props.type) {
-                                    case "str":
-                                        this.props.onChange(this.state.currentValue as string);
-                                        break;
-                                    case "num":
-                                        this.props.onChange(this.state.currentValue as number);
-                                        break;
-                                    case "bool":
-                                        this.props.onChange(this.state.currentValue as boolean);
-                                        break;
-                                    case "enum":
-                                        this.props.onChange(this.state.currentValue as string);
-                                        break;
-                                }
+                                commit();
                             }}>
                             <InputGroup.Text>
                                 <FontAwesomeIcon fixedWidth icon="check" />
