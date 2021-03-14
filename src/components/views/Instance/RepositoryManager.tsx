@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import Button from "react-bootstrap/esm/Button";
 import Col from "react-bootstrap/esm/Col";
+import InputGroup from "react-bootstrap/esm/InputGroup";
 import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
 import Row from "react-bootstrap/esm/Row";
 import Tab from "react-bootstrap/esm/Tab";
@@ -33,11 +34,11 @@ import InternalError, {
 import InternalStatus, { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import RepositoryClient from "../../../ApiClient/RepositoryClient";
 import JobsController from "../../../ApiClient/util/JobsController";
+import GitHubClient, { CommitData, PRData } from "../../../utils/GithubClient";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import InputField from "../../utils/InputField";
 import Loading from "../../utils/Loading";
-import WIPNotice from "../../utils/WIPNotice";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 interface IState {
@@ -55,12 +56,21 @@ interface IState {
     newReference?: string | null;
 
     newTestMerges: Components.Schemas.TestMergeParameters[];
+
     manualTestMergeNumber?: number | null;
     manualTestMergeSha?: string | null;
     manualTestMergeComment?: string | null;
 
+    autoTestMergeNumber?: number | null;
+    autoTestMergeSha?: string | null;
+    autoTestMergeComment?: string | null;
+
+    prData?: PRData[] | null;
+    commitData: Map<number, CommitData[] | null>;
+
     deployAfterTestMerges: boolean;
 
+    checkingAutoSetup: boolean;
     editLock: boolean;
     tab: string;
 }
@@ -81,7 +91,9 @@ export default withRouter(
                 editLock: false,
                 tab: RouteData.selectedrepotab || "info",
                 newTestMerges: [],
-                deployAfterTestMerges: true
+                deployAfterTestMerges: true,
+                checkingAutoSetup: false,
+                commitData: new Map<number, CommitData[] | null>()
             };
         }
 
@@ -120,11 +132,19 @@ export default withRouter(
             );
 
             if (response.code === StatusCode.OK) {
-                this.digestResponse(response.payload);
+                const serverModel = response.payload;
+                this.digestResponse(serverModel);
+
                 this.setState({
                     newReference: null,
                     newUsername: null,
                     newPassword: null
+                });
+
+                const prData = await this.getPRData(serverModel);
+                this.setState({
+                    prData,
+                    commitData: new Map<number, CommitData[] | null>()
                 });
             } else {
                 this.addError(response.error);
@@ -134,6 +154,24 @@ export default withRouter(
                 this.setState({
                     loading: false
                 });
+        }
+
+        private async getPRData(
+            serverModel: Components.Schemas.RepositoryResponse
+        ): Promise<PRData[] | null> {
+            if (serverModel.remoteGitProvider !== RemoteGitProvider.GitHub) return null;
+
+            const response = await GitHubClient.getPrs(
+                serverModel.remoteRepositoryOwner!,
+                serverModel.remoteRepositoryName!
+            );
+
+            if (response.code !== StatusCode.OK) {
+                this.addError(response.error);
+                return null;
+            }
+
+            return response.payload;
         }
 
         private addError(error: InternalError<ErrorCode>): void {
@@ -197,15 +235,15 @@ export default withRouter(
             );
         }
 
-        private checkPermission(right: Components.Schemas.RepositoryRights): boolean {
-            return (
-                this.state.repositoryRights != null && (this.state.repositoryRights & right) !== 0
-            );
+        private checkOriginCloning(newOrigin: string) {
+            this.setState({
+                newOrigin
+            });
         }
 
         private renderClonePage(model: Components.Schemas.RepositoryResponse): React.ReactNode {
-            const canClone = this.checkPermission(RepositoryRights.SetOrigin);
-            const canCreds = this.checkPermission(RepositoryRights.ChangeCredentials);
+            const canClone = this.checkFlag(RepositoryRights.SetOrigin);
+            const canCreds = this.checkFlag(RepositoryRights.ChangeCredentials);
             return (
                 <React.Fragment>
                     <h3>
@@ -216,7 +254,7 @@ export default withRouter(
                         defaultValue={this.state.newOrigin}
                         type="str"
                         onChange={newOrigin => {
-                            this.setState({ newOrigin });
+                            this.checkOriginCloning(newOrigin);
                         }}
                         disabled={!canClone}
                     />
@@ -428,19 +466,6 @@ export default withRouter(
         private renderTestMergeManager(
             model: Components.Schemas.RepositoryResponse
         ): React.ReactNode {
-            let activeTestMergeDisplay: React.ReactNode | null;
-            switch (model.remoteGitProvider) {
-                case RemoteGitProvider.GitHub:
-                    activeTestMergeDisplay = this.renderGitHubTestMergeAdder();
-                    break;
-                case RemoteGitProvider.GitLab:
-                    activeTestMergeDisplay = this.renderGitLabTestMergeAdder();
-                    break;
-                default:
-                    activeTestMergeDisplay = null;
-                    break;
-            }
-
             const activeTestMerges = model.revisionInformation?.activeTestMerges || [];
             const noActiveTestMergesRemovedOrChanged = activeTestMerges.every(activeTestMerge =>
                 this.state.newTestMerges.some(
@@ -466,7 +491,8 @@ export default withRouter(
                     title={<FormattedMessage id="view.instance.repo.test_merging" />}>
                     {this.renderDeployToggle()}
                     <br />
-                    {activeTestMergeDisplay}
+                    {this.renderAutomaticTestMergeAdder()}
+                    <br />
                     {this.renderManualTestMergeAdder()}
                     <br />
                     {this.renderPendingChanges(model)}
@@ -753,12 +779,193 @@ export default withRouter(
             );
         }
 
-        private renderGitHubTestMergeAdder(): React.ReactNode {
-            return <WIPNotice />;
+        private async loadCommitData(prNumber: number): Promise<void> {
+            if (this.state.commitData.has(prNumber) || !this.state.serverModel) return;
+
+            const copyMap = new Map<number, CommitData[] | null>(this.state.commitData);
+            copyMap.set(prNumber, null);
+
+            this.setState({
+                commitData: copyMap
+            });
+
+            const response = await GitHubClient.getCommits(
+                this.state.serverModel.remoteRepositoryOwner!,
+                this.state.serverModel.remoteRepositoryName!,
+                prNumber
+            );
+
+            if (response.code !== StatusCode.OK) {
+                this.addError(response.error);
+                return;
+            }
+
+            const copyMap2 = new Map<number, CommitData[] | null>(this.state.commitData);
+            copyMap2.set(prNumber, response.payload);
+
+            this.setState({
+                commitData: copyMap2
+            });
         }
 
-        private renderGitLabTestMergeAdder(): React.ReactNode {
-            return <WIPNotice />;
+        private renderAutomaticTestMergeAdder(): React.ReactNode | null {
+            if (!this.state.prData?.length) return null;
+
+            return (
+                <React.Fragment>
+                    <h5>
+                        <FormattedMessage id="view.instance.repo.test_merging.auto" />
+                    </h5>
+                    <InputGroup>
+                        <InputGroup.Prepend className="w-40 flex-grow-1 flex-xl-grow-0 overflow-auto mb-2 mb-xl-0">
+                            <InputGroup.Text className="flex-fill">
+                                <FormattedMessage id="fields.repository.test_merge.auto" />
+                            </InputGroup.Text>
+                        </InputGroup.Prepend>
+                        <div className="flex-grow-1 w-100 w-xl-auto d-flex mb-3 mb-xl-0">
+                            <select
+                                className="flex-fill mb-0"
+                                onChange={event => {
+                                    const newPrNumber = parseInt(
+                                        event.target.selectedOptions[0].value
+                                    );
+                                    this.setState({
+                                        autoTestMergeNumber: newPrNumber
+                                    });
+
+                                    void this.loadCommitData(newPrNumber);
+                                }}
+                                disabled={!this.checkFlag(RepositoryRights.MergePullRequest)}>
+                                <FormattedMessage id="view.instance.repo.test_merging.auto.select">
+                                    {message => (
+                                        <option
+                                            selected={this.state.autoTestMergeNumber == null}
+                                            value="0">
+                                            {message}
+                                        </option>
+                                    )}
+                                </FormattedMessage>
+                                {this.state.prData
+                                    .filter(
+                                        data =>
+                                            !this.state.newTestMerges.some(
+                                                parameters => parameters.number === data.number
+                                            )
+                                    )
+                                    .map(data => (
+                                        <option
+                                            value={data.number}
+                                            key={data.number}
+                                            selected={
+                                                data.number === this.state.autoTestMergeNumber
+                                            }>
+                                            #{data.number} - {data.title} @{data.author}
+                                        </option>
+                                    ))}
+                            </select>
+                        </div>
+                    </InputGroup>
+                    <InputGroup>
+                        <InputGroup.Prepend className="w-40 flex-grow-1 flex-xl-grow-0 overflow-auto mb-2 mb-xl-0">
+                            <InputGroup.Text className="flex-fill">
+                                <FormattedMessage id="fields.repository.test_merge.sha" />
+                            </InputGroup.Text>
+                        </InputGroup.Prepend>
+                        <div className="flex-grow-1 w-100 w-xl-auto d-flex mb-3 mb-xl-0">
+                            <select
+                                className="flex-fill mb-0"
+                                onChange={event => {
+                                    let newSha: string | null =
+                                        event.target.selectedOptions[0].value;
+                                    if (newSha === "HEAD") newSha = null;
+                                    this.setState({
+                                        autoTestMergeSha: newSha
+                                    });
+                                }}
+                                disabled={
+                                    !(
+                                        this.state.commitData.has(
+                                            this.state.autoTestMergeNumber || 0
+                                        ) &&
+                                        !!this.state.commitData.get(
+                                            this.state.autoTestMergeNumber || 0
+                                        ) &&
+                                        this.checkFlag(RepositoryRights.MergePullRequest)
+                                    )
+                                }>
+                                <FormattedMessage id="loading.commits">
+                                    {message => (
+                                        <option
+                                            selected={this.state.autoTestMergeSha == null}
+                                            value="HEAD">
+                                            HEAD
+                                            {this.state.autoTestMergeNumber &&
+                                            this.state.commitData.has(
+                                                this.state.autoTestMergeNumber
+                                            ) &&
+                                            !this.state.commitData.get(
+                                                this.state.autoTestMergeNumber
+                                            )
+                                                ? ` (${message!.toString()})`
+                                                : ""}
+                                        </option>
+                                    )}
+                                </FormattedMessage>
+                                {!!this.state.autoTestMergeNumber &&
+                                this.state.commitData.has(this.state.autoTestMergeNumber) &&
+                                !!this.state.commitData.get(this.state.autoTestMergeNumber)
+                                    ? this.state.commitData
+                                          .get(this.state.autoTestMergeNumber)!
+                                          .map(data => (
+                                              <option
+                                                  value={data.sha}
+                                                  key={data.sha}
+                                                  selected={
+                                                      data.sha === this.state.autoTestMergeSha
+                                                  }>
+                                                  {data.sha.substring(0, 7)} - {data.message}
+                                              </option>
+                                          ))
+                                    : null}
+                            </select>
+                        </div>
+                    </InputGroup>
+                    <InputField
+                        name="repository.test_merge.comment"
+                        tooltip="view.instance.repo.test_merging.comment"
+                        defaultValue={this.state.autoTestMergeComment || ""}
+                        type="str"
+                        onChange={newval => {
+                            void this.setState({ autoTestMergeComment: newval });
+                        }}
+                        disabled={!this.checkFlag(RepositoryRights.MergePullRequest)}
+                    />
+                    <br />
+                    <Button
+                        disabled={!this.state.autoTestMergeNumber}
+                        className="btn mx-3 btn-info w-25"
+                        variant="success"
+                        onClick={() => {
+                            const newPendingTestMerges = [...this.state.newTestMerges];
+
+                            newPendingTestMerges.push({
+                                number: this.state.autoTestMergeNumber!, // this wouldn't fire if this wasn't the case
+                                // @ts-expect-error: actually a bug in the API definition, LHS should be nullable. https://github.com/tgstation/tgstation-server/issues/1234
+                                targetCommitSha: this.state.autoTestMergeSha,
+                                comment: this.state.autoTestMergeComment
+                            });
+
+                            this.setState({
+                                newTestMerges: newPendingTestMerges,
+                                autoTestMergeNumber: null,
+                                autoTestMergeComment: null,
+                                autoTestMergeSha: null
+                            });
+                        }}>
+                        <FormattedMessage id="view.instance.repo.test_merging.add" />
+                    </Button>
+                </React.Fragment>
+            );
         }
 
         private renderManualTestMergeAdder(): React.ReactNode {
@@ -788,7 +995,7 @@ export default withRouter(
                     />
                     <InputField
                         name="repository.test_merge.comment"
-                        tooltip="view.instance.repo.test_merging.manual.comment"
+                        tooltip="view.instance.repo.test_merging.comment"
                         defaultValue={this.state.manualTestMergeComment || ""}
                         type="str"
                         onChange={newval => {
@@ -818,7 +1025,7 @@ export default withRouter(
                                 manualTestMergeSha: null
                             });
                         }}>
-                        <FormattedMessage id="view.instance.repo.test_merging.manual.add" />
+                        <FormattedMessage id="view.instance.repo.test_merging.add" />
                     </Button>
                 </React.Fragment>
             );

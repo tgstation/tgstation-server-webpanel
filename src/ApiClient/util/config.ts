@@ -52,6 +52,11 @@ const configOptions: ConfigMap = {
         type: "pwd",
         value: ""
     },
+    testmergelabel: {
+        id: "config.testmergelabel",
+        type: "str",
+        value: "Test Merge Candidate"
+    },
     apipath: {
         id: "config.apipath",
         type: "str",

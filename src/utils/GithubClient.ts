@@ -16,6 +16,19 @@ export interface TGSVersion {
     old: boolean;
 }
 
+export interface PRData {
+    number: number;
+    title: string;
+    author: string;
+    priority: boolean;
+    url: string;
+}
+
+export interface CommitData {
+    sha: string;
+    message: string;
+}
+
 interface IEvents {}
 
 /* eslint-disable */
@@ -86,6 +99,80 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                 }
             }
         });
+    }
+
+    public async getCommits(
+        owner: string,
+        repo: string,
+        pr: number
+    ): Promise<InternalStatus<CommitData[], ErrorCode.GITHUB_FAIL>> {
+        try {
+            const payload = await this.apiClient.paginate(
+                this.apiClient.pulls.listCommits,
+                { owner, repo, pull_number: pr },
+                response => {
+                    return response.data.reduce((result, commit) => {
+                        result.splice(0, 0, {
+                            sha: commit.sha,
+                            message: commit.commit.message
+                        });
+
+                        return result;
+                    }, [] as CommitData[]);
+                }
+            );
+
+            return new InternalStatus({
+                code: StatusCode.OK,
+                payload
+            });
+        } catch (e) {
+            return new InternalStatus<CommitData[], ErrorCode.GITHUB_FAIL>({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                    jsError: e as RequestError
+                })
+            });
+        }
+    }
+
+    public async getPrs(
+        owner: string,
+        repo: string
+    ): Promise<InternalStatus<PRData[], ErrorCode.GITHUB_FAIL>> {
+        try {
+            const payload = await this.apiClient.paginate(
+                this.apiClient.pulls.list,
+                { owner, repo },
+                response => {
+                    return response.data.reduce((result, pr) => {
+                        result.push({
+                            number: pr.number,
+                            title: pr.title,
+                            author: pr.user!.login,
+                            url: pr.html_url,
+                            priority: pr.labels.some(
+                                label => label.name === configOptions.testmergelabel.value
+                            )
+                        });
+
+                        return result;
+                    }, [] as PRData[]);
+                }
+            );
+
+            return new InternalStatus({
+                code: StatusCode.OK,
+                payload
+            });
+        } catch (e) {
+            return new InternalStatus<PRData[], ErrorCode.GITHUB_FAIL>({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                    jsError: e as RequestError
+                })
+            });
+        }
     }
 
     public async getVersions({
