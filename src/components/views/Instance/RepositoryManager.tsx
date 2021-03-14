@@ -852,6 +852,7 @@ export default withRouter(
                                                 parameters => parameters.number === data.number
                                             )
                                     )
+                                    .sort(a => (a.priority ? 0 : 1))
                                     .map(data => (
                                         <option
                                             value={data.number}
@@ -859,7 +860,8 @@ export default withRouter(
                                             selected={
                                                 data.number === this.state.autoTestMergeNumber
                                             }>
-                                            #{data.number} - {data.title} @{data.author}
+                                            {data.priority ? "! " : ""}#{data.number} - {data.title}{" "}
+                                            @{data.author}
                                         </option>
                                     ))}
                             </select>
