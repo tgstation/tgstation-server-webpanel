@@ -659,6 +659,7 @@ export default withRouter(
                                 <a
                                     href={additionalInfo.url}
                                     target="_blank"
+                                    title={`${additionalInfo.titleAtMerge} @${additionalInfo.author}`}
                                     rel="noopener noreferrer">
                                     #{parameters.number}
                                 </a>
