@@ -32,8 +32,7 @@ import UserGroupClient from "../../../ApiClient/UserGroupClient";
 import { GlobalObjects } from "../../../utils/globalObjects";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
-import ErrorAlert from "../../utils/ErrorAlert";
-import Loading from "../../utils/Loading";
+import { ErrorAlert, Loading } from "../../utils";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 

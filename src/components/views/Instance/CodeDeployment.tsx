@@ -1,6 +1,6 @@
 import React from "react";
 
-import WIPNotice from "../../utils/WIPNotice";
+import { WIPNotice } from "../../utils";
 
 interface IProps {}
 interface IState {}

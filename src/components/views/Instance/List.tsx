@@ -18,8 +18,7 @@ import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStat
 import UserClient from "../../../ApiClient/UserClient";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
-import ErrorAlert from "../../utils/ErrorAlert";
-import Loading from "../../utils/Loading";
+import { ErrorAlert, Loading } from "../../utils";
 
 type Instance = Components.Schemas.InstanceResponse & {
     canAccess: boolean;

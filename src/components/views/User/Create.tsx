@@ -12,8 +12,7 @@ import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStat
 import ServerClient from "../../../ApiClient/ServerClient";
 import UserClient from "../../../ApiClient/UserClient";
 import { AppRoutes, RouteData } from "../../../utils/routes";
-import ErrorAlert from "../../utils/ErrorAlert";
-import Loading from "../../utils/Loading";
+import { ErrorAlert, Loading } from "../../utils";
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;

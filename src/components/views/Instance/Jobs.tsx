@@ -3,7 +3,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { RouteData } from "../../../utils/routes";
-import JobsList from "../../utils/JobsList";
+import { JobsList } from "../../utils";
 
 interface IProps extends RouteComponentProps<{ id: string }> {}
 interface IState {}

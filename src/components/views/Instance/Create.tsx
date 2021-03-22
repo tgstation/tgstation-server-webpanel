@@ -12,8 +12,7 @@ import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComm
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../../ApiClient/ServerClient";
 import { AppRoutes, RouteData } from "../../../utils/routes";
-import ErrorAlert from "../../utils/ErrorAlert";
-import Loading from "../../utils/Loading";
+import { ErrorAlert, Loading } from "../../utils";
 
 interface IState {
     loading: boolean;

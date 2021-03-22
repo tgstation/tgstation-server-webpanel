@@ -9,8 +9,7 @@ import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/I
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
 import { MODE, VERSION } from "../../definitions/constants";
-import ErrorAlert from "../utils/ErrorAlert";
-import Loading from "../utils/Loading";
+import { ErrorAlert, Loading } from "../utils";
 
 interface IProps {}
 interface IState {

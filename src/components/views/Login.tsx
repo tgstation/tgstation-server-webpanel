@@ -20,8 +20,7 @@ import { MODE } from "../../definitions/constants";
 import KeycloakLogo from "../../images/keycloak_icon_64px.png";
 import TGLogo from "../../images/tglogo-white.svg";
 import { RouteData } from "../../utils/routes";
-import ErrorAlert from "../utils/ErrorAlert";
-import Loading from "../utils/Loading";
+import { ErrorAlert, Loading } from "../utils";
 
 interface IProps extends RouteComponentProps {
     prefillLogin?: string;

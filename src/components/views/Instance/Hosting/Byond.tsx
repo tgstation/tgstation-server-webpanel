@@ -13,9 +13,7 @@ import { ByondRights } from "../../../../ApiClient/generatedcode/_enums";
 import { Components } from "../../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
-import AccessDenied from "../../../utils/AccessDenied";
-import ErrorAlert from "../../../utils/ErrorAlert";
-import Loading from "../../../utils/Loading";
+import { AccessDenied, ErrorAlert, Loading } from "../../../utils";
 
 interface IProps {
     instance: Components.Schemas.InstanceResponse;

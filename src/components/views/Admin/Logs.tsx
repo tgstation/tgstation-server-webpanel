@@ -15,8 +15,7 @@ import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComm
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import { download } from "../../../utils/misc";
 import { AppRoutes } from "../../../utils/routes";
-import ErrorAlert from "../../utils/ErrorAlert";
-import Loading from "../../utils/Loading";
+import { ErrorAlert, Loading } from "../../utils";
 
 interface IProps extends RouteComponentProps<{ name: string | undefined }> {}
 

@@ -16,9 +16,7 @@ import UserClient from "../../../ApiClient/UserClient";
 import { GlobalObjects } from "../../../utils/globalObjects";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
-import ErrorAlert from "../../utils/ErrorAlert";
-import Loading from "../../utils/Loading";
-import WIPNotice from "../../utils/WIPNotice";
+import { ErrorAlert, Loading, WIPNotice } from "../../utils";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
