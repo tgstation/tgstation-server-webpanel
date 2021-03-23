@@ -42,44 +42,10 @@ export default class Home extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
-        return (
-            <Row xs={1} sm={2} md={3} lg={4} className="justify-content-center">
-                {this.state.routes.map(val => {
-                    //this means it shouldnt be displayed on the home screen
-                    if (!val.homeIcon) return;
-
-                    if (val === AppRoutes.home) return;
-
-                    return (
-                        <Col key={val.link || val.route} className="mb-1">
-                            <Card
-                                as={val.cachedAuth ? Link : "div"}
-                                //@ts-expect-error //dont really know how to fix this so uhhhhhhh, this will do for now
-                                to={val.link || val.route}
-                                className={`text-decoration-none m-1 h-75 ${
-                                    val.cachedAuth ? "text-primary" : "text-danger d-sm-flex d-none"
-                                }`}>
-                                <Card.Body
-                                    style={{
-                                        height: "245px"
-                                    }}>
-                                    <FontAwesomeIcon
-                                        fixedWidth={true}
-                                        icon={val.homeIcon}
-                                        className="d-block w-100 h-100 m-auto"
-                                    />
-                                </Card.Body>
-                                <Card.Footer
-                                    className={`text-center font-weight-bold ${
-                                        val.cachedAuth ? "" : "text-danger font-italic"
-                                    }`}>
-                                    <FormattedMessage id={val.name} />
-                                </Card.Footer>
-                            </Card>
-                        </Col>
-                    );
-                })}
-            </Row>
-        );
+        return `
+            Testing!\n
+            {Info about TGS, version and stuff}\n
+            {Server instances}
+        `;
     }
 }

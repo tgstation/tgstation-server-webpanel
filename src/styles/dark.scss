@@ -9,6 +9,16 @@ $enable-gradients: true;
     height: 50vmin !important;
 }
 
+/**
+ * <code> tag css
+ */
+code{
+    background-color: rgb(44, 44, 44);
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 0.2em;
+}
+
 $theme-colors: (
     //02549a
     "primary": #02549a,
@@ -185,7 +195,7 @@ $toast-header-background-color: $gray-600;
 //@import "~bootstrap/scss/breadcrumb";
 //@import "~bootstrap/scss/pagination";
 @import "~bootstrap/scss/badge";
-//@import "~bootstrap/scss/jumbotron";
+@import "~bootstrap/scss/jumbotron";
 @import "~bootstrap/scss/alert";
 @import "~bootstrap/scss/progress";
 //@import "~bootstrap/scss/media";
@@ -209,6 +219,10 @@ $toast-header-background-color: $gray-600;
     border: $nav-tabs-border-width solid $gray-700;
     margin-right: 0.10rem;
     margin-left: 0.10rem;
+}
+
+.jumbotron.dark {
+    background-color: #aaa;
 }
 
 @include media-breakpoint-down("sm") {

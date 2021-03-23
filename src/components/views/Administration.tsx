@@ -184,32 +184,122 @@ export default withRouter(
                     />
                     {this.state.adminInfo && this.state.serverInfo ? (
                         <div className="text-center">
-                            <h3 className=" text-secondary">
-                                <FormattedMessage id="view.admin.hostos" />
-                                <FontAwesomeIcon
-                                    fixedWidth
-                                    icon={this.state.serverInfo.windowsHost ? faWindows : faLinux}
-                                />
+                            <h3>
+                                <FormattedMessage id="view.info.server" />
                             </h3>
+                            <table className="mx-auto text-left">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <h4 className="mr-3">
+                                                <FormattedMessage id="view.admin.hostos" />
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4>
+                                                <FontAwesomeIcon
+                                                    fixedWidth
+                                                    icon={
+                                                        this.state.serverInfo.windowsHost
+                                                            ? faWindows
+                                                            : faLinux
+                                                    }
+                                                />
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="mr-3">
+                                                <FormattedMessage id="view.info.version" />
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4>{this.state.serverInfo.version}</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="mr-3">
+                                                <FormattedMessage id="view.info.httpapiversion" />
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4>{this.state.serverInfo.apiVersion}</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="mr-3">
+                                                <FormattedMessage id="view.info.dmapiversion" />
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4>{this.state.serverInfo.dmApiVersion}</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="mr-3">
+                                                <FormattedMessage id="view.info.minpassword" />
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4>{this.state.serverInfo.minimumPasswordLength}</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="mr-3">
+                                                <FormattedMessage id="view.info.instancelimit" />
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4>{this.state.serverInfo.instanceLimit}</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="mr-3">
+                                                <FormattedMessage id="view.info.userlimit" />
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4>{this.state.serverInfo.userLimit}</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="mr-3">
+                                                <FormattedMessage id="view.info.grouplimit" />
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4>{this.state.serverInfo.userGroupLimit}</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="mr-3">
+                                                <FormattedMessage id="view.info.oauth" />
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4>
+                                                {Object.keys(
+                                                    this.state.serverInfo.oAuthProviderInfos || {}
+                                                ).join(", ")}
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <h5 className="text-secondary">
                                 <FormattedMessage id="view.admin.remote" />
                                 <a href={this.state.adminInfo.trackedRepositoryUrl}>
                                     {this.state.adminInfo.trackedRepositoryUrl}
                                 </a>
-                            </h5>
-                            <h3 className="text-secondary">
-                                <FormattedMessage id="view.admin.version.current" />
-                                <span
-                                    className={
-                                        this.state.serverInfo.version <
-                                        this.state.adminInfo.latestVersion
-                                            ? "text-danger"
-                                            : ""
-                                    }>
-                                    {this.state.serverInfo.version}
-                                </span>
-                            </h3>
-                            <h3 className="text-secondary">
+                                <br />
                                 <FormattedMessage id="view.admin.version.latest" />
                                 <span
                                     className={
@@ -220,7 +310,7 @@ export default withRouter(
                                     }>
                                     {this.state.adminInfo.latestVersion}
                                 </span>
-                            </h3>
+                            </h5>
                             <hr />
                             <Button
                                 className="mr-2"

@@ -2,23 +2,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
-import CSSTransition from "react-transition-group/CSSTransition";
 
 import { Components } from "../ApiClient/generatedcode/_generated";
 import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
-import UserClient, { GetUserErrors } from "../ApiClient/UserClient";
+import UserClient from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import LoginHooks from "../ApiClient/util/LoginHooks";
+import TGLogo from "../images/tglogo-white.svg";
 import { matchesPath } from "../utils/misc";
 import RouteController from "../utils/RouteController";
 import { AppCategories, AppRoute, AppRoutes } from "../utils/routes";
-import ErrorAlert from "./utils/ErrorAlert";
 
 interface IProps extends RouteComponentProps {
     category?: {
@@ -38,6 +40,7 @@ interface IState {
     categories: typeof AppCategories;
     focusedCategory: string;
     focusTimer?: number;
+    logout_modal: boolean;
 }
 
 export default withRouter(
@@ -61,7 +64,8 @@ export default withRouter(
                 serverInfoError: null,
                 userNameError: null,
                 currentUser: null,
-                serverInformation: null
+                serverInformation: null,
+                logout_modal: false
             };
         }
 
@@ -142,7 +146,46 @@ export default withRouter(
 
         public render(): React.ReactNode {
             return (
-                <React.Fragment>
+                <>
+                    <Modal
+                        aria-labelledby="contained-modal-title-vcenter"
+                        show={this.state.logout_modal}
+                        centered
+                        onHide={() => {
+                            this.setState({ logout_modal: false });
+                        }}>
+                        <Modal.Header
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}>
+                            <Modal.Title id="contained-modal-title-vcenter">
+                                Do you want to log out?
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Footer
+                            style={{
+                                display: "flex",
+                                justifyContent: "center"
+                            }}>
+                            <Button
+                                variant="secondary"
+                                onClick={() => {
+                                    this.setState({ logout_modal: false });
+                                }}>
+                                Close
+                            </Button>
+                            <Button
+                                variant="danger"
+                                onClick={() => {
+                                    this.setState({ logout_modal: false });
+                                    this.logoutClick();
+                                }}>
+                                Log Out
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
                     <Navbar
                         className="shadow-lg"
                         expand={this.state.loggedIn ? "lg" : undefined}
@@ -154,6 +197,7 @@ export default withRouter(
                                 : "primary"
                         }>
                         <Navbar.Brand
+                            href="#"
                             onClick={() => {
                                 this.props.history.push(
                                     AppRoutes.home.link || AppRoutes.home.route,
@@ -161,171 +205,29 @@ export default withRouter(
                                         reload: true
                                     }
                                 );
-                            }}
-                            className="mr-auto">
+                            }}>
+                            <img
+                                src={TGLogo}
+                                alt="tglogo"
+                                width={30}
+                                height={30}
+                                className="d-inline-block align-top"
+                            />
+                            {""} {/* THIS IS NEEDED! DO NOT REMOVE! */}
                             {this.renderVersion()}
                         </Navbar.Brand>
-                        <Navbar.Toggle className="mr-2" aria-controls="responsive-navbar-nav" />
-                        <Navbar.Collapse className="text-right mr-2" style={{ minWidth: "0px" }}>
-                            <Nav className="mr-auto overflow-auto fancyscroll">
-                                {!this.state.loggedIn ? (
-                                    <Nav.Item>
-                                        <Nav.Link
-                                            onClick={() => {
-                                                this.props.history.push(
-                                                    AppRoutes.home.link || AppRoutes.home.route,
-                                                    { reload: true }
-                                                );
-                                            }}
-                                            active={true}>
-                                            <FormattedMessage id="routes.login" />
-                                        </Nav.Link>
-                                    </Nav.Item>
-                                ) : (
-                                    Object.values(this.state.categories).map(cat => {
-                                        if (!cat.leader.cachedAuth) return;
-                                        return (
-                                            <div
-                                                key={cat.name}
-                                                className="d-flex"
-                                                onMouseEnter={() => {
-                                                    const timer = window.setTimeout(() => {
-                                                        this.setState({
-                                                            focusedCategory: cat.name,
-                                                            focusTimer: undefined
-                                                        });
-                                                    }, 130);
-                                                    this.setState({
-                                                        focusTimer: timer
-                                                    });
-                                                }}
-                                                onMouseLeave={() => {
-                                                    window.clearTimeout(this.state.focusTimer);
-                                                    this.setState({
-                                                        focusTimer: undefined
-                                                    });
-                                                }}
-                                                onClick={() => {
-                                                    window.clearTimeout(this.state.focusTimer);
-                                                    this.setState({
-                                                        focusedCategory: cat.name,
-                                                        focusTimer: undefined
-                                                    });
-                                                }}>
-                                                <Nav.Item>
-                                                    <Nav.Link
-                                                        onClick={() => {
-                                                            this.props.history.push(
-                                                                cat.leader.link || cat.leader.route,
-                                                                { reload: true }
-                                                            );
-                                                        }}
-                                                        active={matchesPath(
-                                                            this.props.location.pathname,
-                                                            cat.leader.route,
-                                                            !cat.leader.navbarLoose
-                                                        )}>
-                                                        <FormattedMessage id={cat.leader.name} />
-                                                    </Nav.Link>
-                                                </Nav.Item>
-                                                {Object.values(cat.routes).filter(
-                                                    value => value.cachedAuth
-                                                ).length >= 2 ? (
-                                                    <CSSTransition
-                                                        in={this.state.focusedCategory === cat.name}
-                                                        classNames="anim-collapse"
-                                                        className="nowrap anim-collapse-all"
-                                                        addEndListener={(node, done) => {
-                                                            node.addEventListener(
-                                                                "transitionend",
-                                                                done,
-                                                                false
-                                                            );
-                                                        }}
-                                                        onMouseEnter={() => {
-                                                            this.setState({
-                                                                focusedCategory: cat.name
-                                                            });
-                                                        }}>
-                                                        <div>
-                                                            <Nav>
-                                                                <div className="py-2 d-none d-lg-inline">
-                                                                    <FontAwesomeIcon icon="angle-right" />
-                                                                </div>
-                                                                <Nav className="bg-darkblue mx-1 rounded">
-                                                                    {cat.routes.map(val => {
-                                                                        if (val.catleader) return; //we already display this but differently
-                                                                        if (!val.cachedAuth) return;
-                                                                        if (!val.visibleNavbar)
-                                                                            return;
-
-                                                                        return (
-                                                                            <Nav.Item
-                                                                                key={val.name}>
-                                                                                <Nav.Link
-                                                                                    onClick={() => {
-                                                                                        this.props.history.push(
-                                                                                            val.link ||
-                                                                                                val.route,
-                                                                                            {
-                                                                                                reload: true
-                                                                                            }
-                                                                                        );
-                                                                                    }}
-                                                                                    active={matchesPath(
-                                                                                        this.props
-                                                                                            .location
-                                                                                            .pathname,
-                                                                                        val.route,
-                                                                                        !val.navbarLoose
-                                                                                    )}>
-                                                                                    <FormattedMessage
-                                                                                        id={
-                                                                                            val.name
-                                                                                        }
-                                                                                    />
-                                                                                </Nav.Link>
-                                                                            </Nav.Item>
-                                                                        );
-                                                                    })}
-
-                                                                    <div className="py-2 d-none d-lg-inline mr-1">
-                                                                        <FontAwesomeIcon icon="grip-lines-vertical" />
-                                                                    </div>
-                                                                </Nav>
-                                                            </Nav>
-                                                        </div>
-                                                    </CSSTransition>
-                                                ) : (
-                                                    ""
-                                                )}
-                                            </div>
-                                        );
-                                    })
-                                )}
-                            </Nav>
-                            {this.renderUser()}
+                        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+                        <Navbar.Collapse className="justify-content-end">
+                            <Nav>{this.renderDropdowns()}</Nav>
+                            <Nav>{this.renderUser()}</Nav>
                         </Navbar.Collapse>
                     </Navbar>
-                    {this.state.serverInfoError ? (
-                        <ErrorAlert error={this.state.serverInfoError} />
-                    ) : (
-                        ""
-                    )}
-                    {this.state.userNameError ? (
-                        <ErrorAlert error={this.state.userNameError} />
-                    ) : (
-                        ""
-                    )}
-                </React.Fragment>
+                </>
             );
         }
 
         private renderVersion(): React.ReactNode {
-            if (!this.state.loggedIn) {
-                return <FormattedMessage id="generic.appname" />;
-            }
-            if (this.state.serverInfoError)
+            if (this.state.serverInfoError && this.state.loggedIn)
                 return (
                     <div>
                         <div className="align-top d-inline-block px-1">
@@ -344,60 +246,46 @@ export default withRouter(
                         {this.state.serverInformation.version}
                     </React.Fragment>
                 );
-
-            return "loading"; //TODO: add a spinner;
+            //TODO: add a spinner. Though having the name would be fine i guess
+            // oh and for some reason serverInfo is null while you can see it on the info button...
+            return <FormattedMessage id="generic.appname" />;
         }
 
         private renderUser(): React.ReactNode {
             if (!this.state.loggedIn)
                 return (
-                    <React.Fragment>
-                        <Button
-                            onClick={() => {
-                                this.props.history.push(
-                                    AppRoutes.config.link || AppRoutes.config.route,
-                                    { reload: true }
-                                );
-                            }}
-                            variant={
-                                this.state.serverInfoError || this.state.userNameError
-                                    ? "danger"
-                                    : "primary"
-                            }>
-                            <FontAwesomeIcon icon="cogs" />
-                        </Button>
-                        <Button
+                    <>
+                        <Nav.Link
                             onClick={() => {
                                 this.props.history.push(
                                     AppRoutes.info.link || AppRoutes.info.route,
                                     { reload: true }
                                 );
-                            }}
-                            variant={
-                                this.state.serverInfoError || this.state.userNameError
-                                    ? "danger"
-                                    : "primary"
-                            }>
+                            }}>
                             <FontAwesomeIcon icon="info-circle" />
-                        </Button>
-                    </React.Fragment>
+                        </Nav.Link>
+                        <Nav.Link
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.config.link || AppRoutes.config.route,
+                                    { reload: true }
+                                );
+                            }}>
+                            <FontAwesomeIcon icon="cog" />
+                        </Nav.Link>
+                    </>
                 );
 
             return (
                 <Nav.Item className="ml-auto">
-                    <Dropdown>
-                        <Dropdown.Toggle
-                            id="user-dropdown"
-                            type="button"
-                            variant={
-                                this.state.serverInfoError || this.state.userNameError
-                                    ? "danger"
-                                    : "primary"
-                            }
-                            data-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false">
-                            {this.state.userNameError ? (
+                    <DropdownButton
+                        variant={
+                            this.state.serverInfoError || this.state.userNameError
+                                ? "danger"
+                                : "secondary"
+                        }
+                        title={
+                            this.state.userNameError ? (
                                 <div>
                                     <div className="align-top d-inline-block px-1">
                                         <FontAwesomeIcon icon="exclamation-circle" />
@@ -410,60 +298,126 @@ export default withRouter(
                                 this.state.currentUser.name
                             ) : (
                                 "loading" //TODO: add spinner
-                            )}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu alignRight className="text-right">
+                            )
+                        }
+                        menuAlign="right">
+                        <Dropdown.Item
+                            onClick={() => {
+                                this.props.history.push(
+                                    this.state.currentUser
+                                        ? `/users/edit/user/${this.state.currentUser.id}/info`
+                                        : `/users/edit`, // Tragic!
+                                    { reload: true }
+                                );
+                            }}>
+                            <FontAwesomeIcon icon={"info"} /> <FormattedMessage id="routes.info" />
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.config.link || AppRoutes.config.route,
+                                    { reload: true }
+                                );
+                            }}>
+                            <FontAwesomeIcon icon={"cog"} /> <FormattedMessage id="routes.config" />
+                        </Dropdown.Item>
+                        {AppRoutes.passwd.cachedAuth ? (
                             <Dropdown.Item
                                 onClick={() => {
                                     this.props.history.push(
-                                        AppRoutes.info.link || AppRoutes.info.route,
+                                        AppRoutes.passwd.link || AppRoutes.passwd.route,
                                         { reload: true }
                                     );
                                 }}>
-                                <FormattedMessage id="routes.info" />
+                                <FontAwesomeIcon icon={"key"} />{" "}
+                                <FormattedMessage id="routes.passwd" />
                             </Dropdown.Item>
-                            <Dropdown.Item
-                                onClick={() => {
-                                    this.props.history.push(
-                                        AppRoutes.config.link || AppRoutes.config.route,
-                                        { reload: true }
-                                    );
-                                }}>
-                                <FormattedMessage id="routes.config" />
-                            </Dropdown.Item>
-                            {AppRoutes.passwd.cachedAuth ? (
-                                <Dropdown.Item
-                                    onClick={() => {
-                                        this.props.history.push(
-                                            AppRoutes.passwd.link || AppRoutes.passwd.route,
-                                            { reload: true }
-                                        );
-                                    }}>
-                                    <FormattedMessage id="routes.passwd" />
-                                </Dropdown.Item>
-                            ) : (
-                                ""
-                            )}
-                            <Dropdown.Item
-                                onClick={() => {
-                                    ServerClient.emit("purgeCache");
-                                }}>
-                                <FormattedMessage id="navbar.purgecache" />
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                                onClick={() => {
-                                    this.props.history.replace(this.props.location.pathname, {
-                                        reload: true
-                                    });
-                                }}>
-                                <FormattedMessage id="navbar.refresh" />
-                            </Dropdown.Item>
-                            <Dropdown.Item onClick={this.logoutClick}>
-                                <FormattedMessage id="navbar.logout" />
-                            </Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
+                        ) : null}
+                        <Dropdown.Item
+                            onClick={() => {
+                                ServerClient.emit("purgeCache");
+                            }}>
+                            <FontAwesomeIcon icon={"trash"} />{" "}
+                            <FormattedMessage id="navbar.purgecache" />
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={() => {
+                                this.props.history.replace(this.props.location.pathname, {
+                                    reload: true
+                                });
+                            }}>
+                            <FontAwesomeIcon icon={"sync"} />{" "}
+                            <FormattedMessage id="navbar.refresh" />
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={() => {
+                                this.setState({ logout_modal: true });
+                            }}>
+                            <FontAwesomeIcon icon={"sign-out-alt"} />{" "}
+                            <FormattedMessage id="navbar.logout" />
+                        </Dropdown.Item>
+                    </DropdownButton>
                 </Nav.Item>
+            );
+        }
+
+        private renderDropdowns(): React.ReactNode {
+            if (!this.state.loggedIn) return "";
+            return Object.values(this.state.categories).map(cat =>
+                cat.routes.length > 1 ? (
+                    <NavDropdown
+                        key={cat.name}
+                        title={
+                            <>
+                                <FormattedMessage id={cat.leader.name} />{" "}
+                                {!!cat.leader.homeIcon && (
+                                    <FontAwesomeIcon icon={cat.leader.homeIcon} />
+                                )}
+                            </>
+                        }
+                        id="basic-nav-dropdown">
+                        <NavDropdown.Item
+                            active={matchesPath(
+                                this.props.location.pathname,
+                                cat.leader.route,
+                                cat.leader.navbarLoose
+                            )}
+                            onClick={() => {
+                                this.props.history.push(cat.leader.route, {
+                                    reload: true
+                                });
+                            }}>
+                            <FormattedMessage id={cat.leader.name} />
+                        </NavDropdown.Item>
+                        <NavDropdown.Divider />
+                        {Object.values(cat.routes).map(sites => {
+                            if (sites === cat.leader || !sites.visibleNavbar) return null;
+                            return (
+                                <NavDropdown.Item
+                                    key={sites.name}
+                                    active={matchesPath(this.props.location.pathname, sites.route)}
+                                    onClick={() => {
+                                        this.props.history.push(sites.link || sites.route, {
+                                            reload: true
+                                        });
+                                    }}>
+                                    {!!sites.homeIcon && <FontAwesomeIcon icon={sites.homeIcon} />}{" "}
+                                    <FormattedMessage id={sites.name} />
+                                </NavDropdown.Item>
+                            );
+                        })}
+                    </NavDropdown>
+                ) : cat.leader.visibleNavbar ? (
+                    <Nav.Link
+                        onClick={() => {
+                            this.props.history.push(cat.leader.route, {
+                                reload: true
+                            });
+                        }}>
+                        <FormattedMessage id={cat.leader.name} />{" "}
+                        {!!cat.leader.homeIcon && <FontAwesomeIcon icon={cat.leader.homeIcon} />}
+                    </Nav.Link>
+                ) : null
             );
         }
 

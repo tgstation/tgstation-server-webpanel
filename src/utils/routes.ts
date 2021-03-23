@@ -10,43 +10,75 @@ import { resolvePermissionSet } from "./misc";
 
 export interface AppRoute {
     ///Base parameters
-    //must be unique, also is the id of the route name message
+    /**
+     * Must be unique, also is the id of the route name message
+     */
     name: string;
-    //must be unique, url to access
+    /**
+     * Must be unique, url to access
+     */
     route: string;
-    //link to link to when linking to the route, defaults to the "route"
+    /**
+     * Fink to link to when linking to the route, defaults to the "route"
+     */
     link?: string;
-    //filename in components/view that the route should display
+    /**
+     * Filename in components/view that the route should display
+     */
     file: string;
 
     ///Path parameters
-    //If subpaths should route here
+    /**
+     * If subpaths should route here
+     */
     loose: boolean;
-    //If subpaths should light up the navbar button
+    /**
+     * If subpaths should light up the navbar button
+     */
     navbarLoose: boolean;
 
     ///Authentication
-    //if we can route to it even on the login page
+    /**
+     * If we can route to it even on the login page
+     */
     loginless?: boolean;
-    //function to tell if we are authorized
+    /**
+     * Function to tell if we are authorized
+     */
     isAuthorized: () => Promise<boolean>;
-    //result of isAuthorized() after RouteController runs it, can be used by components but only set by RouteController
+    /**
+     * Result of isAuthorized() after RouteController runs it, can be used by components but only set by RouteController
+     */
     cachedAuth?: boolean;
 
     ///Visibility
-    //if this shows up on the navbar
+    /**
+     * If this shows up on the navbar
+     */
     visibleNavbar: boolean;
-    //serves two purposes, first one is to give it an icon, the second one is to not display it if the icon is undefined
+    /**
+     * Displays the icon.
+     */
     homeIcon?: IconProp;
+    /**
+     * Is this specific thing hidden? Stops it from being shown in Home.tsx
+     */
+    hidden?: boolean;
 
     ///Categories
-    //name of the category it belongs to
+    /**
+     * Name of the category it belongs to
+     */
     category?: string;
-    //if this is the main button in the category
+    /**
+     * If this is the main button in the category
+     */
     catleader?: boolean;
 
     ///Misc
-    //Should we not wrap this component in a <Container>?
+    /**
+     * Should we not wrap this component in a <Container>?
+     */
     noContainer?: boolean;
 }
 
@@ -89,8 +121,8 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
         cachedAuth: true,
 
-        visibleNavbar: true,
-        homeIcon: undefined,
+        visibleNavbar: false, // eeh, kinda useless
+        homeIcon: "home",
 
         category: "home",
         catleader: true
@@ -106,6 +138,7 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: instanceManagerRight(InstanceManagerRights.Create),
 
         visibleNavbar: false,
+        homeIcon: "plus-square",
 
         category: "instance",
         catleader: false
@@ -144,7 +177,7 @@ const AppRoutes = asElementTypesAppRoute({
         cachedAuth: true,
 
         visibleNavbar: true,
-        homeIcon: undefined,
+        homeIcon: "code-branch",
 
         category: "instance"
     },
@@ -170,7 +203,7 @@ const AppRoutes = asElementTypesAppRoute({
         cachedAuth: true,
 
         visibleNavbar: true,
-        homeIcon: undefined,
+        homeIcon: "server",
 
         category: "instance"
     },
@@ -196,7 +229,7 @@ const AppRoutes = asElementTypesAppRoute({
         cachedAuth: true,
 
         visibleNavbar: true,
-        homeIcon: undefined,
+        homeIcon: "cog",
 
         category: "instance"
     },
@@ -262,7 +295,29 @@ const AppRoutes = asElementTypesAppRoute({
         cachedAuth: true,
 
         visibleNavbar: true,
-        homeIcon: undefined,
+        homeIcon: "edit",
+
+        category: "user"
+    },
+    useredit_info: {
+        name: "routes.useredit_info",
+        route: "/users/edit/user/:id(\\d+)/:tab?/",
+
+        //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
+        get link(): string {
+            return RouteData.selfuser ? `/users/edit/user/${RouteData.selfuser}` : "/users/edit";
+        },
+        file: "User/Edit",
+
+        loose: true,
+        navbarLoose: true,
+
+        //you can always read your own user
+        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
+        cachedAuth: true,
+
+        visibleNavbar: false,
+        homeIcon: "edit",
 
         category: "user"
     },
@@ -279,7 +334,7 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: adminRight(AdministrationRights.WriteUsers),
 
         visibleNavbar: true,
-        homeIcon: undefined,
+        homeIcon: "user-plus",
 
         category: "user"
     },
@@ -312,7 +367,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         isAuthorized: adminRight(AdministrationRights.ChangeVersion),
         visibleNavbar: true,
-        homeIcon: undefined,
+        homeIcon: "toolbox",
 
         category: "admin"
     },
@@ -327,7 +382,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         isAuthorized: adminRight(AdministrationRights.DownloadLogs),
         visibleNavbar: true,
-        homeIcon: undefined,
+        homeIcon: "bars",
 
         category: "admin",
 
@@ -359,8 +414,8 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
         cachedAuth: true,
 
-        visibleNavbar: false,
-        homeIcon: "cogs"
+        visibleNavbar: true,
+        homeIcon: "cog"
     },
     setup: {
         name: "routes.setup",
@@ -374,7 +429,8 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
         cachedAuth: true,
 
-        visibleNavbar: false
+        visibleNavbar: false,
+        homeIcon: "wrench"
     },
     oAuth: {
         name: "routes.oauth",
@@ -388,7 +444,8 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
         cachedAuth: true,
 
-        visibleNavbar: false
+        visibleNavbar: false,
+        homeIcon: "key"
     },
     info: {
         name: "routes.info",
@@ -405,7 +462,7 @@ const AppRoutes = asElementTypesAppRoute({
         visibleNavbar: true,
         homeIcon: "info-circle",
 
-        category: undefined,
+        category: "admin",
         catleader: false
     }
 });
@@ -445,6 +502,7 @@ export const UnpopulatedAppCategories = asElementTypesCategory({
 export const AppCategories: { [K in keyof typeof UnpopulatedAppCategories]: AppCategory } = {};
 
 export const RouteData = {
+    selfuser: (UserClient.getCurrentUser() as unknown) as string | string,
     selecteduserid: undefined as undefined | number,
     selectedusertab: undefined as undefined | string,
 

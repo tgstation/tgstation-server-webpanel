@@ -39,6 +39,7 @@ export default class Configuration extends React.Component<IProps, IState> {
 
         return (
             <React.Fragment>
+                <h2>Clientside Config</h2>
                 {config.map(([key, currentVal]) => {
                     //const persistRef = React.createRef<HTMLInputElement>();
                     const valueRef = React.createRef<HTMLInputElement>();
