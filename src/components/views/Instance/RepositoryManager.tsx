@@ -33,6 +33,7 @@ import InternalError, {
 } from "../../../ApiClient/models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import RepositoryClient from "../../../ApiClient/RepositoryClient";
+import configOptions from "../../../ApiClient/util/config";
 import JobsController from "../../../ApiClient/util/JobsController";
 import GitHubClient, { CommitData, PRData } from "../../../utils/GithubClient";
 import { AppRoutes, RouteData } from "../../../utils/routes";
@@ -812,6 +813,14 @@ export default withRouter(
         private renderAutomaticTestMergeAdder(): React.ReactNode | null {
             if (!this.state.prData?.length) return null;
 
+            function isPriority(pr: PRData) {
+                return pr.labels.some(
+                    label =>
+                        label.name?.toLowerCase().trim() ===
+                        (configOptions.testmergelabel.value as string).toLowerCase().trim()
+                );
+            }
+
             return (
                 <React.Fragment>
                     <h5>
@@ -853,7 +862,7 @@ export default withRouter(
                                                 parameters => parameters.number === data.number
                                             )
                                     )
-                                    .sort(a => (a.priority ? 0 : 1))
+                                    .sort(a => Number(!isPriority(a)))
                                     .map(data => (
                                         <option
                                             value={data.number}
@@ -861,8 +870,8 @@ export default withRouter(
                                             selected={
                                                 data.number === this.state.autoTestMergeNumber
                                             }>
-                                            {data.priority ? "! " : ""}#{data.number} - {data.title}{" "}
-                                            @{data.author}
+                                            {isPriority(data) ? "! " : ""}#{data.number} -{" "}
+                                            {data.title} @{data.user?.login || "Ghost"}
                                         </option>
                                     ))}
                             </select>
@@ -926,7 +935,7 @@ export default withRouter(
                                                   selected={
                                                       data.sha === this.state.autoTestMergeSha
                                                   }>
-                                                  {data.sha.substring(0, 7)} - {data.message}
+                                                  {data.sha.substring(0, 7)} - {data.commit.message}
                                               </option>
                                           ))
                                     : null}

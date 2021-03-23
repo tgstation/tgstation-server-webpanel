@@ -2,6 +2,7 @@ import { retry } from "@octokit/plugin-retry";
 import { throttling } from "@octokit/plugin-throttling";
 import { RequestError } from "@octokit/request-error";
 import { Octokit } from "@octokit/rest";
+import { OctokitResponse } from "@octokit/types";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
@@ -15,20 +16,6 @@ export interface TGSVersion {
     current: boolean;
     old: boolean;
 }
-
-export interface PRData {
-    number: number;
-    title: string;
-    author: string;
-    priority: boolean;
-    url: string;
-}
-
-export interface CommitData {
-    sha: string;
-    message: string;
-}
-
 interface IEvents {}
 
 /* eslint-disable */
@@ -64,6 +51,19 @@ const authStrategy = () => {
 };
 
 /* eslint-enable */
+
+type ExtractResponse<T> = T extends OctokitResponse<infer U> ? U : never;
+type ExtractPromise<T> = T extends PromiseLike<infer U> ? U : never;
+type ExtractTypeFromEndpoint<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    T extends (...args: any[]) => Promise<OctokitResponse<unknown>>
+> = ExtractResponse<ExtractPromise<ReturnType<T>>>;
+type ExtractTypeFromArray<T> = T extends Array<infer U> ? U : never;
+
+export type PRData = ExtractTypeFromArray<ExtractTypeFromEndpoint<Octokit["pulls"]["list"]>>;
+export type CommitData = ExtractTypeFromArray<
+    ExtractTypeFromEndpoint<Octokit["pulls"]["listCommits"]>
+>;
 
 const e = new (class GithubClient extends TypedEmitter<IEvents> {
     private readonly apiClient: Octokit;
@@ -107,20 +107,11 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
         pr: number
     ): Promise<InternalStatus<CommitData[], ErrorCode.GITHUB_FAIL>> {
         try {
-            const payload = await this.apiClient.paginate(
-                this.apiClient.pulls.listCommits,
-                { owner, repo, pull_number: pr },
-                response => {
-                    return response.data.reduce((result, commit) => {
-                        result.splice(0, 0, {
-                            sha: commit.sha,
-                            message: commit.commit.message
-                        });
-
-                        return result;
-                    }, [] as CommitData[]);
-                }
-            );
+            const payload = await this.apiClient.paginate(this.apiClient.pulls.listCommits, {
+                owner,
+                repo,
+                pull_number: pr
+            });
 
             return new InternalStatus({
                 code: StatusCode.OK,
@@ -141,25 +132,10 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
         repo: string
     ): Promise<InternalStatus<PRData[], ErrorCode.GITHUB_FAIL>> {
         try {
-            const payload = await this.apiClient.paginate(
-                this.apiClient.pulls.list,
-                { owner, repo },
-                response => {
-                    return response.data.reduce((result, pr) => {
-                        result.push({
-                            number: pr.number,
-                            title: pr.title,
-                            author: pr.user!.login,
-                            url: pr.html_url,
-                            priority: pr.labels.some(
-                                label => label.name === configOptions.testmergelabel.value
-                            )
-                        });
-
-                        return result;
-                    }, [] as PRData[]);
-                }
-            );
+            const payload = await this.apiClient.paginate(this.apiClient.pulls.list, {
+                owner,
+                repo
+            });
 
             return new InternalStatus({
                 code: StatusCode.OK,
