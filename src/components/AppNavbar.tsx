@@ -20,7 +20,7 @@ import LoginHooks from "../ApiClient/util/LoginHooks";
 import TGLogo from "../images/tglogo-white.svg";
 import { matchesPath } from "../utils/misc";
 import RouteController from "../utils/RouteController";
-import { AppCategories, AppRoute, AppRoutes } from "../utils/routes";
+import { AppCategories, AppRoute, AppRoutes, RouteData } from "../utils/routes";
 
 interface IProps extends RouteComponentProps {
     category?: {
@@ -83,6 +83,9 @@ export default withRouter(
                 currentUser: user.code == StatusCode.OK ? user.payload : null,
                 userNameError: user.code == StatusCode.ERROR ? user.error : null
             });
+            RouteData.currentuserid = this.state?.currentUser?.id
+                ? this.state.currentUser.id
+                : undefined;
         }
 
         private loginSuccess() {
@@ -147,45 +150,7 @@ export default withRouter(
         public render(): React.ReactNode {
             return (
                 <>
-                    <Modal
-                        aria-labelledby="contained-modal-title-vcenter"
-                        show={this.state.logout_modal}
-                        centered
-                        onHide={() => {
-                            this.setState({ logout_modal: false });
-                        }}>
-                        <Modal.Header
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center"
-                            }}>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                Do you want to log out?
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Footer
-                            style={{
-                                display: "flex",
-                                justifyContent: "center"
-                            }}>
-                            <Button
-                                variant="secondary"
-                                onClick={() => {
-                                    this.setState({ logout_modal: false });
-                                }}>
-                                Close
-                            </Button>
-                            <Button
-                                variant="danger"
-                                onClick={() => {
-                                    this.setState({ logout_modal: false });
-                                    this.logoutClick();
-                                }}>
-                                Log Out
-                            </Button>
-                        </Modal.Footer>
-                    </Modal>
+                    {!!this.state.logout_modal && this.renderQuitModal()}
                     <Navbar
                         className="shadow-lg"
                         expand={this.state.loggedIn ? "lg" : undefined}
@@ -303,10 +268,12 @@ export default withRouter(
                         menuAlign="right">
                         <Dropdown.Item
                             onClick={() => {
+                                // AHEM.
+                                RouteData.currentuserid = this.state?.currentUser?.id
+                                    ? this.state.currentUser.id
+                                    : undefined;
                                 this.props.history.push(
-                                    this.state.currentUser
-                                        ? `/users/edit/user/${this.state.currentUser.id}/info`
-                                        : `/users/edit`, // Tragic!
+                                    AppRoutes.useredit_info.link || AppRoutes.useredit_info.route,
                                     { reload: true }
                                 );
                             }}>
@@ -369,10 +336,10 @@ export default withRouter(
                         key={cat.name}
                         title={
                             <>
-                                <FormattedMessage id={cat.leader.name} />{" "}
                                 {!!cat.leader.homeIcon && (
                                     <FontAwesomeIcon icon={cat.leader.homeIcon} />
-                                )}
+                                )}{" "}
+                                <FormattedMessage id={cat.leader.name} />
                             </>
                         }
                         id="basic-nav-dropdown">
@@ -418,6 +385,50 @@ export default withRouter(
                         {!!cat.leader.homeIcon && <FontAwesomeIcon icon={cat.leader.homeIcon} />}
                     </Nav.Link>
                 ) : null
+            );
+        }
+
+        private renderQuitModal(): React.ReactNode {
+            return (
+                <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    show={this.state.logout_modal}
+                    centered
+                    onHide={() => {
+                        this.setState({ logout_modal: false });
+                    }}>
+                    <Modal.Header
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            <FormattedMessage id={"logout.text"} />
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Footer
+                        style={{
+                            display: "flex",
+                            justifyContent: "center"
+                        }}>
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                this.setState({ logout_modal: false });
+                            }}>
+                            <FormattedMessage id={"logout.close"} />
+                        </Button>
+                        <Button
+                            variant="danger"
+                            onClick={() => {
+                                this.setState({ logout_modal: false });
+                                this.logoutClick();
+                            }}>
+                            <FormattedMessage id={"logout.logout"} />
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             );
         }
 

@@ -6,6 +6,7 @@ import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import JobsController from "../ApiClient/util/JobsController";
+import { HostingTabLocation } from "../definitions/constants";
 import { resolvePermissionSet } from "./misc";
 
 export interface AppRoute {
@@ -145,7 +146,7 @@ const AppRoutes = asElementTypesAppRoute({
     },
     instancelist: {
         name: "routes.instancelist",
-        route: "/instances/",
+        route: "/instances",
         file: "Instance/List",
 
         loose: false,
@@ -159,14 +160,17 @@ const AppRoutes = asElementTypesAppRoute({
         category: "instance",
         catleader: true
     },
+    /**
+     * @deprecated
+     */
     instancecode: {
         name: "routes.instancecode",
-        route: "/instances/code/:id(\\d+)/",
+        route: "/instances/code/:id(\\d+)",
         file: "Instance/CodeDeployment",
 
         get link(): string {
             return RouteData.instanceid !== undefined
-                ? `/instances/code/${RouteData.instanceid}/`
+                ? `/instances/code/${RouteData.instanceid}`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
 
@@ -176,21 +180,21 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
         cachedAuth: true,
 
-        visibleNavbar: true,
+        visibleNavbar: false,
         homeIcon: "code-branch",
 
         category: "instance"
     },
     instancehosting: {
         name: "routes.instancehosting",
-        route: "/instances/hosting/:id(\\d+)/:tab?/",
+        route: "/instances/hosting/:id(\\d+)/:tab?",
         file: "Instance/Hosting",
 
         get link(): string {
             return RouteData.instanceid !== undefined
-                ? `/instances/hosting/${RouteData.instanceid}/${
-                      RouteData.selectedinstancehostingtab !== undefined
-                          ? `${RouteData.selectedinstancehostingtab}/`
+                ? `/instances/hosting/${RouteData.instanceid}${
+                      RouteData.selectedinstancehostingtab
+                          ? `/${RouteData.selectedinstancehostingtab}`
                           : ""
                   }`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
@@ -202,11 +206,14 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: (): Promise<boolean> => Promise.resolve(true),
         cachedAuth: true,
 
-        visibleNavbar: true,
+        visibleNavbar: false,
         homeIcon: "server",
 
         category: "instance"
     },
+    /**
+     * @deprecated
+     */
     instanceconfig: {
         name: "routes.instanceconfig",
         route: "/instances/config/:id(\\d+)/:tab?/",
@@ -214,9 +221,9 @@ const AppRoutes = asElementTypesAppRoute({
 
         get link(): string {
             return RouteData.instanceid !== undefined
-                ? `/instances/config/${RouteData.instanceid}/${
+                ? `/instances/config/${RouteData.instanceid}${
                       RouteData.selectedinstanceconfigtab !== undefined
-                          ? `${RouteData.selectedinstanceconfigtab}/`
+                          ? `/${RouteData.selectedinstanceconfigtab}`
                           : ""
                   }`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
@@ -240,7 +247,7 @@ const AppRoutes = asElementTypesAppRoute({
 
         get link(): string {
             return RouteData.instanceid !== undefined
-                ? `/instances/jobs/${RouteData.instanceid}/`
+                ? `/instances/jobs/${RouteData.instanceid}`
                 : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
         },
 
@@ -257,7 +264,7 @@ const AppRoutes = asElementTypesAppRoute({
     },
     userlist: {
         name: "routes.usermanager",
-        route: "/users/",
+        route: "/users",
         file: "User/List",
 
         loose: false,
@@ -275,13 +282,13 @@ const AppRoutes = asElementTypesAppRoute({
     },
     useredit: {
         name: "routes.useredit",
-        route: "/users/edit/user/:id(\\d+)/:tab?/",
+        route: "/users/edit/user/:id(\\d+)/:tab?",
 
         //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
         get link(): string {
             return RouteData.selecteduserid !== undefined
-                ? `/users/edit/user/${RouteData.selecteduserid}/${
-                      RouteData.selectedusertab !== undefined ? `${RouteData.selectedusertab}/` : ""
+                ? `/users/edit/user/${RouteData.selecteduserid}${
+                      RouteData.selectedusertab !== undefined ? `/${RouteData.selectedusertab}` : ""
                   }`
                 : AppRoutes.userlist.link || AppRoutes.userlist.route;
         },
@@ -305,7 +312,9 @@ const AppRoutes = asElementTypesAppRoute({
 
         //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
         get link(): string {
-            return RouteData.selfuser ? `/users/edit/user/${RouteData.selfuser}` : "/users/edit";
+            return RouteData.currentuserid
+                ? `/users/edit/user/${RouteData.currentuserid}/info`
+                : "/users";
         },
         file: "User/Edit",
 
@@ -323,9 +332,9 @@ const AppRoutes = asElementTypesAppRoute({
     },
     usercreate: {
         name: "routes.usercreate",
-        route: "/users/create/",
+        route: "/users/create",
 
-        link: "/users/create/",
+        link: "/users/create",
         file: "User/Create",
 
         loose: true,
@@ -340,7 +349,7 @@ const AppRoutes = asElementTypesAppRoute({
     },
     admin: {
         name: "routes.admin",
-        route: "/admin/",
+        route: "/admin",
         file: "Administration",
 
         loose: false,
@@ -357,10 +366,10 @@ const AppRoutes = asElementTypesAppRoute({
     },
     admin_update: {
         name: "routes.admin.update",
-        route: "/admin/update/:all?/",
+        route: "/admin/update/:all?",
         file: "Admin/Update",
 
-        link: "/admin/update/",
+        link: "/admin/update",
 
         loose: true,
         navbarLoose: true,
@@ -373,8 +382,8 @@ const AppRoutes = asElementTypesAppRoute({
     },
     admin_logs: {
         name: "routes.admin.logs",
-        route: "/admin/logs/:name?/",
-        link: "/admin/logs/",
+        route: "/admin/logs/:name?",
+        link: "/admin/logs",
         file: "Admin/Logs",
 
         loose: false,
@@ -390,7 +399,7 @@ const AppRoutes = asElementTypesAppRoute({
     },
     passwd: {
         name: "routes.passwd",
-        route: "/users/passwd/:id(\\d+)?/",
+        route: "/users/passwd/:id(\\d+)?",
         link: "/users/passwd/",
         file: "ChangePassword",
 
@@ -404,7 +413,7 @@ const AppRoutes = asElementTypesAppRoute({
     },
     config: {
         name: "routes.config",
-        route: "/config/",
+        route: "/config",
         file: "Configuration",
 
         loose: true,
@@ -419,7 +428,7 @@ const AppRoutes = asElementTypesAppRoute({
     },
     setup: {
         name: "routes.setup",
-        route: "/setup/",
+        route: "/setup",
         file: "Setup",
 
         loose: true,
@@ -434,7 +443,7 @@ const AppRoutes = asElementTypesAppRoute({
     },
     oAuth: {
         name: "routes.oauth",
-        route: "/oauth/:provider?/",
+        route: "/oauth/:provider?",
         file: "Login",
 
         loose: true,
@@ -502,12 +511,12 @@ export const UnpopulatedAppCategories = asElementTypesCategory({
 export const AppCategories: { [K in keyof typeof UnpopulatedAppCategories]: AppCategory } = {};
 
 export const RouteData = {
-    selfuser: (UserClient.getCurrentUser() as unknown) as string | string,
     selecteduserid: undefined as undefined | number,
     selectedusertab: undefined as undefined | string,
+    currentuserid: undefined as undefined | number,
 
     selectedinstanceconfigtab: undefined as undefined | string,
-    selectedinstancehostingtab: undefined as undefined | string,
+    selectedinstancehostingtab: undefined as undefined | HostingTabLocation,
     _instanceid: undefined as undefined | number,
 
     set instanceid(newval: string | undefined) {

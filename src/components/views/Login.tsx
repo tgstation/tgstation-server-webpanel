@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, FormEvent, ReactNode } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
+import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
+import Tooltip from "react-bootstrap/esm/Tooltip";
 import Form from "react-bootstrap/Form";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import { FormattedMessage } from "react-intl";
@@ -137,14 +139,10 @@ export default withRouter(
             };
 
             return (
-                <div
-                    style={{
-                        width: "50%",
-                        maxWidth: "300%",
-                        marginLeft: "auto",
-                        marginRight: "auto"
-                    }}>
-                    <h1>Login to continue</h1>
+                <div className={"login"}>
+                    <h1>
+                        <FormattedMessage id="login.tocontinue" />
+                    </h1>
                     <Form validated={this.state.validated} onSubmit={this.submit}>
                         <Jumbotron className={"dark"}>
                             <Col className="mx-auto">
@@ -173,6 +171,7 @@ export default withRouter(
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter username"
+                                        autoComplete={"username"}
                                         onChange={handleUsrInput}
                                         value={this.state.username}
                                         required
@@ -195,6 +194,24 @@ export default withRouter(
                                 <Button type="submit" variant="primary" block>
                                     <FormattedMessage id="login.submit" />
                                 </Button>
+                                {MODE === "DEV" && (
+                                    <OverlayTrigger
+                                        placement={"top"}
+                                        overlay={
+                                            <Tooltip id={"tooltip-defaultacc"}>
+                                                Or you could use <code>ctrl+shift+l</code>
+                                            </Tooltip>
+                                        }>
+                                        <Button
+                                            onClick={async () => {
+                                                await this.tryLoginDefault();
+                                            }}
+                                            variant="outline-primary"
+                                            block>
+                                            <FormattedMessage id="login.defaultacc" />
+                                        </Button>
+                                    </OverlayTrigger>
+                                )}
                                 {/* <Button
                                     onClick={() => {
                                         alert(

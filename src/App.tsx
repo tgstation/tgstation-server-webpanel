@@ -153,10 +153,10 @@ class App extends React.Component<IProps, IState> {
         );
     }
 
-    private async loadTranslation(): Promise<void> {
+    private async loadTranslation(locale: string = this.props.locale): Promise<void> {
         console.time("LoadTranslations");
         try {
-            const translation = await this.translationFactory.loadTranslation(this.props.locale);
+            const translation = await this.translationFactory.loadTranslation(locale);
             this.setState({
                 translation
             });

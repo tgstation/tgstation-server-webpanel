@@ -26,6 +26,7 @@ import { faToolbox } from "@fortawesome/free-solid-svg-icons/faToolbox";
 import { faTools } from "@fortawesome/free-solid-svg-icons/faTools";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { faUndo } from "@fortawesome/free-solid-svg-icons/faUndo";
+import { faUpload } from "@fortawesome/free-solid-svg-icons/faUpload";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 import { faUserSlash } from "@fortawesome/free-solid-svg-icons/faUserSlash";
@@ -61,6 +62,7 @@ export default function (): void {
         faPen,
         faGithub,
         faDiscord,
+        faUpload,
         faTrash,
         faInfoCircle
     );

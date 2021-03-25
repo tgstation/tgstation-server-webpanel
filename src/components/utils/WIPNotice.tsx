@@ -18,10 +18,12 @@ export default class WIPNotice extends React.Component {
                             https://github.com/tgstation/Tgstation.Server.ControlPanel/releases/latest
                         </a>
                     </Card.Title>
-                    <Card.Text as={"pre"} className="bg-transparent text-info">
-                        <code>
-                            {`Version: ${VERSION}\nWebpanel Mode: ${MODE}\nCurrent route: ${window.location.toString()}`}
-                        </code>
+                    <Card.Text className="bg-transparent text-info">
+                        <code>{`Version: ${VERSION}`}</code>
+                        <code>{`Webpanel Mode: ${MODE}`}</code>
+                        <br />
+                        <code>{`Current route: ${window.location.toString()}`}</code>
+                        <br />
                     </Card.Text>
                 </Card.Body>
             </Card>
