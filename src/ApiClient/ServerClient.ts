@@ -110,7 +110,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 headers: {
                     Accept: "application/json",
                     Api: `Tgstation.Server.Api/` + API_VERSION,
-                    "User-Agent": "tgstation-server-control-panel/" + VERSION
+                    "Webpanel-Version": VERSION
                 },
                 //Global errors are handled via the catch clause and endpoint specific response codes are handled normally
                 validateStatus: status => {
