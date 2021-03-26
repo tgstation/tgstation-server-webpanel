@@ -38,8 +38,11 @@
         <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet" />
         <% } %>
     </head>
-    <body>
-        <div id="root"></div>
+    <body class="fancyscroll">
+        <noscript>
+            <h2>Javascript is required to run the app.</h2>
+        </noscript>
+        <div id="root" aria-details="Div container containing the react-app."></div>
         <script>
             try {
                 function loadChannel(channel) {
