@@ -235,7 +235,7 @@ const AppRoutes = asElementTypesAppRoute({
         isAuthorized: () => Promise.resolve(true),
         cachedAuth: true,
 
-        visibleNavbar: true,
+        visibleNavbar: false, // bye bye!
         homeIcon: "cog",
 
         category: "instance"
@@ -258,7 +258,7 @@ const AppRoutes = asElementTypesAppRoute({
         cachedAuth: true,
 
         visibleNavbar: true,
-        homeIcon: undefined,
+        homeIcon: "briefcase",
 
         category: "instance"
     },

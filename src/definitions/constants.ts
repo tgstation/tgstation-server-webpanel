@@ -12,11 +12,12 @@ const _DEFAULT_APIPATH = DEFAULT_APIPATH;
 
 export enum HostingTabLocation {
     INFO = "",
+    CHATBOT = "chatbots",
     CODE = "code",
+    DEPLOYMENT = "deployment",
     CONFIG = "configuration",
-    BYOND = "byond",
-    USER = "users",
-    CHATBOT = "chatbots"
+    FILES = "files",
+    USER = "users"
 }
 
 export { _API_VERSION as API_VERSION };

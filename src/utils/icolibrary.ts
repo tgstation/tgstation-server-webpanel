@@ -2,6 +2,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
+import { faBriefcase } from "@fortawesome/free-solid-svg-icons/faBriefcase";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons/faCodeBranch";
 import { faCog } from "@fortawesome/free-solid-svg-icons/faCog";
@@ -61,6 +62,7 @@ export default function (): void {
         faKey,
         faPen,
         faGithub,
+        faBriefcase,
         faDiscord,
         faUpload,
         faTrash,

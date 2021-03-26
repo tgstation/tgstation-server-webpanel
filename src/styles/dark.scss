@@ -1,13 +1,5 @@
-.navbar {
-    font-weight: 600;
-}
 $enable-shadows: true;
-$enable-gradients: true;
-
-.vmin-50 {
-    width: 50vmin !important;
-    height: 50vmin !important;
-}
+$enable-gradients: false;
 
 /**
  * <code> tag css
@@ -18,6 +10,8 @@ code{
     border-radius: 3px;
     padding: 0.2em;
 }
+$code-color: #a4a4a4 !default;
+
 /**
  * Login box css
  */
@@ -60,14 +54,24 @@ code{
 /**
  * CardColum for configs
  */
-.card-columns {
-    @media (min-width: 576px) and (max-width: 775px) {
+@media (min-width: 576px) and (max-width: 775px) {
+    .card-colum-cfg { // do not override the base pls
         column-count: 1 !important;
     }
-    @media (min-width: 775px) {
+}
+@media (min-width: 775px) {
+    .card-colum-cfg {
         column-count: 2 !important;
+        widows: unset !important;
     }
-  }
+}
+
+/**
+ * Jumbotrons, might not use them since >>cards
+ */
+.jumbotron.dark {
+    background-color: #aaa;
+}
 
 $theme-colors: (
     //02549a
@@ -78,10 +82,10 @@ $theme-colors: (
     "darker": darken(#212529, 5%)
 );
 $theme-colors: map-merge(
-        $theme-colors,
-        (
-            "darkblue": rgba(scale-color(map-get($theme-colors, "primary"), $lightness: -20%), 1)
-        )
+    $theme-colors,
+    (
+        "darkblue": rgba(scale-color(map-get($theme-colors, "primary"), $lightness: -20%), 1)
+    )
 );
 
 $sizes: (
@@ -185,8 +189,6 @@ $body-color: $gray-200;
 $card-bg: $gray-700;
 $card-cap-color: $white;
 
-$code-color: inherit;
-
 $dropdown-bg: $gray-700;
 $dropdown-color: $black;
 $dropdown-link-color: $white;
@@ -219,46 +221,7 @@ $toast-background-color: $gray-700;
 $toast-header-color: $toast-color;
 $toast-header-background-color: $gray-600;
 
-
-
-@import "~bootstrap/scss/variables";
-
-@import "~bootstrap/scss/mixins";
-@import "~bootstrap/scss/root";
-@import "~bootstrap/scss/reboot";
-@import "~bootstrap/scss/type";
-
-//@import "~bootstrap/scss/images";
-@import "~bootstrap/scss/code";
-@import "~bootstrap/scss/grid";
-@import "~bootstrap/scss/tables";
-@import "~bootstrap/scss/forms";
-@import "~bootstrap/scss/buttons";
-@import "~bootstrap/scss/transitions";
-@import "~bootstrap/scss/dropdown";
-@import "~bootstrap/scss/button-group";
-@import "~bootstrap/scss/input-group";
-@import "~bootstrap/scss/custom-forms";
-@import "~bootstrap/scss/nav";
-@import "~bootstrap/scss/navbar";
-@import "~bootstrap/scss/card";
-//@import "~bootstrap/scss/breadcrumb";
-//@import "~bootstrap/scss/pagination";
-@import "~bootstrap/scss/badge";
-@import "~bootstrap/scss/jumbotron";
-@import "~bootstrap/scss/alert";
-@import "~bootstrap/scss/progress";
-//@import "~bootstrap/scss/media";
-@import "~bootstrap/scss/list-group";
-@import "~bootstrap/scss/close";
-@import "~bootstrap/scss/toasts";
-@import "~bootstrap/scss/modal";
-@import "~bootstrap/scss/tooltip";
-//@import "~bootstrap/scss/popover";
-//@import "~bootstrap/scss/carousel";
-@import "~bootstrap/scss/spinners";
-@import "~bootstrap/scss/utilities";
-//@import "~bootstrap/scss/print";
+@import "./default.scss";
 
 .text-secondary {
     color: #3b93de !important;
@@ -271,9 +234,6 @@ $toast-header-background-color: $gray-600;
     margin-left: 0.10rem;
 }
 
-.jumbotron.dark {
-    background-color: #aaa;
-}
 
 @include media-breakpoint-down("sm") {
     .nav-tabs .nav-link{

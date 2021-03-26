@@ -3,8 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ReactNode } from "react";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/esm/Card";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
+import ListGroup from "react-bootstrap/ListGroup";
 import Modal from "react-bootstrap/Modal";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
@@ -31,7 +33,9 @@ type Instance = Components.Schemas.InstanceResponse & {
 interface IState {
     instances: Instance[];
     loading?: boolean;
+    loadingNewInstance: boolean;
     errors: Array<InternalError<ErrorCode> | undefined>;
+    errorNewInstance?: InternalError<ErrorCode>;
     //isnt directly used but is used to make react rerender when the selected insance is changed
     instanceid?: number;
     canOnline: boolean;
@@ -58,6 +62,7 @@ export default withRouter(
 
             this.state = {
                 loading: true,
+                loadingNewInstance: false,
                 instances: [],
                 errors: [],
                 instanceid: actualid,
@@ -175,34 +180,35 @@ export default withRouter(
             return (
                 <>
                     {!!this.state.creatingInstance && this.renderNewInstanceModal()}
-                    <div className="text-center">
-                        {this.state.errors.map((err, index) => {
-                            if (!err) return;
-                            return (
-                                <ErrorAlert
-                                    key={index}
-                                    error={err}
-                                    onClose={() =>
-                                        this.setState(prev => {
-                                            const newarr = Array.from(prev.errors);
-                                            newarr[index] = undefined;
-                                            return {
-                                                errors: newarr
-                                            };
-                                        })
+                    {this.state.errors.map((err, index) => {
+                        if (!err) return;
+                        return (
+                            <ErrorAlert
+                                key={index}
+                                error={err}
+                                onClose={() => {
+                                    this.setState(prev => {
+                                        const newarr = Array.from(prev.errors);
+                                        newarr[index] = undefined;
+                                        return {
+                                            errors: newarr
+                                        };
+                                    });
+                                    if (this.state.errorNewInstance === err) {
+                                        this.setState({ errorNewInstance: undefined });
                                     }
-                                />
-                            );
-                        })}
+                                }}
+                            />
+                        );
+                    })}
+                    <Card>
+                        <Card.Header>
+                            <h1>
+                                <FormattedMessage id="view.instance.list.title" />
+                            </h1>
+                        </Card.Header>
                         <Table striped hover variant="dark" responsive className="mb-4">
                             <thead>
-                                <tr>
-                                    <td colSpan={5}>
-                                        <h1>
-                                            <FormattedMessage id="view.instance.list.title" />
-                                        </h1>
-                                    </td>
-                                </tr>
                                 <tr>
                                     <th>ID</th>
                                     <th>
@@ -214,19 +220,12 @@ export default withRouter(
                                     <th>
                                         <FormattedMessage id="generic.path" />
                                     </th>
-                                    <th>
-                                        <FormattedMessage id="generic.configmode" />
-                                    </th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {this.renderListing()}
-                                <tr>
-                                    <td colSpan={5}>{this.renderAddInstance()}</td>
-                                </tr>
-                            </tbody>
+                            <tbody>{this.renderListing()}</tbody>
                         </Table>
-                    </div>
+                        <Card.Body>{this.renderAddInstance()}</Card.Body>
+                    </Card>
                 </>
             );
         }
@@ -242,122 +241,126 @@ export default withRouter(
                         this.setState({ creatingInstance: false });
                     }}>
                     <Modal.Header closeButton>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Create a new instance
-                        </Modal.Title>
+                        <Modal.Title>Create a new instance</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form>
-                            <Form.Group controlId="name">
-                                <Form.Label>
-                                    <FormattedMessage id="view.instance.create.name" />
-                                </Form.Label>
+                        {this.state.errorNewInstance && (
+                            <ErrorAlert
+                                error={this.state.errorNewInstance}
+                                onClose={() => this.setState({ errorNewInstance: undefined })}
+                            />
+                        )}
+                        <Form.Group>
+                            <Form.Label>
+                                <FormattedMessage id="view.instance.create.name" />
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Enter instance name"
+                                onChange={e => {
+                                    const instanceName = e.target.value;
+                                    this.setState({
+                                        instanceName
+                                    });
+                                }}
+                                value={this.state.instanceName}
+                                required
+                                isInvalid={!this.state.instanceName}
+                            />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>
+                                <FormattedMessage id="view.instance.create.path" />
+                            </Form.Label>
+                            <InputGroup hasValidation>
+                                {vlad_paths != null ? (
+                                    <>
+                                        <InputGroup.Text>
+                                            <FormattedMessage id="view.instance.create.path.prefix" />
+                                        </InputGroup.Text>
+                                        <Form.Control
+                                            as="select"
+                                            custom
+                                            required
+                                            onChange={event => {
+                                                this.setState({
+                                                    prefix: event.target.value
+                                                });
+                                            }}>
+                                            {vlad_paths.map(validPath => {
+                                                return (
+                                                    <option
+                                                        key={validPath}
+                                                        value={validPath}
+                                                        selected={this.state.prefix == validPath}>
+                                                        {validPath}/
+                                                    </option>
+                                                );
+                                            })}
+                                        </Form.Control>
+                                    </>
+                                ) : null}
                                 <Form.Control
                                     type="text"
-                                    placeholder="Enter instance name"
-                                    onChange={e => {
-                                        const instanceName = e.target.value;
-                                        this.setState({
-                                            instanceName
-                                        });
-                                    }}
-                                    value={this.state.instanceName}
+                                    placeholder="Enter instance directory"
                                     required
-                                    isInvalid={!this.state.instanceName}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="path">
-                                <Form.Label>
-                                    <FormattedMessage id="view.instance.create.path" />
-                                </Form.Label>
-                                <InputGroup className="mb-1">
-                                    {vlad_paths != null ? (
-                                        <InputGroup.Prepend className="flex-grow-1 flex-grow-md-0">
-                                            <InputGroup.Text>
-                                                <span>
-                                                    <FormattedMessage id="view.instance.create.path.prefix" />
-                                                </span>
-                                            </InputGroup.Text>
-                                            <Form.Control
-                                                className="rounded-0 flex-grow-1 flex-grow-md-0 flex-shrink-0 flex-shrink-md-1 w-auto"
-                                                as="select"
-                                                custom
-                                                required
-                                                onChange={event => {
-                                                    this.setState({
-                                                        prefix: event.target.value
-                                                    });
-                                                }}>
-                                                {vlad_paths.map(validPath => {
-                                                    return (
-                                                        <option
-                                                            key={validPath}
-                                                            value={validPath}
-                                                            selected={
-                                                                this.state.prefix == validPath
-                                                            }>
-                                                            {validPath}/
-                                                        </option>
-                                                    );
-                                                })}
-                                            </Form.Control>
-                                        </InputGroup.Prepend>
-                                    ) : null}
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Enter instance directory"
-                                        required
-                                        onChange={event => {
-                                            const instancePath = event.target.value;
-                                            this.setState({
-                                                instancePath
-                                            });
-                                        }}
-                                        value={this.state.instancePath}
-                                        isInvalid={!this.state.instancePath}
-                                    />
-                                </InputGroup>
-                            </Form.Group>
-                            <Form.Group controlId="enabled">
-                                <Form.Check
-                                    type="switch"
-                                    checked={this.state.instanceEnabled}
-                                    id={"enable-server-on-create"}
-                                    onChange={e => {
+                                    onChange={event => {
+                                        const instancePath = event.target.value;
                                         this.setState({
-                                            instanceEnabled: e.target.checked
+                                            instancePath
                                         });
                                     }}
-                                    label={<FormattedMessage id="view.instance.create.enabled" />}
+                                    value={this.state.instancePath}
+                                    isInvalid={!this.state.instancePath}
+                                    disabled={this.state.loadingNewInstance}
                                 />
-                            </Form.Group>
-                            <Modal.Footer>
-                                <Button
-                                    onClick={async () => {
-                                        await this.submit();
-                                    }}
-                                    variant="success">
-                                    <FormattedMessage id="view.instance.create.submit" />
-                                </Button>
-                                <Button
-                                    variant="secondary"
-                                    onClick={() => {
-                                        this.props.history.push(
-                                            AppRoutes.instancecreate.link ||
-                                                AppRoutes.instancecreate.route
-                                        );
-                                    }}>
-                                    Use Old Setup
-                                </Button>
-                                <Button
-                                    variant="secondary"
-                                    onClick={() => {
-                                        this.setState({ creatingInstance: false });
-                                    }}>
-                                    Cancel
-                                </Button>
-                            </Modal.Footer>
-                        </Form>
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Check
+                                type="switch"
+                                checked={this.state.instanceEnabled}
+                                id={"enable-server-on-create"}
+                                onChange={e => {
+                                    this.setState({
+                                        instanceEnabled: e.target.checked
+                                    });
+                                }}
+                                disabled={this.state.loadingNewInstance}
+                                label={<FormattedMessage id="view.instance.create.enabled" />}
+                            />
+                        </Form.Group>
+                        <Modal.Footer>
+                            <Button
+                                onClick={async () => {
+                                    await this.submit();
+                                }}
+                                disabled={
+                                    !this.state.instanceName ||
+                                    !this.state.instancePath ||
+                                    this.state.loadingNewInstance
+                                }
+                                variant="success">
+                                <FormattedMessage id="view.instance.create.submit" />
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={() => {
+                                    this.props.history.push(
+                                        AppRoutes.instancecreate.link ||
+                                            AppRoutes.instancecreate.route
+                                    );
+                                }}>
+                                Use Old Setup
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={() => {
+                                    this.setState({ creatingInstance: false });
+                                }}>
+                                Cancel
+                            </Button>
+                        </Modal.Footer>
                     </Modal.Body>
                 </Modal>
             );
@@ -373,7 +376,7 @@ export default withRouter(
                 (this.state.prefix ? this.state.prefix + "/" : "") + this.state.instancePath;
 
             this.setState({
-                loading: true
+                loadingNewInstance: true
             });
 
             const result = await InstanceClient.createInstance({
@@ -383,7 +386,9 @@ export default withRouter(
 
             if (result.code === StatusCode.ERROR) {
                 this.setState({
-                    loading: false
+                    errorNewInstance: result.error,
+                    loadingNewInstance: false,
+                    creatingInstance: false
                 });
                 this.addError(result.error);
                 return;
@@ -394,7 +399,8 @@ export default withRouter(
             RouteData.instanceid = result.payload.id.toString();
             this.props.history.push(AppRoutes.instancelist.link || AppRoutes.instancelist.route);
             this.setState({
-                loading: false
+                loadingNewInstance: false,
+                creatingInstance: false
             });
         }
 
@@ -410,11 +416,7 @@ export default withRouter(
                                 onClick={() => {
                                     RouteData.instanceid = String(value.id);
                                 }}
-                                to={
-                                    `/instances/hosting/${value.id}` ||
-                                    AppRoutes.instancehosting.link ||
-                                    AppRoutes.instancehosting.route
-                                }>
+                                to={`/instances/hosting/${value.id}`}>
                                 {value.name}
                             </Link>
                         </td>
@@ -439,31 +441,8 @@ export default withRouter(
                             </code>
                         </td>
                         <td>
-                            <FormattedMessage
-                                id={`view.instance.configmode.${value.configurationType.toString()}`}
-                            />
-                        </td>
-                        {/* <td className="align-middle p-1">
                             <Button
-                                className="mx-1"
-                                variant={
-                                    value.id.toString() === RouteData.instanceid
-                                        ? "success"
-                                        : "primary"
-                                }
-                                onClick={() => {
-                                    RouteData.instanceid = value.id.toString();
-                                    this.setState({
-                                        instanceid: value.id
-                                    });
-                                }}
-                                disabled={
-                                    !value.canAccess || value.id.toString() === RouteData.instanceid
-                                }>
-                                <FormattedMessage id="generic.select" />
-                            </Button>
-                            <Button
-                                className="mx-1"
+                                size="sm"
                                 variant={value.online ? "danger" : "success"}
                                 onClick={() => this.setOnline(value)}
                                 disabled={!this.state.canOnline}>
@@ -473,7 +452,7 @@ export default withRouter(
                                     }`}
                                 />
                             </Button>
-                        </td> */}
+                        </td>
                     </tr>
                 );
             });
@@ -491,7 +470,6 @@ export default withRouter(
                     trigger={!this.state.canCreate ? ["hover", "focus"] : []}>
                     <div>
                         <Button
-                            size="sm"
                             variant="success"
                             block
                             onClick={() => {

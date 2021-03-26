@@ -9,6 +9,7 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
+import { Link } from "react-router-dom";
 
 import { Components } from "../ApiClient/generatedcode/_generated";
 import InternalError, { GenericErrors } from "../ApiClient/models/InternalComms/InternalError";
@@ -162,7 +163,8 @@ export default withRouter(
                                 : "primary"
                         }>
                         <Navbar.Brand
-                            href="#"
+                            as={Link}
+                            to={AppRoutes.home.route}
                             onClick={() => {
                                 this.props.history.push(
                                     AppRoutes.home.link || AppRoutes.home.route,
@@ -205,11 +207,11 @@ export default withRouter(
                 );
             if (this.state.serverInformation)
                 return (
-                    <React.Fragment>
+                    <>
                         <FormattedMessage id="generic.appname" />
                         {" v"}
                         {this.state.serverInformation.version}
-                    </React.Fragment>
+                    </>
                 );
             //TODO: add a spinner. Though having the name would be fine i guess
             // oh and for some reason serverInfo is null while you can see it on the info button...
@@ -220,27 +222,15 @@ export default withRouter(
             if (!this.state.loggedIn)
                 return (
                     <>
-                        <Nav.Link
-                            onClick={() => {
-                                this.props.history.push(
-                                    AppRoutes.info.link || AppRoutes.info.route,
-                                    { reload: true }
-                                );
-                            }}>
+                        <Nav.Link as={Link} to={AppRoutes.info.link || AppRoutes.info.route}>
                             <FontAwesomeIcon icon="info-circle" />
                         </Nav.Link>
-                        <Nav.Link
-                            onClick={() => {
-                                this.props.history.push(
-                                    AppRoutes.config.link || AppRoutes.config.route,
-                                    { reload: true }
-                                );
-                            }}>
+                        <Nav.Link as={Link} to={AppRoutes.config.link || AppRoutes.config.route}>
                             <FontAwesomeIcon icon="cog" />
                         </Nav.Link>
                     </>
                 );
-
+            RouteData.currentuserid = this.state?.currentUser?.id;
             return (
                 <Nav.Item className="ml-auto">
                     <DropdownButton
@@ -267,35 +257,19 @@ export default withRouter(
                         }
                         menuAlign="right">
                         <Dropdown.Item
-                            onClick={() => {
-                                // AHEM.
-                                RouteData.currentuserid = this.state?.currentUser?.id
-                                    ? this.state.currentUser.id
-                                    : undefined;
-                                this.props.history.push(
-                                    AppRoutes.useredit_info.link || AppRoutes.useredit_info.route,
-                                    { reload: true }
-                                );
-                            }}>
+                            as={Link}
+                            to={AppRoutes.useredit_info.link || AppRoutes.useredit_info.route}>
                             <FontAwesomeIcon icon={"info"} /> <FormattedMessage id="routes.info" />
                         </Dropdown.Item>
                         <Dropdown.Item
-                            onClick={() => {
-                                this.props.history.push(
-                                    AppRoutes.config.link || AppRoutes.config.route,
-                                    { reload: true }
-                                );
-                            }}>
+                            as={Link}
+                            to={AppRoutes.config.link || AppRoutes.config.route}>
                             <FontAwesomeIcon icon={"cog"} /> <FormattedMessage id="routes.config" />
                         </Dropdown.Item>
                         {AppRoutes.passwd.cachedAuth ? (
                             <Dropdown.Item
-                                onClick={() => {
-                                    this.props.history.push(
-                                        AppRoutes.passwd.link || AppRoutes.passwd.route,
-                                        { reload: true }
-                                    );
-                                }}>
+                                as={Link}
+                                to={AppRoutes.passwd.link || AppRoutes.passwd.route}>
                                 <FontAwesomeIcon icon={"key"} />{" "}
                                 <FormattedMessage id="routes.passwd" />
                             </Dropdown.Item>
@@ -307,12 +281,7 @@ export default withRouter(
                             <FontAwesomeIcon icon={"trash"} />{" "}
                             <FormattedMessage id="navbar.purgecache" />
                         </Dropdown.Item>
-                        <Dropdown.Item
-                            onClick={() => {
-                                this.props.history.replace(this.props.location.pathname, {
-                                    reload: true
-                                });
-                            }}>
+                        <Dropdown.Item as={Link} to={this.props.location.pathname}>
                             <FontAwesomeIcon icon={"sync"} />{" "}
                             <FormattedMessage id="navbar.refresh" />
                         </Dropdown.Item>
@@ -334,6 +303,8 @@ export default withRouter(
                 cat.routes.length > 1 ? (
                     <NavDropdown
                         key={cat.name}
+                        as={Link}
+                        to={cat.leader.route}
                         title={
                             <>
                                 {!!cat.leader.homeIcon && (
@@ -342,18 +313,15 @@ export default withRouter(
                                 <FormattedMessage id={cat.leader.name} />
                             </>
                         }
-                        id="basic-nav-dropdown">
+                        id="nav-dropdown-navbar">
                         <NavDropdown.Item
                             active={matchesPath(
                                 this.props.location.pathname,
                                 cat.leader.route,
                                 cat.leader.navbarLoose
                             )}
-                            onClick={() => {
-                                this.props.history.push(cat.leader.route, {
-                                    reload: true
-                                });
-                            }}>
+                            as={Link}
+                            to={cat.leader.route}>
                             <FormattedMessage id={cat.leader.name} />
                         </NavDropdown.Item>
                         <NavDropdown.Divider />
@@ -363,11 +331,8 @@ export default withRouter(
                                 <NavDropdown.Item
                                     key={sites.name}
                                     active={matchesPath(this.props.location.pathname, sites.route)}
-                                    onClick={() => {
-                                        this.props.history.push(sites.link || sites.route, {
-                                            reload: true
-                                        });
-                                    }}>
+                                    as={Link}
+                                    to={sites.link || sites.route}>
                                     {!!sites.homeIcon && <FontAwesomeIcon icon={sites.homeIcon} />}{" "}
                                     <FormattedMessage id={sites.name} />
                                 </NavDropdown.Item>
@@ -375,12 +340,7 @@ export default withRouter(
                         })}
                     </NavDropdown>
                 ) : cat.leader.visibleNavbar ? (
-                    <Nav.Link
-                        onClick={() => {
-                            this.props.history.push(cat.leader.route, {
-                                reload: true
-                            });
-                        }}>
+                    <Nav.Link as={Link} to={cat.leader.route}>
                         <FormattedMessage id={cat.leader.name} />{" "}
                         {!!cat.leader.homeIcon && <FontAwesomeIcon icon={cat.leader.homeIcon} />}
                     </Nav.Link>
