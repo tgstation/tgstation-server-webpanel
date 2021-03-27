@@ -118,16 +118,9 @@ export default withRouter(
                     tab: newkey
                 });
             };
-            const LoadSpin = <Loading text={"loading.page"} />;
-
-            //should always be a react component
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-            const InstanceSettings = loadable(() => import(`./Config/InstanceSettings`), {
-                fallback: LoadSpin
-            });
 
             return (
-                <div className="text-center">
+                <>
                     {this.state.errors.map((err, index) => {
                         if (!err) return;
                         return (
@@ -163,19 +156,6 @@ export default withRouter(
                         activeKey={this.state.tab}
                         onSelect={changetabs}>
                         <Tab
-                            eventKey="settings"
-                            title={<FormattedMessage id="view.instance.config.instancesettings" />}>
-                            {this.state.instance && this.state.currentUser ? (
-                                <InstanceSettings
-                                    instance={this.state.instance}
-                                    loadInstance={this.loadInstance}
-                                    selfPermissionSet={resolvePermissionSet(this.state.currentUser)}
-                                />
-                            ) : (
-                                <FormattedMessage id="generic.assert.noinstance" />
-                            )}
-                        </Tab>
-                        <Tab
                             eventKey="users"
                             title={<FormattedMessage id="view.instance.config.instanceusers" />}>
                             <WIPNotice />
@@ -186,7 +166,7 @@ export default withRouter(
                             <WIPNotice />
                         </Tab>
                     </Tabs>
-                </div>
+                </>
             );
         }
     }

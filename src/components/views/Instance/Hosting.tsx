@@ -156,11 +156,11 @@ export default withRouter(
                 fallback: LoadSpin
             });
 
-            const RepositoryManager = loadable(() => import(`./Hosting/Config`), {
+            const RepositoryManager = loadable(() => import(`./Hosting/RepositoryManager`), {
                 fallback: LoadSpin
             });
 
-            const Deployment = loadable(() => import(`./Hosting/Config`), {
+            const Deployment = loadable(() => import(`./Hosting/Deployment`), {
                 fallback: LoadSpin
             });
 

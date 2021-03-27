@@ -2,6 +2,7 @@ import { retry } from "@octokit/plugin-retry";
 import { throttling } from "@octokit/plugin-throttling";
 import { RequestError } from "@octokit/request-error";
 import { Octokit } from "@octokit/rest";
+import { OctokitResponse } from "@octokit/types";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
@@ -15,7 +16,6 @@ export interface TGSVersion {
     current: boolean;
     old: boolean;
 }
-
 interface IEvents {}
 
 /* eslint-disable */
@@ -52,6 +52,19 @@ const authStrategy = () => {
 
 /* eslint-enable */
 
+type ExtractResponse<T> = T extends OctokitResponse<infer U> ? U : never;
+type ExtractPromise<T> = T extends PromiseLike<infer U> ? U : never;
+type ExtractTypeFromEndpoint<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    T extends (...args: any[]) => Promise<OctokitResponse<unknown>>
+> = ExtractResponse<ExtractPromise<ReturnType<T>>>;
+type ExtractTypeFromArray<T> = T extends Array<infer U> ? U : never;
+
+export type PRData = ExtractTypeFromArray<ExtractTypeFromEndpoint<Octokit["pulls"]["list"]>>;
+export type CommitData = ExtractTypeFromArray<
+    ExtractTypeFromEndpoint<Octokit["pulls"]["listCommits"]>
+>;
+
 const e = new (class GithubClient extends TypedEmitter<IEvents> {
     private readonly apiClient: Octokit;
 
@@ -86,6 +99,56 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                 }
             }
         });
+    }
+
+    public async getCommits(
+        owner: string,
+        repo: string,
+        pr: number
+    ): Promise<InternalStatus<CommitData[], ErrorCode.GITHUB_FAIL>> {
+        try {
+            const payload = await this.apiClient.paginate(this.apiClient.pulls.listCommits, {
+                owner,
+                repo,
+                pull_number: pr
+            });
+
+            return new InternalStatus({
+                code: StatusCode.OK,
+                payload
+            });
+        } catch (e) {
+            return new InternalStatus<CommitData[], ErrorCode.GITHUB_FAIL>({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                    jsError: e as RequestError
+                })
+            });
+        }
+    }
+
+    public async getPrs(
+        owner: string,
+        repo: string
+    ): Promise<InternalStatus<PRData[], ErrorCode.GITHUB_FAIL>> {
+        try {
+            const payload = await this.apiClient.paginate(this.apiClient.pulls.list, {
+                owner,
+                repo
+            });
+
+            return new InternalStatus({
+                code: StatusCode.OK,
+                payload
+            });
+        } catch (e) {
+            return new InternalStatus<PRData[], ErrorCode.GITHUB_FAIL>({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                    jsError: e as RequestError
+                })
+            });
+        }
     }
 
     public async getVersions({
