@@ -80,7 +80,7 @@ export default class Byond extends React.Component<IProps, IState> {
     public async componentDidMount(): Promise<void> {
         await this.loadVersions();
 
-        fetch("http://www.byond.com/download/version.txt")
+        fetch("https://secure.byond.com/download/version.txt")
             .then(res => res.text())
             .then(data => data.split("\n"))
             .then(versions => versions[0])
