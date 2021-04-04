@@ -1,10 +1,11 @@
-import { AxiosResponse, AxiosRequestConfig } from "axios";
-import { OpenAPIV3 } from "openapi-types";
-export * from "openapi-types";
+import { AxiosResponse, AxiosRequestConfig } from 'axios';
+import { OpenAPIV3 } from 'openapi-types';
+export * from 'openapi-types';
 /**
  * Type alias for OpenAPI document. We only support v3
  */
 export declare type Document = OpenAPIV3.Document;
+export declare type Server = OpenAPIV3.ServerObject;
 /**
  * OpenAPI allowed HTTP methods
  */
@@ -39,18 +40,11 @@ export interface ExplicitParamValue {
 export declare type UnknownParamsObject = {};
 export declare type ParamsArray = ExplicitParamValue[];
 export declare type SingleParam = ImplicitParamValue;
-export declare type Parameters<ParamsObject = UnknownParamsObject> =
-    | ParamsObject
-    | ParamsArray
-    | SingleParam;
+export declare type Parameters<ParamsObject = UnknownParamsObject> = ParamsObject | ParamsArray | SingleParam;
 export declare type RequestPayload = any;
 export declare type OperationMethodArguments = [Parameters?, RequestPayload?, AxiosRequestConfig?];
 export declare type OperationResponse<Response> = Promise<AxiosResponse<Response>>;
-export declare type UnknownOperationMethod = (
-    parameters?: Parameters,
-    data?: RequestPayload,
-    config?: AxiosRequestConfig
-) => OperationResponse<any>;
+export declare type UnknownOperationMethod = (parameters?: Parameters, data?: RequestPayload, config?: AxiosRequestConfig) => OperationResponse<any>;
 export interface UnknownOperationMethods {
     [operationId: string]: UnknownOperationMethod;
 }
