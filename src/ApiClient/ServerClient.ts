@@ -95,7 +95,6 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
         this.api = new OpenAPIClientAxios({
             definition: defObj,
-            validate: false,
             //Defaults for all requests sent by the apiClient, you may notice a lack of authorization headers,
             // those are applied in the request interceptor
             axiosConfigDefaults: {

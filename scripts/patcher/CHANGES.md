@@ -15,6 +15,14 @@ getRequestConfigForOperation:
                         setRequestParam(name, paramsArg[name], getParamType(name));
                     }
                 }
+@@ -554 +525 @@
+                         var method = _a[0],
+                              operation = _a[1];
+                         var op = __assign({}, operation, { path: path, method: method });
++                        operation.operationId = operation.operationId.replace(
++                            /[^0-9A-Za-z_$]+/g,
++                            "_"
++                        );
 ```
 ## types/client.d.ts
 ```diff
@@ -309,6 +317,28 @@ getRequestConfigForOperation:
 +                }
 +            ];
 +        }
+@@ -342 +392 @@
+             if ("content" in body) {
+                 setSubIdToMediaTypes(body.content, keys);
+             }
+-            if ("$ref" in body) {
++            else if ("$ref" in body) {
+                 setSubId(body, keys);
++            }
++            else {
++                setSubId({}, keys);
+             }
+@@ -358 +407 @@
+            if ("content" in response) {
+                setSubIdToMediaTypes(response.content, keys);
+            }
+-           if ("$ref" in response) {
++           else if ("$ref" in response) {
+                setSubId(response, keys);
++           }
++           else {
++               setSubId({}, keys);
+            }
 @@ -405 +485 @@
         function setSubId(s, paths) {
             if (typeof s !== "object") {

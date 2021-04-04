@@ -144,7 +144,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                         <React.Fragment>
                             <span>
                                 <FormattedMessage id="view.instance.jobs.error" />(
-                                {job.errorCode !== undefined
+                                {job.errorCode !== undefined && job.errorCode !== null
                                     ? TGSErrorCode[job.errorCode]
                                     : "NoCode"}
                                 ): {job.exceptionDetails}
