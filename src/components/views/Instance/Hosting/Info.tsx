@@ -118,12 +118,9 @@ export default class Info extends React.Component<IProps, IState> {
                                             <>
                                                 {" | "}
                                                 <a
-                                                    href={"#"}
-                                                    onClick={() => {
-                                                        open(
-                                                            `https://secure.byond.com/download/build/${byondVer[0]}/${byondVer[0]}.${byondVer[1]}_byond.exe`
-                                                        );
-                                                    }}>
+                                                    href={`https://secure.byond.com/download/build/${byondVer[0]}/${byondVer[0]}.${byondVer[1]}_byond.exe`}
+                                                    target="_blank"
+                                                    rel="noreferrer">
                                                     <FormattedMessage id="generic.download" />{" "}
                                                     <FontAwesomeIcon icon={faWindows} />
                                                 </a>

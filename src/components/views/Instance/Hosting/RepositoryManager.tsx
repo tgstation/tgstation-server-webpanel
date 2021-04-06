@@ -1,15 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { ChangeEvent } from "react";
-import Badge from "react-bootstrap/Badge";
+import React from "react";
+import { Highlighter, Typeahead } from "react-bootstrap-typeahead";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
 import CardGroup from "react-bootstrap/CardGroup";
+import Badge from "react-bootstrap/esm/Badge";
 import Table from "react-bootstrap/esm/Table";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import ListGroup from "react-bootstrap/ListGroup";
+import Modal from "react-bootstrap/Modal";
+import Nav from "react-bootstrap/Nav";
 import ProgressBar from "react-bootstrap/ProgressBar";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 
@@ -29,7 +34,7 @@ import InternalError, {
 import InternalStatus, {
     StatusCode
 } from "../../../../ApiClient/models/InternalComms/InternalStatus";
-import RepositoryClient from "../../../../ApiClient/RepositoryClient";
+import RepositoryClient, { editRepositoryErrors } from "../../../../ApiClient/RepositoryClient";
 import JobsController from "../../../../ApiClient/util/JobsController";
 import GitHubClient, { CommitData, PRData } from "../../../../utils/GithubClient";
 import { ErrorAlert, Loading, WIPNotice } from "../../../utils";
@@ -47,25 +52,17 @@ interface IState {
     repositoryRights?: RepositoryRights;
 
     serverModel?: Components.Schemas.RepositoryResponse;
-
-    newTestMerges: Components.Schemas.TestMergeParameters[];
-
-    manualTestMergeNumber?: number | null;
-    manualTestMergeSha?: string | null;
-    manualTestMergeComment?: string | null;
-
-    autoTestMergeNumber?: number | null;
-    autoTestMergeSha?: string | null;
-    autoTestMergeComment?: string | null;
-
+    newTestMerges: Components.Schemas.TestMerge[];
     prData?: PRData[] | null;
     commitData: Map<number, CommitData[] | null>;
 
+    selectedPrNumber: Components.Schemas.TestMerge[];
     deployAfterTestMerges: boolean;
 
-    checkingAutoSetup: boolean;
+    configRepoValues: Components.Schemas.RepositoryUpdateRequest;
 
-    modifiedRepoValues: { [key: string]: string | number | boolean };
+    deletingRepo: boolean;
+
     // When creating a NEW repository
     newRepoValues: Components.Schemas.RepositoryCreateRequest;
     downloadPercent?: number;
@@ -82,23 +79,19 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
         this.state = {
             errors: [],
             loading: true,
+            deletingRepo: false,
             newRepoValues: {
                 origin: "",
+                reference: "", // branch
                 accessUser: "",
                 accessToken: "",
-                reference: "", // branch
                 recurseSubmodules: true
             },
-            modifiedRepoValues: {
-                origin: "",
-                accessUser: "",
-                reference: "",
-                recurseSubmodules: false
-            },
+            configRepoValues: {},
             downloadPercent: 0,
             newTestMerges: [],
+            selectedPrNumber: [],
             deployAfterTestMerges: true,
-            checkingAutoSetup: false,
             commitData: new Map<number, CommitData[] | null>(),
             repositoryRights: this.props.selfInstancePermissionSet.repositoryRights
         };
@@ -257,9 +250,24 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
         this.setState({
             loading: true
         });
-
+        // yes those checks are a feature. Explicit undefineds
         const response = await RepositoryClient.clone(
-            this.state.newRepoValues,
+            {
+                origin: this.state.newRepoValues.origin,
+                recurseSubmodules: this.state.newRepoValues.recurseSubmodules,
+                reference:
+                    this.state.newRepoValues.reference === ""
+                        ? undefined
+                        : this.state.newRepoValues.reference,
+                accessUser:
+                    this.state.newRepoValues.accessUser === ""
+                        ? undefined
+                        : this.state.newRepoValues.accessUser,
+                accessToken:
+                    this.state.newRepoValues.accessToken === ""
+                        ? undefined
+                        : this.state.newRepoValues.accessToken
+            },
             this.props.instance.id
         );
 
@@ -281,6 +289,9 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
                     void: true
                 })
             );
+            this.setState({
+                loading: false
+            });
             return;
         }
 
@@ -291,22 +302,14 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
             loading: false,
             downloadPercent: 0.1
         });
+        this.toggleAutoUpdate();
     }
 
     private digestResponse(serverModel: Components.Schemas.RepositoryResponse) {
         const activeTestMerges = serverModel.revisionInformation?.activeTestMerges;
-        const newTestMerges: Components.Schemas.TestMergeParameters[] =
-            activeTestMerges?.map(activeTestMerge => {
-                return {
-                    number: activeTestMerge.number,
-                    comment: activeTestMerge.comment,
-                    targetCommitSha: activeTestMerge.targetCommitSha
-                };
-            }) || [];
-
         this.setState({
             serverModel,
-            newTestMerges
+            newTestMerges: activeTestMerges || []
         });
 
         if (serverModel.activeJob) {
@@ -314,41 +317,36 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
         }
     }
 
-    private async refresh(): Promise<void> {
+    private async refresh(annoyGithub = true): Promise<void> {
         const response = await RepositoryClient.getCurrent(this.props.instance.id);
-        console.log(response);
         if (response.code === StatusCode.OK) {
             const serverModel = response.payload;
             this.digestResponse(serverModel);
 
             this.setState({
-                modifiedRepoValues: {
-                    // nuke it
-                    origin: "",
-                    accessUser: "",
-                    accessPassword: "", //optional
-                    reference: "",
-                    recurseSubmodules: false
+                configRepoValues: {
+                    accessUser: this.state?.serverModel?.accessUser || "",
+                    accessToken: "", //optional
+                    reference: this.state?.serverModel?.reference || "",
+                    committerName: this.state?.serverModel?.committerName || "",
+                    committerEmail: this.state?.serverModel?.committerEmail || "",
+                    checkoutSha:
+                        this.state?.serverModel?.revisionInformation?.originCommitSha || "",
+                    pushTestMergeCommits: this.state?.serverModel?.pushTestMergeCommits,
+                    createGitHubDeployments: this.state?.serverModel?.createGitHubDeployments,
+                    showTestMergeCommitters: this.state?.serverModel?.showTestMergeCommitters,
+                    autoUpdatesKeepTestMerges: this.state?.serverModel?.autoUpdatesKeepTestMerges,
+                    postTestMergeComment: this.state?.serverModel?.postTestMergeComment
                 }
             });
 
-            const prData = await this.getPRData(serverModel);
-            this.setState({
-                prData,
-                commitData: new Map<number, CommitData[] | null>(),
-                modifiedRepoValues: {
-                    ...this.state.modifiedRepoValues,
-                    accessUser: this.state?.serverModel?.accessUser
-                        ? String(this.state.serverModel.accessUser)
-                        : "",
-                    reference: this.state?.serverModel?.reference
-                        ? String(this.state.serverModel.reference)
-                        : "",
-                    origin: this.state?.serverModel?.origin
-                        ? String(this.state.serverModel.origin)
-                        : ""
-                }
-            });
+            if (annoyGithub) {
+                const prData = await this.getPRData(serverModel); // todo: stop git api spam
+                this.setState({
+                    prData,
+                    commitData: new Map<number, CommitData[] | null>()
+                });
+            }
         } else if (response?.error.desc?.type === 1) {
             await this.downloadJobCheck();
         } else {
@@ -372,6 +370,10 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
 
         return response.payload;
     }
+
+    /**
+     * Helper funcs down here
+     */
 
     private checkRRFlag(flag: RepositoryRights): boolean {
         return this.state.repositoryRights == null || !!(this.state.repositoryRights & flag);
@@ -401,6 +403,41 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
         this.setState({
             downloadPercentAutoUpdate: loop
         });
+    }
+
+    private async saveConfig(): Promise<void> {
+        const blankToUndef = (x: string | null | undefined, y: string | null | undefined) => {
+            return x && y && x !== y && y !== "" ? y : undefined;
+        };
+        const response = await RepositoryClient.edit(this.props.instance.id, {
+            accessUser: blankToUndef(
+                this.state.serverModel?.accessUser,
+                this.state.configRepoValues.accessUser
+            ),
+            accessToken: blankToUndef("", this.state.configRepoValues.accessUser),
+            reference: blankToUndef(
+                this.state.serverModel?.reference,
+                this.state.configRepoValues.reference
+            ),
+            committerName: blankToUndef(
+                this.state.serverModel?.committerName,
+                this.state.configRepoValues.committerName
+            ),
+            committerEmail: blankToUndef(
+                this.state.serverModel?.committerEmail,
+                this.state.configRepoValues.committerEmail
+            ),
+            checkoutSha: blankToUndef(
+                this.state.serverModel?.revisionInformation?.originCommitSha,
+                this.state.configRepoValues.checkoutSha
+            ),
+            pushTestMergeCommits: this.state.configRepoValues.pushTestMergeCommits,
+            createGitHubDeployments: this.state.configRepoValues.createGitHubDeployments,
+            showTestMergeCommitters: this.state.configRepoValues.showTestMergeCommitters,
+            autoUpdatesKeepTestMerges: this.state.configRepoValues.autoUpdatesKeepTestMerges,
+            postTestMergeComment: this.state.configRepoValues.postTestMergeComment
+        });
+        return;
     }
 
     public render(): React.ReactNode {
@@ -624,6 +661,7 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
 
         return (
             <>
+                {!!this.state.deletingRepo && this.renderDeleteRepoModal()}
                 {this.state.errors.map((err, index) => {
                     if (!err) return;
                     return (
@@ -642,237 +680,677 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
                         />
                     );
                 })}
-                <CardColumns style={{ columnCount: "unset", widows: "unset" }}>
-                    <Card>
-                        <Card.Header>Top Card</Card.Header>
-                        <Card.Body>
-                            <WIPNotice />
-                        </Card.Body>
-                    </Card>
-                    <CardColumns className={"card-colum-cfg"}>
-                        {/* TM */}
-                        <Card>
-                            <Card.Header>Test Merges</Card.Header>
-                            <Card.Body>
-                                <WIPNotice />
-                            </Card.Body>
-                        </Card>
-                        {/* Creds */}
-                        <Card>
-                            <Card.Header>Credentials</Card.Header>
-                            <Card.Body>
-                                <Card.Title>
-                                    {/* <FormattedMessage id="fields.instance.name" /> */}
-                                    Username
-                                </Card.Title>
-                                <Form.Group>
-                                    <InputGroup>
-                                        <Form.Control
-                                            type="text"
-                                            key="test"
-                                            placeholder="Account username"
-                                            value={String(this.state.modifiedRepoValues.accessUser)}
-                                            onChange={e => {
-                                                this.setState({
-                                                    modifiedRepoValues: {
-                                                        ...this.state.modifiedRepoValues,
-                                                        accessUser: e.currentTarget.value
-                                                    }
-                                                });
-                                            }}
-                                        />
-                                        {this.state?.serverModel?.accessUser &&
-                                            this.state.modifiedRepoValues.accessUser !==
-                                                this.state?.serverModel.accessUser && (
-                                                <InputGroup.Append>
-                                                    <Button
-                                                        variant="secondary"
-                                                        onClick={() => {
-                                                            this.setState({
-                                                                modifiedRepoValues: {
-                                                                    ...this.state
-                                                                        .modifiedRepoValues,
-                                                                    accessUser: String(
-                                                                        this.state?.serverModel
-                                                                            ?.accessUser
-                                                                            ? this.state.serverModel
-                                                                                  .accessUser
-                                                                            : ""
-                                                                    )
-                                                                }
-                                                            });
-                                                        }}>
-                                                        <FontAwesomeIcon fixedWidth icon="undo" />
-                                                    </Button>
-                                                </InputGroup.Append>
-                                            )}
-                                    </InputGroup>
-                                    <Form.Text muted>
-                                        The username of the account used to pull the repository.
-                                    </Form.Text>
-                                </Form.Group>
-                                <Card.Title>
-                                    {/* <FormattedMessage id="fields.instance.name" /> */}
-                                    PAT / Password
-                                </Card.Title>
-                                <Form.Group>
-                                    <InputGroup hasValidation>
-                                        <Form.Control
-                                            type="password"
-                                            autoComplete="new-password"
-                                            key="test"
-                                            placeholder="Account PAT/Password"
-                                        />
-                                    </InputGroup>
-                                    <Form.Text muted>
-                                        The password/PAT used for fetching the repository. PAT
-                                        (Github) is your personal token. Click{" "}
-                                        <a
-                                            href={
-                                                "https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
-                                            }>
-                                            here
-                                        </a>{" "}
-                                        to learn more.
-                                    </Form.Text>
-                                </Form.Group>
+                <Tabs
+                    className="justify-content-center"
+                    defaultActiveKey="config"
+                    variant="pills"
+                    id="cfg">
+                    <Tab eventKey="config" title="Configuration">
+                        <br />
+                        {this.renderConfig()}
+                    </Tab>
+                    <Tab eventKey="testmerges" title="Testmerges">
+                        <br />
+                        {this.renderTestmerge()}
+                    </Tab>
+                </Tabs>
+            </>
+        );
+    }
+
+    private renderConfig(): React.ReactNode {
+        return (
+            <CardGroup>
+                {/* Config */}
+                <Card>
+                    <Card.Header>Repository</Card.Header>
+                    {/* Repo */}
+                    <Card.Body>
+                        {/* Repo config */}
+                        <Card.Title>
+                            {/* <FormattedMessage id="fields.instance.name" /> */}
+                            Repository Settings
+                        </Card.Title>
+                        <Form.Group>
+                            {/* Once created, cannot be edited. */}
+                            <Form.Label>Closest origin SHA</Form.Label>
+                            <InputGroup>
+                                <Form.Control
+                                    type="text"
+                                    value={String(this.state.serverModel?.origin)}
+                                    disabled
+                                />
+                            </InputGroup>
+                            <Form.Text muted>The URL of the repository.</Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Repository Branch</Form.Label>
+                            <InputGroup hasValidation>
+                                <Form.Control
+                                    type="text"
+                                    key="test"
+                                    placeholder={"(default branch)"}
+                                    value={String(this.state.configRepoValues.reference)}
+                                    onChange={e => {
+                                        this.setState({
+                                            configRepoValues: {
+                                                ...this.state.configRepoValues,
+                                                reference: e.currentTarget.value
+                                            }
+                                        });
+                                    }}
+                                />
+                                {this.state?.serverModel?.reference &&
+                                    this.state.configRepoValues.reference !==
+                                        this.state?.serverModel.reference && (
+                                        <InputGroup.Append>
+                                            <Button
+                                                variant="secondary"
+                                                onClick={() => {
+                                                    this.setState({
+                                                        configRepoValues: {
+                                                            ...this.state.configRepoValues,
+                                                            reference: String(
+                                                                this.state?.serverModel?.reference
+                                                                    ? this.state.serverModel
+                                                                          .reference
+                                                                    : ""
+                                                            )
+                                                        }
+                                                    });
+                                                }}>
+                                                <FontAwesomeIcon fixedWidth icon="undo" />
+                                            </Button>
+                                        </InputGroup.Append>
+                                    )}
+                            </InputGroup>
+                            <Form.Text muted>Repository Branch. Leave empty for default.</Form.Text>
+                        </Form.Group>
+                        {/* Repo SHA */}
+                        <Card.Title>
+                            {/* <FormattedMessage id="fields.instance.name" /> */}
+                            Branch SHA1
+                        </Card.Title>
+                        <Form.Group>
+                            <Form.Label>Checkout SHA</Form.Label>
+                            <InputGroup hasValidation>
+                                <Form.Control
+                                    type="text"
+                                    key="test"
+                                    placeholder={"(origin SHA)"}
+                                    value={String(this.state.configRepoValues.checkoutSha)}
+                                    onChange={e => {
+                                        this.setState({
+                                            configRepoValues: {
+                                                ...this.state.configRepoValues,
+                                                checkoutSha: e.currentTarget.value
+                                            }
+                                        });
+                                    }}
+                                />
+                                {this.state?.serverModel?.revisionInformation?.originCommitSha &&
+                                    this.state.configRepoValues.checkoutSha !==
+                                        this.state.serverModel.revisionInformation
+                                            .originCommitSha && (
+                                        <InputGroup.Append>
+                                            <Button
+                                                variant="secondary"
+                                                onClick={() => {
+                                                    this.setState({
+                                                        configRepoValues: {
+                                                            ...this.state.configRepoValues,
+                                                            checkoutSha: String(
+                                                                this.state.serverModel
+                                                                    ?.revisionInformation
+                                                                    ?.originCommitSha
+                                                            )
+                                                        }
+                                                    });
+                                                }}>
+                                                <FontAwesomeIcon fixedWidth icon="undo" />
+                                            </Button>
+                                        </InputGroup.Append>
+                                    )}
+                            </InputGroup>
+                            <Form.Text muted>Repository Branch. Leave empty for default.</Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Closest origin SHA</Form.Label>
+                            <InputGroup hasValidation>
+                                <Form.Control
+                                    value={String(
+                                        this.state.serverModel?.revisionInformation?.commitSha
+                                    )}
+                                    disabled
+                                />
+                            </InputGroup>
+                            <Form.Text muted>
+                                The closest branch (in sha1) to the parent origin.
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Check
+                                type="switch"
+                                id={"ATTM"}
+                                label={"Auto-update Test merges."}
+                                checked={!!this.state.configRepoValues.autoUpdatesKeepTestMerges}
+                                onChange={e => {
+                                    this.setState({
+                                        configRepoValues: {
+                                            ...this.state.configRepoValues,
+                                            autoUpdatesKeepTestMerges: e.currentTarget.checked
+                                        }
+                                    });
+                                }}
+                            />
+                            <Form.Text muted>
+                                Deploy the code onto the server after compilation.
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Check
+                                type="switch"
+                                id={"PTMOTB"}
+                                label={"Push test merge onto remote as a temporary branch."}
+                                checked={!!this.state.configRepoValues.pushTestMergeCommits}
+                                onChange={e => {
+                                    this.setState({
+                                        configRepoValues: {
+                                            ...this.state.configRepoValues,
+                                            pushTestMergeCommits: e.currentTarget.checked
+                                        }
+                                    });
+                                }}
+                            />
+                            <Form.Text muted>
+                                Deploy the code onto the server after compilation.
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Check
+                                type="switch"
+                                id={"SMUIPM"}
+                                label={"Show merger username in public metadata."}
+                                checked={!!this.state.configRepoValues.showTestMergeCommitters}
+                                onChange={e => {
+                                    this.setState({
+                                        configRepoValues: {
+                                            ...this.state.configRepoValues,
+                                            showTestMergeCommitters: e.currentTarget.checked
+                                        }
+                                    });
+                                }}
+                            />
+                            <Form.Text muted>
+                                Deploy the code onto the server after compilation.
+                            </Form.Text>
+                        </Form.Group>
+                        <Button
+                            size="sm"
+                            onClick={() => {
+                                void this.saveConfig();
+                            }}>
+                            Apply Changes
+                        </Button>{" "}
+                        <Button
+                            size="sm"
+                            variant="danger"
+                            onClick={() => {
+                                this.setState({ deletingRepo: true });
+                            }}>
+                            Delete Repository
+                        </Button>
+                    </Card.Body>
+                </Card>
+                {/* Creds */}
+                <Card>
+                    <Card.Header>Credentials</Card.Header>
+                    <Card.Body>
+                        {/* Commiter info */}
+                        <Card.Title>
+                            {/* <FormattedMessage id="fields.instance.name" /> */}
+                            Committer Credentials
+                        </Card.Title>
+                        <Form.Group>
+                            <Form.Label>Committer Username</Form.Label>
+                            <InputGroup hasValidation>
+                                <Form.Control
+                                    autoComplete="new-password"
+                                    placeholder="tgstation-server"
+                                    value={this.state.configRepoValues?.committerName || ""}
+                                    onChange={e => {
+                                        this.setState({
+                                            configRepoValues: {
+                                                ...this.state.configRepoValues,
+                                                committerName: e.currentTarget.value
+                                            }
+                                        });
+                                    }}
+                                />
+                                {this.state?.serverModel?.committerName &&
+                                    this.state.configRepoValues.committerName !==
+                                        this.state.serverModel.committerName && (
+                                        <InputGroup.Append>
+                                            <Button
+                                                variant="secondary"
+                                                onClick={() => {
+                                                    this.setState({
+                                                        configRepoValues: {
+                                                            ...this.state.configRepoValues,
+                                                            committerName: String(
+                                                                this.state.serverModel
+                                                                    ?.committerName
+                                                            )
+                                                        }
+                                                    });
+                                                }}>
+                                                <FontAwesomeIcon fixedWidth icon="undo" />
+                                            </Button>
+                                        </InputGroup.Append>
+                                    )}
+                            </InputGroup>
+                            <Form.Text muted>
+                                The Username to be used when pushing test-merges onto the
+                                repository.
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Committer Email</Form.Label>
+                            <InputGroup hasValidation>
+                                <Form.Control
+                                    autoComplete="new-password"
+                                    placeholder="tgstation-server@users.noreply.github.com"
+                                    value={this.state.configRepoValues?.committerEmail || ""}
+                                    onChange={e => {
+                                        this.setState({
+                                            configRepoValues: {
+                                                ...this.state.configRepoValues,
+                                                committerEmail: e.currentTarget.value
+                                            }
+                                        });
+                                    }}
+                                />
+                                {this.state?.serverModel?.committerEmail &&
+                                    this.state.configRepoValues.committerEmail !==
+                                        this.state.serverModel.committerEmail && (
+                                        <InputGroup.Append>
+                                            <Button
+                                                variant="secondary"
+                                                onClick={() => {
+                                                    this.setState({
+                                                        configRepoValues: {
+                                                            ...this.state.configRepoValues,
+                                                            committerEmail: String(
+                                                                this.state.serverModel
+                                                                    ?.committerEmail
+                                                            )
+                                                        }
+                                                    });
+                                                }}>
+                                                <FontAwesomeIcon fixedWidth icon="undo" />
+                                            </Button>
+                                        </InputGroup.Append>
+                                    )}
+                            </InputGroup>
+                            <Form.Text muted>
+                                The email to be used when pushing test-merges onto the repository.
+                            </Form.Text>
+                        </Form.Group>
+                        {/* Repo Access user */}
+                        <Card.Title>
+                            {/* <FormattedMessage id="fields.instance.name" /> */}
+                            Repository Access Credentials
+                        </Card.Title>
+                        <Form.Group>
+                            <Form.Label>Username</Form.Label>
+                            <InputGroup>
+                                <Form.Control
+                                    type="text"
+                                    key="test"
+                                    placeholder="Account username"
+                                    value={String(this.state.configRepoValues.accessUser)}
+                                    onChange={e => {
+                                        this.setState({
+                                            configRepoValues: {
+                                                ...this.state.configRepoValues,
+                                                accessUser: e.currentTarget.value
+                                            }
+                                        });
+                                    }}
+                                />
+                                {this.state?.serverModel?.accessUser &&
+                                    this.state.configRepoValues.accessUser !==
+                                        this.state?.serverModel.accessUser && (
+                                        <InputGroup.Append>
+                                            <Button
+                                                variant="secondary"
+                                                onClick={() => {
+                                                    this.setState({
+                                                        configRepoValues: {
+                                                            ...this.state.configRepoValues,
+                                                            accessUser: String(
+                                                                this.state?.serverModel?.accessUser
+                                                                    ? this.state.serverModel
+                                                                          .accessUser
+                                                                    : ""
+                                                            )
+                                                        }
+                                                    });
+                                                }}>
+                                                <FontAwesomeIcon fixedWidth icon="undo" />
+                                            </Button>
+                                        </InputGroup.Append>
+                                    )}
+                            </InputGroup>
+                            <Form.Text muted>
+                                The username of the account used to pull the repository.
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Password/PAT</Form.Label>
+                            <InputGroup hasValidation>
+                                <Form.Control
+                                    type="password"
+                                    autoComplete="new-password"
+                                    placeholder="Account PAT/Password"
+                                    onChange={e => {
+                                        this.setState({
+                                            configRepoValues: {
+                                                ...this.state.configRepoValues,
+                                                accessToken: e.currentTarget.value
+                                            }
+                                        });
+                                    }}
+                                />
+                            </InputGroup>
+                            <Form.Text muted>
+                                The password/PAT used for fetching the repository. PAT (Github) is
+                                your personal token. Click{" "}
+                                <a
+                                    href={
+                                        "https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
+                                    }>
+                                    here
+                                </a>{" "}
+                                to learn more.
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Check
+                                type="switch"
+                                id={"comment"}
+                                label={"Post GitHub Comment when test merge is deployed."}
+                                checked={!!this.state.configRepoValues.postTestMergeComment}
+                                onChange={e => {
+                                    this.setState({
+                                        configRepoValues: {
+                                            ...this.state.configRepoValues,
+                                            postTestMergeComment: e.currentTarget.checked
+                                        }
+                                    });
+                                }}
+                            />
+                            <Form.Text muted>
+                                Post GitHub Comment when test merge is deployed.
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Check
+                                type="switch"
+                                id={"dep-stat"}
+                                label={"Create GitHub Deployment status."}
+                                checked={!!this.state.configRepoValues.createGitHubDeployments}
+                                onChange={e => {
+                                    this.setState({
+                                        configRepoValues: {
+                                            ...this.state.configRepoValues,
+                                            createGitHubDeployments: e.currentTarget.checked
+                                        }
+                                    });
+                                }}
+                            />
+                            <Form.Text muted>Create GitHub Deployment status.</Form.Text>
+                        </Form.Group>
+                        <Button
+                            size="sm"
+                            variant="warning"
+                            disabled={!this.state?.serverModel?.accessUser}
+                            onClick={async () => {
+                                await RepositoryClient.edit(this.props.instance.id, {
+                                    committerName: null,
+                                    committerEmail: null,
+                                    accessUser: "",
+                                    accessToken: ""
+                                });
+                                await this.refresh();
+                            }}>
+                            Clear Credentials
+                        </Button>
+                    </Card.Body>
+                </Card>
+            </CardGroup>
+        );
+    }
+
+    private renderTestmerge(): React.ReactNode {
+        const hexToHSL = (H: string) => {
+            // Convert hex to RGB first
+            let r = 0,
+                g = 0,
+                b = 0;
+            if (H.length == 4) {
+                r = Number("0x" + H[1] + H[1]);
+                g = Number("0x" + H[2] + H[2]);
+                b = Number("0x" + H[3] + H[3]);
+            } else if (H.length == 7) {
+                r = Number("0x" + H[1] + H[2]);
+                g = Number("0x" + H[3] + H[4]);
+                b = Number("0x" + H[5] + H[6]);
+            }
+            // Then to HSL
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            const cmin = Math.min(r, g, b),
+                cmax = Math.max(r, g, b),
+                delta = cmax - cmin;
+            let h = 0,
+                s = 0,
+                l = 0;
+
+            if (delta == 0) h = 0;
+            else if (cmax == r) h = ((g - b) / delta) % 6;
+            else if (cmax == g) h = (b - r) / delta + 2;
+            else h = (r - g) / delta + 4;
+
+            h = Math.round(h * 60);
+
+            if (h < 0) h += 360;
+
+            l = (cmax + cmin) / 2;
+            s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+            s = +(s * 100).toFixed(1);
+            l = +(l * 100).toFixed(1);
+
+            return [h, s, l];
+        };
+        return (
+            <Card>
+                <Card.Header>Test Merges</Card.Header>
+                <Card.Body>
+                    <Form.Group>
+                        <InputGroup>
+                            <Typeahead
+                                id="testmerges"
+                                labelKey="number"
+                                placeholder="Search for testmerges..."
+                                options={
+                                    this.state.prData?.map(pr => ({
+                                        number: String(pr.number),
+                                        titleAtMerge: pr.title,
+                                        labels: pr.labels
+                                    })) || []
+                                }
+                                maxResults={50}
+                                paginate
+                                allowNew={true}
+                                clearButton
+                                multiple
+                                filterBy={() => true}
+                                renderMenuItemChildren={(option, props, k) => (
+                                    <React.Fragment key={k}>
+                                        <Highlighter search={props.text || ""}>
+                                            {option.number}
+                                        </Highlighter>{" "}
+                                        - {option.titleAtMerge.substring(0, 100)}
+                                        {option.titleAtMerge.length >= 100 && "..."}
+                                        <div>
+                                            {option?.labels?.map((label, key) => {
+                                                const hsl = hexToHSL(`#${label.color || "aaa"}`);
+                                                const txt_color = `hsl(${hsl[0]}, ${
+                                                    hsl[0] === 0 ? 0 : Math.max(hsl[0] + 70, 100)
+                                                }%, ${Math.max(
+                                                    hsl[2] +
+                                                        Math.min(
+                                                            Math.max(
+                                                                40 -
+                                                                    (hsl[2] < 5
+                                                                        ? Math.log(hsl[2])
+                                                                        : 0),
+                                                                1
+                                                            ),
+                                                            30
+                                                        ),
+                                                    1
+                                                )}%)`;
+                                                const border_col = `hsl(${hsl[0]}, ${
+                                                    hsl[1] - 15
+                                                }%, ${hsl[2] + 5 - Math.log(hsl[2])}%)`;
+                                                return (
+                                                    <>
+                                                        <Badge
+                                                            key={key}
+                                                            // as={Link}
+                                                            // to={label.url || ""}
+                                                            title={label.description}
+                                                            style={{
+                                                                backgroundColor: `hsl(${hsl[0]}, ${
+                                                                    hsl[1]
+                                                                }%, ${hsl[2] - 15}%)`,
+                                                                color: txt_color,
+                                                                border: `solid 1px ${border_col}`,
+                                                                borderRadius: "2em",
+                                                                paddingLeft: "7px",
+                                                                paddingRight: "7px",
+                                                                fontWeight: 500
+                                                            }}>
+                                                            {label.name}
+                                                        </Badge>{" "}
+                                                    </>
+                                                );
+                                            })}
+                                        </div>
+                                    </React.Fragment>
+                                )}
+                                onChange={selected => {
+                                    this.setState({
+                                        // @ts-expect-error: i know labels are not defined but shut the fuck up
+                                        selectedPrNumber: selected
+                                    });
+                                }}
+                            />
+                            <InputGroup.Append>
                                 <Button
-                                    size="sm"
+                                    block
                                     onClick={() => {
-                                        alert("Saved. Or something? Idk.");
+                                        alert(JSON.stringify(this.state.selectedPrNumber));
                                     }}>
-                                    Save
-                                </Button>{" "}
-                                <Button
-                                    size="sm"
-                                    variant="warning"
-                                    disabled={!this.state?.serverModel?.accessUser}
-                                    onClick={() => {
-                                        alert("Saved. Or something? Idk.");
-                                    }}>
-                                    Clear Credentials
+                                    <FontAwesomeIcon fixedWidth icon="plus" />
                                 </Button>
-                            </Card.Body>
-                        </Card>
-                        {/* Config */}
-                        <Card>
-                            <Card.Header>Repository Settings</Card.Header>
-                            <Card.Body>
-                                <Card.Title>
-                                    {/* <FormattedMessage id="fields.instance.name" /> */}
-                                    Repository URL
-                                </Card.Title>
-                                <Form.Group>
-                                    <InputGroup hasValidation>
-                                        <Form.Control
-                                            type="text"
-                                            value={String(this.state.modifiedRepoValues.origin)}
-                                            disabled
-                                        />
-                                    </InputGroup>
-                                    <Form.Text muted>The URL of the repository.</Form.Text>
-                                </Form.Group>
-                                <Card.Title>
-                                    {/* <FormattedMessage id="fields.instance.name" /> */}
-                                    Repository Branch
-                                </Card.Title>
-                                <Form.Group>
-                                    <InputGroup hasValidation>
-                                        <Form.Control
-                                            type="text"
-                                            key="test"
-                                            placeholder={"(default branch)"}
-                                            value={String(this.state.modifiedRepoValues.reference)}
-                                            onChange={e => {
-                                                this.setState({
-                                                    modifiedRepoValues: {
-                                                        ...this.state.modifiedRepoValues,
-                                                        reference: e.currentTarget.value
-                                                    }
-                                                });
-                                            }}
-                                        />
-                                        {this.state?.serverModel?.reference &&
-                                            this.state.modifiedRepoValues.reference !==
-                                                this.state?.serverModel.reference && (
-                                                <InputGroup.Append>
-                                                    <Button
-                                                        variant="secondary"
-                                                        onClick={() => {
-                                                            this.setState({
-                                                                modifiedRepoValues: {
-                                                                    ...this.state
-                                                                        .modifiedRepoValues,
-                                                                    reference: String(
-                                                                        this.state?.serverModel
-                                                                            ?.reference
-                                                                            ? this.state.serverModel
-                                                                                  .reference
-                                                                            : ""
-                                                                    )
-                                                                }
-                                                            });
-                                                        }}>
-                                                        <FontAwesomeIcon fixedWidth icon="undo" />
-                                                    </Button>
-                                                </InputGroup.Append>
-                                            )}
-                                    </InputGroup>
-                                    <Form.Text muted>
-                                        Repository Branch. Leave empty for default.
-                                    </Form.Text>
-                                </Form.Group>
-                                <Form.Group>
+                            </InputGroup.Append>
+                        </InputGroup>
+                        <Form.Text muted>Info or something</Form.Text>
+                    </Form.Group>
+                    <Card.Text>
+                        <ListGroup>
+                            {this.state.newTestMerges.map((v, k) => (
+                                <ListGroup.Item variant="dark" key={k}>
                                     <Form.Check
-                                        type="switch"
-                                        // checked
-                                        id={"recursive-submodule-toggle"}
-                                        label={"Recursive Submodules"}
+                                        id={`toggle-${v.number}`}
+                                        label={
+                                            <>
+                                                <a href={v.url} target="_blank" rel="noreferrer">
+                                                    #{v.number}
+                                                </a>{" "}
+                                                - {v.titleAtMerge}
+                                            </>
+                                        }
                                         defaultChecked
                                     />
-                                    <Form.Text muted>
-                                        What is recursive submodule?? Hewwo?
-                                    </Form.Text>
-                                </Form.Group>
-                                <Form.Group>
-                                    <Form.Check
-                                        type="switch"
-                                        id={"dep-after-tm-toggle"}
-                                        label={"Deploy after updating testmerges"}
+                                    <InputGroup>
+                                        <Form.Control
+                                            id="branchselect-n"
+                                            placeholder="Select branch"
+                                            defaultValue={v.targetCommitSha}
+                                            size="sm"
+                                        />
+                                    </InputGroup>
+                                    <Form.Control
+                                        as="textarea"
+                                        placeholder="Add Comment"
+                                        rows={2}
+                                        minLength={1}
+                                        defaultValue={v.comment || ""}
                                     />
-                                    <Form.Text muted>
-                                        What is recursive submodule?? Hewwo?
-                                    </Form.Text>
-                                </Form.Group>
-                                <Button
-                                    variant="success"
-                                    size="sm"
-                                    onClick={() => {
-                                        alert("Saved. Or something? Idk.");
-                                    }}
-                                    disabled={!!this.state?.serverModel?.origin}>
-                                    Clone <FontAwesomeIcon icon="code-branch" />
-                                </Button>{" "}
-                                <Button
-                                    size="sm"
-                                    onClick={() => {
-                                        alert("Saved. Or something? Idk.");
-                                    }}>
-                                    Apply Changes
-                                </Button>{" "}
-                                <Button
-                                    size="sm"
-                                    variant="danger"
-                                    onClick={() => {
-                                        alert("Saved. Or something? Idk.");
-                                    }}>
-                                    Delete Repository
-                                </Button>
-                            </Card.Body>
-                        </Card>
-                    </CardColumns>
-                </CardColumns>
-            </>
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Card.Text>
+                    <Button>Merge from Tracked Origin</Button>{" "}
+                    <Button>Fetch and hard reset to Tracked Origin</Button>
+                </Card.Body>
+            </Card>
+        );
+    }
+
+    // Highlander style, there can only be one!
+    private renderDeleteRepoModal(): React.ReactNode {
+        return (
+            <Modal
+                aria-labelledby="contained-modal-title-vcenter"
+                show={this.state.deletingRepo}
+                centered
+                onHide={() => {
+                    this.setState({ deletingRepo: false });
+                }}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete repository</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Modal.Title>
+                        Are you ABSOLUTELY SURE that you are going to delete this repository?
+                    </Modal.Title>
+                    Data WILL BE DELETED AND BECOME UNRECOVERABLE AFTER THIS, MAKE SURE YOU HAVE A
+                    BACKUP!
+                    <Modal.Footer>
+                        <Button
+                            onClick={() => {
+                                void RepositoryClient.delete(this.props.instance.id);
+                                void this.refresh(false);
+                            }}
+                            variant="danger">
+                            Delete Repository
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                this.setState({ deletingRepo: false });
+                            }}>
+                            Cancel
+                        </Button>
+                    </Modal.Footer>
+                </Modal.Body>
+            </Modal>
         );
     }
 }
