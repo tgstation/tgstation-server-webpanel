@@ -1,6 +1,6 @@
 import loadable, { LoadableComponent } from "@loadable/component";
 import * as React from "react";
-import { Component, ReactNode } from "react";
+import { Component, ComponentClass, ReactNode } from "react";
 import Container from "react-bootstrap/Container";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
@@ -182,18 +182,19 @@ export default withRouter(
                                                 if (!route.cachedAuth) {
                                                     Comp = AccessDenied;
                                                 } else {
-                                                    Comp = this.state.components.get(route.name)!;
+                                                    Comp = this.state.components.get(
+                                                        route.name
+                                                    )! as ComponentClass;
                                                 }
 
-                                                const WrapperComponent = route.noContainer
-                                                    ? React.Fragment
-                                                    : Container;
-
-                                                return (
-                                                    <WrapperComponent className="mt-5 mb-5">
-                                                        {/*//@ts-expect-error //i cant for the life of me make this shit work so it has to stay like this.*/}
+                                                return route.noContainer ? (
+                                                    <React.Fragment>
                                                         <Comp {...props} />
-                                                    </WrapperComponent>
+                                                    </React.Fragment>
+                                                ) : (
+                                                    <Container className="mt-5 mb-5">
+                                                        <Comp {...props} />
+                                                    </Container>
                                                 );
                                             }}
                                         />
