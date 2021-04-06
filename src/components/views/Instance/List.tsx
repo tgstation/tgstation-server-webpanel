@@ -345,19 +345,9 @@ export default withRouter(
                             <Button
                                 variant="secondary"
                                 onClick={() => {
-                                    this.props.history.push(
-                                        AppRoutes.instancecreate.link ||
-                                            AppRoutes.instancecreate.route
-                                    );
-                                }}>
-                                Use Old Setup
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                onClick={() => {
                                     this.setState({ creatingInstance: false });
                                 }}>
-                                Cancel
+                                <FormattedMessage id="generic.cancel" />
                             </Button>
                         </Modal.Footer>
                     </Modal.Body>
@@ -478,7 +468,7 @@ export default withRouter(
                             disabled={!this.state.canCreate}>
                             <div>
                                 <FontAwesomeIcon className="mr-2" icon={faPlus} />
-                                <FormattedMessage id="routes.instancecreate" />
+                                <FormattedMessage id="view.instance.create.title" />
                             </div>
                         </Button>
                     </div>

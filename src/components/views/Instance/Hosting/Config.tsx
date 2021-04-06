@@ -254,7 +254,7 @@ export default class Config extends React.Component<IProps, IState> {
                         {/* Todo: modularize the optiony thingies */}
                         {/* Name */}
                         <Card.Title>
-                            <FormattedMessage id="fields.instance.name" />
+                            <FormattedMessage id="view.instance.hosting.config.instance.name" />
                         </Card.Title>
                         <Form.Group>
                             <InputGroup
@@ -298,12 +298,13 @@ export default class Config extends React.Component<IProps, IState> {
                                 </Form.Control.Feedback>
                             </InputGroup>
                             <Form.Text muted>
-                                Max length limit of <code>100</code>.
+                                <FormattedMessage id="view.instance.hosting.config.instance.name.desc" />{" "}
+                                <code>100</code>.
                             </Form.Text>
                         </Form.Group>
                         {/* Path */}
                         <Card.Title>
-                            <FormattedMessage id="fields.instance.path" />
+                            <FormattedMessage id="view.instance.hosting.config.instance.path" />
                         </Card.Title>
                         <Form.Group>
                             <InputGroup
@@ -344,11 +345,13 @@ export default class Config extends React.Component<IProps, IState> {
                                     {validatePath().toString()}
                                 </Form.Control.Feedback>
                             </InputGroup>
-                            <Form.Text muted>What will be the path of the instance?</Form.Text>
+                            <Form.Text muted>
+                                <FormattedMessage id="view.instance.hosting.config.instance.path.desc" />
+                            </Form.Text>
                         </Form.Group>
                         {/* Chatbot */}
                         <Card.Title>
-                            <FormattedMessage id="fields.instance.chatbotlimit" />
+                            <FormattedMessage id="view.instance.hosting.config.instance.chatbot" />
                         </Card.Title>
                         <Form.Group>
                             <InputGroup>
@@ -391,12 +394,12 @@ export default class Config extends React.Component<IProps, IState> {
                                 )}
                             </InputGroup>
                             <Form.Text muted>
-                                What will be the name of the instance? Max length limit of 100.
+                                <FormattedMessage id="view.instance.hosting.config.instance.chatbot.desc" />
                             </Form.Text>
                         </Form.Group>
                         {/* Autoupdate */}
                         <Card.Title>
-                            <FormattedMessage id="fields.instance.autoupdate" />
+                            <FormattedMessage id="view.instance.hosting.config.instance.autoupdate" />
                         </Card.Title>
                         <Form.Group>
                             <InputGroup>
@@ -437,12 +440,12 @@ export default class Config extends React.Component<IProps, IState> {
                                 )}
                             </InputGroup>
                             <Form.Text muted>
-                                What will be the name of the instance? Max length limit of 100.
+                                <FormattedMessage id="view.instance.hosting.config.instance.autoupdate.desc" />
                             </Form.Text>
                         </Form.Group>
                         {/* File mode */}
                         <Card.Title>
-                            <FormattedMessage id="fields.instance.filemode" />
+                            <FormattedMessage id="view.instance.hosting.config.instance.filemode" />
                         </Card.Title>
                         <Form.Group>
                             <InputGroup>
@@ -492,7 +495,7 @@ export default class Config extends React.Component<IProps, IState> {
                                 )}
                             </InputGroup>
                             <Form.Text muted>
-                                What will be the name of the instance? Max length limit of 100.
+                                <FormattedMessage id="view.instance.hosting.config.instance.filemode.desc" />
                             </Form.Text>
                         </Form.Group>
                         <Button
@@ -501,7 +504,7 @@ export default class Config extends React.Component<IProps, IState> {
                                 this.saveConfigChanges();
                             }}
                             disabled={this.state.switchingConfigs}>
-                            Save
+                            <FormattedMessage id="generic.save" />
                         </Button>
                     </Card.Body>
                 </Card>
@@ -509,16 +512,16 @@ export default class Config extends React.Component<IProps, IState> {
                 {/* BYOND List */}
                 <Card>
                     <Card.Header>
-                        <FormattedMessage id="view.instance.hosting.byond.add" />
+                        <FormattedMessage id="view.instance.hosting.config.byond.add" />
                     </Card.Header>
                     <Card.Body>
                         <Card.Title>
-                            <FormattedMessage id="view.instance.hosting.byond.add.title" />
+                            <FormattedMessage id="view.instance.hosting.config.byond.add.title" />
                         </Card.Title>
                         <Form.Group>
                             <Form.Label>
                                 <FormattedMessage
-                                    id="view.instance.hosting.byond.add.versions"
+                                    id="view.instance.hosting.config.byond.add.versions"
                                     values={{
                                         latest: this.state.latestVersion,
                                         beta: this.state.latestBetaVersion
@@ -596,25 +599,27 @@ export default class Config extends React.Component<IProps, IState> {
                                 </InputGroup.Append>
                                 <Form.Control.Feedback type="invalid" tooltip>
                                     <FormattedMessage
-                                        id="view.instance.hosting.byond.add.invalid"
+                                        id="view.instance.hosting.config.byond.add.invalid"
                                         values={{
                                             majorminor: invalidMajor ? (
                                                 invalidMinor ? (
-                                                    <FormattedMessage id="view.instance.hosting.byond.add.invalid.both" />
+                                                    <FormattedMessage id="view.instance.hosting.config.byond.add.invalid.both" />
                                                 ) : (
-                                                    <FormattedMessage id="view.instance.hosting.byond.add.invalid.major" />
+                                                    <FormattedMessage id="view.instance.hosting.config.byond.add.invalid.major" />
                                                 )
                                             ) : (
-                                                <FormattedMessage id="view.instance.hosting.byond.add.invalid.minor" />
+                                                <FormattedMessage id="view.instance.hosting.config.byond.add.invalid.minor" />
                                             )
                                         }}
                                     />
                                 </Form.Control.Feedback>
                             </InputGroup>
-                            <Form.Text muted>Major[.]Minor of the byond version.</Form.Text>
+                            <Form.Text muted>
+                                <FormattedMessage id="view.instance.hosting.config.byond.add.desc" />
+                            </Form.Text>
                         </Form.Group>
                         <Card.Title>
-                            <FormattedMessage id="view.instance.hosting.byond.upload.fys" />
+                            <FormattedMessage id="view.instance.hosting.config.byond.upload.fys" />
                         </Card.Title>
                         <Form.Group>
                             <InputGroup>
@@ -625,7 +630,7 @@ export default class Config extends React.Component<IProps, IState> {
                                         this.state.customFile ? (
                                             this.state.customFile.name
                                         ) : (
-                                            <FormattedMessage id="view.instance.hosting.byond.upload" />
+                                            <FormattedMessage id="view.instance.hosting.config.byond.upload" />
                                         )
                                     }
                                     data-browse="Upload"
@@ -680,7 +685,7 @@ export default class Config extends React.Component<IProps, IState> {
                 {/* BYOND Version list */}
                 <Card>
                     <Card.Header>
-                        <FormattedMessage id="view.instance.hosting.byond" />
+                        <FormattedMessage id="view.instance.hosting.config.byond" />
                     </Card.Header>
                     <Card.Body>
                         <Card.Title>Installed Versions</Card.Title>
@@ -740,9 +745,14 @@ export default class Config extends React.Component<IProps, IState> {
                                         htmlFor={version.version!}>
                                         <OverlayTrigger
                                             overlay={
-                                                <Tooltip id={"view.instance.hosting.byond.custom"}>
+                                                <Tooltip
+                                                    id={
+                                                        "view.instance.hosting.config.byond.custom"
+                                                    }>
                                                     <FormattedMessage
-                                                        id={"view.instance.hosting.byond.custom"}
+                                                        id={
+                                                            "view.instance.hosting.config.byond.custom"
+                                                        }
                                                     />
                                                 </Tooltip>
                                             }
