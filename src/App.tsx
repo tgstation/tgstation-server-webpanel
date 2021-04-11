@@ -6,6 +6,8 @@ import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
 import { CredentialsType } from "./ApiClient/models/ICredentials";
+import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
 import CredentialsProvider from "./ApiClient/util/CredentialsProvider";
@@ -14,6 +16,7 @@ import AppNavbar from "./components/AppNavbar";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
+import { UserContext } from "./contexts/UserContext";
 import { DEFAULT_BASEPATH } from "./definitions/constants";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
@@ -25,6 +28,7 @@ interface IState {
     translationError?: string;
     loggedIn: boolean;
     loading: boolean;
+    userContextInfo: UserContext;
 }
 
 interface IProps {
@@ -99,19 +103,79 @@ class App extends React.Component<IProps, IState> {
 
         this.finishLogin = this.finishLogin.bind(this);
         this.finishLogout = this.finishLogout.bind(this);
+        this.updateUserContext = this.updateUserContext.bind(this);
 
         this.translationFactory = this.props.translationFactory || new TranslationFactory();
 
         this.state = {
             loggedIn: !!CredentialsProvider.isTokenValid(),
-            loading: true
+            loading: true,
+            userContextInfo: {
+                errors: new Set(),
+                loading: true,
+                user: null,
+                reloadUser: this.updateUserContext
+            }
         };
+    }
+
+    private async updateUserContext() {
+        this.setState(prev => {
+            return {
+                userContextInfo: {
+                    errors: prev.userContextInfo.errors,
+                    loading: true,
+                    user: prev.userContextInfo.user,
+                    reloadUser: prev.userContextInfo.reloadUser
+                }
+            };
+        });
+        const response = await UserClient.getCurrentUser();
+        if (response.code === StatusCode.OK) {
+            this.setState(prev => {
+                return {
+                    userContextInfo: {
+                        errors: prev.userContextInfo.errors,
+                        loading: false,
+                        user: response.payload,
+                        reloadUser: prev.userContextInfo.reloadUser
+                    }
+                };
+            });
+        } else {
+            if (response.error.code === ErrorCode.HTTP_ACCESS_DENIED) {
+                this.setState(prev => {
+                    return {
+                        userContextInfo: {
+                            loading: true,
+                            user: null,
+                            reloadUser: prev.userContextInfo.reloadUser,
+                            errors: prev.userContextInfo.errors
+                        }
+                    };
+                });
+            } else {
+                this.setState(prev => {
+                    const newSet = new Set(prev.userContextInfo.errors);
+                    newSet.add(response.error);
+                    return {
+                        userContextInfo: {
+                            errors: newSet,
+                            reloadUser: prev.userContextInfo.reloadUser,
+                            user: null,
+                            loading: true
+                        }
+                    };
+                });
+            }
+        }
     }
 
     private finishLogin() {
         console.log("Logging in");
 
         void UserClient.getCurrentUser(); //preload the user, we dont particularly care about the content, just that its preloaded
+        void this.updateUserContext();
         this.setState({
             loggedIn: true,
             loading: false
@@ -122,6 +186,8 @@ class App extends React.Component<IProps, IState> {
         this.setState({
             loggedIn: false
         });
+
+        void this.updateUserContext();
     }
     public async componentDidMount(): Promise<void> {
         LoginHooks.on("loginSuccess", this.finishLogin);
@@ -150,7 +216,9 @@ class App extends React.Component<IProps, IState> {
             <IntlProvider
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}>
-                <InnerApp loading={this.state.loading} loggedIn={this.state.loggedIn} />
+                <UserContext.Provider value={this.state.userContextInfo}>
+                    <InnerApp loading={this.state.loading} loggedIn={this.state.loggedIn} />
+                </UserContext.Provider>
             </IntlProvider>
         );
     }
