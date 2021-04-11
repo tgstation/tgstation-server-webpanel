@@ -5,6 +5,7 @@ import InternalError from "../ApiClient/models/InternalComms/InternalError";
 
 export type UserContext = {
     reloadUser: () => Promise<void>;
+    deleteError: (error: InternalError) => void;
     errors: Set<InternalError>;
 } & (
     | {

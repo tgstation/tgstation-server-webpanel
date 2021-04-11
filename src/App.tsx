@@ -5,14 +5,16 @@ import Container from "react-bootstrap/Container";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
+import { Components } from "./ApiClient/generatedcode/_generated";
 import { CredentialsType } from "./ApiClient/models/ICredentials";
-import { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
+import InternalError, { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
 import CredentialsProvider from "./ApiClient/util/CredentialsProvider";
 import LoginHooks from "./ApiClient/util/LoginHooks";
 import AppNavbar from "./components/AppNavbar";
+import ErrorAlert from "./components/utils/ErrorAlert";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
@@ -46,6 +48,8 @@ interface InnerState {
 }
 
 class InnerApp extends React.Component<InnerProps, InnerState> {
+    public declare context: UserContext;
+
     public constructor(props: InnerProps) {
         super(props);
 
@@ -76,17 +80,30 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                             <Loading text="loading.app" />
                         </Container>
                     ) : (
-                        <Router
-                            loggedIn={this.props.loggedIn}
-                            selectCategory={cat => {
-                                this.setState({
-                                    passdownCat: {
-                                        name: cat,
-                                        key: Math.random().toString()
-                                    }
-                                });
-                            }}
-                        />
+                        <React.Fragment>
+                            <Container className="mt-5">
+                                {[...this.context.errors.values()].map((value, idx) => {
+                                    return (
+                                        <ErrorAlert
+                                            error={value}
+                                            key={idx}
+                                            onClose={() => this.context.deleteError(value)}
+                                        />
+                                    );
+                                })}
+                            </Container>
+                            <Router
+                                loggedIn={this.props.loggedIn}
+                                selectCategory={cat => {
+                                    this.setState({
+                                        passdownCat: {
+                                            name: cat,
+                                            key: Math.random().toString()
+                                        }
+                                    });
+                                }}
+                            />
+                        </React.Fragment>
                     )}
                     <JobsList />
                 </ErrorBoundary>
@@ -94,6 +111,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
         );
     }
 }
+InnerApp.contextType = UserContext;
 
 class App extends React.Component<IProps, IState> {
     private readonly translationFactory: ITranslationFactory;
@@ -104,6 +122,7 @@ class App extends React.Component<IProps, IState> {
         this.finishLogin = this.finishLogin.bind(this);
         this.finishLogout = this.finishLogout.bind(this);
         this.updateUserContext = this.updateUserContext.bind(this);
+        this.deleteUserContextError = this.deleteUserContextError.bind(this);
 
         this.translationFactory = this.props.translationFactory || new TranslationFactory();
 
@@ -114,7 +133,8 @@ class App extends React.Component<IProps, IState> {
                 errors: new Set(),
                 loading: true,
                 user: null,
-                reloadUser: this.updateUserContext
+                reloadUser: this.updateUserContext,
+                deleteError: this.deleteUserContextError
             }
         };
     }
@@ -126,7 +146,8 @@ class App extends React.Component<IProps, IState> {
                     errors: prev.userContextInfo.errors,
                     loading: true,
                     user: prev.userContextInfo.user,
-                    reloadUser: prev.userContextInfo.reloadUser
+                    reloadUser: prev.userContextInfo.reloadUser,
+                    deleteError: prev.userContextInfo.deleteError
                 }
             };
         });
@@ -138,7 +159,8 @@ class App extends React.Component<IProps, IState> {
                         errors: prev.userContextInfo.errors,
                         loading: false,
                         user: response.payload,
-                        reloadUser: prev.userContextInfo.reloadUser
+                        reloadUser: prev.userContextInfo.reloadUser,
+                        deleteError: prev.userContextInfo.deleteError
                     }
                 };
             });
@@ -150,6 +172,7 @@ class App extends React.Component<IProps, IState> {
                             loading: true,
                             user: null,
                             reloadUser: prev.userContextInfo.reloadUser,
+                            deleteError: prev.userContextInfo.deleteError,
                             errors: prev.userContextInfo.errors
                         }
                     };
@@ -162,6 +185,7 @@ class App extends React.Component<IProps, IState> {
                         userContextInfo: {
                             errors: newSet,
                             reloadUser: prev.userContextInfo.reloadUser,
+                            deleteError: prev.userContextInfo.deleteError,
                             user: null,
                             loading: true
                         }
@@ -169,6 +193,22 @@ class App extends React.Component<IProps, IState> {
                 });
             }
         }
+    }
+
+    public deleteUserContextError(error: InternalError): void {
+        this.setState(prev => {
+            const newSet = new Set(prev.userContextInfo.errors);
+            newSet.delete(error);
+            return {
+                userContextInfo: {
+                    deleteError: prev.userContextInfo.deleteError,
+                    reloadUser: prev.userContextInfo.reloadUser,
+                    loading: prev.userContextInfo.loading,
+                    user: prev.userContextInfo.user as Components.Schemas.UserResponse,
+                    errors: newSet
+                }
+            };
+        });
     }
 
     private finishLogin() {
