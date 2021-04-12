@@ -120,7 +120,8 @@ class App extends React.Component<IProps, IState> {
 
         this.finishLogin = this.finishLogin.bind(this);
         this.finishLogout = this.finishLogout.bind(this);
-        this.updateGeneralContext = this.updateGeneralContext.bind(this);
+        this.updateContextUser = this.updateContextUser.bind(this);
+        this.updateContextServer = this.updateContextServer.bind(this);
         this.deleteGeneralContextError = this.deleteGeneralContextError.bind(this);
 
         this.translationFactory = this.props.translationFactory || new TranslationFactory();
@@ -131,23 +132,13 @@ class App extends React.Component<IProps, IState> {
             GeneralContextInfo: {
                 errors: new Set(),
                 user: null,
-                reloadUser: this.updateGeneralContext,
+                serverInfo: null,
                 deleteError: this.deleteGeneralContextError
             }
         };
     }
 
-    private async updateGeneralContext() {
-        this.setState(prev => {
-            return {
-                GeneralContextInfo: {
-                    errors: prev.GeneralContextInfo.errors,
-                    user: prev.GeneralContextInfo.user,
-                    reloadUser: prev.GeneralContextInfo.reloadUser,
-                    deleteError: prev.GeneralContextInfo.deleteError
-                }
-            };
-        });
+    private async updateContextUser() {
         const response = await UserClient.getCurrentUser();
         if (response.code === StatusCode.OK) {
             this.setState(prev => {
@@ -155,7 +146,7 @@ class App extends React.Component<IProps, IState> {
                     GeneralContextInfo: {
                         errors: prev.GeneralContextInfo.errors,
                         user: response.payload,
-                        reloadUser: prev.GeneralContextInfo.reloadUser,
+                        serverInfo: prev.GeneralContextInfo.serverInfo,
                         deleteError: prev.GeneralContextInfo.deleteError
                     }
                 };
@@ -166,7 +157,7 @@ class App extends React.Component<IProps, IState> {
                     return {
                         GeneralContextInfo: {
                             user: null,
-                            reloadUser: prev.GeneralContextInfo.reloadUser,
+                            serverInfo: prev.GeneralContextInfo.serverInfo,
                             deleteError: prev.GeneralContextInfo.deleteError,
                             errors: prev.GeneralContextInfo.errors
                         }
@@ -179,13 +170,42 @@ class App extends React.Component<IProps, IState> {
                     return {
                         GeneralContextInfo: {
                             errors: newSet,
-                            reloadUser: prev.GeneralContextInfo.reloadUser,
                             deleteError: prev.GeneralContextInfo.deleteError,
-                            user: null
+                            user: null,
+                            serverInfo: prev.GeneralContextInfo.serverInfo
                         }
                     };
                 });
             }
+        }
+    }
+
+    private async updateContextServer() {
+        const response = await ServerClient.getServerInfo();
+        if (response.code === StatusCode.OK) {
+            this.setState(prev => {
+                return {
+                    GeneralContextInfo: {
+                        errors: prev.GeneralContextInfo.errors,
+                        user: prev.GeneralContextInfo.user,
+                        serverInfo: response.payload,
+                        deleteError: prev.GeneralContextInfo.deleteError
+                    }
+                };
+            });
+        } else {
+            this.setState(prev => {
+                const newSet = new Set(prev.GeneralContextInfo.errors);
+                newSet.add(response.error);
+                return {
+                    GeneralContextInfo: {
+                        errors: newSet,
+                        deleteError: prev.GeneralContextInfo.deleteError,
+                        user: prev.GeneralContextInfo.user,
+                        serverInfo: null
+                    }
+                };
+            });
         }
     }
 
@@ -196,8 +216,8 @@ class App extends React.Component<IProps, IState> {
             return {
                 GeneralContextInfo: {
                     deleteError: prev.GeneralContextInfo.deleteError,
-                    reloadUser: prev.GeneralContextInfo.reloadUser,
                     user: prev.GeneralContextInfo.user,
+                    serverInfo: prev.GeneralContextInfo.serverInfo,
                     errors: newSet
                 }
             };
@@ -208,7 +228,7 @@ class App extends React.Component<IProps, IState> {
         console.log("Logging in");
 
         void UserClient.getCurrentUser(); //preload the user, we dont particularly care about the content, just that its preloaded
-        void this.updateGeneralContext();
+        void this.updateContextUser();
         this.setState({
             loggedIn: true,
             loading: false
@@ -220,15 +240,19 @@ class App extends React.Component<IProps, IState> {
             loggedIn: false
         });
 
-        void this.updateGeneralContext();
+        void this.updateContextUser();
     }
     public async componentDidMount(): Promise<void> {
         LoginHooks.on("loginSuccess", this.finishLogin);
         ServerClient.on("logout", this.finishLogout);
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        ServerClient.on("purgeCache", this.updateContextServer);
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        ServerClient.on("purgeCache", this.updateContextUser);
 
         await this.loadTranslation();
         await ServerClient.initApi();
-        await ServerClient.getServerInfo();
+        await this.updateContextServer();
 
         this.setState({
             loading: false
@@ -238,6 +262,10 @@ class App extends React.Component<IProps, IState> {
     public componentWillUnmount(): void {
         LoginHooks.removeListener("loginSuccess", this.finishLogin);
         ServerClient.removeListener("logout", this.finishLogout);
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        ServerClient.removeListener("purgeCache", this.updateContextServer);
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        ServerClient.removeListener("purgeCache", this.updateContextUser);
     }
 
     public render(): React.ReactNode {
