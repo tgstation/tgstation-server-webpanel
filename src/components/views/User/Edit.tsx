@@ -26,7 +26,6 @@ import {
 import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
-import ServerClient from "../../../ApiClient/ServerClient";
 import UserClient from "../../../ApiClient/UserClient";
 import UserGroupClient from "../../../ApiClient/UserGroupClient";
 import { GeneralContext } from "../../../contexts/GeneralContext";
@@ -41,7 +40,6 @@ interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     user?: Components.Schemas.UserResponse;
-    serverinfo?: Components.Schemas.ServerInformationResponse;
     newOAuthConnections: Components.Schemas.OAuthConnection[];
     loading: boolean;
     saving: boolean;
@@ -139,15 +137,6 @@ class UserEdit extends React.Component<IProps, IState> {
                 this.loadUser(response.payload);
                 break;
             }
-        }
-
-        const serverinfo = await ServerClient.getServerInfo();
-        if (serverinfo.code == StatusCode.OK) {
-            this.setState({
-                serverinfo: serverinfo.payload
-            });
-        } else {
-            this.addError(serverinfo.error);
         }
 
         await this.loadGroups();
@@ -504,7 +493,7 @@ class UserEdit extends React.Component<IProps, IState> {
     }
 
     private renderOAuth(): React.ReactNode {
-        const oAuthProviderInfos = this.state.serverinfo?.oAuthProviderInfos;
+        const oAuthProviderInfos = this.context.serverInfo.oAuthProviderInfos;
         const currentOAuthConnections =
             this.state.newOAuthConnections || this.state.user?.oAuthConnections;
         if (
