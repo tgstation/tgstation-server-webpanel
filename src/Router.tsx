@@ -190,25 +190,29 @@ class Router extends Component<IProps, IState> {
                                             }
 
                                             return !this.context?.user && !route.loginless ? (
-                                                <ErrorAlert
-                                                    error={
-                                                        new InternalError(ErrorCode.APP_FAIL, {
-                                                            jsError: Error(
-                                                                "Router has no user in the general context"
-                                                            )
-                                                        })
-                                                    }
-                                                />
+                                                <Container>
+                                                    <ErrorAlert
+                                                        error={
+                                                            new InternalError(ErrorCode.APP_FAIL, {
+                                                                jsError: Error(
+                                                                    "Router has no user in the general context"
+                                                                )
+                                                            })
+                                                        }
+                                                    />
+                                                </Container>
                                             ) : !this.context?.serverInfo ? (
-                                                <ErrorAlert
-                                                    error={
-                                                        new InternalError(ErrorCode.APP_FAIL, {
-                                                            jsError: Error(
-                                                                "Router has no server info in the general context"
-                                                            )
-                                                        })
-                                                    }
-                                                />
+                                                <Container>
+                                                    <ErrorAlert
+                                                        error={
+                                                            new InternalError(ErrorCode.APP_FAIL, {
+                                                                jsError: Error(
+                                                                    "Router has no server info in the general context"
+                                                                )
+                                                            })
+                                                        }
+                                                    />
+                                                </Container>
                                             ) : route.noContainer ? (
                                                 <React.Fragment>
                                                     <Comp {...props} />
