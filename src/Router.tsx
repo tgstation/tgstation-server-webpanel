@@ -17,7 +17,7 @@ import ErrorBoundary from "./components/utils/ErrorBoundary";
 import Loading from "./components/utils/Loading";
 import Reload from "./components/utils/Reload";
 import Login, { OAuthStateStorage } from "./components/views/Login";
-import { GeneralContext } from "./contexts/GeneralContext";
+import { GeneralContext, UnsafeGeneralContext } from "./contexts/GeneralContext";
 import { MODE } from "./definitions/constants";
 import { matchesPath } from "./utils/misc";
 import RouteController from "./utils/RouteController";
@@ -44,7 +44,7 @@ const NotFound = loadable(() => import("./components/utils/NotFound"), {
 });
 
 class Router extends Component<IProps, IState> {
-    public declare context: GeneralContext;
+    public declare context: UnsafeGeneralContext;
     public constructor(props: IProps) {
         super(props);
 

@@ -18,7 +18,7 @@ import ErrorAlert from "./components/utils/ErrorAlert";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
-import { GeneralContext } from "./contexts/GeneralContext";
+import { GeneralContext, UnsafeGeneralContext } from "./contexts/GeneralContext";
 import { DEFAULT_BASEPATH } from "./definitions/constants";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
@@ -48,7 +48,7 @@ interface InnerState {
 }
 
 class InnerApp extends React.Component<InnerProps, InnerState> {
-    public declare context: GeneralContext;
+    public declare context: UnsafeGeneralContext;
 
     public constructor(props: InnerProps) {
         super(props);
