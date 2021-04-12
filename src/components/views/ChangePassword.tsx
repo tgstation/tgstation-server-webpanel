@@ -24,7 +24,6 @@ interface IState {
     password2: string;
     matchError?: boolean;
     lengthError?: boolean;
-    serverInfo?: Components.Schemas.ServerInformationResponse;
     loading: boolean;
     pwdload?: boolean;
     user?: Components.Schemas.UserResponse;
@@ -62,21 +61,6 @@ class ChangePassword extends React.Component<IProps, IState> {
     }
 
     public async componentDidMount(): Promise<void> {
-        const res = await ServerClient.getServerInfo();
-
-        switch (res.code) {
-            case StatusCode.ERROR: {
-                this.addError(res.error);
-                break;
-            }
-            case StatusCode.OK: {
-                this.setState({
-                    serverInfo: res.payload
-                });
-                break;
-            }
-        }
-
         const user = await UserClient.getUser(this.state.userId);
         if (user.code == StatusCode.OK) {
             this.setState({
@@ -114,7 +98,7 @@ class ChangePassword extends React.Component<IProps, IState> {
 
         event.preventDefault();
         let err = false;
-        if (this.state.password1.length < this.state.serverInfo!.minimumPasswordLength) {
+        if (this.state.password1.length < this.context.serverInfo.minimumPasswordLength) {
             err = true;
             this.setState({
                 lengthError: true
@@ -224,7 +208,7 @@ class ChangePassword extends React.Component<IProps, IState> {
                                     {this.state.lengthError ? (
                                         <React.Fragment>
                                             <FormattedMessage id="login.password.repeat.short" />
-                                            {this.state.serverInfo!.minimumPasswordLength}
+                                            {this.context.serverInfo.minimumPasswordLength}
                                         </React.Fragment>
                                     ) : (
                                         ""
