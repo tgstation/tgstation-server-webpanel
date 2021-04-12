@@ -14,7 +14,7 @@ import InternalStatus, { StatusCode } from "../ApiClient/models/InternalComms/In
 import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import LoginHooks from "../ApiClient/util/LoginHooks";
-import { UserContext } from "../contexts/UserContext";
+import { GeneralContext } from "../contexts/GeneralContext";
 import { matchesPath } from "../utils/misc";
 import RouteController from "../utils/RouteController";
 import { AppCategories, AppRoute, AppRoutes } from "../utils/routes";
@@ -39,7 +39,7 @@ interface IState {
 }
 
 class AppNavbar extends React.Component<IProps, IState> {
-    public declare context: UserContext;
+    public declare context: GeneralContext;
 
     public constructor(props: IProps) {
         super(props);
@@ -422,5 +422,5 @@ class AppNavbar extends React.Component<IProps, IState> {
         });
     }
 }
-AppNavbar.contextType = UserContext;
+AppNavbar.contextType = GeneralContext;
 export default withRouter(AppNavbar);

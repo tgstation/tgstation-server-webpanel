@@ -5,7 +5,6 @@ import Container from "react-bootstrap/Container";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
-import { Components } from "./ApiClient/generatedcode/_generated";
 import { CredentialsType } from "./ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
@@ -18,7 +17,7 @@ import ErrorAlert from "./components/utils/ErrorAlert";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
-import { UserContext } from "./contexts/UserContext";
+import { GeneralContext } from "./contexts/GeneralContext";
 import { DEFAULT_BASEPATH } from "./definitions/constants";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
@@ -30,7 +29,7 @@ interface IState {
     translationError?: string;
     loggedIn: boolean;
     loading: boolean;
-    userContextInfo: UserContext;
+    GeneralContextInfo: GeneralContext;
 }
 
 interface IProps {
@@ -48,7 +47,7 @@ interface InnerState {
 }
 
 class InnerApp extends React.Component<InnerProps, InnerState> {
-    public declare context: UserContext;
+    public declare context: GeneralContext;
 
     public constructor(props: InnerProps) {
         super(props);
@@ -111,7 +110,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
         );
     }
 }
-InnerApp.contextType = UserContext;
+InnerApp.contextType = GeneralContext;
 
 class App extends React.Component<IProps, IState> {
     private readonly translationFactory: ITranslationFactory;
@@ -121,33 +120,31 @@ class App extends React.Component<IProps, IState> {
 
         this.finishLogin = this.finishLogin.bind(this);
         this.finishLogout = this.finishLogout.bind(this);
-        this.updateUserContext = this.updateUserContext.bind(this);
-        this.deleteUserContextError = this.deleteUserContextError.bind(this);
+        this.updateGeneralContext = this.updateGeneralContext.bind(this);
+        this.deleteGeneralContextError = this.deleteGeneralContextError.bind(this);
 
         this.translationFactory = this.props.translationFactory || new TranslationFactory();
 
         this.state = {
             loggedIn: !!CredentialsProvider.isTokenValid(),
             loading: true,
-            userContextInfo: {
+            GeneralContextInfo: {
                 errors: new Set(),
-                loading: true,
                 user: null,
-                reloadUser: this.updateUserContext,
-                deleteError: this.deleteUserContextError
+                reloadUser: this.updateGeneralContext,
+                deleteError: this.deleteGeneralContextError
             }
         };
     }
 
-    private async updateUserContext() {
+    private async updateGeneralContext() {
         this.setState(prev => {
             return {
-                userContextInfo: {
-                    errors: prev.userContextInfo.errors,
-                    loading: true,
-                    user: prev.userContextInfo.user,
-                    reloadUser: prev.userContextInfo.reloadUser,
-                    deleteError: prev.userContextInfo.deleteError
+                GeneralContextInfo: {
+                    errors: prev.GeneralContextInfo.errors,
+                    user: prev.GeneralContextInfo.user,
+                    reloadUser: prev.GeneralContextInfo.reloadUser,
+                    deleteError: prev.GeneralContextInfo.deleteError
                 }
             };
         });
@@ -155,12 +152,11 @@ class App extends React.Component<IProps, IState> {
         if (response.code === StatusCode.OK) {
             this.setState(prev => {
                 return {
-                    userContextInfo: {
-                        errors: prev.userContextInfo.errors,
-                        loading: false,
+                    GeneralContextInfo: {
+                        errors: prev.GeneralContextInfo.errors,
                         user: response.payload,
-                        reloadUser: prev.userContextInfo.reloadUser,
-                        deleteError: prev.userContextInfo.deleteError
+                        reloadUser: prev.GeneralContextInfo.reloadUser,
+                        deleteError: prev.GeneralContextInfo.deleteError
                     }
                 };
             });
@@ -168,26 +164,24 @@ class App extends React.Component<IProps, IState> {
             if (response.error.code === ErrorCode.HTTP_ACCESS_DENIED) {
                 this.setState(prev => {
                     return {
-                        userContextInfo: {
-                            loading: true,
+                        GeneralContextInfo: {
                             user: null,
-                            reloadUser: prev.userContextInfo.reloadUser,
-                            deleteError: prev.userContextInfo.deleteError,
-                            errors: prev.userContextInfo.errors
+                            reloadUser: prev.GeneralContextInfo.reloadUser,
+                            deleteError: prev.GeneralContextInfo.deleteError,
+                            errors: prev.GeneralContextInfo.errors
                         }
                     };
                 });
             } else {
                 this.setState(prev => {
-                    const newSet = new Set(prev.userContextInfo.errors);
+                    const newSet = new Set(prev.GeneralContextInfo.errors);
                     newSet.add(response.error);
                     return {
-                        userContextInfo: {
+                        GeneralContextInfo: {
                             errors: newSet,
-                            reloadUser: prev.userContextInfo.reloadUser,
-                            deleteError: prev.userContextInfo.deleteError,
-                            user: null,
-                            loading: true
+                            reloadUser: prev.GeneralContextInfo.reloadUser,
+                            deleteError: prev.GeneralContextInfo.deleteError,
+                            user: null
                         }
                     };
                 });
@@ -195,16 +189,15 @@ class App extends React.Component<IProps, IState> {
         }
     }
 
-    public deleteUserContextError(error: InternalError): void {
+    public deleteGeneralContextError(error: InternalError): void {
         this.setState(prev => {
-            const newSet = new Set(prev.userContextInfo.errors);
+            const newSet = new Set(prev.GeneralContextInfo.errors);
             newSet.delete(error);
             return {
-                userContextInfo: {
-                    deleteError: prev.userContextInfo.deleteError,
-                    reloadUser: prev.userContextInfo.reloadUser,
-                    loading: prev.userContextInfo.loading,
-                    user: prev.userContextInfo.user as Components.Schemas.UserResponse,
+                GeneralContextInfo: {
+                    deleteError: prev.GeneralContextInfo.deleteError,
+                    reloadUser: prev.GeneralContextInfo.reloadUser,
+                    user: prev.GeneralContextInfo.user,
                     errors: newSet
                 }
             };
@@ -215,7 +208,7 @@ class App extends React.Component<IProps, IState> {
         console.log("Logging in");
 
         void UserClient.getCurrentUser(); //preload the user, we dont particularly care about the content, just that its preloaded
-        void this.updateUserContext();
+        void this.updateGeneralContext();
         this.setState({
             loggedIn: true,
             loading: false
@@ -227,7 +220,7 @@ class App extends React.Component<IProps, IState> {
             loggedIn: false
         });
 
-        void this.updateUserContext();
+        void this.updateGeneralContext();
     }
     public async componentDidMount(): Promise<void> {
         LoginHooks.on("loginSuccess", this.finishLogin);
@@ -256,9 +249,9 @@ class App extends React.Component<IProps, IState> {
             <IntlProvider
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}>
-                <UserContext.Provider value={this.state.userContextInfo}>
+                <GeneralContext.Provider value={this.state.GeneralContextInfo}>
                     <InnerApp loading={this.state.loading} loggedIn={this.state.loggedIn} />
-                </UserContext.Provider>
+                </GeneralContext.Provider>
             </IntlProvider>
         );
     }

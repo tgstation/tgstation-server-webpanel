@@ -3,19 +3,13 @@ import React from "react";
 import { Components } from "../ApiClient/generatedcode/_generated";
 import InternalError from "../ApiClient/models/InternalComms/InternalError";
 
-export type UserContext = {
+export type GeneralContext = {
     reloadUser: () => Promise<void>;
     deleteError: (error: InternalError) => void;
     errors: Set<InternalError>;
-} & (
-    | {
-          user: Components.Schemas.UserResponse;
-          loading: boolean;
-      }
-    | {
-          user: null;
-          loading: true;
-      }
-);
+    user: Components.Schemas.UserResponse | null;
+};
 
-export const UserContext = React.createContext<UserContext>((undefined as unknown) as UserContext);
+export const GeneralContext = React.createContext<GeneralContext>(
+    (undefined as unknown) as GeneralContext
+);

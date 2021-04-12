@@ -14,7 +14,7 @@ import { Components } from "../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
-import { UserContext } from "../../contexts/UserContext";
+import { GeneralContext } from "../../contexts/GeneralContext";
 import { resolvePermissionSet } from "../../utils/misc";
 import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
@@ -30,7 +30,7 @@ interface IState {
 }
 
 class Administration extends React.Component<IProps, IState> {
-    public declare context: UserContext;
+    public declare context: GeneralContext;
 
     public constructor(props: IProps) {
         super(props);
@@ -127,9 +127,7 @@ class Administration extends React.Component<IProps, IState> {
             return <Loading text="loading.admin" />;
         }
 
-        if (this.context.loading) {
-            return <Loading text="loading.user.load" />;
-        }
+        if (!this.context.user) throw Error("Administration: this.context.user is null!");
 
         const handleClose = () => this.setState({ showRebootModal: false });
         const handleOpen = () => this.setState({ showRebootModal: true });
@@ -251,5 +249,5 @@ class Administration extends React.Component<IProps, IState> {
         );
     }
 }
-Administration.contextType = UserContext;
+Administration.contextType = GeneralContext;
 export default withRouter(Administration);

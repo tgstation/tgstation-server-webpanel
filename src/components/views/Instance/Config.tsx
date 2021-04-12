@@ -11,7 +11,7 @@ import { Components } from "../../../ApiClient/generatedcode/_generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
-import { UserContext } from "../../../contexts/UserContext";
+import { GeneralContext } from "../../../contexts/GeneralContext";
 import { GlobalObjects } from "../../../utils/globalObjects";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
@@ -29,7 +29,7 @@ interface IState {
 }
 
 class InstanceConfig extends React.Component<IProps, IState> {
-    public declare context: UserContext;
+    public declare context: GeneralContext;
 
     public constructor(props: IProps) {
         super(props);
@@ -185,5 +185,5 @@ class InstanceConfig extends React.Component<IProps, IState> {
         );
     }
 }
-InstanceConfig.contextType = UserContext;
+InstanceConfig.contextType = GeneralContext;
 export default withRouter(InstanceConfig);

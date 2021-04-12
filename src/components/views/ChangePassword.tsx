@@ -12,7 +12,7 @@ import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/I
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
 import UserClient from "../../ApiClient/UserClient";
-import { UserContext } from "../../contexts/UserContext";
+import { GeneralContext } from "../../contexts/GeneralContext";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
@@ -33,9 +33,9 @@ interface IState {
 }
 
 class ChangePassword extends React.Component<IProps, IState> {
-    public declare context: UserContext;
+    public declare context: GeneralContext;
 
-    public constructor(props: IProps, context: UserContext) {
+    public constructor(props: IProps, context: GeneralContext) {
         super(props);
 
         if (!context?.user) {
@@ -261,5 +261,5 @@ class ChangePassword extends React.Component<IProps, IState> {
         );
     }
 }
-ChangePassword.contextType = UserContext;
+ChangePassword.contextType = GeneralContext;
 export default withRouter(ChangePassword);

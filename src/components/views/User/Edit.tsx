@@ -29,7 +29,7 @@ import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStat
 import ServerClient from "../../../ApiClient/ServerClient";
 import UserClient from "../../../ApiClient/UserClient";
 import UserGroupClient from "../../../ApiClient/UserGroupClient";
-import { UserContext } from "../../../contexts/UserContext";
+import { GeneralContext } from "../../../contexts/GeneralContext";
 import { GlobalObjects } from "../../../utils/globalObjects";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
@@ -58,8 +58,8 @@ interface Permission {
 }
 
 class UserEdit extends React.Component<IProps, IState> {
-    public declare context: UserContext;
-    public constructor(props: IProps, context: UserContext) {
+    public declare context: GeneralContext;
+    public constructor(props: IProps, context: GeneralContext) {
         super(props);
 
         this.createGroup = this.createGroup.bind(this);
@@ -85,14 +85,14 @@ class UserEdit extends React.Component<IProps, IState> {
         RouteData.selectedusertab = props.match.params.tab;
     }
 
-    private assertUserContext(): void {
+    private assertGeneralContext(): void {
         if (!this.context.user) {
-            throw Error("UserEdit: assertUserContext failed!");
+            throw Error("UserEdit: assertGeneralContext failed!");
         }
     }
 
     private get canEdit() {
-        this.assertUserContext();
+        this.assertGeneralContext();
         return (
             resolvePermissionSet(this.context.user!).administrationRights &
             AdministrationRights.WriteUsers
@@ -100,7 +100,7 @@ class UserEdit extends React.Component<IProps, IState> {
     }
 
     private get canRead() {
-        this.assertUserContext();
+        this.assertGeneralContext();
         return !!(
             resolvePermissionSet(this.context.user!).administrationRights &
             AdministrationRights.ReadUsers
@@ -108,7 +108,7 @@ class UserEdit extends React.Component<IProps, IState> {
     }
 
     private get canEditOwnPassword() {
-        this.assertUserContext();
+        this.assertGeneralContext();
 
         const userid = parseInt(this.props.match.params.id);
         return (
@@ -120,7 +120,7 @@ class UserEdit extends React.Component<IProps, IState> {
     }
 
     private get canEditOwnOAuth() {
-        this.assertUserContext();
+        this.assertGeneralContext();
 
         const userid = parseInt(this.props.match.params.id);
         return (
@@ -1140,5 +1140,5 @@ class UserEdit extends React.Component<IProps, IState> {
         );
     }
 }
-UserEdit.contextType = UserContext;
+UserEdit.contextType = GeneralContext;
 export default withRouter(UserEdit);
