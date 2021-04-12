@@ -269,6 +269,7 @@
     "loading.updating": "Updating server...",
     "loading.logs": "Loading Log(s)...",
     "loading.info": "Loading Information...",
+    "loading.serverinfo": "Loading Server Information...",
     "loading.passwd": "Changing password...",
     "loading.userlist": "Loading user list...",
     "loading.user.load": "Loading user information...",
