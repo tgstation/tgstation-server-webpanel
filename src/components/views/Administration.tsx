@@ -13,7 +13,6 @@ import { AdministrationRights } from "../../ApiClient/generatedcode/_enums";
 import { Components } from "../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
-import ServerClient from "../../ApiClient/ServerClient";
 import { GeneralContext } from "../../contexts/GeneralContext";
 import { resolvePermissionSet } from "../../utils/misc";
 import { AppRoutes } from "../../utils/routes";
@@ -23,7 +22,6 @@ import Loading from "../utils/Loading";
 interface IProps extends RouteComponentProps {}
 interface IState {
     adminInfo?: Components.Schemas.AdministrationResponse;
-    serverInfo?: Components.Schemas.ServerInformationResponse;
     error?: InternalError<ErrorCode>;
     busy: boolean;
     showRebootModal?: boolean;
@@ -49,33 +47,12 @@ class Administration extends React.Component<IProps, IState> {
 
         console.time("DataLoad");
         tasks.push(this.loadAdminInfo());
-        tasks.push(this.loadServerInfo());
 
         await Promise.all(tasks);
         console.timeEnd("DataLoad");
         this.setState({
             busy: false
         });
-    }
-
-    private async loadServerInfo() {
-        console.time("ServerLoad");
-        const response = await ServerClient.getServerInfo();
-        switch (response.code) {
-            case StatusCode.ERROR: {
-                this.setState({
-                    error: response.error
-                });
-                break;
-            }
-            case StatusCode.OK: {
-                this.setState({
-                    serverInfo: response.payload
-                });
-                break;
-            }
-        }
-        console.timeEnd("ServerLoad");
     }
 
     private async loadAdminInfo() {
@@ -149,13 +126,13 @@ class Administration extends React.Component<IProps, IState> {
                     error={this.state.error}
                     onClose={() => this.setState({ error: undefined })}
                 />
-                {this.state.adminInfo && this.state.serverInfo ? (
+                {this.state.adminInfo ? (
                     <div className="text-center">
                         <h3 className=" text-secondary">
                             <FormattedMessage id="view.admin.hostos" />
                             <FontAwesomeIcon
                                 fixedWidth
-                                icon={this.state.serverInfo.windowsHost ? faWindows : faLinux}
+                                icon={this.context.serverInfo.windowsHost ? faWindows : faLinux}
                             />
                         </h3>
                         <h5 className="text-secondary">
@@ -168,19 +145,19 @@ class Administration extends React.Component<IProps, IState> {
                             <FormattedMessage id="view.admin.version.current" />
                             <span
                                 className={
-                                    this.state.serverInfo.version <
+                                    this.context.serverInfo.version <
                                     this.state.adminInfo.latestVersion
                                         ? "text-danger"
                                         : ""
                                 }>
-                                {this.state.serverInfo.version}
+                                {this.context.serverInfo.version}
                             </span>
                         </h3>
                         <h3 className="text-secondary">
                             <FormattedMessage id="view.admin.version.latest" />
                             <span
                                 className={
-                                    this.state.serverInfo.version <
+                                    this.context.serverInfo.version <
                                     this.state.adminInfo.latestVersion
                                         ? "text-danger"
                                         : ""
