@@ -8,17 +8,13 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 import CSSTransition from "react-transition-group/CSSTransition";
 
-import { Components } from "../ApiClient/generatedcode/_generated";
-import InternalError from "../ApiClient/models/InternalComms/InternalError";
-import InternalStatus, { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
-import ServerClient, { ServerInfoErrors } from "../ApiClient/ServerClient";
+import ServerClient from "../ApiClient/ServerClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import { GeneralContext } from "../contexts/GeneralContext";
 import { matchesPath } from "../utils/misc";
 import RouteController from "../utils/RouteController";
 import { AppCategories, AppRoute, AppRoutes } from "../utils/routes";
-import ErrorAlert from "./utils/ErrorAlert";
 
 interface IProps extends RouteComponentProps {
     category?: {
@@ -28,8 +24,6 @@ interface IProps extends RouteComponentProps {
 }
 
 interface IState {
-    serverInformation: Components.Schemas.ServerInformationResponse | null;
-    serverInfoError: InternalError<ServerInfoErrors> | null;
     loggedIn: boolean;
     //so we dont actually use the routes but it allows us to make react update the component
     routes: AppRoute[];
@@ -44,8 +38,6 @@ class AppNavbar extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
         this.logoutClick = this.logoutClick.bind(this);
-        this.loadServerInformation = this.loadServerInformation.bind(this);
-        this.loadServerInfo = this.loadServerInfo.bind(this);
         this.loginSuccess = this.loginSuccess.bind(this);
         this.logout = this.logout.bind(this);
         this.refresh = this.refresh.bind(this);
@@ -54,19 +46,8 @@ class AppNavbar extends React.Component<IProps, IState> {
             loggedIn: !!CredentialsProvider.isTokenValid(),
             routes: [],
             categories: AppCategories,
-            focusedCategory: this.props.category?.name || "",
-            serverInfoError: null,
-            serverInformation: null
+            focusedCategory: this.props.category?.name || ""
         };
-    }
-
-    private loadServerInfo(
-        info: InternalStatus<Components.Schemas.ServerInformationResponse, ServerInfoErrors>
-    ) {
-        this.setState({
-            serverInformation: info.code == StatusCode.OK ? info.payload : null,
-            serverInfoError: info.code == StatusCode.ERROR ? info.error : null
-        });
     }
 
     private loginSuccess() {
@@ -88,9 +69,6 @@ class AppNavbar extends React.Component<IProps, IState> {
     }
 
     public async componentDidMount(): Promise<void> {
-        LoginHooks.addHook(this.loadServerInformation);
-        ServerClient.on("loadServerInfo", this.loadServerInfo);
-
         LoginHooks.on("loginSuccess", this.loginSuccess);
         ServerClient.on("logout", this.logout);
 
@@ -98,15 +76,10 @@ class AppNavbar extends React.Component<IProps, IState> {
             routes: await RouteController.getRoutes()
         });
 
-        if (CredentialsProvider.isTokenValid()) {
-            await this.loadServerInformation();
-        }
-
         RouteController.on("refresh", this.refresh);
     }
 
     public componentWillUnmount(): void {
-        ServerClient.removeListener("loadServerInfo", this.loadServerInfo);
         LoginHooks.removeListener("loginSuccess", this.loginSuccess);
         ServerClient.removeListener("logout", this.logout);
         RouteController.removeListener("refresh", this.refresh);
@@ -131,7 +104,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                     expand={this.state.loggedIn ? "lg" : undefined}
                     collapseOnSelect
                     variant="dark"
-                    bg={this.state.serverInfoError ? "danger" : "primary"}>
+                    bg="primary">
                     <Navbar.Brand
                         onClick={() => {
                             this.props.history.push(AppRoutes.home.link || AppRoutes.home.route, {
@@ -279,40 +252,22 @@ class AppNavbar extends React.Component<IProps, IState> {
                         {this.renderUser()}
                     </Navbar.Collapse>
                 </Navbar>
-                {this.state.serverInfoError ? (
-                    <ErrorAlert error={this.state.serverInfoError} />
-                ) : (
-                    ""
-                )}
             </React.Fragment>
         );
     }
 
     private renderVersion(): React.ReactNode {
-        if (!this.state.loggedIn) {
-            return <FormattedMessage id="generic.appname" />;
+        if (!this.context.serverInfo?.version) {
+            return <FormattedMessage id="loading.loading" />;
         }
-        if (this.state.serverInfoError)
-            return (
-                <div>
-                    <div className="align-top d-inline-block px-1">
-                        <FontAwesomeIcon icon="exclamation-circle" />
-                    </div>
-                    <div className="d-inline-block">
-                        <FormattedMessage id="navbar.server_error" />
-                    </div>
-                </div>
-            );
-        if (this.state.serverInformation)
-            return (
-                <React.Fragment>
-                    <FormattedMessage id="generic.appname" />
-                    {" v"}
-                    {this.state.serverInformation.version}
-                </React.Fragment>
-            );
 
-        return "loading"; //TODO: add a spinner;
+        return (
+            <React.Fragment>
+                <FormattedMessage id="generic.appname" />
+                {" v"}
+                {this.context.serverInfo.version}
+            </React.Fragment>
+        );
     }
 
     private renderUser(): React.ReactNode {
@@ -326,7 +281,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                                 { reload: true }
                             );
                         }}
-                        variant={this.state.serverInfoError ? "danger" : "primary"}>
+                        variant="primary">
                         <FontAwesomeIcon icon="cogs" />
                     </Button>
                     <Button
@@ -335,7 +290,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                                 reload: true
                             });
                         }}
-                        variant={this.state.serverInfoError ? "danger" : "primary"}>
+                        variant="primary">
                         <FontAwesomeIcon icon="info-circle" />
                     </Button>
                 </React.Fragment>
@@ -347,13 +302,15 @@ class AppNavbar extends React.Component<IProps, IState> {
                     <Dropdown.Toggle
                         id="user-dropdown"
                         type="button"
-                        variant={this.state.serverInfoError ? "danger" : "primary"}
+                        variant="primary"
                         data-toggle="dropdown"
                         aria-haspopup="true"
                         aria-expanded="false">
-                        {
-                            this.context.user ? this.context.user.name : "loading" //TODO: add spinner
-                        }
+                        {this.context.user ? (
+                            this.context.user.name
+                        ) : (
+                            <FormattedMessage id="loading.loading" />
+                        )}
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight className="text-right">
                         <Dropdown.Item
@@ -412,14 +369,6 @@ class AppNavbar extends React.Component<IProps, IState> {
 
     private logoutClick(): void {
         ServerClient.logout();
-    }
-
-    private async loadServerInformation(): Promise<void> {
-        const info = await ServerClient.getServerInfo();
-        this.setState({
-            serverInformation: info.code == StatusCode.OK ? info.payload : null,
-            serverInfoError: info.code == StatusCode.ERROR ? info.error : null
-        });
     }
 }
 AppNavbar.contextType = GeneralContext;
