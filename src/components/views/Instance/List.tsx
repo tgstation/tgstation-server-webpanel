@@ -132,10 +132,6 @@ class InstanceList extends React.Component<IProps, IState> {
             return <Loading text="loading.instance.list" />;
         }
 
-        if (!this.context.user) {
-            throw Error("InstanceList: this.context.user is null!");
-        }
-
         const canOnline = !!(
             resolvePermissionSet(this.context.user).instanceManagerRights &
             InstanceManagerRights.SetOnline
@@ -309,10 +305,6 @@ class InstanceList extends React.Component<IProps, IState> {
     }
 
     private renderAddInstance(): React.ReactNode {
-        if (!this.context.user) {
-            throw Error("InstanceList2: this.context.user is null!");
-        }
-
         const canCreate = !!(
             resolvePermissionSet(this.context.user).instanceManagerRights &
             InstanceManagerRights.Create

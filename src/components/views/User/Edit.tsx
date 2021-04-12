@@ -85,49 +85,37 @@ class UserEdit extends React.Component<IProps, IState> {
         RouteData.selectedusertab = props.match.params.tab;
     }
 
-    private assertGeneralContext(): void {
-        if (!this.context.user) {
-            throw Error("UserEdit: assertGeneralContext failed!");
-        }
-    }
-
     private get canEdit() {
-        this.assertGeneralContext();
         return (
-            resolvePermissionSet(this.context.user!).administrationRights &
+            resolvePermissionSet(this.context.user).administrationRights &
             AdministrationRights.WriteUsers
         );
     }
 
     private get canRead() {
-        this.assertGeneralContext();
         return !!(
-            resolvePermissionSet(this.context.user!).administrationRights &
+            resolvePermissionSet(this.context.user).administrationRights &
             AdministrationRights.ReadUsers
         );
     }
 
     private get canEditOwnPassword() {
-        this.assertGeneralContext();
-
         const userid = parseInt(this.props.match.params.id);
         return (
             !!(
-                resolvePermissionSet(this.context.user!).administrationRights &
+                resolvePermissionSet(this.context.user).administrationRights &
                 AdministrationRights.EditOwnPassword
-            ) && this.context.user!.id === userid
+            ) && this.context.user.id === userid
         );
     }
 
     private get canEditOwnOAuth() {
-        this.assertGeneralContext();
-
         const userid = parseInt(this.props.match.params.id);
         return (
             !!(
-                resolvePermissionSet(this.context.user!).administrationRights &
+                resolvePermissionSet(this.context.user).administrationRights &
                 AdministrationRights.EditOwnOAuthConnections
-            ) && this.context.user!.id === userid
+            ) && this.context.user.id === userid
         );
     }
 

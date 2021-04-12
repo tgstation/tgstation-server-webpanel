@@ -106,10 +106,6 @@ class Hosting extends React.Component<IProps, IState> {
             return <Loading text="loading.instance" />;
         }
 
-        if (!this.context.user) {
-            throw Error("Hosting: this.context.user is null!");
-        }
-
         // noinspection DuplicatedCode
         const changetabs = (newkey: string | null) => {
             if (!newkey) return;

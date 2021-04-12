@@ -5,6 +5,7 @@ import Container from "react-bootstrap/Container";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
+import { Components } from "./ApiClient/generatedcode/_generated";
 import { CredentialsType } from "./ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
@@ -131,8 +132,8 @@ class App extends React.Component<IProps, IState> {
             loading: true,
             GeneralContextInfo: {
                 errors: new Set(),
-                user: null,
-                serverInfo: null,
+                user: (null as unknown) as Components.Schemas.UserResponse,
+                serverInfo: (null as unknown) as Components.Schemas.ServerInformationResponse,
                 deleteError: this.deleteGeneralContextError
             }
         };
@@ -156,7 +157,7 @@ class App extends React.Component<IProps, IState> {
                 this.setState(prev => {
                     return {
                         GeneralContextInfo: {
-                            user: null,
+                            user: (null as unknown) as Components.Schemas.UserResponse,
                             serverInfo: prev.GeneralContextInfo.serverInfo,
                             deleteError: prev.GeneralContextInfo.deleteError,
                             errors: prev.GeneralContextInfo.errors
@@ -171,7 +172,7 @@ class App extends React.Component<IProps, IState> {
                         GeneralContextInfo: {
                             errors: newSet,
                             deleteError: prev.GeneralContextInfo.deleteError,
-                            user: null,
+                            user: (null as unknown) as Components.Schemas.UserResponse,
                             serverInfo: prev.GeneralContextInfo.serverInfo
                         }
                     };
@@ -202,7 +203,7 @@ class App extends React.Component<IProps, IState> {
                         errors: newSet,
                         deleteError: prev.GeneralContextInfo.deleteError,
                         user: prev.GeneralContextInfo.user,
-                        serverInfo: null
+                        serverInfo: (null as unknown) as Components.Schemas.ServerInformationResponse
                     }
                 };
             });

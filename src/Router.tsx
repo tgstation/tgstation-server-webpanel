@@ -194,7 +194,17 @@ class Router extends Component<IProps, IState> {
                                                     error={
                                                         new InternalError(ErrorCode.APP_FAIL, {
                                                             jsError: Error(
-                                                                "Router has no user in the user context"
+                                                                "Router has no user in the general context"
+                                                            )
+                                                        })
+                                                    }
+                                                />
+                                            ) : !this.context?.serverInfo ? (
+                                                <ErrorAlert
+                                                    error={
+                                                        new InternalError(ErrorCode.APP_FAIL, {
+                                                            jsError: Error(
+                                                                "Router has no server info in the general context"
                                                             )
                                                         })
                                                     }

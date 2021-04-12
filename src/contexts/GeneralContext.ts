@@ -6,8 +6,8 @@ import InternalError from "../ApiClient/models/InternalComms/InternalError";
 export type GeneralContext = {
     deleteError: (error: InternalError) => void;
     errors: Set<InternalError>;
-    user: Components.Schemas.UserResponse | null;
-    serverInfo: Components.Schemas.ServerInformationResponse | null;
+    user: Components.Schemas.UserResponse;
+    serverInfo: Components.Schemas.ServerInformationResponse;
 };
 
 export const GeneralContext = React.createContext<GeneralContext>(

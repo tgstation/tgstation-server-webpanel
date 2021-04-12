@@ -94,10 +94,6 @@ class InstanceConfig extends React.Component<IProps, IState> {
             return <Loading text="loading.instance" />;
         }
 
-        if (!this.context.user) {
-            throw Error("Config: this.context.user is null!");
-        }
-
         // noinspection DuplicatedCode
         const changetabs = (newkey: string | null) => {
             if (!newkey) return;

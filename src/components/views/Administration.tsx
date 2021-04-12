@@ -127,8 +127,6 @@ class Administration extends React.Component<IProps, IState> {
             return <Loading text="loading.admin" />;
         }
 
-        if (!this.context.user) throw Error("Administration: this.context.user is null!");
-
         const handleClose = () => this.setState({ showRebootModal: false });
         const handleOpen = () => this.setState({ showRebootModal: true });
 
