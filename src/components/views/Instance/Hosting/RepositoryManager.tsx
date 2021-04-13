@@ -1330,8 +1330,6 @@ export default class CodeDeployment extends React.Component<IProps, IState> {
                     <Modal.Title>
                         Are you ABSOLUTELY SURE that you are going to delete this repository?
                     </Modal.Title>
-                    Data WILL BE DELETED AND BECOME UNRECOVERABLE AFTER THIS, MAKE SURE YOU HAVE A
-                    BACKUP!
                     <Modal.Footer>
                         <Button
                             onClick={() => {
