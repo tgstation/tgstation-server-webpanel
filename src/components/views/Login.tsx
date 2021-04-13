@@ -13,12 +13,12 @@ import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
 import { OAuthProvider } from "../../ApiClient/generatedcode/_enums";
-import { Components } from "../../ApiClient/generatedcode/_generated";
 import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
 import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
+import { GeneralContext, UnsafeGeneralContext } from "../../contexts/GeneralContext";
 import { MODE } from "../../definitions/constants";
 import KeycloakLogo from "../../images/keycloak_icon_64px.png";
 import TGLogo from "../../images/tglogo-white.svg";
@@ -36,7 +36,6 @@ interface IState {
     password: string;
     errors: Array<InternalError<ErrorCode> | undefined>;
     redirectSetup?: boolean;
-    serverInfo?: Components.Schemas.ServerInformationResponse;
 }
 
 export type NormalOauth = { provider: Exclude<OAuthProvider, OAuthProvider.TGForums>; url: string };
@@ -48,171 +47,159 @@ export type TGSnowflakeOauth = {
 export type StoredOAuthData = NormalOauth | TGSnowflakeOauth;
 export type OAuthStateStorage = Record<string, StoredOAuthData>;
 
-export default withRouter(
-    class Login extends React.Component<IProps, IState> {
-        public constructor(props: IProps) {
-            super(props);
-            this.submit = this.submit.bind(this);
+class Login extends React.Component<IProps, IState> {
+    public declare context: UnsafeGeneralContext;
 
-            console.log(RouteData.oautherrors);
+    public constructor(props: IProps) {
+        super(props);
+        this.submit = this.submit.bind(this);
 
-            this.state = {
-                busy: true,
-                validated: false,
-                username: "",
-                password: "",
-                errors: Array.from(RouteData.oautherrors)
+        console.log(RouteData.oautherrors);
+
+        this.state = {
+            busy: true,
+            validated: false,
+            username: "",
+            password: "", // todo: DO NOT STORE PASSWORDS IN STATE, YOU CAN STILL RECOVER IT
+            errors: Array.from(RouteData.oautherrors)
+        };
+    }
+
+    public componentDidMount() {
+        if (MODE === "PROD") {
+            // noinspection ES6MissingAwait
+            void this.tryLoginDefault();
+        }
+    }
+
+    private async tryLoginDefault(): Promise<void> {
+        const response = await ServerClient.login({
+            type: CredentialsType.Password,
+            userName: "admin",
+            password: "ISolemlySwearToDeleteTheDataDirectory"
+        });
+
+        if (response.code === StatusCode.OK) {
+            this.setState({
+                redirectSetup: true
+            });
+        }
+    }
+
+    private addError(error: InternalError<ErrorCode>): void {
+        this.setState(prevState => {
+            const errors = Array.from(prevState.errors);
+            errors.push(error);
+            return {
+                errors
             };
+        });
+    }
+
+    public render(): ReactNode {
+        const handleUsrInput = (event: ChangeEvent<HTMLInputElement>) =>
+            this.setState({ username: event.target.value });
+        const handlePwdInput = (event: ChangeEvent<HTMLInputElement>) =>
+            this.setState({ password: event.target.value });
+
+        if (this.state.busy || CredentialsProvider.isTokenValid()) {
+            return <Loading text="loading.login" />;
         }
 
-        public async componentDidMount() {
-            if (MODE === "PROD") {
-                // noinspection ES6MissingAwait
-                void this.tryLoginDefault();
-            }
-
-            const serverInfo = await ServerClient.getServerInfo();
-            if (serverInfo.code == StatusCode.OK) {
-                this.setState({
-                    busy: false,
-                    serverInfo: serverInfo.payload
-                });
-            } else {
-                this.addError(serverInfo.error);
-                this.setState({
-                    busy: false
-                });
-            }
+        if (!this.context.serverInfo) {
+            return <Loading text="loading.serverinfo" />;
         }
 
-        private async tryLoginDefault(): Promise<void> {
-            const response = await ServerClient.login({
-                type: CredentialsType.Password,
-                userName: "admin",
-                password: "ISolemlySwearToDeleteTheDataDirectory"
-            });
-
-            if (response.code === StatusCode.OK) {
-                this.setState({
-                    redirectSetup: true
-                });
-            }
-        }
-
-        private addError(error: InternalError<ErrorCode>): void {
-            this.setState(prevState => {
-                const errors = Array.from(prevState.errors);
-                errors.push(error);
-                return {
-                    errors
-                };
-            });
-        }
-
-        public render(): ReactNode {
-            const handleUsrInput = (event: ChangeEvent<HTMLInputElement>) =>
-                this.setState({ username: event.target.value });
-            const handlePwdInput = (event: ChangeEvent<HTMLInputElement>) =>
-                this.setState({ password: event.target.value });
-
-            if (this.state.busy || CredentialsProvider.isTokenValid()) {
-                return <Loading text="loading.login" />;
-            }
-
-            /*if (this.state.redirectSetup) {
+        /*if (this.state.redirectSetup) {
                 return <Redirect to={AppRoutes.setup.link || AppRoutes.setup.route} />;
             }*/
 
-            const providers: Record<OAuthProvider, React.ReactNode> = {
-                [OAuthProvider.GitHub]: (
-                    <FontAwesomeIcon icon={faGithub} style={{ width: "1.2em" }} />
-                ),
-                [OAuthProvider.Discord]: (
-                    <FontAwesomeIcon icon={faDiscord} style={{ width: "1.2em" }} />
-                ),
-                [OAuthProvider.TGForums]: (
-                    <img src={TGLogo} alt="tglogo" style={{ width: "1.2em" }} />
-                ),
-                [OAuthProvider.Keycloak]: (
-                    <img src={KeycloakLogo} alt="keycloaklogo" style={{ width: "1.2em" }} />
-                )
-            };
+        const providers: Record<OAuthProvider, React.ReactNode> = {
+            [OAuthProvider.GitHub]: <FontAwesomeIcon icon={faGithub} style={{ width: "1.2em" }} />,
+            [OAuthProvider.Discord]: (
+                <FontAwesomeIcon icon={faDiscord} style={{ width: "1.2em" }} />
+            ),
+            [OAuthProvider.TGForums]: <img src={TGLogo} alt="tglogo" style={{ width: "1.2em" }} />,
+            [OAuthProvider.Keycloak]: (
+                <img src={KeycloakLogo} alt="keycloaklogo" style={{ width: "1.2em" }} />
+            )
+        };
 
-            return (
-                <div className={"login"}>
-                    <h1>
-                        <FormattedMessage id="login.tocontinue" />
-                    </h1>
-                    <Form validated={this.state.validated} onSubmit={this.submit}>
-                        <Jumbotron className={"dark"}>
-                            <Col className="mx-auto">
-                                {this.state.errors.map((err, index) => {
-                                    if (!err) return;
-                                    return (
-                                        <ErrorAlert
-                                            key={index}
-                                            error={err}
-                                            onClose={() =>
-                                                this.setState(prev => {
-                                                    const newarr = Array.from(prev.errors);
-                                                    newarr[index] = undefined;
-                                                    return {
-                                                        errors: newarr
-                                                    };
-                                                })
-                                            }
-                                        />
-                                    );
-                                })}
-                                <Form.Group controlId="username">
-                                    <Form.Label>
-                                        <FormattedMessage id="login.username" />
-                                    </Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Enter username"
-                                        autoComplete={"username"}
-                                        onChange={handleUsrInput}
-                                        value={this.state.username}
-                                        required
-                                        isInvalid={!this.state.username}
+        return (
+            <div className={"login"}>
+                <h1>
+                    <FormattedMessage id="login.tocontinue" />
+                </h1>
+                <Form validated={this.state.validated} onSubmit={this.submit}>
+                    <Jumbotron className={"dark"}>
+                        <Col className="mx-auto">
+                            {this.state.errors.map((err, index) => {
+                                if (!err) return;
+                                return (
+                                    <ErrorAlert
+                                        key={index}
+                                        error={err}
+                                        onClose={() =>
+                                            this.setState(prev => {
+                                                const newarr = Array.from(prev.errors);
+                                                newarr[index] = undefined;
+                                                return {
+                                                    errors: newarr
+                                                };
+                                            })
+                                        }
                                     />
-                                </Form.Group>
-                                <Form.Group controlId="password">
-                                    <Form.Label>
-                                        <FormattedMessage id="login.password" />
-                                    </Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        placeholder="Password"
-                                        onChange={handlePwdInput}
-                                        value={this.state.password}
-                                        required
-                                        isInvalid={!this.state.password}
-                                    />
-                                </Form.Group>
-                                <Button type="submit" variant="primary" block>
-                                    <FormattedMessage id="login.submit" />
-                                </Button>
-                                {MODE === "DEV" && (
-                                    <OverlayTrigger
-                                        placement={"top"}
-                                        overlay={
-                                            <Tooltip id={"tooltip-defaultacc"}>
-                                                Or you could use <code>ctrl+shift+l</code>
-                                            </Tooltip>
-                                        }>
-                                        <Button
-                                            onClick={async () => {
-                                                await this.tryLoginDefault();
-                                            }}
-                                            variant="outline-primary"
-                                            block>
-                                            <FormattedMessage id="login.defaultacc" />
-                                        </Button>
-                                    </OverlayTrigger>
-                                )}
-                                {/* <Button
+                                );
+                            })}
+                            <Form.Group controlId="username">
+                                <Form.Label>
+                                    <FormattedMessage id="login.username" />
+                                </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Enter username"
+                                    autoComplete={"username"}
+                                    onChange={handleUsrInput}
+                                    value={this.state.username}
+                                    required
+                                    isInvalid={!this.state.username}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="password">
+                                <Form.Label>
+                                    <FormattedMessage id="login.password" />
+                                </Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    placeholder="Password"
+                                    onChange={handlePwdInput}
+                                    value={this.state.password}
+                                    required
+                                    isInvalid={!this.state.password}
+                                />
+                            </Form.Group>
+                            <Button type="submit" variant="primary" block>
+                                <FormattedMessage id="login.submit" />
+                            </Button>
+                            {MODE === "DEV" && (
+                                <OverlayTrigger
+                                    placement={"top"}
+                                    overlay={
+                                        <Tooltip id={"tooltip-defaultacc"}>
+                                            Or you could use <code>ctrl+shift+l</code>
+                                        </Tooltip>
+                                    }>
+                                    <Button
+                                        onClick={async () => {
+                                            await this.tryLoginDefault();
+                                        }}
+                                        variant="outline-primary"
+                                        block>
+                                        <FormattedMessage id="login.defaultacc" />
+                                    </Button>
+                                </OverlayTrigger>
+                            )}
+                            {/* <Button
                                     onClick={() => {
                                         alert(
                                             "Not yet implimented!\nPlease ask your webmaster about resetting it."
@@ -223,142 +210,141 @@ export default withRouter(
                                     <FormattedMessage id="login.forgotpass" />
                                 </Button> */}
 
-                                {/* you see that, yes? I can't use normal json functions to find if there is any auth providers. Too bad! */}
-                                {(this.state.serverInfo?.oAuthProviderInfos?.Discord ||
-                                    this.state.serverInfo?.oAuthProviderInfos?.GitHub ||
-                                    this.state.serverInfo?.oAuthProviderInfos?.Keycloak ||
-                                    this.state.serverInfo?.oAuthProviderInfos?.TGForums) && (
-                                    <>
-                                        <hr />
-                                        <Jumbotron>
-                                            <div className="d-flex flex-column align-items-stretch">
-                                                {Object.keys(
-                                                    this.state.serverInfo?.oAuthProviderInfos || {}
-                                                ).map(provider => (
-                                                    <Button
-                                                        className="text-left my-1"
-                                                        key={provider}
-                                                        onClick={() =>
-                                                            this.startOAuth(
-                                                                provider as OAuthProvider
-                                                            )
-                                                        }
-                                                        block>
-                                                        {providers[provider as OAuthProvider]}
-                                                        <span className="ml-2">
-                                                            <FormattedMessage
-                                                                id="login.oauth"
-                                                                values={{ provider }}
-                                                            />
-                                                        </span>
-                                                    </Button>
-                                                ))}
-                                            </div>
-                                        </Jumbotron>
-                                    </>
-                                )}
-                            </Col>
-                        </Jumbotron>
-                    </Form>
-                </div>
+                            {/* you see that, yes? I can't use normal json functions to find if there is any auth providers. Too bad! */}
+                            {(this.context.serverInfo?.oAuthProviderInfos?.Discord ||
+                                this.context.serverInfo?.oAuthProviderInfos?.GitHub ||
+                                this.context.serverInfo?.oAuthProviderInfos?.Keycloak ||
+                                this.context.serverInfo?.oAuthProviderInfos?.TGForums) && (
+                                <>
+                                    <hr />
+                                    <Jumbotron>
+                                        <div className="d-flex flex-column align-items-stretch">
+                                            {Object.keys(
+                                                this.context.serverInfo?.oAuthProviderInfos || {}
+                                            ).map(provider => (
+                                                <Button
+                                                    className="text-left my-1"
+                                                    key={provider}
+                                                    onClick={() =>
+                                                        this.startOAuth(provider as OAuthProvider)
+                                                    }
+                                                    block>
+                                                    {providers[provider as OAuthProvider]}
+                                                    <span className="ml-2">
+                                                        <FormattedMessage
+                                                            id="login.oauth"
+                                                            values={{ provider }}
+                                                        />
+                                                    </span>
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    </Jumbotron>
+                                </>
+                            )}
+                        </Col>
+                    </Jumbotron>
+                </Form>
+            </div>
+        );
+    }
+
+    private async startOAuth(provider: OAuthProvider): Promise<void> {
+        if (!this.context.serverInfo) {
+            this.addError(
+                new InternalError(ErrorCode.APP_FAIL, {
+                    jsError: Error("serverInfo is null in startOAuth")
+                })
             );
+            return;
         }
 
-        private async startOAuth(provider: OAuthProvider): Promise<void> {
-            if (!this.state.serverInfo) {
-                this.addError(
-                    new InternalError(ErrorCode.APP_FAIL, {
-                        jsError: Error("serverInfo is null in startOAuth")
-                    })
-                );
-                return;
+        const stateArray = new Uint8Array(10);
+        window.crypto.getRandomValues(stateArray);
+        const state = Array.from(stateArray, dec => dec.toString(16).padStart(2, "0")).join("");
+
+        let url: string | undefined = undefined;
+
+        const e = encodeURIComponent;
+
+        switch (provider) {
+            case OAuthProvider.Discord: {
+                url = `https://discord.com/api/oauth2/authorize?response_type=code&client_id=${e(
+                    this.context.serverInfo.oAuthProviderInfos.Discord.clientId
+                )}&scope=identify&state=${e(state)}&redirect_uri=${e(
+                    this.context.serverInfo.oAuthProviderInfos.Discord.redirectUri
+                )}`;
+                break;
             }
-
-            const stateArray = new Uint8Array(10);
-            window.crypto.getRandomValues(stateArray);
-            const state = Array.from(stateArray, dec => dec.toString(16).padStart(2, "0")).join("");
-
-            let url: string | undefined = undefined;
-
-            const e = encodeURIComponent;
-
-            switch (provider) {
-                case OAuthProvider.Discord: {
-                    url = `https://discord.com/api/oauth2/authorize?response_type=code&client_id=${e(
-                        this.state.serverInfo.oAuthProviderInfos.Discord.clientId
-                    )}&scope=identify&state=${e(state)}&redirect_uri=${e(
-                        this.state.serverInfo.oAuthProviderInfos.Discord.redirectUri
-                    )}`;
-                    break;
-                }
-                case OAuthProvider.GitHub: {
-                    url = `https://github.com/login/oauth/authorize?client_id=${e(
-                        this.state.serverInfo.oAuthProviderInfos.GitHub.clientId
-                    )}&redirect_uri=${e(
-                        this.state.serverInfo.oAuthProviderInfos.GitHub.redirectUri
-                    )}&state=${e(state)}&allow_signup=false`;
-                    break;
-                }
-                case OAuthProvider.Keycloak: {
-                    url = `${this.state.serverInfo.oAuthProviderInfos.Keycloak
-                        .serverUrl!}/protocol/openid-connect/auth?response_type=code&client_id=${e(
-                        this.state.serverInfo.oAuthProviderInfos.Keycloak.clientId
-                    )}&scope=openid&state=${e(state)}&redirect_uri=${e(
-                        this.state.serverInfo.oAuthProviderInfos.Keycloak.redirectUri
-                    )}`;
-                    break;
-                }
-                case OAuthProvider.TGForums: {
-                    url = `https://tgstation13.org/phpBB/oauth.php?session_public_token=${e(
-                        this.state.serverInfo.oAuthProviderInfos.TGForums.clientId
-                    )}`;
-                    break;
-                }
+            case OAuthProvider.GitHub: {
+                url = `https://github.com/login/oauth/authorize?client_id=${e(
+                    this.context.serverInfo.oAuthProviderInfos.GitHub.clientId
+                )}&redirect_uri=${e(
+                    this.context.serverInfo.oAuthProviderInfos.GitHub.redirectUri
+                )}&state=${e(state)}&allow_signup=false`;
+                break;
             }
-
-            const oauthdata = JSON.parse(
-                window.sessionStorage.getItem("oauth") || "{}"
-            ) as OAuthStateStorage;
-            if (provider === OAuthProvider.TGForums) {
-                oauthdata["tgforums"] = {
-                    provider: provider,
-                    url: this.props.location.pathname,
-                    state: this.state.serverInfo.oAuthProviderInfos.TGForums.clientId
-                };
-            } else {
-                oauthdata[state] = {
-                    provider: provider,
-                    url: this.props.location.pathname
-                };
+            case OAuthProvider.Keycloak: {
+                url = `${this.context.serverInfo.oAuthProviderInfos.Keycloak
+                    .serverUrl!}/protocol/openid-connect/auth?response_type=code&client_id=${e(
+                    this.context.serverInfo.oAuthProviderInfos.Keycloak.clientId
+                )}&scope=openid&state=${e(state)}&redirect_uri=${e(
+                    this.context.serverInfo.oAuthProviderInfos.Keycloak.redirectUri
+                )}`;
+                break;
             }
-
-            window.sessionStorage.setItem("oauth", JSON.stringify(oauthdata));
-
-            window.location.href = url;
-
-            return new Promise(resolve => resolve());
+            case OAuthProvider.TGForums: {
+                url = `https://tgstation13.org/phpBB/oauth.php?session_public_token=${e(
+                    this.context.serverInfo.oAuthProviderInfos.TGForums.clientId
+                )}`;
+                break;
+            }
         }
 
-        private async submit(event: FormEvent<HTMLFormElement>) {
-            event.preventDefault();
+        const oauthdata = JSON.parse(
+            window.sessionStorage.getItem("oauth") || "{}"
+        ) as OAuthStateStorage;
+        if (provider === OAuthProvider.TGForums) {
+            oauthdata["tgforums"] = {
+                provider: provider,
+                url: this.props.location.pathname,
+                state: this.context.serverInfo.oAuthProviderInfos.TGForums.clientId
+            };
+        } else {
+            oauthdata[state] = {
+                provider: provider,
+                url: this.props.location.pathname
+            };
+        }
+
+        window.sessionStorage.setItem("oauth", JSON.stringify(oauthdata));
+
+        window.location.href = url;
+
+        return new Promise(resolve => resolve());
+    }
+
+    private async submit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        this.setState({
+            busy: true
+        });
+        const response = await ServerClient.login({
+            type: CredentialsType.Password,
+            userName: this.state.username,
+            password: this.state.password
+        });
+        if (response.code == StatusCode.ERROR) {
             this.setState({
-                busy: true
+                busy: false
             });
-            const response = await ServerClient.login({
-                type: CredentialsType.Password,
-                userName: this.state.username,
-                password: this.state.password
-            });
-            if (response.code == StatusCode.ERROR) {
-                this.setState({
-                    busy: false
-                });
-                this.addError(response.error);
-            } else {
-                if (this.props.postLoginAction) {
-                    this.props.postLoginAction();
-                }
+            this.addError(response.error);
+        } else {
+            if (this.props.postLoginAction) {
+                this.props.postLoginAction();
             }
         }
     }
-);
+}
+Login.contextType = GeneralContext;
+export default withRouter(Login);

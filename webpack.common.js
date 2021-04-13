@@ -126,6 +126,7 @@ module.exports = function createConfig(prodLike, github) {
                                 "@babel/preset-react"
                             ],
                             plugins: [
+                                ["@babel/plugin-transform-typescript", {allowDeclareFields: true}],
                                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                                 isDevelopment && require.resolve("react-refresh/babel")
                             ].filter(Boolean)

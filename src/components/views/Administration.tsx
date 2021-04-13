@@ -13,8 +13,7 @@ import { AdministrationRights } from "../../ApiClient/generatedcode/_enums";
 import { Components } from "../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
-import ServerClient from "../../ApiClient/ServerClient";
-import UserClient from "../../ApiClient/UserClient";
+import { GeneralContext } from "../../contexts/GeneralContext";
 import { resolvePermissionSet } from "../../utils/misc";
 import { AppRoutes } from "../../utils/routes";
 import { ErrorAlert, Loading } from "../utils";
@@ -22,352 +21,207 @@ import { ErrorAlert, Loading } from "../utils";
 interface IProps extends RouteComponentProps {}
 interface IState {
     adminInfo?: Components.Schemas.AdministrationResponse;
-    serverInfo?: Components.Schemas.ServerInformationResponse;
     error?: InternalError<ErrorCode>;
     busy: boolean;
-    canReboot: boolean;
-    canUpdate: boolean;
-    canLogs: boolean;
     showRebootModal?: boolean;
 }
 
-export default withRouter(
-    class Administration extends React.Component<IProps, IState> {
-        public constructor(props: IProps) {
-            super(props);
-            this.restart = this.restart.bind(this);
+class Administration extends React.Component<IProps, IState> {
+    public declare context: GeneralContext;
 
-            this.state = {
-                busy: false,
-                canReboot: false,
-                canUpdate: false,
-                canLogs: false
-            };
-        }
+    public constructor(props: IProps) {
+        super(props);
+        this.restart = this.restart.bind(this);
 
-        public async componentDidMount(): Promise<void> {
-            this.setState({
-                busy: true
-            });
-            const tasks = [];
-
-            console.time("DataLoad");
-            tasks.push(this.loadAdminInfo());
-            tasks.push(this.loadServerInfo());
-            tasks.push(this.checkRebootRights());
-            tasks.push(this.checkUpdateRights());
-            tasks.push(this.checkLogsRights());
-
-            await Promise.all(tasks);
-            console.timeEnd("DataLoad");
-            this.setState({
-                busy: false
-            });
-        }
-
-        private async loadServerInfo() {
-            console.time("ServerLoad");
-            const response = await ServerClient.getServerInfo();
-            switch (response.code) {
-                case StatusCode.ERROR: {
-                    this.setState({
-                        error: response.error
-                    });
-                    break;
-                }
-                case StatusCode.OK: {
-                    this.setState({
-                        serverInfo: response.payload
-                    });
-                    break;
-                }
-            }
-            console.timeEnd("ServerLoad");
-        }
-
-        private async loadAdminInfo() {
-            console.time("AdminLoad");
-            const response = await AdminClient.getAdminInfo();
-            switch (response.code) {
-                case StatusCode.ERROR: {
-                    this.setState({
-                        error: response.error
-                    });
-                    break;
-                }
-                case StatusCode.OK: {
-                    this.setState({
-                        adminInfo: response.payload
-                    });
-                    break;
-                }
-            }
-            console.timeEnd("AdminLoad");
-        }
-
-        private async checkRebootRights() {
-            const response = await UserClient.getCurrentUser();
-
-            if (response.code === StatusCode.OK) {
-                this.setState({
-                    canReboot: !!(
-                        resolvePermissionSet(response.payload).administrationRights &
-                        AdministrationRights.RestartHost
-                    )
-                });
-            }
-        }
-
-        private async checkUpdateRights() {
-            const response = await UserClient.getCurrentUser();
-
-            if (response.code === StatusCode.OK) {
-                this.setState({
-                    canUpdate: !!(
-                        resolvePermissionSet(response.payload).administrationRights &
-                        AdministrationRights.ChangeVersion
-                    )
-                });
-            }
-        }
-
-        private async checkLogsRights() {
-            const response = await UserClient.getCurrentUser();
-
-            if (response.code === StatusCode.OK) {
-                this.setState({
-                    canLogs: !!(
-                        resolvePermissionSet(response.payload).administrationRights &
-                        AdministrationRights.DownloadLogs
-                    )
-                });
-            }
-        }
-
-        private async restart() {
-            this.setState({
-                showRebootModal: false,
-                busy: true
-            });
-            console.time("Reboot");
-            const response = await AdminClient.restartServer();
-            switch (response.code) {
-                case StatusCode.ERROR: {
-                    this.setState({
-                        error: response.error
-                    });
-                    break;
-                }
-                case StatusCode.OK: {
-                    window.location.reload();
-                }
-            }
-            this.setState({
-                busy: false
-            });
-            console.timeEnd("Reboot");
-        }
-
-        public render(): ReactNode {
-            if (this.state.busy) {
-                return <Loading text="loading.admin" />;
-            }
-
-            const handleClose = () => this.setState({ showRebootModal: false });
-            const handleOpen = () => this.setState({ showRebootModal: true });
-
-            return (
-                <React.Fragment>
-                    <ErrorAlert
-                        error={this.state.error}
-                        onClose={() => this.setState({ error: undefined })}
-                    />
-                    {this.state.adminInfo && this.state.serverInfo ? (
-                        <div className="text-center">
-                            <h3>
-                                <FormattedMessage id="view.info.server" />
-                            </h3>
-                            <table className="mx-auto text-left">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.admin.hostos" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>
-                                                <FontAwesomeIcon
-                                                    fixedWidth
-                                                    icon={
-                                                        this.state.serverInfo.windowsHost
-                                                            ? faWindows
-                                                            : faLinux
-                                                    }
-                                                />
-                                            </h4>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.info.version" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>{this.state.serverInfo.version}</h4>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.info.httpapiversion" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>{this.state.serverInfo.apiVersion}</h4>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.info.dmapiversion" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>{this.state.serverInfo.dmApiVersion}</h4>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.info.minpassword" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>{this.state.serverInfo.minimumPasswordLength}</h4>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.info.instancelimit" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>{this.state.serverInfo.instanceLimit}</h4>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.info.userlimit" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>{this.state.serverInfo.userLimit}</h4>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.info.grouplimit" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>{this.state.serverInfo.userGroupLimit}</h4>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.info.oauth" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>
-                                                {Object.keys(
-                                                    this.state.serverInfo.oAuthProviderInfos || {}
-                                                ).join(", ")}
-                                            </h4>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <h5 className="text-secondary">
-                                <FormattedMessage id="view.admin.remote" />
-                                <a href={this.state.adminInfo.trackedRepositoryUrl}>
-                                    {this.state.adminInfo.trackedRepositoryUrl}
-                                </a>
-                                <br />
-                                <FormattedMessage id="view.admin.version.latest" />
-                                <span
-                                    className={
-                                        this.state.serverInfo.version <
-                                        this.state.adminInfo.latestVersion
-                                            ? "text-danger"
-                                            : ""
-                                    }>
-                                    {this.state.adminInfo.latestVersion}
-                                </span>
-                            </h5>
-                            <hr />
-                            <Button
-                                className="mr-2"
-                                variant="danger"
-                                disabled={!this.state.canReboot}
-                                onClick={handleOpen}>
-                                <FormattedMessage id="view.admin.reboot.button" />
-                            </Button>
-                            <Button
-                                className="mr-2"
-                                variant="primary"
-                                disabled={!this.state.canUpdate}
-                                onClick={() => {
-                                    this.props.history.push(
-                                        AppRoutes.admin_update.link || AppRoutes.admin_update.route
-                                    );
-                                }}>
-                                <FormattedMessage id="view.admin.update.button" />
-                            </Button>
-                            <Button
-                                variant="primary"
-                                disabled={!this.state.canLogs}
-                                onClick={() => {
-                                    this.props.history.push(
-                                        AppRoutes.admin_logs.link || AppRoutes.admin_logs.route
-                                    );
-                                }}>
-                                <FormattedMessage id="view.admin.logs.button" />
-                            </Button>
-                            <Modal
-                                show={this.state.showRebootModal}
-                                onHide={handleClose}
-                                size="lg"
-                                centered>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>
-                                        <FormattedMessage id="view.admin.reboot.modal.title" />
-                                    </Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <FormattedMessage id="view.admin.reboot.modal.body" />
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button onClick={handleClose}>
-                                        <FormattedMessage id="generic.close" />
-                                    </Button>
-                                    <Button variant="danger" onClick={this.restart}>
-                                        <FormattedMessage id="view.admin.reboot.button" />
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal>
-                        </div>
-                    ) : (
-                        ""
-                    )}
-                </React.Fragment>
-            );
-        }
+        this.state = {
+            busy: false
+        };
     }
-);
+
+    public async componentDidMount(): Promise<void> {
+        this.setState({
+            busy: true
+        });
+        const tasks = [];
+
+        console.time("DataLoad");
+        tasks.push(this.loadAdminInfo());
+
+        await Promise.all(tasks);
+        console.timeEnd("DataLoad");
+        this.setState({
+            busy: false
+        });
+    }
+
+    private async loadAdminInfo() {
+        console.time("AdminLoad");
+        const response = await AdminClient.getAdminInfo();
+        switch (response.code) {
+            case StatusCode.ERROR: {
+                this.setState({
+                    error: response.error
+                });
+                break;
+            }
+            case StatusCode.OK: {
+                this.setState({
+                    adminInfo: response.payload
+                });
+                break;
+            }
+        }
+        console.timeEnd("AdminLoad");
+    }
+
+    private async restart() {
+        this.setState({
+            showRebootModal: false,
+            busy: true
+        });
+        console.time("Reboot");
+        const response = await AdminClient.restartServer();
+        switch (response.code) {
+            case StatusCode.ERROR: {
+                this.setState({
+                    error: response.error
+                });
+                break;
+            }
+            case StatusCode.OK: {
+                window.location.reload();
+            }
+        }
+        this.setState({
+            busy: false
+        });
+        console.timeEnd("Reboot");
+    }
+
+    public render(): ReactNode {
+        if (this.state.busy) {
+            return <Loading text="loading.admin" />;
+        }
+
+        const handleClose = () => this.setState({ showRebootModal: false });
+        const handleOpen = () => this.setState({ showRebootModal: true });
+
+        const canReboot = !!(
+            resolvePermissionSet(this.context.user).administrationRights &
+            AdministrationRights.RestartHost
+        );
+        const canUpdate = !!(
+            resolvePermissionSet(this.context.user).administrationRights &
+            AdministrationRights.ChangeVersion
+        );
+        const canLogs = !!(
+            resolvePermissionSet(this.context.user).administrationRights &
+            AdministrationRights.DownloadLogs
+        );
+
+        return (
+            <React.Fragment>
+                <ErrorAlert
+                    error={this.state.error}
+                    onClose={() => this.setState({ error: undefined })}
+                />
+                {this.state.adminInfo ? (
+                    <div className="text-center">
+                        <h3 className=" text-secondary">
+                            <FormattedMessage id="view.admin.hostos" />
+                            <FontAwesomeIcon
+                                fixedWidth
+                                icon={this.context.serverInfo.windowsHost ? faWindows : faLinux}
+                            />
+                        </h3>
+                        <h5 className="text-secondary">
+                            <FormattedMessage id="view.admin.remote" />
+                            <a href={this.state.adminInfo.trackedRepositoryUrl}>
+                                {this.state.adminInfo.trackedRepositoryUrl}
+                            </a>
+                        </h5>
+                        <h3 className="text-secondary">
+                            <FormattedMessage id="view.admin.version.current" />
+                            <span
+                                className={
+                                    this.context.serverInfo.version <
+                                    this.state.adminInfo.latestVersion
+                                        ? "text-danger"
+                                        : ""
+                                }>
+                                {this.context.serverInfo.version}
+                            </span>
+                        </h3>
+                        <h3 className="text-secondary">
+                            <FormattedMessage id="view.admin.version.latest" />
+                            <span
+                                className={
+                                    this.context.serverInfo.version <
+                                    this.state.adminInfo.latestVersion
+                                        ? "text-danger"
+                                        : ""
+                                }>
+                                {this.state.adminInfo.latestVersion}
+                            </span>
+                        </h3>
+                        <hr />
+                        <Button
+                            className="mr-2"
+                            variant="danger"
+                            disabled={!canReboot}
+                            onClick={handleOpen}>
+                            <FormattedMessage id="view.admin.reboot.button" />
+                        </Button>
+                        <Button
+                            className="mr-2"
+                            variant="primary"
+                            disabled={!canUpdate}
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.admin_update.link || AppRoutes.admin_update.route
+                                );
+                            }}>
+                            <FormattedMessage id="view.admin.update.button" />
+                        </Button>
+                        <Button
+                            variant="primary"
+                            disabled={!canLogs}
+                            onClick={() => {
+                                this.props.history.push(
+                                    AppRoutes.admin_logs.link || AppRoutes.admin_logs.route
+                                );
+                            }}>
+                            <FormattedMessage id="view.admin.logs.button" />
+                        </Button>
+                        <Modal
+                            show={this.state.showRebootModal}
+                            onHide={handleClose}
+                            size="lg"
+                            centered>
+                            <Modal.Header closeButton>
+                                <Modal.Title>
+                                    <FormattedMessage id="view.admin.reboot.modal.title" />
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <FormattedMessage id="view.admin.reboot.modal.body" />
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button onClick={handleClose}>
+                                    <FormattedMessage id="generic.close" />
+                                </Button>
+                                <Button variant="danger" onClick={this.restart}>
+                                    <FormattedMessage id="view.admin.reboot.button" />
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                    </div>
+                ) : (
+                    ""
+                )}
+            </React.Fragment>
+        );
+    }
+}
+Administration.contextType = GeneralContext;
+export default withRouter(Administration);

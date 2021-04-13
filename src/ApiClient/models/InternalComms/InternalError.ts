@@ -99,7 +99,7 @@ interface Desc {
 
 type allAddons = errorMessage | axiosResponse | jsError | voidError;
 
-export default class InternalError<T extends ErrorCode> {
+export default class InternalError<T extends ErrorCode = ErrorCode> {
     public readonly code: T;
     public readonly desc?: Desc;
     public readonly extendedInfo: string;

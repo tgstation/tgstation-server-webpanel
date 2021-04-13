@@ -4,13 +4,15 @@ import { Components } from "./generatedcode/_generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
+import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
 
 interface IEvents {
     loadUserInfo: (user: InternalStatus<Components.Schemas.UserResponse, GenericErrors>) => void;
 }
 
-export type EditUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
+export type GetCurrentUserErrors = GenericErrors;
+export type EditUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND | GetCurrentUserErrors;
 export type GetUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type CreateUserErrors = GenericErrors | ErrorCode.USER_NO_SYS_IDENT;
 
@@ -88,8 +90,18 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
     public async getCurrentUser(
         bypassCache?: boolean
-    ): Promise<InternalStatus<Components.Schemas.UserResponse, GenericErrors>> {
+    ): Promise<InternalStatus<Components.Schemas.UserResponse, GetCurrentUserErrors>> {
         await ServerClient.wait4Init();
+
+        if (!CredentialsProvider.isTokenValid()) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.HTTP_ACCESS_DENIED, {
+                    void: true
+                })
+            });
+        }
+
         if (this._cachedUser && !bypassCache) {
             return this._cachedUser;
         }
