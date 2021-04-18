@@ -30,7 +30,7 @@ interface IState {
     translationError?: string;
     loggedIn: boolean;
     loading: boolean;
-    GeneralContextInfo: GeneralContext;
+    GeneralContextInfo: UnsafeGeneralContext;
 }
 
 interface IProps {
@@ -165,6 +165,7 @@ class App extends React.Component<IProps, IState> {
                     };
                 });
             } else {
+                setTimeout(() => void this.updateContextUser(), 5000);
                 this.setState(prev => {
                     const newSet = new Set(prev.GeneralContextInfo.errors);
                     newSet.add(response.error);
@@ -195,6 +196,7 @@ class App extends React.Component<IProps, IState> {
                 };
             });
         } else {
+            setTimeout(() => void this.updateContextServer(), 5000);
             this.setState(prev => {
                 const newSet = new Set(prev.GeneralContextInfo.errors);
                 newSet.add(response.error);
@@ -278,7 +280,7 @@ class App extends React.Component<IProps, IState> {
             <IntlProvider
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}>
-                <GeneralContext.Provider value={this.state.GeneralContextInfo}>
+                <GeneralContext.Provider value={this.state.GeneralContextInfo as GeneralContext}>
                     <InnerApp loading={this.state.loading} loggedIn={this.state.loggedIn} />
                 </GeneralContext.Provider>
             </IntlProvider>
