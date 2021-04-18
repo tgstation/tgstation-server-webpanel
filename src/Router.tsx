@@ -21,7 +21,7 @@ import { GeneralContext, UnsafeGeneralContext } from "./contexts/GeneralContext"
 import { MODE } from "./definitions/constants";
 import { matchesPath } from "./utils/misc";
 import RouteController from "./utils/RouteController";
-import { AppRoute, RouteData } from "./utils/routes";
+import { AppRoute, AppRoutes, RouteData } from "./utils/routes";
 
 interface IState {
     loading: boolean;
@@ -201,7 +201,10 @@ class Router extends Component<IProps, IState> {
                                                         }
                                                     />
                                                 </Container>
-                                            ) : !this.context?.serverInfo ? (
+                                            ) : //Yeah I have no excuse for this, I didn't want to implement a route config option
+                                            // to allow a single route to work without server info so i added it as a check here
+                                            !this.context?.serverInfo &&
+                                              route != AppRoutes.config ? (
                                                 <Container>
                                                     <ErrorAlert
                                                         error={
