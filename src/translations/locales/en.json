@@ -166,6 +166,7 @@
     "view.user.passwd.title": "Editing password for ",
     "view.user.create.tgs": "Create user with TGS identifier",
     "view.user.create.sys": "Create user with system identifier",
+    "view.instanceedit.title": "Editing Instance {instancename}({instanceid})",
     "view.instance.create.loading": "Creating Instance...",
     "view.instance.create.title": "New Instance",
     "view.instance.create.name": "Name",

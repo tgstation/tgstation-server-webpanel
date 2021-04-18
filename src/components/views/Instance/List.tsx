@@ -233,12 +233,13 @@ class InstanceList extends React.Component<IProps, IState> {
                                                 this.setState({
                                                     instanceid: value.id
                                                 });
+                                                this.props.history.push(
+                                                    AppRoutes.instanceedit.link ||
+                                                        AppRoutes.instanceedit.route
+                                                );
                                             }}
-                                            disabled={
-                                                !value.canAccess ||
-                                                value.id.toString() === RouteData.instanceid
-                                            }>
-                                            <FormattedMessage id="generic.select" />
+                                            disabled={!value.canAccess}>
+                                            <FormattedMessage id="generic.edit" />
                                         </Button>
                                         <Button
                                             className="mx-1"

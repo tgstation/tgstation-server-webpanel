@@ -159,7 +159,22 @@ $toast-background-color: $gray-700;
 $toast-header-color: $toast-color;
 $toast-header-background-color: $gray-600;
 
+//instanceedittab
+.instanceedittab {
+    background-color: theme-color("primary");
+    color: white;
 
+    &:hover {
+        color: darken(white, 20);
+    }
+
+    &.active {
+        background-color: darken(theme-color("primary"), 12) !important;
+        color: lightskyblue !important;
+        box-shadow: inset 0 2px 8px -2px black;
+        border: 1px solid $gray-600 !important;
+    }
+}
 
 @import "~bootstrap/scss/variables";
 
@@ -202,6 +217,10 @@ $toast-header-background-color: $gray-600;
 
 .text-secondary {
     color: #3b93de !important;
+}
+
+.bg-body {
+    background-color: $body-bg;
 }
 
 .nav-tabs .nav-link {
