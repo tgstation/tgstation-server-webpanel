@@ -23,6 +23,7 @@ import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
 import Info from "./Edit/Info";
+import InstanceSettings from "./Edit/Config";
 
 type IProps = RouteComponentProps<{ id: string; tab?: string }>;
 type IState = Omit<UnsafeInstanceEditContext, "user" | "serverInfo"> & {
@@ -40,7 +41,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ["chatbots", "comments"],
         ["files", "folder-open"],
         ["users", "users"],
-        ["config", "cogs"]
+        ["config", "cogs", InstanceSettings]
     ];
 
     public constructor(props: IProps) {
@@ -76,6 +77,10 @@ class InstanceEdit extends React.Component<IProps, IState> {
     }
 
     public async reloadInstance(): Promise<void> {
+        this.setState({
+            instance: null,
+            instancePermissionSet: null
+        });
         const response = await InstanceClient.getInstance(this.state.instanceid);
         if (response.code === StatusCode.OK) {
             this.setState({
