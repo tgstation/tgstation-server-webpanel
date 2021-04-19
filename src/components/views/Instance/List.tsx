@@ -264,36 +264,6 @@ class InstanceList extends React.Component<IProps, IState> {
                         className="mx-1"
                         onClick={() => {
                             this.props.history.push(
-                                AppRoutes.instancecode.link || AppRoutes.instancecode.route
-                            );
-                        }}
-                        disabled={this.state.instanceid === undefined}>
-                        <FormattedMessage id="routes.instancecode" />
-                    </Button>
-                    <Button
-                        className="mx-1"
-                        onClick={() => {
-                            this.props.history.push(
-                                AppRoutes.instancehosting.link || AppRoutes.instancehosting.route
-                            );
-                        }}
-                        disabled={this.state.instanceid === undefined}>
-                        <FormattedMessage id="routes.instancehosting" />
-                    </Button>
-                    <Button
-                        className="mx-1"
-                        onClick={() => {
-                            this.props.history.push(
-                                AppRoutes.instanceconfig.link || AppRoutes.instanceconfig.route
-                            );
-                        }}
-                        disabled={this.state.instanceid === undefined}>
-                        <FormattedMessage id="routes.instanceconfig" />
-                    </Button>
-                    <Button
-                        className="mx-1"
-                        onClick={() => {
-                            this.props.history.push(
                                 AppRoutes.instancejobs.link || AppRoutes.instancejobs.route
                             );
                         }}

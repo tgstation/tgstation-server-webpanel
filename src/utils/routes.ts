@@ -126,80 +126,6 @@ const AppRoutes = asElementTypesAppRoute({
         category: "instance",
         catleader: true
     },
-    instancecode: {
-        name: "routes.instancecode",
-        route: "/instances/code/:id(\\d+)/",
-        file: "Instance/CodeDeployment",
-
-        get link(): string {
-            return RouteData.instanceid !== undefined
-                ? `/instances/code/${RouteData.instanceid}/`
-                : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
-        },
-
-        loose: false,
-        navbarLoose: true,
-
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
-
-        visibleNavbar: true,
-        homeIcon: undefined,
-
-        category: "instance"
-    },
-    instancehosting: {
-        name: "routes.instancehosting",
-        route: "/instances/hosting/:id(\\d+)/:tab?/",
-        file: "Instance/Hosting",
-
-        get link(): string {
-            return RouteData.instanceid !== undefined
-                ? `/instances/hosting/${RouteData.instanceid}/${
-                      RouteData.selectedinstancehostingtab !== undefined
-                          ? `${RouteData.selectedinstancehostingtab}/`
-                          : ""
-                  }`
-                : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
-        },
-
-        loose: false,
-        navbarLoose: true,
-
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
-
-        visibleNavbar: true,
-        homeIcon: undefined,
-
-        category: "instance"
-    },
-    instanceconfig: {
-        name: "routes.instanceconfig",
-        route: "/instances/config/:id(\\d+)/:tab?/",
-        file: "Instance/Config",
-
-        get link(): string {
-            return RouteData.instanceid !== undefined
-                ? `/instances/config/${RouteData.instanceid}/${
-                      RouteData.selectedinstanceconfigtab !== undefined
-                          ? `${RouteData.selectedinstanceconfigtab}/`
-                          : ""
-                  }`
-                : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
-        },
-
-        loose: false,
-        navbarLoose: true,
-
-        isAuthorized: () => Promise.resolve(true),
-        cachedAuth: true,
-
-        visibleNavbar: true,
-        homeIcon: undefined,
-
-        category: "instance"
-    },
     instanceedit: {
         name: "routes.instanceedit",
         route: "/instances/edit/:id(\\d+)/:tab?/",
@@ -474,9 +400,7 @@ export const RouteData = {
     selecteduserid: undefined as undefined | number,
     selectedusertab: undefined as undefined | string,
 
-    selectedinstanceconfigtab: undefined as undefined | string,
     selectedinstanceedittab: undefined as undefined | string,
-    selectedinstancehostingtab: undefined as undefined | string,
     _instanceid: undefined as undefined | number,
 
     set instanceid(newval: string | undefined) {
