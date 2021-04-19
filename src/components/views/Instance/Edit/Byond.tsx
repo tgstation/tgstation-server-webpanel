@@ -13,15 +13,12 @@ import { ByondRights } from "../../../../ApiClient/generatedcode/_enums";
 import { Components } from "../../../../ApiClient/generatedcode/_generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
+import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import AccessDenied from "../../../utils/AccessDenied";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import Loading from "../../../utils/Loading";
 
-interface IProps {
-    instance: Components.Schemas.InstanceResponse;
-    selfPermissionSet: Components.Schemas.PermissionSet;
-    selfInstancePermissionSet: Components.Schemas.InstancePermissionSetResponse;
-}
+interface IProps {}
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
@@ -33,7 +30,8 @@ interface IState {
     customFile?: File | null;
 }
 
-export default class Byond extends React.Component<IProps, IState> {
+class Byond extends React.Component<IProps, IState> {
+    public declare context: InstanceEditContext;
     public constructor(props: IProps) {
         super(props);
 
@@ -58,13 +56,13 @@ export default class Byond extends React.Component<IProps, IState> {
     }
 
     private async loadVersions() {
-        const response = await ByondClient.listAllVersions(this.props.instance.id);
+        const response = await ByondClient.listAllVersions(this.context.instance.id);
         if (response.code === StatusCode.OK) {
             this.setState({
                 versions: response.payload.content
             });
 
-            const response2 = await ByondClient.getActiveVersion(this.props.instance.id);
+            const response2 = await ByondClient.getActiveVersion(this.context.instance.id);
             if (response2.code === StatusCode.OK) {
                 this.setState({
                     activeVersion: response2.payload.version
@@ -107,8 +105,8 @@ export default class Byond extends React.Component<IProps, IState> {
         // noinspection JSBitwiseOperatorUsage
         if (
             !(
-                this.props.selfInstancePermissionSet.byondRights & ByondRights.ListInstalled &&
-                this.props.selfInstancePermissionSet.byondRights & ByondRights.ReadActive
+                this.context.instancePermissionSet.byondRights & ByondRights.ListInstalled &&
+                this.context.instancePermissionSet.byondRights & ByondRights.ReadActive
             )
         ) {
             return <AccessDenied />;
@@ -125,7 +123,7 @@ export default class Byond extends React.Component<IProps, IState> {
         };
 
         return (
-            <div>
+            <div className="text-center">
                 <h1>
                     <FormattedMessage id="view.instance.hosting.byond" />
                 </h1>
@@ -153,7 +151,7 @@ export default class Byond extends React.Component<IProps, IState> {
                             loading: true
                         });
                         const response = await ByondClient.switchActive(
-                            this.props.instance.id,
+                            this.context.instance.id,
                             e.target.value
                         );
                         if (response.code === StatusCode.OK) {
@@ -173,7 +171,7 @@ export default class Byond extends React.Component<IProps, IState> {
                                     <InputGroup.Radio
                                         disabled={
                                             !(
-                                                this.props.selfInstancePermissionSet.byondRights &
+                                                this.context.instancePermissionSet.byondRights &
                                                 ByondRights.InstallOfficialOrChangeActiveVersion
                                             )
                                         }
@@ -255,7 +253,7 @@ export default class Byond extends React.Component<IProps, IState> {
                                     loading: true
                                 });
                                 const response = await ByondClient.switchActive(
-                                    this.props.instance.id,
+                                    this.context.instance.id,
                                     this.state.selectedVersion,
                                     this.state.customFile
                                         ? await this.state.customFile.arrayBuffer()
@@ -301,3 +299,5 @@ export default class Byond extends React.Component<IProps, IState> {
         );
     }
 }
+Byond.contextType = InstanceEditContext;
+export default Byond;

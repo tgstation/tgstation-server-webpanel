@@ -36,7 +36,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ["info", "info", Info],
         ["repository", "code-branch"],
         ["deployment", "hammer"],
-        ["byond", "list-ul"],
+        ["byond", "list-ul", Byond],
         ["chatbots", "comments"],
         ["files", "folder-open"],
         ["users", "users"],
