@@ -22,7 +22,6 @@ import { AppRoutes, RouteData } from "../../../utils/routes";
 import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
-import Info from "./Edit/Info";
 import InstanceSettings from "./Edit/Config";
 
 type IProps = RouteComponentProps<{ id: string; tab?: string }>;
@@ -34,7 +33,7 @@ type IState = Omit<UnsafeInstanceEditContext, "user" | "serverInfo"> & {
 class InstanceEdit extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
     public static tabs: [string, IconProp, ComponentType?][] = [
-        ["info", "info", Info],
+        ["info", "info"],
         ["repository", "code-branch"],
         ["deployment", "hammer"],
         ["byond", "list-ul", Byond],
