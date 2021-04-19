@@ -159,6 +159,18 @@ $toast-background-color: $gray-700;
 $toast-header-color: $toast-color;
 $toast-header-background-color: $gray-600;
 
+.nav-item {
+    &:not(:first-of-type) > .instanceedittab {
+            border-bottom-left-radius: 0 !important;
+            border-top-left-radius: 0 !important;
+            border-left: solid $gray-500 1px !important;
+    }
+    &:not(:last-of-type) > .instanceedittab {
+            border-bottom-right-radius: 0 !important;
+            border-top-right-radius: 0 !important;
+    }
+}
+
 //instanceedittab
 .instanceedittab {
     background-color: theme-color("primary");

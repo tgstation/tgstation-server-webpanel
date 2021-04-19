@@ -1,15 +1,21 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faGitAlt } from "@fortawesome/free-brands-svg-icons/faGitAlt";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+import { faCodeBranch } from "@fortawesome/free-solid-svg-icons/faCodeBranch";
 import { faCogs } from "@fortawesome/free-solid-svg-icons/faCogs";
+import { faComments } from "@fortawesome/free-solid-svg-icons/faComments";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons/faExclamationCircle";
+import { faFolderOpen } from "@fortawesome/free-solid-svg-icons/faFolderOpen";
 import { faGripLinesVertical } from "@fortawesome/free-solid-svg-icons/faGripLinesVertical";
+import { faHammer } from "@fortawesome/free-solid-svg-icons/faHammer";
 import { faHdd } from "@fortawesome/free-solid-svg-icons/faHdd";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faInfo } from "@fortawesome/free-solid-svg-icons/faInfo";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { faKey } from "@fortawesome/free-solid-svg-icons/faKey";
+import { faListUl } from "@fortawesome/free-solid-svg-icons/faListUl";
 import { faPen } from "@fortawesome/free-solid-svg-icons/faPen";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons/faQuestion";
@@ -19,6 +25,7 @@ import { faTools } from "@fortawesome/free-solid-svg-icons/faTools";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { faUndo } from "@fortawesome/free-solid-svg-icons/faUndo";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
 import { faUserSlash } from "@fortawesome/free-solid-svg-icons/faUserSlash";
 
 export default function (): void {
@@ -44,6 +51,13 @@ export default function (): void {
         faGithub,
         faDiscord,
         faTrash,
-        faInfoCircle
+        faInfoCircle,
+        faGitAlt,
+        faHammer,
+        faListUl,
+        faComments,
+        faFolderOpen,
+        faUsers,
+        faCodeBranch
     );
 }
