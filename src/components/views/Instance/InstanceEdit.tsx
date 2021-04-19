@@ -10,6 +10,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 
 import InstanceClient from "../../../ApiClient/InstanceClient";
+import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import { GeneralContext } from "../../../contexts/GeneralContext";
@@ -20,24 +21,26 @@ import {
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
+import Byond from "./Edit/Byond";
 import Info from "./Edit/Info";
 
 type IProps = RouteComponentProps<{ id: string; tab?: string }>;
 type IState = Omit<UnsafeInstanceEditContext, "user" | "serverInfo"> & {
     tab: string;
+    instanceid: number;
 };
 
 class InstanceEdit extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
-    public static tabs: [string, IconProp, ComponentType][] = [
+    public static tabs: [string, IconProp, ComponentType?][] = [
         ["info", "info", Info],
-        ["repository", "code-branch", () => <WIPNotice />],
-        ["deployment", "hammer", () => <WIPNotice />],
-        ["byond", "list-ul", () => <WIPNotice />],
-        ["chatbots", "comments", () => <WIPNotice />],
-        ["files", "folder-open", () => <WIPNotice />],
-        ["users", "users", () => <WIPNotice />],
-        ["config", "cogs", () => <WIPNotice />]
+        ["repository", "code-branch"],
+        ["deployment", "hammer"],
+        ["byond", "list-ul"],
+        ["chatbots", "comments"],
+        ["files", "folder-open"],
+        ["users", "users"],
+        ["config", "cogs"]
     ];
 
     public constructor(props: IProps) {
@@ -52,8 +55,10 @@ class InstanceEdit extends React.Component<IProps, IState> {
             tab: props.match.params.tab || InstanceEdit.tabs[0][0],
             errors: new Set(),
             instance: null,
+            instancePermissionSet: null,
             reloadInstance: this.reloadInstance,
-            deleteError: this.deleteContextError
+            deleteError: this.deleteContextError,
+            instanceid: parseInt(this.props.match.params.id)
         };
     }
     public deleteContextError(error: InternalError): void {
@@ -71,16 +76,35 @@ class InstanceEdit extends React.Component<IProps, IState> {
     }
 
     public async reloadInstance(): Promise<void> {
-        const response = await InstanceClient.getInstance(parseInt(this.props.match.params.id));
+        const response = await InstanceClient.getInstance(this.state.instanceid);
         if (response.code === StatusCode.OK) {
             this.setState({
                 instance: response.payload
             });
+
+            const response2 = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                this.state.instanceid
+            );
+            if (response2.code === StatusCode.OK) {
+                this.setState({
+                    instancePermissionSet: response2.payload
+                });
+            } else {
+                this.setState(prev => {
+                    const newSet = new Set(prev.errors);
+                    newSet.add(response2.error);
+                    return {
+                        instancePermissionSet: null,
+                        errors: newSet
+                    };
+                });
+            }
         } else {
             this.setState(prev => {
                 const newSet = new Set(prev.errors);
                 newSet.add(response.error);
                 return {
+                    instance: null,
                     errors: newSet
                 };
             });
@@ -88,7 +112,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
-        if (!this.state.instance) {
+        if (!this.state.instance || !this.state.instancePermissionSet) {
             return <Loading text="loading.instance" />;
         }
 
@@ -133,6 +157,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
                             className="d-block mx-auto w-75 text-center">
                             {InstanceEdit.tabs.map(value => {
                                 if (value === active) return;
+                                if (value[2] === undefined) return;
 
                                 return (
                                     <Dropdown.Item key={value[0]} eventKey={value[0]}>
@@ -163,10 +188,13 @@ class InstanceEdit extends React.Component<IProps, IState> {
                     variant="pills"
                     activeKey={this.state.tab}
                     className="flex-nowrap text-nowrap overflow-auto ">
-                    {InstanceEdit.tabs.map(([tabKey, icon]) => {
+                    {InstanceEdit.tabs.map(([tabKey, icon, component]) => {
                         return (
                             <Nav.Item key={tabKey}>
-                                <Nav.Link eventKey={tabKey} bsPrefix="nav-link instanceedittab ">
+                                <Nav.Link
+                                    eventKey={tabKey}
+                                    bsPrefix="nav-link instanceedittab "
+                                    className={!component ? "wip text-white" : ""}>
                                     <React.Fragment>
                                         <FontAwesomeIcon icon={icon} className="mr-1" />
                                         <FormattedMessage id={`view.instanceedit.tabs.${tabKey}`} />
@@ -216,7 +244,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
                                 {InstanceEdit.tabs.map(([tabKey, , Comp]) => {
                                     return (
                                         <Tab.Pane eventKey={tabKey} key={tabKey}>
-                                            <Comp />
+                                            {Comp ? <Comp /> : <WIPNotice />}
                                         </Tab.Pane>
                                     );
                                 })}

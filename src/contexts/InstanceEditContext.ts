@@ -10,6 +10,7 @@ export type InstanceEditContext = {
     instance: Components.Schemas.InstanceResponse;
     user: Components.Schemas.UserResponse;
     serverInfo: Components.Schemas.ServerInformationResponse;
+    instancePermissionSet: Components.Schemas.InstancePermissionSetResponse;
 };
 
 //same as InstanceEditContext except used for components which arent loading under instanceedit so we cant guarentee that instance wont be null
@@ -20,6 +21,7 @@ export type UnsafeInstanceEditContext = {
     instance: Components.Schemas.InstanceResponse | null;
     user: Components.Schemas.UserResponse;
     serverInfo: Components.Schemas.ServerInformationResponse;
+    instancePermissionSet: Components.Schemas.InstancePermissionSetResponse | null;
 };
 
 export const InstanceEditContext = React.createContext<InstanceEditContext>(
