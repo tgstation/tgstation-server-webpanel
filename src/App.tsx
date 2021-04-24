@@ -60,6 +60,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
         document.addEventListener("keydown", function (event) {
             if (event.key == "L" && event.ctrlKey && event.shiftKey) {
                 //alert("ISolemlySwearToDeleteTheDataDirectory");
+                ServerClient.logout();
                 void ServerClient.login({
                     type: CredentialsType.Password,
                     userName: "admin",
