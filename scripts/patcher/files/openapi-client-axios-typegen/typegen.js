@@ -77,7 +77,6 @@ var schemaConvertor_1 = __importDefault(require("@anttiviljami/dtsgenerator/dist
 var writeProcessor_1 = __importDefault(require("@anttiviljami/dtsgenerator/dist/core/writeProcessor"));
 var typeNameConvertor_1 = require("@anttiviljami/dtsgenerator/dist/core/typeNameConvertor");
 var json_schema_ref_parser_1 = require("@apidevtools/json-schema-ref-parser");
-var typeNameConvertor_1 = require("@anttiviljami/dtsgenerator/dist/core/typeNameConvertor");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var argv, opts, _a, modulePath, func, module_1, _b, imports, schemaTypes, operationTypings;

@@ -58,17 +58,19 @@ export default class Configuration extends React.Component<IProps, IState> {
                     };
 
                     const updateValue = () => {
-                        const obj: ConfigOption = this.state.values[key] || {
-                            ...currentVal
-                        };
-                        //obj.persist = persistRef.current!.checked;
-                        obj.value =
-                            value.type === "enum"
-                                ? enumRef.current!.selectedOptions[0].value
-                                : value.type === "bool"
-                                ? valueRef.current!.checked
-                                : valueRef.current!.value;
                         this.setState(prevstate => {
+                            const obj: ConfigOption = this.state.values[key]
+                                ? { ...this.state.values[key] }
+                                : {
+                                      ...currentVal
+                                  };
+                            obj.value =
+                                value.type === "enum"
+                                    ? enumRef.current!.selectedOptions[0].value
+                                    : value.type === "bool"
+                                    ? valueRef.current!.checked
+                                    : valueRef.current!.value;
+
                             return {
                                 values: {
                                     ...prevstate.values,
