@@ -148,7 +148,7 @@ const AppRoutes = asElementTypesAppRoute({
         cachedAuth: true,
 
         visibleNavbar: true,
-        homeIcon: "edit",
+        homeIcon: undefined,
 
         category: "instance"
     },
