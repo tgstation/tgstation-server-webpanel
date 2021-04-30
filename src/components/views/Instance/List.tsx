@@ -29,8 +29,6 @@ interface IState {
     instances: Instance[];
     loading?: boolean;
     errors: Array<InternalError<ErrorCode> | undefined>;
-    //isnt directly used but is used to make react rerender when the selected insance is changed
-    instanceid?: number;
 }
 interface IProps extends RouteComponentProps {}
 
@@ -42,14 +40,10 @@ class InstanceList extends React.Component<IProps, IState> {
 
         this.setOnline = this.setOnline.bind(this);
 
-        const actualid =
-            RouteData.instanceid !== undefined ? parseInt(RouteData.instanceid) : undefined;
-
         this.state = {
             loading: true,
             instances: [],
-            errors: [],
-            instanceid: actualid
+            errors: []
         };
     }
 
@@ -188,13 +182,7 @@ class InstanceList extends React.Component<IProps, IState> {
                     <tbody>
                         {this.state.instances.map(value => {
                             return (
-                                <tr
-                                    key={value.id}
-                                    className={
-                                        value.id.toString() === RouteData.instanceid
-                                            ? "font-weight-bold"
-                                            : ""
-                                    }>
+                                <tr key={value.id}>
                                     <td style={tablecellstyling}>{value.id}</td>
                                     <td style={tablecellstyling}>{value.name}</td>
                                     <td style={tablecellstyling}>
@@ -223,16 +211,8 @@ class InstanceList extends React.Component<IProps, IState> {
                                     <td className="align-middle p-1" style={tablecellstyling}>
                                         <Button
                                             className="mx-1"
-                                            variant={
-                                                value.id.toString() === RouteData.instanceid
-                                                    ? "success"
-                                                    : "primary"
-                                            }
                                             onClick={() => {
-                                                RouteData.instanceid = value.id.toString();
-                                                this.setState({
-                                                    instanceid: value.id
-                                                });
+                                                RouteData.selectedinstanceid = value.id;
                                                 this.props.history.push(
                                                     AppRoutes.instanceedit.link ||
                                                         AppRoutes.instanceedit.route
@@ -266,8 +246,7 @@ class InstanceList extends React.Component<IProps, IState> {
                             this.props.history.push(
                                 AppRoutes.instancejobs.link || AppRoutes.instancejobs.route
                             );
-                        }}
-                        disabled={this.state.instanceid === undefined}>
+                        }}>
                         <FormattedMessage id="routes.instancejobs" />
                     </Button>
                 </div>

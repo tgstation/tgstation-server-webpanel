@@ -8,13 +8,13 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 
 import { ErrorCode as TGSErrorCode } from "../../ApiClient/generatedcode/_enums";
-import { CanCancelJob } from "../../ApiClient/util/JobsController";
+import { tgsJobResponse } from "../../ApiClient/JobsClient";
 
 interface IState {}
 interface IProps {
-    job: CanCancelJob;
+    job: tgsJobResponse;
     width?: string;
-    onClose: (job: CanCancelJob) => void;
+    onClose: (job: tgsJobResponse) => void;
 }
 
 export default class JobCard extends React.Component<IProps, IState> {

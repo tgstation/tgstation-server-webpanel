@@ -72,6 +72,11 @@ const configOptions: ConfigMap = {
         type: "enum",
         possibleValues: jobsWidgetOptions,
         value: jobsWidgetOptions.AUTO
+    },
+    instanceprobetimer: {
+        id: "config.instanceprobetimer",
+        type: "num",
+        value: 60
     }
 };
 

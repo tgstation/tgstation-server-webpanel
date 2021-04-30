@@ -11,10 +11,15 @@ export type deleteJobErrors =
     | ErrorCode.JOB_JOB_NOT_FOUND
     | ErrorCode.JOB_JOB_COMPLETE;
 
+export type tgsJobResponse = JobResponse & {
+    instanceid: number;
+    canCancel?: boolean;
+};
+
 export default new (class JobsClient extends ApiClient {
     public async listActiveJobs(
         instanceid: number
-    ): Promise<InternalStatus<JobResponse[], listJobsErrors>> {
+    ): Promise<InternalStatus<tgsJobResponse[], listJobsErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -25,7 +30,7 @@ export default new (class JobsClient extends ApiClient {
                 pageSize: 100
             });
         } catch (stat) {
-            return new InternalStatus<JobResponse[], listJobsErrors>({
+            return new InternalStatus<tgsJobResponse[], listJobsErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -33,13 +38,18 @@ export default new (class JobsClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
-                return new InternalStatus<JobResponse[], listJobsErrors>({
+                return new InternalStatus<tgsJobResponse[], listJobsErrors>({
                     code: StatusCode.OK,
-                    payload: (response.data as PaginatedJobResponse)!.content
+                    payload: (response.data as PaginatedJobResponse)!.content.map(job => {
+                        return {
+                            ...job,
+                            instanceid: instanceid
+                        };
+                    })
                 });
             }
             default: {
-                return new InternalStatus<JobResponse[], listJobsErrors>({
+                return new InternalStatus<tgsJobResponse[], listJobsErrors>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,
@@ -54,7 +64,7 @@ export default new (class JobsClient extends ApiClient {
     public async getJob(
         instanceid: number,
         jobid: number
-    ): Promise<InternalStatus<JobResponse, getJobErrors>> {
+    ): Promise<InternalStatus<tgsJobResponse, getJobErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -72,9 +82,13 @@ export default new (class JobsClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
+                const job = {
+                    ...(response.data as JobResponse),
+                    instanceid: instanceid
+                };
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as JobResponse
+                    payload: job
                 });
             }
             case 404: {
@@ -101,7 +115,7 @@ export default new (class JobsClient extends ApiClient {
     public async deleteJob(
         instanceid: number,
         jobid: number
-    ): Promise<InternalStatus<JobResponse, deleteJobErrors>> {
+    ): Promise<InternalStatus<tgsJobResponse, deleteJobErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -119,9 +133,13 @@ export default new (class JobsClient extends ApiClient {
 
         switch (response.status) {
             case 202: {
+                const job = {
+                    ...(response.data as JobResponse),
+                    instanceid: instanceid
+                };
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as JobResponse
+                    payload: job
                 });
             }
             case 404: {

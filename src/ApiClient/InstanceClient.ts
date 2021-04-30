@@ -15,7 +15,11 @@ export type CreateInstanceErrors = GenericErrors;
 export type EditInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
 export type GetInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
 
-export default new (class InstanceClient extends ApiClient {
+interface IEvents {
+    instanceChange: (instanceId: number) => void;
+}
+
+export default new (class InstanceClient extends ApiClient<IEvents> {
     public async listInstances(): Promise<InternalStatus<InstanceResponse[], ListInstancesErrors>> {
         await ServerClient.wait4Init();
 
@@ -64,6 +68,7 @@ export default new (class InstanceClient extends ApiClient {
         let response;
         try {
             response = await ServerClient.apiClient!.InstanceController_Update(null, instance);
+            this.emit("instanceChange", instance.id);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -118,6 +123,8 @@ export default new (class InstanceClient extends ApiClient {
             case 200:
             case 201: {
                 const instance = response.data as InstanceResponse;
+
+                this.emit("instanceChange", instance.id);
 
                 return new InternalStatus({
                     code: StatusCode.OK,

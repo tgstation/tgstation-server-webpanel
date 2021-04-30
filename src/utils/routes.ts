@@ -5,7 +5,6 @@ import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/Inte
 import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
-import JobsController from "../ApiClient/util/JobsController";
 import { resolvePermissionSet } from "./misc";
 
 export interface AppRoute {
@@ -132,8 +131,8 @@ const AppRoutes = asElementTypesAppRoute({
         file: "Instance/InstanceEdit",
 
         get link(): string {
-            return RouteData.instanceid !== undefined
-                ? `/instances/edit/${RouteData.instanceid}/${
+            return RouteData.selectedinstanceid !== undefined
+                ? `/instances/edit/${RouteData.selectedinstanceid}/${
                       RouteData.selectedinstanceedittab !== undefined
                           ? `${RouteData.selectedinstanceedittab}/`
                           : ""
@@ -154,14 +153,8 @@ const AppRoutes = asElementTypesAppRoute({
     },
     instancejobs: {
         name: "routes.instancejobs",
-        route: "/instances/jobs/:id(\\d+)/:jobid(\\d+)?/",
+        route: "/instances/jobs/",
         file: "Instance/Jobs",
-
-        get link(): string {
-            return RouteData.instanceid !== undefined
-                ? `/instances/jobs/${RouteData.instanceid}/`
-                : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
-        },
 
         loose: false,
         navbarLoose: true,
@@ -376,8 +369,6 @@ export interface AppCategory {
     leader: AppRoute;
 }
 
-let _instanceid: number | undefined = undefined;
-
 export const UnpopulatedAppCategories = asElementTypesCategory({
     home: {
         name: "home"
@@ -400,33 +391,8 @@ export const RouteData = {
     selecteduserid: undefined as undefined | number,
     selectedusertab: undefined as undefined | string,
 
+    selectedinstanceid: undefined as undefined | number,
     selectedinstanceedittab: undefined as undefined | string,
-    _instanceid: undefined as undefined | number,
-
-    set instanceid(newval: string | undefined) {
-        let id: number | undefined;
-        //Undefined as a value is ok
-        if (newval === undefined) {
-            id = undefined;
-        } else {
-            //check if its a number
-            id = parseInt(newval);
-            if (Number.isNaN(id)) {
-                return;
-            }
-        }
-
-        //setting the instance id causes the thing to drop all jobs its aware of, so avoid when possible
-        if (_instanceid == id) {
-            return;
-        }
-
-        _instanceid = id;
-        JobsController.instance = id;
-    },
-    get instanceid(): string | undefined {
-        return _instanceid?.toString();
-    },
 
     oautherrors: [] as InternalError<ErrorCode>[]
 };

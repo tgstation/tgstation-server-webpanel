@@ -49,7 +49,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         this.reloadInstance = this.reloadInstance.bind(this);
         this.deleteContextError = this.deleteContextError.bind(this);
 
-        RouteData.instanceid = this.props.match.params.id;
+        RouteData.selectedinstanceid = this.props.match.params.id;
 
         this.state = {
             tab: props.match.params.tab || InstanceEdit.tabs[0][0],

@@ -12,6 +12,7 @@ import * as React from "react";
 import { render as ReactDOMRender } from "react-dom";
 
 import ConfigController from "./ApiClient/util/ConfigController";
+import JobsController from "./ApiClient/util/JobsController";
 import App from "./App";
 import { MODE, VERSION } from "./definitions/constants";
 import Locales from "./translations/Locales";
@@ -19,6 +20,7 @@ import initIcons from "./utils/icolibrary";
 
 initIcons();
 ConfigController.loadconfig();
+JobsController.init();
 
 if (window.loadedChannelFromWebpack && MODE !== "DEV") {
     alert(

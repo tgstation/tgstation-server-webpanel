@@ -1,12 +1,10 @@
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
-import JobsController from "../ApiClient/util/JobsController";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import {
     AppCategories,
     AppRoute,
     AppRoutes,
-    RouteData,
     UnpopulatedAppCategories,
     UnpopulatedAppCategory
 } from "./routes";
@@ -15,14 +13,6 @@ interface IEvents {
     refresh: (routes: Array<AppRoute>) => void; //auth
     refreshAll: (routes: Array<AppRoute>) => void; //noauth+auth
 }
-
-//Either pass the instance id or pass an empty string
-JobsController.setInstance = instance => {
-    RouteData.instanceid = instance?.toString();
-};
-/*ServerClient.clearInstance = instance => {
-    if(AppCategories.instance.data)
-};*/
 
 //helper class to process AppRoutes
 class RouteController extends TypedEmitter<IEvents> {

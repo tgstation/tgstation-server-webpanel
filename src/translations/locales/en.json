@@ -266,6 +266,8 @@
     "config.jobswidgetdisplay.enum.always": "Always display",
     "config.jobswidgetdisplay.enum.auto": "Display when there are jobs",
     "config.jobswidgetdisplay.enum.never": "Never display",
+    "config.instanceprobetimer": "Instance permission poll delay",
+    "config.instanceprobetimer.desc": "After how many seconds should we update the list of instances",
     "loading.loading": "Loading...",
     "loading.login": "Logging in...",
     "loading.page": "Loading page: ",

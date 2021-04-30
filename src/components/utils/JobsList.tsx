@@ -2,10 +2,10 @@ import React, { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 import { Rnd } from "react-rnd";
 
+import { tgsJobResponse } from "../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import configOptions, { jobsWidgetOptions } from "../../ApiClient/util/config";
-import JobsController, { CanCancelJob } from "../../ApiClient/util/JobsController";
-import { RouteData } from "../../utils/routes";
+import JobsController from "../../ApiClient/util/JobsController";
 import ErrorAlert from "./ErrorAlert";
 import JobCard from "./JobCard";
 import Loading from "./Loading";
@@ -16,7 +16,7 @@ interface IProps {
 }
 
 interface IState {
-    jobs: Map<number, CanCancelJob>;
+    jobs: Map<number, tgsJobResponse>;
     errors: InternalError<ErrorCode>[];
     ownerrors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;
@@ -36,7 +36,7 @@ export default class JobsList extends React.Component<IProps, IState> {
         this.onCancelorClose = this.onCancelorClose.bind(this);
 
         this.state = {
-            jobs: new Map<number, CanCancelJob>(),
+            jobs: new Map<number, tgsJobResponse>(),
             errors: [],
             ownerrors: [],
             loading: true
@@ -57,8 +57,8 @@ export default class JobsList extends React.Component<IProps, IState> {
     }
 
     public componentDidMount(): void {
-        JobsController.restartLoop();
         JobsController.on("jobsLoaded", this.handleUpdate);
+        this.handleUpdate();
     }
 
     public componentWillUnmount(): void {
@@ -73,7 +73,7 @@ export default class JobsList extends React.Component<IProps, IState> {
         });
     }
 
-    private async onCancelorClose(job: CanCancelJob) {
+    private async onCancelorClose(job: tgsJobResponse) {
         const cancelling = !job.stoppedAt;
         const status = await JobsController.cancelOrClear(job.id, error => this.addError(error));
 
@@ -83,14 +83,10 @@ export default class JobsList extends React.Component<IProps, IState> {
         //Jobs changed, might as well refresh
         if (cancelling) {
             JobsController.fastmode = 5;
-        } else {
-            JobsController.restartLoop();
         }
     }
 
     public render(): ReactNode {
-        if (RouteData.instanceid === undefined) return "";
-
         if (!this.props.widget) return this.nested();
         return (
             <div

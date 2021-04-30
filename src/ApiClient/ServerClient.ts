@@ -3,18 +3,18 @@ import { Document } from "openapi-client-axios/types/client";
 
 import { API_VERSION, VERSION } from "../definitions/constants";
 import { ApiClient } from "./_base";
-import { Client, Components } from "./generatedcode/_generated";
+import { Client } from "./generatedcode/_generated";
+import {
+    ErrorMessageResponse,
+    ServerInformationResponse,
+    TokenResponse
+} from "./generatedcode/schemas";
 import { CredentialsType, ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import configOptions from "./util/config";
 import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
-import {
-    ErrorMessageResponse,
-    ServerInformationResponse,
-    TokenResponse
-} from "./generatedcode/schemas";
 
 interface IEvents {
     //self explainatory
