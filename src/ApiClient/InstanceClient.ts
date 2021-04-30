@@ -1,5 +1,11 @@
 import { ApiClient } from "./_base";
-import { Components } from "./generatedcode/_generated";
+import {
+    ErrorMessageResponse,
+    InstanceCreateRequest,
+    InstanceResponse,
+    InstanceUpdateRequest,
+    PaginatedInstanceResponse
+} from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -10,9 +16,7 @@ export type EditInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY
 export type GetInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
 
 export default new (class InstanceClient extends ApiClient {
-    public async listInstances(): Promise<
-        InternalStatus<Components.Schemas.InstanceResponse[], ListInstancesErrors>
-    > {
+    public async listInstances(): Promise<InternalStatus<InstanceResponse[], ListInstancesErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -30,7 +34,7 @@ export default new (class InstanceClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as Components.Schemas.PaginatedInstanceResponse)!.content.sort(
+                const payload = (response.data as PaginatedInstanceResponse)!.content.sort(
                     (a, b) => a.id - b.id
                 );
 
@@ -53,8 +57,8 @@ export default new (class InstanceClient extends ApiClient {
     }
 
     public async editInstance(
-        instance: Components.Schemas.InstanceUpdateRequest
-    ): Promise<InternalStatus<Components.Schemas.InstanceResponse, EditInstanceErrors>> {
+        instance: InstanceUpdateRequest
+    ): Promise<InternalStatus<InstanceResponse, EditInstanceErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -69,7 +73,7 @@ export default new (class InstanceClient extends ApiClient {
         switch (response.status) {
             case 200:
             case 202: {
-                const instance = response.data as Components.Schemas.InstanceResponse;
+                const instance = response.data as InstanceResponse;
 
                 return new InternalStatus({
                     code: StatusCode.OK,
@@ -80,7 +84,7 @@ export default new (class InstanceClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.INSTANCE_NO_DB_ENTITY, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             default: {
@@ -97,8 +101,8 @@ export default new (class InstanceClient extends ApiClient {
     }
 
     public async createInstance(
-        instance: Components.Schemas.InstanceCreateRequest
-    ): Promise<InternalStatus<Components.Schemas.InstanceResponse, CreateInstanceErrors>> {
+        instance: InstanceCreateRequest
+    ): Promise<InternalStatus<InstanceResponse, CreateInstanceErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -113,7 +117,7 @@ export default new (class InstanceClient extends ApiClient {
         switch (response.status) {
             case 200:
             case 201: {
-                const instance = response.data as Components.Schemas.InstanceResponse;
+                const instance = response.data as InstanceResponse;
 
                 return new InternalStatus({
                     code: StatusCode.OK,
@@ -124,7 +128,7 @@ export default new (class InstanceClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.HTTP_DATA_INEGRITY, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             default: {
@@ -142,7 +146,7 @@ export default new (class InstanceClient extends ApiClient {
 
     public async getInstance(
         instanceid: number
-    ): Promise<InternalStatus<Components.Schemas.InstanceResponse, GetInstanceErrors>> {
+    ): Promise<InternalStatus<InstanceResponse, GetInstanceErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -158,14 +162,14 @@ export default new (class InstanceClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.InstanceResponse
+                    payload: response.data as InstanceResponse
                 });
             }
             case 410:
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.INSTANCE_NO_DB_ENTITY, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             default: {

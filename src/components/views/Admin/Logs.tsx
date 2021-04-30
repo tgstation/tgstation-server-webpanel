@@ -9,7 +9,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 import { Link } from "react-router-dom";
 
 import AdminClient from "../../../ApiClient/AdminClient";
-import { Components } from "../../../ApiClient/generatedcode/_generated";
+import { LogFileResponse } from "../../../ApiClient/generatedcode/schemas";
 import { DownloadedLog } from "../../../ApiClient/models/DownloadedLog";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
@@ -31,7 +31,7 @@ interface Log {
 }
 
 interface IState {
-    logs: Components.Schemas.LogFileResponse[];
+    logs: LogFileResponse[];
     viewedLog?: Log;
     errors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;

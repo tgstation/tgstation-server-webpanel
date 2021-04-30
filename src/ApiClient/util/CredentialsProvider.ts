@@ -1,5 +1,5 @@
 import { MODE } from "../../definitions/constants";
-import { Components } from "../generatedcode/_generated";
+import { TokenResponse } from "../generatedcode/schemas";
 import { ICredentials } from "../models/ICredentials";
 
 //Data structure meant to help against circular dependencies within the ApiClient
@@ -7,7 +7,7 @@ import { ICredentials } from "../models/ICredentials";
 //Also contains a function to determine if theres a token here
 export default new (class CredentialsProvider {
     //token
-    public token?: Components.Schemas.TokenResponse;
+    public token?: TokenResponse;
 
     //credentials
     public credentials?: ICredentials;

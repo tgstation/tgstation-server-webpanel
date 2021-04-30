@@ -1,12 +1,12 @@
 import { ApiClient } from "./_base";
-import { Components } from "./generatedcode/_generated";
+import { InstancePermissionSetResponse } from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
 
 interface IEvents {
     loadInstancePermissionSet: (
-        user: InternalStatus<Components.Schemas.InstancePermissionSetResponse, GenericErrors>
+        user: InternalStatus<InstancePermissionSetResponse, GenericErrors>
     ) => void;
 }
 
@@ -15,11 +15,8 @@ export type getCurrentInstancePermissionSetErrors = GenericErrors;
 export default new (class InstancePermissionSetClient extends ApiClient<IEvents> {
     private _cachedInstancePermissionSet: Map<
         number,
-        InternalStatus<Components.Schemas.InstancePermissionSetResponse, ErrorCode.OK>
-    > = new Map<
-        number,
-        InternalStatus<Components.Schemas.InstancePermissionSetResponse, ErrorCode.OK>
-    >();
+        InternalStatus<InstancePermissionSetResponse, ErrorCode.OK>
+    > = new Map<number, InternalStatus<InstancePermissionSetResponse, ErrorCode.OK>>();
 
     private loadingInstancePermissionSetInfo: Map<number, boolean> = new Map<number, boolean>();
 
@@ -34,10 +31,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
     public async getCurrentInstancePermissionSet(
         instanceid: number
     ): Promise<
-        InternalStatus<
-            Components.Schemas.InstancePermissionSetResponse,
-            getCurrentInstancePermissionSetErrors
-        >
+        InternalStatus<InstancePermissionSetResponse, getCurrentInstancePermissionSetErrors>
     > {
         await ServerClient.wait4Init();
 
@@ -48,10 +42,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
         if (this.loadingInstancePermissionSetInfo.get(instanceid)) {
             return await new Promise(resolve => {
                 const resolver = (
-                    user: InternalStatus<
-                        Components.Schemas.InstancePermissionSetResponse,
-                        GenericErrors
-                    >
+                    user: InternalStatus<InstancePermissionSetResponse, GenericErrors>
                 ) => {
                     resolve(user);
                     this.removeListener("loadInstancePermissionSet", resolver);
@@ -68,10 +59,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
                 Instance: instanceid
             });
         } catch (stat) {
-            const res = new InternalStatus<
-                Components.Schemas.InstancePermissionSetResponse,
-                GenericErrors
-            >({
+            const res = new InternalStatus<InstancePermissionSetResponse, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -82,12 +70,9 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         switch (response.status) {
             case 200: {
-                const res = new InternalStatus<
-                    Components.Schemas.InstancePermissionSetResponse,
-                    ErrorCode.OK
-                >({
+                const res = new InternalStatus<InstancePermissionSetResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.InstancePermissionSetResponse
+                    payload: response.data as InstancePermissionSetResponse
                 });
 
                 this._cachedInstancePermissionSet.set(instanceid, res);
@@ -96,10 +81,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
                 return res;
             }
             default: {
-                const res = new InternalStatus<
-                    Components.Schemas.InstancePermissionSetResponse,
-                    GenericErrors
-                >({
+                const res = new InternalStatus<InstancePermissionSetResponse, GenericErrors>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,

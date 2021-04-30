@@ -1,5 +1,5 @@
 import { ApiClient } from "./_base";
-import { Components } from "./generatedcode/_generated";
+import { ErrorMessageResponse, JobResponse, PaginatedJobResponse } from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -14,7 +14,7 @@ export type deleteJobErrors =
 export default new (class JobsClient extends ApiClient {
     public async listActiveJobs(
         instanceid: number
-    ): Promise<InternalStatus<Components.Schemas.JobResponse[], listJobsErrors>> {
+    ): Promise<InternalStatus<JobResponse[], listJobsErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -25,7 +25,7 @@ export default new (class JobsClient extends ApiClient {
                 pageSize: 100
             });
         } catch (stat) {
-            return new InternalStatus<Components.Schemas.JobResponse[], listJobsErrors>({
+            return new InternalStatus<JobResponse[], listJobsErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -33,13 +33,13 @@ export default new (class JobsClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
-                return new InternalStatus<Components.Schemas.JobResponse[], listJobsErrors>({
+                return new InternalStatus<JobResponse[], listJobsErrors>({
                     code: StatusCode.OK,
-                    payload: (response.data as Components.Schemas.PaginatedJobResponse)!.content
+                    payload: (response.data as PaginatedJobResponse)!.content
                 });
             }
             default: {
-                return new InternalStatus<Components.Schemas.JobResponse[], listJobsErrors>({
+                return new InternalStatus<JobResponse[], listJobsErrors>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,
@@ -54,7 +54,7 @@ export default new (class JobsClient extends ApiClient {
     public async getJob(
         instanceid: number,
         jobid: number
-    ): Promise<InternalStatus<Components.Schemas.JobResponse, getJobErrors>> {
+    ): Promise<InternalStatus<JobResponse, getJobErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -74,14 +74,14 @@ export default new (class JobsClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.JobResponse
+                    payload: response.data as JobResponse
                 });
             }
             case 404: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.JOB_JOB_NOT_FOUND, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             }
@@ -101,7 +101,7 @@ export default new (class JobsClient extends ApiClient {
     public async deleteJob(
         instanceid: number,
         jobid: number
-    ): Promise<InternalStatus<Components.Schemas.JobResponse, deleteJobErrors>> {
+    ): Promise<InternalStatus<JobResponse, deleteJobErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -121,14 +121,14 @@ export default new (class JobsClient extends ApiClient {
             case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.JobResponse
+                    payload: response.data as JobResponse
                 });
             }
             case 404: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.JOB_JOB_NOT_FOUND, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             }

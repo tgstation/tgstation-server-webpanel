@@ -1,5 +1,5 @@
 import { ApiClient } from "./_base";
-import { Components } from "./generatedcode/_generated";
+import { ErrorMessageResponse } from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -45,7 +45,7 @@ export default new (class TransferClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             }
@@ -106,7 +106,7 @@ export default new (class TransferClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             }

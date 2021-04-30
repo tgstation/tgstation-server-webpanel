@@ -1,5 +1,5 @@
-import { Components } from "../generatedcode/_generated";
+import { LogFileResponse } from "../generatedcode/schemas";
 
-export type DownloadedLog = Components.Schemas.LogFileResponse & {
+export type DownloadedLog = LogFileResponse & {
     content: string;
 };

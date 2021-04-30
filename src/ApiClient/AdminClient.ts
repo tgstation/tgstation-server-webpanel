@@ -1,5 +1,10 @@
 import { ApiClient } from "./_base";
-import { Components } from "./generatedcode/_generated";
+import {
+    AdministrationResponse,
+    ErrorMessageResponse,
+    LogFileResponse,
+    PaginatedLogFileResponse
+} from "./generatedcode/schemas";
 import { DownloadedLog } from "./models/DownloadedLog";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -7,9 +12,7 @@ import ServerClient from "./ServerClient";
 import TransferClient, { DownloadErrors } from "./TransferClient";
 
 interface IEvents {
-    loadAdminInfo: (
-        user: InternalStatus<Components.Schemas.AdministrationResponse, AdminInfoErrors>
-    ) => void;
+    loadAdminInfo: (user: InternalStatus<AdministrationResponse, AdminInfoErrors>) => void;
 }
 
 export type AdminInfoErrors =
@@ -31,10 +34,7 @@ export type LogsErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
 export type LogErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
 
 export default new (class AdminClient extends ApiClient<IEvents> {
-    private _cachedAdminInfo?: InternalStatus<
-        Components.Schemas.AdministrationResponse,
-        ErrorCode.OK
-    >;
+    private _cachedAdminInfo?: InternalStatus<AdministrationResponse, ErrorCode.OK>;
     public get cachedAdminInfo() {
         return this._cachedAdminInfo;
     }
@@ -47,9 +47,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         });
     }
 
-    public async getAdminInfo(): Promise<
-        InternalStatus<Components.Schemas.AdministrationResponse, AdminInfoErrors>
-    > {
+    public async getAdminInfo(): Promise<InternalStatus<AdministrationResponse, AdminInfoErrors>> {
         await ServerClient.wait4Init();
         if (this._cachedAdminInfo) {
             return this._cachedAdminInfo;
@@ -58,7 +56,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         if (this.loadingAdminInfo) {
             return await new Promise(resolve => {
                 const resolver = (
-                    user: InternalStatus<Components.Schemas.AdministrationResponse, AdminInfoErrors>
+                    user: InternalStatus<AdministrationResponse, AdminInfoErrors>
                 ) => {
                     resolve(user);
                     this.removeListener("loadAdminInfo", resolver);
@@ -73,10 +71,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         try {
             response = await ServerClient.apiClient!.AdministrationController_Read();
         } catch (stat) {
-            const res = new InternalStatus<
-                Components.Schemas.AdministrationResponse,
-                AdminInfoErrors
-            >({
+            const res = new InternalStatus<AdministrationResponse, AdminInfoErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<AdminInfoErrors>
             });
@@ -87,12 +82,9 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const thing = new InternalStatus<
-                    Components.Schemas.AdministrationResponse,
-                    ErrorCode.OK
-                >({
+                const thing = new InternalStatus<AdministrationResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.AdministrationResponse
+                    payload: response.data as AdministrationResponse
                 });
 
                 this._cachedAdminInfo = thing;
@@ -101,9 +93,9 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return thing;
             }
             case 424: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 const thing = new InternalStatus<
-                    Components.Schemas.AdministrationResponse,
+                    AdministrationResponse,
                     ErrorCode.ADMIN_GITHUB_RATE
                 >({
                     code: StatusCode.ERROR,
@@ -118,9 +110,9 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return thing;
             }
             case 429: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 const thing = new InternalStatus<
-                    Components.Schemas.AdministrationResponse,
+                    AdministrationResponse,
                     ErrorCode.ADMIN_GITHUB_ERROR
                 >({
                     code: StatusCode.ERROR,
@@ -136,7 +128,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             }
             default: {
                 const res = new InternalStatus<
-                    Components.Schemas.AdministrationResponse,
+                    AdministrationResponse,
                     ErrorCode.UNHANDLED_RESPONSE
                 >({
                     code: StatusCode.ERROR,
@@ -171,7 +163,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return new InternalStatus({ code: StatusCode.OK, payload: null });
             }
             case 422: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -214,7 +206,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return new InternalStatus({ code: StatusCode.OK, payload: null });
             }
             case 410: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -225,7 +217,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 });
             }
             case 422: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -236,7 +228,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 });
             }
             case 424: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_RATE>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -247,7 +239,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 });
             }
             case 429: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_ERROR>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -270,9 +262,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         }
     }
 
-    public async getLogs(): Promise<
-        InternalStatus<Components.Schemas.LogFileResponse[], LogsErrors>
-    > {
+    public async getLogs(): Promise<InternalStatus<LogFileResponse[], LogsErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -292,11 +282,11 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as Components.Schemas.PaginatedLogFileResponse)!.content
+                    payload: (response.data as PaginatedLogFileResponse)!.content
                 });
             }
             case 409: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -338,13 +328,13 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200: {
                 const contents = await TransferClient.Download(
-                    (response.data as Components.Schemas.LogFileResponse).fileTicket
+                    (response.data as LogFileResponse).fileTicket
                 );
                 if (contents.code === StatusCode.OK) {
                     //Object.assign() is a funky function but all it does is copy everything from the second object to the first object
                     const temp: DownloadedLog = Object.assign(
                         { content: contents.payload },
-                        response.data as Components.Schemas.LogFileResponse
+                        response.data as LogFileResponse
                     );
                     return new InternalStatus({
                         code: StatusCode.OK,
@@ -358,7 +348,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 }
             }
             case 409: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(

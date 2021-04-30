@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 
 import { replaceAll } from "../../../utils/misc";
 import { ErrorCode as TGSErrorCode } from "../../generatedcode/_enums";
-import { Components } from "../../generatedcode/_generated";
+import { ErrorMessageResponse } from "../../generatedcode/schemas";
 import configOptions from "../../util/config";
 import CredentialsProvider from "../../util/CredentialsProvider";
 
@@ -75,7 +75,7 @@ export enum ErrorCode {
 }
 
 type errorMessage = {
-    errorMessage: Components.Schemas.ErrorMessageResponse;
+    errorMessage: ErrorMessageResponse;
 };
 type axiosResponse = {
     axiosResponse: AxiosResponse;
@@ -102,7 +102,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
     public readonly code: T;
     public readonly desc?: Desc;
     public readonly extendedInfo: string;
-    public readonly originalErrorMessage?: Components.Schemas.ErrorMessageResponse;
+    public readonly originalErrorMessage?: ErrorMessageResponse;
 
     public constructor(code: T, addon: allAddons, origin?: AxiosResponse) {
         this.code = code;

@@ -6,7 +6,7 @@ import Form from "react-bootstrap/Form";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import { Components } from "../../../ApiClient/generatedcode/_generated";
+import { UserResponse } from "../../../ApiClient/generatedcode/schemas";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
@@ -27,14 +27,14 @@ interface IState {
     redirect?: boolean;
 }
 interface IProps extends RouteComponentProps {
-    postCreateAction?: (user: Components.Schemas.UserResponse, history: LibHistory) => void;
+    postCreateAction?: (user: UserResponse, history: LibHistory) => void;
 }
 
 class UserCreate extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
 
     public static defaultProps = {
-        postCreateAction: (user: Components.Schemas.UserResponse, history: LibHistory) => {
+        postCreateAction: (user: UserResponse, history: LibHistory) => {
             RouteData.selecteduserid = user.id;
             history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
         }

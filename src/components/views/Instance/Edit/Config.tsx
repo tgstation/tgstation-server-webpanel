@@ -5,7 +5,7 @@ import {
     ConfigurationType,
     InstanceManagerRights
 } from "../../../../ApiClient/generatedcode/_enums";
-import { Components } from "../../../../ApiClient/generatedcode/_generated";
+import { InstanceUpdateRequest } from "../../../../ApiClient/generatedcode/schemas";
 import InstanceClient from "../../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
@@ -42,7 +42,7 @@ class InstanceSettings extends React.Component<IProps, IState> {
         });
     }
 
-    private async _editInstance(instance: Omit<Components.Schemas.InstanceUpdateRequest, "id">) {
+    private async _editInstance(instance: Omit<InstanceUpdateRequest, "id">) {
         const response = await InstanceClient.editInstance({
             ...instance,
             id: this.context.instance.id
@@ -54,7 +54,7 @@ class InstanceSettings extends React.Component<IProps, IState> {
         }
     }
 
-    private editInstance(instance: Omit<Components.Schemas.InstanceUpdateRequest, "id">) {
+    private editInstance(instance: Omit<InstanceUpdateRequest, "id">) {
         void this._editInstance(instance);
     }
 

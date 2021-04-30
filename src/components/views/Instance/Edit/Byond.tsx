@@ -10,7 +10,7 @@ import { FormattedMessage } from "react-intl";
 
 import ByondClient from "../../../../ApiClient/ByondClient";
 import { ByondRights } from "../../../../ApiClient/generatedcode/_enums";
-import { Components } from "../../../../ApiClient/generatedcode/_generated";
+import { ByondResponse } from "../../../../ApiClient/generatedcode/schemas";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
@@ -22,7 +22,7 @@ interface IProps {}
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
-    versions: Components.Schemas.ByondResponse[];
+    versions: ByondResponse[];
     activeVersion?: string | null;
     latestVersion: string;
     selectedVersion: string;

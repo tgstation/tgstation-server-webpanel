@@ -23,7 +23,13 @@ import {
     InstanceManagerRights,
     OAuthProvider
 } from "../../../ApiClient/generatedcode/_enums";
-import { Components } from "../../../ApiClient/generatedcode/_generated";
+import {
+    OAuthConnection,
+    PermissionSet,
+    UserGroup,
+    UserGroupResponse,
+    UserResponse
+} from "../../../ApiClient/generatedcode/schemas";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
@@ -39,14 +45,14 @@ interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
-    user?: Components.Schemas.UserResponse;
-    newOAuthConnections: Components.Schemas.OAuthConnection[];
+    user?: UserResponse;
+    newOAuthConnections: OAuthConnection[];
     loading: boolean;
     saving: boolean;
     permsadmin: { [key: string]: Permission };
     permsinstance: { [key: string]: Permission };
     tab: string;
-    groups: Components.Schemas.UserGroupResponse[];
+    groups: UserGroupResponse[];
     createGroupName: string;
 }
 
@@ -158,7 +164,7 @@ class UserEdit extends React.Component<IProps, IState> {
         }
     }
 
-    private loadUser(user: Components.Schemas.UserResponse) {
+    private loadUser(user: UserResponse) {
         this.setState({
             user,
             newOAuthConnections: user.oAuthConnections ? Array.from(user.oAuthConnections) : []
@@ -858,7 +864,7 @@ class UserEdit extends React.Component<IProps, IState> {
                 id: this.state.user.id,
                 group: {
                     id: realID
-                } as Components.Schemas.UserGroup
+                } as UserGroup
             });
             if (response.code === StatusCode.OK) {
                 await this.loadGroups();
@@ -982,7 +988,7 @@ class UserEdit extends React.Component<IProps, IState> {
                     } as
                         | { AdministrationRights: AdministrationRights }
                         | { InstanceManagerRights: InstanceManagerRights }
-                ) as Components.Schemas.PermissionSet;
+                ) as PermissionSet;
                 const response = await UserGroupClient.updateGroup({
                     id: this.state.user.group.id,
                     permissionSet: newset

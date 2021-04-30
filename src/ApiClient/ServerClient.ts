@@ -10,6 +10,11 @@ import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatu
 import configOptions from "./util/config";
 import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
+import {
+    ErrorMessageResponse,
+    ServerInformationResponse,
+    TokenResponse
+} from "./generatedcode/schemas";
 
 interface IEvents {
     //self explainatory
@@ -18,18 +23,16 @@ interface IEvents {
     accessDenied: () => void;
     //fired when the server info is first loaded
     loadServerInfo: (
-        serverInfo: InternalStatus<Components.Schemas.ServerInformationResponse, ServerInfoErrors>
+        serverInfo: InternalStatus<ServerInformationResponse, ServerInfoErrors>
     ) => void;
     //fired when the api is loaded from the json file and loaded
     initialized: () => void;
     //purge all caches
     purgeCache: () => void;
     //internal event, queues logins
-    loadLoginInfo: (
-        loginInfo: InternalStatus<Components.Schemas.TokenResponse, LoginErrors>
-    ) => void;
+    loadLoginInfo: (loginInfo: InternalStatus<TokenResponse, LoginErrors>) => void;
     //internal event fired for wait4Token(), external things should be using LoginHooks#LoginSuccess or a login hook
-    tokenAvailable: (token: Components.Schemas.TokenResponse) => void;
+    tokenAvailable: (token: TokenResponse) => void;
 }
 
 export type LoginErrors =
@@ -78,10 +81,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     }
 
     //serverInfo
-    private _serverInfo?: InternalStatus<
-        Components.Schemas.ServerInformationResponse,
-        ErrorCode.OK
-    >;
+    private _serverInfo?: InternalStatus<ServerInformationResponse, ErrorCode.OK>;
 
     public get serverInfo() {
         return this._serverInfo;
@@ -189,7 +189,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 switch (error.response.status) {
                     //Error code 400: Bad request, show message to user and instruct them to report it as its probably a bug
                     case 400: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
+                        const errorMessage = res.data as ErrorMessageResponse;
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_BAD_REQUEST,
                             {
@@ -274,7 +274,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         return Promise.reject(errorobj);
                     }
                     case 409: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
+                        const errorMessage = res.data as ErrorMessageResponse;
 
                         //Thanks for reusing a global erorr status cyber. Log operations can return 409
                         const request = error.config;
@@ -292,7 +292,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         return Promise.reject(errorobj);
                     }
                     case 426: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
+                        const errorMessage = res.data as ErrorMessageResponse;
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_API_MISMATCH,
                             { errorMessage },
@@ -301,7 +301,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         return Promise.reject(errorobj);
                     }
                     case 500: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
+                        const errorMessage = res.data as ErrorMessageResponse;
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_SERVER_ERROR,
                             {
@@ -312,7 +312,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         return Promise.reject(errorobj);
                     }
                     case 501: {
-                        const errorMessage = res.data as Components.Schemas.ErrorMessageResponse;
+                        const errorMessage = res.data as ErrorMessageResponse;
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_UNIMPLEMENTED,
                             { errorMessage },
@@ -365,7 +365,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
     //Utility function that returns a promise which resolves with the token whenever theres valid credentials(could be immediatly)
     public wait4Token() {
-        return new Promise<Components.Schemas.TokenResponse>(resolve => {
+        return new Promise<TokenResponse>(resolve => {
             if (CredentialsProvider.isTokenValid()) {
                 resolve(CredentialsProvider.token);
                 return;
@@ -378,7 +378,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
     public async login(
         newCreds?: ICredentials
-    ): Promise<InternalStatus<Components.Schemas.TokenResponse, LoginErrors>> {
+    ): Promise<InternalStatus<TokenResponse, LoginErrors>> {
         //Shouldn't really happen edge cases
         await this.wait4Init();
 
@@ -398,7 +398,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         //This is thrown if you try to reuse the last credentials without actually having last used credentials
         //or you let an oauth login expire
         if (oauthAutoLogin || !CredentialsProvider.credentials)
-            return new InternalStatus<Components.Schemas.TokenResponse, ErrorCode.LOGIN_NOCREDS>({
+            return new InternalStatus<TokenResponse, ErrorCode.LOGIN_NOCREDS>({
                 code: StatusCode.ERROR,
                 error: new InternalError(ErrorCode.LOGIN_NOCREDS, { void: true })
             });
@@ -410,9 +410,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         // Basically, make two calls, receive two identical return values, make only one request
         if (this.loggingIn) {
             return await new Promise(resolve => {
-                const resolver = (
-                    info: InternalStatus<Components.Schemas.TokenResponse, LoginErrors>
-                ) => {
+                const resolver = (info: InternalStatus<TokenResponse, LoginErrors>) => {
                     resolve(info);
                     this.removeListener("loadLoginInfo", resolver);
                 };
@@ -450,7 +448,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 );
             }
         } catch (stat) {
-            const res = new InternalStatus<Components.Schemas.TokenResponse, GenericErrors>({
+            const res = new InternalStatus<TokenResponse, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -462,7 +460,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200: {
                 console.log("Login success");
-                const token = response.data as Components.Schemas.TokenResponse;
+                const token = response.data as TokenResponse;
 
                 // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
                 CredentialsProvider.token = token;
@@ -479,7 +477,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 // TL;DR; Runs shit when you login
 
                 LoginHooks.runHooks(token);
-                const res = new InternalStatus<Components.Schemas.TokenResponse, ErrorCode.OK>({
+                const res = new InternalStatus<TokenResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: token
                 });
@@ -491,10 +489,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             case 401: {
                 this.logout();
                 console.log("Failed to login");
-                const res = new InternalStatus<
-                    Components.Schemas.TokenResponse,
-                    ErrorCode.LOGIN_FAIL
-                >({
+                const res = new InternalStatus<TokenResponse, ErrorCode.LOGIN_FAIL>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_FAIL,
@@ -510,10 +505,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             case 403: {
                 this.logout();
                 console.log("Account disabled");
-                const res = new InternalStatus<
-                    Components.Schemas.TokenResponse,
-                    ErrorCode.LOGIN_DISABLED
-                >({
+                const res = new InternalStatus<TokenResponse, ErrorCode.LOGIN_DISABLED>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_DISABLED,
@@ -529,15 +521,12 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             case 429: {
                 this.logout();
                 console.log("rate limited");
-                const res = new InternalStatus<
-                    Components.Schemas.TokenResponse,
-                    ErrorCode.LOGIN_RATELIMIT
-                >({
+                const res = new InternalStatus<TokenResponse, ErrorCode.LOGIN_RATELIMIT>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_RATELIMIT,
                         {
-                            errorMessage: response.data as Components.Schemas.ErrorMessageResponse
+                            errorMessage: response.data as ErrorMessageResponse
                         },
                         response
                     )
@@ -546,10 +535,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 return res;
             }
             default: {
-                const res = new InternalStatus<
-                    Components.Schemas.TokenResponse,
-                    ErrorCode.UNHANDLED_RESPONSE
-                >({
+                const res = new InternalStatus<TokenResponse, ErrorCode.UNHANDLED_RESPONSE>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,
@@ -577,9 +563,9 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     }
 
     public async getServerInfo(
-        _token?: Components.Schemas.TokenResponse,
+        _token?: TokenResponse,
         bypassCache = false
-    ): Promise<InternalStatus<Components.Schemas.ServerInformationResponse, ServerInfoErrors>> {
+    ): Promise<InternalStatus<ServerInformationResponse, ServerInfoErrors>> {
         await this.wait4Init();
 
         if (this._serverInfo && !bypassCache) {
@@ -594,10 +580,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     return;
                 }
                 const resolver = (
-                    info: InternalStatus<
-                        Components.Schemas.ServerInformationResponse,
-                        GenericErrors
-                    >
+                    info: InternalStatus<ServerInformationResponse, GenericErrors>
                 ) => {
                     resolve(info);
                     this.removeListener("loadServerInfo", resolver);
@@ -612,10 +595,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         try {
             response = await this.apiClient!.HomeController_Home();
         } catch (stat) {
-            const res = new InternalStatus<
-                Components.Schemas.ServerInformationResponse,
-                GenericErrors
-            >({
+            const res = new InternalStatus<ServerInformationResponse, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -625,11 +605,8 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         }
         switch (response.status) {
             case 200: {
-                const info = response.data as Components.Schemas.ServerInformationResponse;
-                const cache = new InternalStatus<
-                    Components.Schemas.ServerInformationResponse,
-                    ErrorCode.OK
-                >({
+                const info = response.data as ServerInformationResponse;
+                const cache = new InternalStatus<ServerInformationResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: info
                 });
@@ -640,7 +617,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             }
             default: {
                 const res = new InternalStatus<
-                    Components.Schemas.ServerInformationResponse,
+                    ServerInformationResponse,
                     ErrorCode.UNHANDLED_RESPONSE
                 >({
                     code: StatusCode.ERROR,

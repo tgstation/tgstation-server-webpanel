@@ -1,6 +1,6 @@
 import { pathToRegexp } from "path-to-regexp";
 
-import { Components } from "../ApiClient/generatedcode/_generated";
+import { PermissionSet, UserResponse } from "../ApiClient/generatedcode/schemas";
 
 function download(filename: string, text: string): void {
     const element = document.createElement("a");
@@ -30,10 +30,8 @@ function matchesPath(path: string, target: string, exact = false): boolean {
     return pathToRegexp(target, undefined, { end: exact }).test(path);
 }
 
-function resolvePermissionSet(
-    user: Components.Schemas.UserResponse
-): Components.Schemas.PermissionSet {
-    return (user.permissionSet || user.group?.permissionSet) as Components.Schemas.PermissionSet;
+function resolvePermissionSet(user: UserResponse): PermissionSet {
+    return (user.permissionSet || user.group?.permissionSet) as PermissionSet;
 }
 
 export { download, replaceAll, matchesPath, resolvePermissionSet };

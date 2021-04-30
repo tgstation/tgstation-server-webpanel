@@ -1,6 +1,12 @@
 import { ApiClient } from "./_base";
 import { AdministrationRights, InstanceManagerRights } from "./generatedcode/_enums";
-import { Components } from "./generatedcode/_generated";
+import {
+    ErrorMessageResponse,
+    PaginatedUserResponse,
+    UserCreateRequest,
+    UserResponse,
+    UserUpdateRequest
+} from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -8,7 +14,7 @@ import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
 
 interface IEvents {
-    loadUserInfo: (user: InternalStatus<Components.Schemas.UserResponse, GenericErrors>) => void;
+    loadUserInfo: (user: InternalStatus<UserResponse, GenericErrors>) => void;
 }
 
 export type GetCurrentUserErrors = GenericErrors;
@@ -17,7 +23,7 @@ export type GetUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type CreateUserErrors = GenericErrors | ErrorCode.USER_NO_SYS_IDENT;
 
 export default new (class UserClient extends ApiClient<IEvents> {
-    private _cachedUser?: InternalStatus<Components.Schemas.UserResponse, ErrorCode.OK>;
+    private _cachedUser?: InternalStatus<UserResponse, ErrorCode.OK>;
     public get cachedUser() {
         return this._cachedUser;
     }
@@ -36,8 +42,8 @@ export default new (class UserClient extends ApiClient<IEvents> {
     }
 
     public async editUser(
-        newUser: Components.Schemas.UserUpdateRequest
-    ): Promise<InternalStatus<Components.Schemas.UserResponse, EditUserErrors>> {
+        newUser: UserUpdateRequest
+    ): Promise<InternalStatus<UserResponse, EditUserErrors>> {
         await ServerClient.wait4Init();
         let response;
         try {
@@ -65,11 +71,11 @@ export default new (class UserClient extends ApiClient<IEvents> {
                 }
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.UserResponse
+                    payload: response.data as UserResponse
                 });
             }
             case 404: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
@@ -90,7 +96,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
     public async getCurrentUser(
         bypassCache?: boolean
-    ): Promise<InternalStatus<Components.Schemas.UserResponse, GetCurrentUserErrors>> {
+    ): Promise<InternalStatus<UserResponse, GetCurrentUserErrors>> {
         await ServerClient.wait4Init();
 
         if (!CredentialsProvider.isTokenValid()) {
@@ -108,9 +114,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         if (this.loadingUserInfo) {
             return await new Promise(resolve => {
-                const resolver = (
-                    user: InternalStatus<Components.Schemas.UserResponse, GenericErrors>
-                ) => {
+                const resolver = (user: InternalStatus<UserResponse, GenericErrors>) => {
                     resolve(user);
                     this.removeListener("loadUserInfo", resolver);
                 };
@@ -124,7 +128,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
         try {
             response = await ServerClient.apiClient!.UserController_Read();
         } catch (stat) {
-            const res = new InternalStatus<Components.Schemas.UserResponse, GenericErrors>({
+            const res = new InternalStatus<UserResponse, GenericErrors>({
                 code: StatusCode.ERROR,
                 error: stat as InternalError<GenericErrors>
             });
@@ -135,9 +139,9 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const thing = new InternalStatus<Components.Schemas.UserResponse, ErrorCode.OK>({
+                const thing = new InternalStatus<UserResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.UserResponse
+                    payload: response.data as UserResponse
                 });
 
                 this._cachedUser = thing;
@@ -146,10 +150,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
                 return thing;
             }
             default: {
-                const res = new InternalStatus<
-                    Components.Schemas.UserResponse,
-                    ErrorCode.UNHANDLED_RESPONSE
-                >({
+                const res = new InternalStatus<UserResponse, ErrorCode.UNHANDLED_RESPONSE>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,
@@ -164,9 +165,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
         }
     }
 
-    public async listUsers(): Promise<
-        InternalStatus<Components.Schemas.UserResponse[], GenericErrors>
-    > {
+    public async listUsers(): Promise<InternalStatus<UserResponse[], GenericErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -184,7 +183,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as Components.Schemas.PaginatedUserResponse)!.content.sort(
+                const payload = (response.data as PaginatedUserResponse)!.content.sort(
                     (a, b) => a.id - b.id
                 );
 
@@ -206,9 +205,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
         }
     }
 
-    public async getUser(
-        id: number
-    ): Promise<InternalStatus<Components.Schemas.UserResponse, GetUserErrors>> {
+    public async getUser(id: number): Promise<InternalStatus<UserResponse, GetUserErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -225,11 +222,11 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.UserResponse
+                    payload: response.data as UserResponse
                 });
             }
             case 404: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
@@ -263,7 +260,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
                   instanceManagerRights?: InstanceManagerRights;
                   administrationRights?: AdministrationRights;
               }
-    ): Promise<InternalStatus<Components.Schemas.UserResponse, CreateUserErrors>> {
+    ): Promise<InternalStatus<UserResponse, CreateUserErrors>> {
         await ServerClient.wait4Init();
 
         if (newuser.enabled === undefined) newuser.enabled = true;
@@ -286,7 +283,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
         try {
             response = await ServerClient.apiClient!.UserController_Create(
                 null,
-                newuser as Components.Schemas.UserCreateRequest
+                newuser as UserCreateRequest
             );
         } catch (stat) {
             return new InternalStatus({
@@ -299,11 +296,11 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 201: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as Components.Schemas.UserResponse
+                    payload: response.data as UserResponse
                 });
             }
             case 410: {
-                const errorMessage = response.data as Components.Schemas.ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NO_SYS_IDENT, { errorMessage })

@@ -14,7 +14,7 @@ import {
     RepositoryRights,
     RightsType
 } from "../generatedcode/_enums";
-import { Components } from "../generatedcode/_generated";
+import { JobResponse } from "../generatedcode/schemas";
 import InstancePermissionSetClient from "../InstancePermissionSetClient";
 import JobsClient, { getJobErrors, listJobsErrors } from "../JobsClient";
 import InternalError, { ErrorCode } from "../models/InternalComms/InternalError";
@@ -27,7 +27,7 @@ interface IEvents {
     jobsLoaded: () => unknown;
 }
 
-export type CanCancelJob = Components.Schemas.JobResponse & {
+export type CanCancelJob = JobResponse & {
     canCancel?: boolean;
 };
 
@@ -53,13 +53,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     private currentLoop: Date = new Date(0);
 
     public errors: InternalError<getJobErrors | listJobsErrors>[] = [];
-    public jobs: Map<number, Components.Schemas.JobResponse> = new Map<
-        number,
-        Components.Schemas.JobResponse
-    >();
+    public jobs: Map<number, JobResponse> = new Map<number, JobResponse>();
 
     private reset() {
-        this.jobs = new Map<number, Components.Schemas.JobResponse>();
+        this.jobs = new Map<number, JobResponse>();
         this.restartLoop();
     }
 

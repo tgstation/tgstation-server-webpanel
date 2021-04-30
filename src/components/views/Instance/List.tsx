@@ -10,7 +10,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { InstanceManagerRights } from "../../../ApiClient/generatedcode/_enums";
-import { Components } from "../../../ApiClient/generatedcode/_generated";
+import { InstanceResponse } from "../../../ApiClient/generatedcode/schemas";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
@@ -21,7 +21,7 @@ import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
 
-type Instance = Components.Schemas.InstanceResponse & {
+type Instance = InstanceResponse & {
     canAccess: boolean;
 };
 
@@ -119,7 +119,7 @@ class InstanceList extends React.Component<IProps, IState> {
         const instanceedit = await InstanceClient.editInstance(({
             id: instance.id,
             online: desiredState
-        } as unknown) as Components.Schemas.InstanceResponse);
+        } as unknown) as InstanceResponse);
         if (instanceedit.code === StatusCode.OK) {
             await this.loadInstances();
         } else {

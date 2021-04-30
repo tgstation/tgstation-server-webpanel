@@ -6,7 +6,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
-import { Components } from "../../ApiClient/generatedcode/_generated";
+import { UserResponse } from "../../ApiClient/generatedcode/schemas";
 import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
@@ -26,7 +26,7 @@ interface IState {
     lengthError?: boolean;
     loading: boolean;
     pwdload?: boolean;
-    user?: Components.Schemas.UserResponse;
+    user?: UserResponse;
     userId: number;
     currentUser: boolean;
 }
