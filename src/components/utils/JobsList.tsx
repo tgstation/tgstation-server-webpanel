@@ -1,9 +1,15 @@
 import React, { ReactNode } from "react";
+import { OverlayInjectedProps } from "react-bootstrap/Overlay";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import { Rnd } from "react-rnd";
 
+import { InstanceResponse } from "../../ApiClient/generatedcode/schemas";
+import InstanceClient from "../../ApiClient/InstanceClient";
 import { tgsJobResponse } from "../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
+import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import configOptions, { jobsWidgetOptions } from "../../ApiClient/util/config";
 import JobsController from "../../ApiClient/util/JobsController";
 import ErrorAlert from "./ErrorAlert";
@@ -16,10 +22,11 @@ interface IProps {
 }
 
 interface IState {
-    jobs: Map<number, tgsJobResponse>;
+    jobs: Map<number, Map<number, tgsJobResponse>>;
     errors: InternalError<ErrorCode>[];
     ownerrors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;
+    instances: Map<number, InstanceResponse>;
 }
 
 export default class JobsList extends React.Component<IProps, IState> {
@@ -36,10 +43,11 @@ export default class JobsList extends React.Component<IProps, IState> {
         this.onCancelorClose = this.onCancelorClose.bind(this);
 
         this.state = {
-            jobs: new Map<number, tgsJobResponse>(),
+            jobs: JobsController.jobsByInstance,
             errors: [],
             ownerrors: [],
-            loading: true
+            loading: true,
+            instances: new Map<number, InstanceResponse>()
         };
     }
 
@@ -56,20 +64,30 @@ export default class JobsList extends React.Component<IProps, IState> {
         });
     }
 
-    public componentDidMount(): void {
+    public async componentDidMount(): Promise<void> {
         JobsController.on("jobsLoaded", this.handleUpdate);
-        this.handleUpdate();
+        await this.handleUpdate();
     }
 
     public componentWillUnmount(): void {
         JobsController.removeListener("jobsLoaded", this.handleUpdate);
     }
 
-    public handleUpdate(): void {
+    public async handleUpdate(): Promise<void> {
+        const instances = await InstanceClient.listInstances();
+        if (instances.code === StatusCode.ERROR) {
+            this.addError(instances.error);
+            return;
+        }
+
+        const instanceMap = new Map<number, InstanceResponse>();
+        instances.payload.forEach(instance => instanceMap.set(instance.id, instance));
+
         this.setState({
-            jobs: JobsController.jobs,
+            jobs: JobsController.jobsByInstance,
             errors: JobsController.errors,
-            loading: false
+            loading: false,
+            instances: instanceMap
         });
     }
 
@@ -88,6 +106,21 @@ export default class JobsList extends React.Component<IProps, IState> {
 
     public render(): ReactNode {
         if (!this.props.widget) return this.nested();
+
+        let totalJobs = 0;
+        for (const job of this.state.jobs.values()) {
+            totalJobs += job.size;
+        }
+
+        let display: boolean;
+        if (configOptions.jobswidgetdisplay.value === jobsWidgetOptions.NEVER) {
+            display = false;
+        } else if (configOptions.jobswidgetdisplay.value === jobsWidgetOptions.ALWAYS) {
+            display = true;
+        } else {
+            display = totalJobs > 0 || this.state.errors.length > 0;
+        }
+
         return (
             <div
                 style={{
@@ -99,15 +132,7 @@ export default class JobsList extends React.Component<IProps, IState> {
                     pointerEvents: "none"
                 }}>
                 <Rnd
-                    className={`jobswidget ${
-                        //Ensure the option ISNT never, then either see if theres something to display(for auto) or if its just set to always in which case we display it
-                        configOptions.jobswidgetdisplay.value !== jobsWidgetOptions.NEVER &&
-                        (configOptions.jobswidgetdisplay.value === jobsWidgetOptions.ALWAYS ||
-                            this.state.jobs.size ||
-                            this.state.errors.length)
-                            ? ""
-                            : "d-none"
-                    }`}
+                    className={`jobswidget ${display ? "" : "invisible"}`}
                     style={{
                         pointerEvents: "auto",
                         bottom: 0,
@@ -118,10 +143,12 @@ export default class JobsList extends React.Component<IProps, IState> {
                         height: "50vh",
                         x:
                             document.documentElement.clientWidth -
-                            Math.min(document.documentElement.clientWidth * 0.3, 350),
+                            Math.min(document.documentElement.clientWidth * 0.3, 350) -
+                            20,
                         y:
                             document.documentElement.clientHeight -
-                            document.documentElement.clientHeight * 0.5
+                            document.documentElement.clientHeight * 0.5 -
+                            20
                     }}
                     maxWidth={350}
                     minHeight={50}
@@ -140,7 +167,7 @@ export default class JobsList extends React.Component<IProps, IState> {
 
     private nested(): ReactNode {
         return (
-            <div className={this.props.widget ? "d-none d-sm-block" : ""}>
+            <div className={this.props.widget ? "d-sm-block" : ""}>
                 {this.state.loading ? <Loading text="loading.instance.jobs.list" /> : ""}
                 {this.state.ownerrors.map((err, index) => {
                     if (!err) return;
@@ -167,16 +194,46 @@ export default class JobsList extends React.Component<IProps, IState> {
                         </div>
                     );
                 })}
-                {Array.from(this.state.jobs, ([, job]) => job)
-                    .sort((a, b) => b.id - a.id)
-                    .map(job => (
-                        <JobCard
-                            job={job}
-                            width={this.props.width}
-                            key={job.id}
-                            onClose={this.onCancelorClose}
-                        />
-                    ))}
+                {Array.from(this.state.jobs)
+                    .sort((a, b) => a[0] - b[0])
+                    .map(([instanceid, jobMap]) => {
+                        const renderTooltip = (instanceid: number) => {
+                            return (props: OverlayInjectedProps) => (
+                                <Tooltip id={`tooltip-instance-${instanceid}`} {...props}>
+                                    {instanceid}
+                                </Tooltip>
+                            );
+                        };
+
+                        return (
+                            <React.Fragment key={instanceid}>
+                                <div className="bg-dark p-2 text-center">
+                                    <OverlayTrigger overlay={renderTooltip(instanceid)}>
+                                        <React.Fragment>
+                                            {this.state.instances.get(instanceid)?.name ||
+                                                "Unknown"}{" "}
+                                            (
+                                            <FormattedMessage
+                                                id="view.instance.jobs.jobtotal"
+                                                values={{ amount: jobMap.size }}
+                                            />
+                                            )
+                                        </React.Fragment>
+                                    </OverlayTrigger>
+                                </div>
+                                {Array.from(jobMap, ([, job]) => job)
+                                    .sort((a, b) => b.id - a.id)
+                                    .map(job => (
+                                        <JobCard
+                                            job={job}
+                                            width={this.props.width}
+                                            key={job.id}
+                                            onClose={this.onCancelorClose}
+                                        />
+                                    ))}
+                            </React.Fragment>
+                        );
+                    })}
             </div>
         );
     }

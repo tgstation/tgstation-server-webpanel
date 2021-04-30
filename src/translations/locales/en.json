@@ -186,6 +186,7 @@
     "view.instance.configmode.1": "Authorized users can read/write",
     "view.instance.configmode.2": "Authorized users can read/write using their system user",
     "view.instance.jobs.title": "Job list",
+    "view.instance.jobs.jobtotal": "{amount} jobs",
     "view.instance.jobs.error": "An error occured",
     "view.instance.moving": "[MOVING INSTANCE...]",
     "view.instance.config.instancesettings": "Instance Settings",
