@@ -41,9 +41,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
     public errors: InternalError[] = [];
     public jobs = new Map<number, tgsJobResponse>();
+    public jobsByInstance = new Map<number, Map<number, tgsJobResponse>>();
 
     public reset() {
         this.jobs = new Map<number, tgsJobResponse>();
+        this.jobsByInstance = new Map<number, Map<number, tgsJobResponse>>();
         this.reloadAccessibleInstances()
             .then(this.restartLoop)
             .catch(e => {
@@ -98,7 +100,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
         await Promise.all(work);
 
-        console.warn(updatedSet);
         this.accessibleInstances = updatedSet;
 
         if (loop) {
@@ -142,7 +143,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             work.push(
                 JobsClient.listActiveJobs(instanceid)
                     .then(async value => {
-                        console.warn(value);
                         //this check is here because the request itself is async and could return after
                         // the loop is terminated, we dont want to contaminate the jobs of an instance
                         // with the jobs of another even if it is for a single fire and would eventually
@@ -150,7 +150,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         if (loopid !== this.currentLoop) return;
 
                         if (value.code === StatusCode.OK) {
+                            const instanceSet = this.jobsByInstance.get(instanceid) || new Map();
+                            this.jobsByInstance.set(instanceid, instanceSet);
                             for (const job of value.payload) {
+                                instanceSet.set(job.id, job);
                                 this.jobs.set(job.id, job);
                             }
 
@@ -171,6 +174,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                                             this.errors.push(job.error);
                                             return;
                                         }
+                                        instanceSet.set(job.payload.id, job.payload);
                                         this.jobs.set(job.payload.id, job.payload);
                                     })
                                 );
@@ -208,8 +212,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         });
 
         await Promise.all(work);
-
-        console.warn(this.jobs);
 
         work.length = 0;
         for (const job of this.jobs.values()) {
@@ -411,6 +413,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
         //just clear out the job
         if (job.stoppedAt) {
+            this.jobsByInstance.get(job.instanceid)?.delete(jobid);
             this.jobs.delete(jobid);
             this.emit("jobsLoaded");
             return true;
