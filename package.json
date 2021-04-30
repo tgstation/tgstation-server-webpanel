@@ -53,7 +53,7 @@
         "react-transition-group": "^4.4.1"
     },
     "scripts": {
-        "generate_api": "npm run patch && npm run download_api && npm run generate_enums && npm run typegen",
+        "generate_api": "npm run patch && npm run download_api && npm run generate_enums && npm run generate_exports && npm run typegen",
         "postinstall": "npm run generate_api",
         "start": "npx webpack-dev-server --config webpack.dev.js",
         "build": "npx webpack --config webpack.prod.js",
@@ -65,6 +65,7 @@
         "patch": "node scripts/patcher/patch.js",
         "download_api": "node scripts/api_download.js",
         "generate_enums": "node scripts/generate_enums.js > src/ApiClient/generatedcode/_enums.ts",
+        "generate_exports": "node scripts/generate_exports.js > src/ApiClient/generatedcode/schemas.d.ts",
         "typegen": "npx typegen src/ApiClient/generatedcode/swagger.json > src/ApiClient/generatedcode/_generated.d.ts",
         "test": "npm run lint && npm run build"
     },
