@@ -105,7 +105,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                             />
                         </React.Fragment>
                     )}
-                    <JobsList />
+                    {this.props.loggedIn ? <JobsList /> : null}
                 </ErrorBoundary>
             </BrowserRouter>
         );
