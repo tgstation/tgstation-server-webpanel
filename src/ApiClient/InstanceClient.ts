@@ -9,6 +9,7 @@ import {
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
+import configOptions from "./util/config";
 
 export type ListInstancesErrors = GenericErrors;
 export type CreateInstanceErrors = GenericErrors;
@@ -20,14 +21,17 @@ interface IEvents {
 }
 
 export default new (class InstanceClient extends ApiClient<IEvents> {
-    public async listInstances(): Promise<InternalStatus<InstanceResponse[], ListInstancesErrors>> {
+    public async listInstances({
+        page = 1,
+        pageSize = configOptions.itemsperpage.value as number
+    } = {}): Promise<InternalStatus<PaginatedInstanceResponse, ListInstancesErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
             response = await ServerClient.apiClient!.InstanceController_List({
-                pageSize: 100,
-                page: 1
+                pageSize: pageSize,
+                page: page
             });
         } catch (stat) {
             return new InternalStatus({
@@ -38,13 +42,9 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as PaginatedInstanceResponse)!.content.sort(
-                    (a, b) => a.id - b.id
-                );
-
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload
+                    payload: response.data as PaginatedInstanceResponse
                 });
             }
             default: {

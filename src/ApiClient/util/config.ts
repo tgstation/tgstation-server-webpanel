@@ -79,6 +79,13 @@ const configOptions: ConfigMap = {
         id: "config.instanceprobetimer",
         type: "num",
         value: 60
+    },
+    itemsperpage: {
+        id: "config.itemsperpage",
+        type: "num",
+        value: 25,
+        min: 1,
+        max: 100
     }
 };
 

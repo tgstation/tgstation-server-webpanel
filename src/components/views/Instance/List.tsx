@@ -20,6 +20,7 @@ import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
+import PageHelper from "../../utils/PageHelper";
 
 type Instance = InstanceResponse & {
     canAccess: boolean;
@@ -29,6 +30,8 @@ interface IState {
     instances: Instance[];
     loading?: boolean;
     errors: Array<InternalError<ErrorCode> | undefined>;
+    page: number;
+    maxPage?: number;
 }
 interface IProps extends RouteComponentProps {}
 
@@ -43,7 +46,8 @@ class InstanceList extends React.Component<IProps, IState> {
         this.state = {
             loading: true,
             instances: [],
-            errors: []
+            errors: [],
+            page: RouteData.instancelistpage || 1
         };
     }
 
@@ -57,13 +61,32 @@ class InstanceList extends React.Component<IProps, IState> {
         });
     }
 
+    public async componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
+        if (prevState.page !== this.state.page) {
+            RouteData.instancelistpage = this.state.page;
+            await this.loadInstances();
+        }
+    }
+
     private async loadInstances(): Promise<void> {
-        const instancelist = await InstanceClient.listInstances();
+        this.setState({
+            loading: true
+        });
+
+        const instancelist = await InstanceClient.listInstances({ page: this.state.page });
         const modifiedlist: Array<Instance> = [];
 
         if (instancelist.code == StatusCode.OK) {
+            //Safety against being on non existant pages
+            if (instancelist.payload.totalPages < this.state.page) {
+                this.setState({
+                    page: 1
+                });
+                return;
+            }
+
             const work: Array<Promise<void>> = [];
-            for (const instance of instancelist.payload) {
+            for (const instance of instancelist.payload.content) {
                 const modifiedinstance = instance as Instance;
                 if (instance.online) {
                     work.push(
@@ -90,19 +113,20 @@ class InstanceList extends React.Component<IProps, IState> {
             await Promise.all(work);
 
             this.setState({
-                instances: modifiedlist.sort((a, b) => a.id - b.id)
+                instances: modifiedlist.sort((a, b) => a.id - b.id),
+                maxPage: instancelist.payload.totalPages
             });
         } else {
             this.addError(instancelist.error);
         }
-    }
-
-    public async componentDidMount(): Promise<void> {
-        await this.loadInstances();
 
         this.setState({
             loading: false
         });
+    }
+
+    public async componentDidMount(): Promise<void> {
+        await this.loadInstances();
     }
 
     private async setOnline(instance: Instance) {
@@ -238,6 +262,11 @@ class InstanceList extends React.Component<IProps, IState> {
                         })}
                     </tbody>
                 </Table>
+                <PageHelper
+                    selectPage={newPage => this.setState({ page: newPage })}
+                    totalPages={this.state.maxPage || 1}
+                    currentPage={this.state.page}
+                />
                 <div className="align-middle">
                     <div className="mb-4">{this.renderAddInstance()}</div>
                     <Button

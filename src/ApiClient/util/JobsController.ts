@@ -14,6 +14,7 @@ import {
     RepositoryRights,
     RightsType
 } from "../generatedcode/_enums";
+import { InstanceResponse } from "../generatedcode/schemas";
 import InstanceClient from "../InstanceClient";
 import InstancePermissionSetClient from "../InstancePermissionSetClient";
 import JobsClient, { tgsJobResponse } from "../JobsClient";
@@ -73,15 +74,28 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     }
 
     private async reloadAccessibleInstances(loop = false): Promise<void> {
-        const allInstances = await InstanceClient.listInstances();
-        if (allInstances.code === StatusCode.ERROR) {
-            this.errors.push(allInstances.error);
+        const allInstances: InstanceResponse[] = [];
+
+        const instances1 = await InstanceClient.listInstances({ pageSize: 100 });
+        if (instances1.code === StatusCode.ERROR) {
+            this.errors.push(instances1.error);
             return;
+        } else {
+            allInstances.push(...instances1.payload.content);
+        }
+        for (let i = 2; i <= instances1.payload.totalPages; i++) {
+            const instances2 = await InstanceClient.listInstances({ page: i, pageSize: 100 });
+            if (instances2.code === StatusCode.ERROR) {
+                this.errors.push(instances2.error);
+                return;
+            } else {
+                allInstances.push(...instances2.payload.content);
+            }
         }
 
         const updatedSet = new Set<number>();
 
-        const work = allInstances.payload
+        const work = allInstances
             .filter(instance => instance.online)
             .map(instance => {
                 return InstancePermissionSetClient.getCurrentInstancePermissionSet(

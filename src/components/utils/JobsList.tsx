@@ -74,14 +74,27 @@ export default class JobsList extends React.Component<IProps, IState> {
     }
 
     public async handleUpdate(): Promise<void> {
-        const instances = await InstanceClient.listInstances();
-        if (instances.code === StatusCode.ERROR) {
-            this.addError(instances.error);
+        const instances: InstanceResponse[] = [];
+
+        const response1 = await InstanceClient.listInstances({ pageSize: 100 });
+        if (response1.code === StatusCode.ERROR) {
+            this.addError(response1.error);
             return;
+        } else {
+            instances.push(...response1.payload.content);
+        }
+        for (let i = 2; i <= response1.payload.totalPages; i++) {
+            const response2 = await InstanceClient.listInstances({ page: i, pageSize: 100 });
+            if (response2.code === StatusCode.ERROR) {
+                this.addError(response2.error);
+                return;
+            } else {
+                instances.push(...response2.payload.content);
+            }
         }
 
         const instanceMap = new Map<number, InstanceResponse>();
-        instances.payload.forEach(instance => instanceMap.set(instance.id, instance));
+        instances.forEach(instance => instanceMap.set(instance.id, instance));
 
         this.setState({
             jobs: JobsController.jobsByInstance,

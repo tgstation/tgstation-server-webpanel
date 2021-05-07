@@ -271,6 +271,8 @@
     "config.jobswidgetdisplay.enum.never": "Never display",
     "config.instanceprobetimer": "Instance permission poll delay",
     "config.instanceprobetimer.desc": "After how many seconds should we update the list of instances",
+    "config.itemsperpage": "Items Per Page",
+    "config.itemsperpage.desc": "This allows you to configure the amount of items shown at once in lists. Note that not all lists support this option yet.",
     "loading.loading": "Loading...",
     "loading.login": "Logging in...",
     "loading.page": "Loading page: ",
