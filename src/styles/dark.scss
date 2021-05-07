@@ -152,6 +152,9 @@ $nav-tabs-link-active-border-color: $gray-500 $gray-500 $nav-tabs-link-active-bg
 
 $pre-color: inherit;
 
+$popover-header-color: $black;
+$popover-body-color: $black;
+
 $progress-bar-color: $black;
 
 $toast-color: $black;
@@ -218,7 +221,7 @@ $toast-header-background-color: $gray-600;
 @import "~bootstrap/scss/navbar";
 @import "~bootstrap/scss/card";
 //@import "~bootstrap/scss/breadcrumb";
-//@import "~bootstrap/scss/pagination";
+@import "~bootstrap/scss/pagination";
 @import "~bootstrap/scss/badge";
 //@import "~bootstrap/scss/jumbotron";
 @import "~bootstrap/scss/alert";
@@ -229,7 +232,7 @@ $toast-header-background-color: $gray-600;
 @import "~bootstrap/scss/toasts";
 @import "~bootstrap/scss/modal";
 @import "~bootstrap/scss/tooltip";
-//@import "~bootstrap/scss/popover";
+@import "~bootstrap/scss/popover";
 //@import "~bootstrap/scss/carousel";
 @import "~bootstrap/scss/spinners";
 @import "~bootstrap/scss/utilities";

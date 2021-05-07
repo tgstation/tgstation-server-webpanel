@@ -119,6 +119,8 @@
     "generic.path": "Path",
     "generic.select": "Select",
     "generic.instance": "Instance",
+    "generic.goto.title": "Go to page",
+    "generic.goto": "Goto",
     "generic.wip": "Work In Progress!",
     "generic.wip.desc": "The TGS webpanel is still a work in progress. The feature you are trying to use is not yet available. Until it becomes available, please use the TGS desktop client at ",
     "generic.assert.noinstance": "No instance. Perhaps an error occured.",

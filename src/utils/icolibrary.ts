@@ -19,6 +19,7 @@ import { faListUl } from "@fortawesome/free-solid-svg-icons/faListUl";
 import { faPen } from "@fortawesome/free-solid-svg-icons/faPen";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons/faQuestion";
+import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { faSync } from "@fortawesome/free-solid-svg-icons/faSync";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { faTools } from "@fortawesome/free-solid-svg-icons/faTools";
@@ -58,6 +59,7 @@ export default function (): void {
         faComments,
         faFolderOpen,
         faUsers,
-        faCodeBranch
+        faCodeBranch,
+        faSearch
     );
 }
