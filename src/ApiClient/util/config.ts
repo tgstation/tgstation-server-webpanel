@@ -12,6 +12,8 @@ export interface BaseConfigOption {
 export interface NumConfigOption extends BaseConfigOption {
     type: "num";
     value: number;
+    min?: number;
+    max?: number;
     callback?: (oldValue: number, newValue: number) => void;
 }
 export interface StrConfigOption extends BaseConfigOption {

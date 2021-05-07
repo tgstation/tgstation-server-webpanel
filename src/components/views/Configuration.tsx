@@ -174,6 +174,8 @@ export default class Configuration extends React.Component<IProps, IState> {
                                         className={`flex-fill mb-0 ${
                                             this.state.values[key] ? "font-weight-bold" : ""
                                         }`}
+                                        min={value.type === "num" ? value.min : undefined}
+                                        max={value.type === "num" ? value.max : undefined}
                                         ref={valueRef}
                                         onChange={updateValue}
                                         value={value.value}

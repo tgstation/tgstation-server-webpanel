@@ -20,12 +20,16 @@ export default new (class ConfigController {
 
         //safeties
         switch (option.type) {
-            case "num":
+            case "num": {
                 //this parses strings and numbers alike to numbers and refuses non numbers
                 //@ts-expect-error //parseInt can take numbers
-                option.value = parseInt(option.value);
+                const value = parseInt(option.value);
                 if (Number.isNaN(option.value)) return;
+                if (option.min !== undefined && value < option.min) return;
+                if (option.max !== undefined && value > option.max) return;
+                option.value = value;
                 break;
+            }
         }
 
         if (option.callback) {
