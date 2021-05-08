@@ -1,3 +1,4 @@
+import { satisfies as SemverSatisfies } from "semver";
 import { TypedEmitter } from "tiny-typed-emitter";
 
 import { resolvePermissionSet } from "../../utils/misc";
@@ -40,6 +41,8 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     private currentLoop: Date = new Date(0);
     private accessibleInstances = new Set<number>();
 
+    private enableJobProgressWorkaround?: boolean;
+
     public errors: InternalError[] = [];
     public jobs = new Map<number, tgsJobResponse>();
     public jobsByInstance = new Map<number, Map<number, tgsJobResponse>>();
@@ -71,6 +74,18 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         InstanceClient.on("instanceChange", this.reset);
         // eslint-disable-next-line @typescript-eslint/require-await
         LoginHooks.addHook(async () => this.reset());
+
+        ServerClient.getServerInfo()
+            .then(response => {
+                if (response.code === StatusCode.OK) {
+                    //A bug in versions below 4.11.0 makes it so that /Job/List doesn't report back progress. If we are running on a higher version, theres no point in enabling the workaround
+                    this.enableJobProgressWorkaround = SemverSatisfies(
+                        response.payload.version,
+                        "<4.11.0"
+                    );
+                }
+            })
+            .catch(e => console.error(e));
     }
 
     private async reloadAccessibleInstances(loop = false): Promise<void> {
@@ -230,6 +245,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         work.length = 0;
         for (const job of this.jobs.values()) {
             if (
+                this.enableJobProgressWorkaround &&
                 job.progress === undefined &&
                 !job.stoppedAt &&
                 this.accessibleInstances.has(job.instanceid)
