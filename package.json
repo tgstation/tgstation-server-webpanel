@@ -13,8 +13,8 @@
     },
     "contributors": [
         {
-            "name" : "alexkar598",
-            "url" : "https://github.com/alexkar598/"
+            "name": "alexkar598",
+            "url": "https://github.com/alexkar598/"
         }
     ],
     "main": "build/lib/App.js",
