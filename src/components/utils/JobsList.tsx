@@ -40,7 +40,8 @@ export default class JobsList extends React.Component<IProps, IState> {
         super(props);
 
         this.handleUpdate = this.handleUpdate.bind(this);
-        this.onCancelorClose = this.onCancelorClose.bind(this);
+        this.onCancel = this.onCancel.bind(this);
+        this.onClose = this.onClose.bind(this);
 
         this.state = {
             jobs: JobsController.jobsByInstance,
@@ -104,17 +105,17 @@ export default class JobsList extends React.Component<IProps, IState> {
         });
     }
 
-    private async onCancelorClose(job: tgsJobResponse) {
-        const cancelling = !job.stoppedAt;
-        const status = await JobsController.cancelOrClear(job.id, error => this.addError(error));
+    private async onCancel(job: tgsJobResponse) {
+        const status = await JobsController.cancelJob(job.id, error => this.addError(error));
 
         if (!status) {
             return;
         }
-        //Jobs changed, might as well refresh
-        if (cancelling) {
-            JobsController.fastmode = 5;
-        }
+        JobsController.fastmode = 5;
+    }
+
+    private onClose(job: tgsJobResponse) {
+        JobsController.clearJob(job.id);
     }
 
     public render(): ReactNode {
@@ -241,7 +242,8 @@ export default class JobsList extends React.Component<IProps, IState> {
                                             job={job}
                                             width={this.props.width}
                                             key={job.id}
-                                            onClose={this.onCancelorClose}
+                                            onClose={this.onClose}
+                                            onCancel={this.onCancel}
                                         />
                                     ))}
                             </React.Fragment>

@@ -432,7 +432,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
     }
 
-    public async cancelOrClear(
+    public async cancelJob(
         jobid: number,
         onError: (error: InternalError<ErrorCode>) => void
     ): Promise<boolean> {
@@ -441,20 +441,24 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         //no we cant cancel jobs we arent aware of yet
         if (!job) return false;
 
-        //just clear out the job
-        if (job.stoppedAt) {
-            this.jobsByInstance.get(job.instanceid)?.delete(jobid);
-            this.jobs.delete(jobid);
-            this.emit("jobsLoaded");
+        const deleteInfo = await JobsClient.deleteJob(job.instanceid, jobid);
+        if (deleteInfo.code === StatusCode.OK) {
             return true;
         } else {
-            const deleteInfo = await JobsClient.deleteJob(job.instanceid, jobid);
-            if (deleteInfo.code === StatusCode.OK) {
-                return true;
-            } else {
-                onError(deleteInfo.error);
-                return false;
-            }
+            onError(deleteInfo.error);
+            return false;
         }
+    }
+
+    public clearJob(jobid: number): boolean {
+        const job = this.jobs.get(jobid);
+
+        //no we cant cancel jobs we arent aware of yet
+        if (!job) return false;
+
+        this.jobsByInstance.get(job.instanceid)?.delete(jobid);
+        this.jobs.delete(jobid);
+        this.emit("jobsLoaded");
+        return true;
     }
 })();

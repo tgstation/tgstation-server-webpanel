@@ -1,4 +1,6 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ReactNode } from "react";
+import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Toast from "react-bootstrap/Toast";
@@ -15,6 +17,7 @@ interface IProps {
     job: tgsJobResponse;
     width?: string;
     onClose: (job: tgsJobResponse) => void;
+    onCancel: (job: tgsJobResponse) => void;
 }
 
 export default class JobCard extends React.Component<IProps, IState> {
@@ -40,9 +43,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                 onClose={() => {
                     this.props.onClose(job);
                 }}>
-                <ToastHeader
-                    closeButton={!!(job.canCancel || job.stoppedAt)}
-                    className={`bg-${variant}`}>
+                <ToastHeader closeButton={!!job.stoppedAt} className={`bg-${variant}`}>
                     #{job.id}: {job.description}
                 </ToastHeader>
                 <ToastBody>
@@ -154,18 +155,29 @@ export default class JobCard extends React.Component<IProps, IState> {
                     ) : (
                         ""
                     )}
-                    <ProgressBar
-                        className="mt-2 text-darker font-weight-bold"
-                        animated={!job.stoppedAt}
-                        label={
-                            typeof job.progress === "number"
-                                ? `${job.progress.toString()}%`
-                                : undefined
-                        }
-                        now={typeof job.progress === "number" ? job.progress : 100}
-                        striped
-                        variant={variant}
-                    />
+                    <div className="d-flex mt-2" style={{ height: "1.5rem" }}>
+                        <ProgressBar
+                            className="text-darker font-weight-bold flex-grow-1 h-unset"
+                            animated={!job.stoppedAt}
+                            label={
+                                typeof job.progress === "number"
+                                    ? `${job.progress.toString()}%`
+                                    : undefined
+                            }
+                            now={typeof job.progress === "number" ? job.progress : 100}
+                            striped
+                            variant={variant}
+                        />
+                        {job.canCancel && !job.stoppedAt ? (
+                            <Button
+                                style={{ padding: "0 1em" }}
+                                className="ml-1"
+                                variant="danger"
+                                onClick={() => this.props.onCancel(job)}>
+                                <FontAwesomeIcon icon="times" className="d-block" />
+                            </Button>
+                        ) : null}
+                    </div>
                 </ToastBody>
             </Toast>
         );
