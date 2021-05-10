@@ -166,7 +166,9 @@ class Byond extends React.Component<IProps, IState> {
                     {this.state.versions.map(version => {
                         // noinspection JSBitwiseOperatorUsage
                         return (
-                            <InputGroup className="w-25 mb-1 mx-auto d-flex" key={version.version}>
+                            <InputGroup
+                                className="w-md-25 mb-1 mx-auto d-flex"
+                                key={version.version}>
                                 <InputGroup.Prepend>
                                     <InputGroup.Radio
                                         disabled={
@@ -217,7 +219,7 @@ class Byond extends React.Component<IProps, IState> {
                 <h4>
                     <FormattedMessage id="view.instance.hosting.byond.add" />
                 </h4>
-                <InputGroup className="w-25 mb-3 mx-auto">
+                <InputGroup className="w-md-50 w-lg-25 mb-3 mx-auto">
                     <FormControl
                         type="number"
                         defaultValue={this.state.latestVersion.split(".")[0]}
@@ -279,7 +281,7 @@ class Byond extends React.Component<IProps, IState> {
                     <Form.File
                         custom
                         id="test"
-                        className="w-25 text-left"
+                        className="w-md-50 w-lg-25 text-left"
                         label={
                             this.state.customFile ? (
                                 this.state.customFile.name
