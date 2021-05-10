@@ -28,6 +28,7 @@ import { faUndo } from "@fortawesome/free-solid-svg-icons/faUndo";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
 import { faUserSlash } from "@fortawesome/free-solid-svg-icons/faUserSlash";
+import { faServer } from "@fortawesome/free-solid-svg-icons/faServer";
 
 export default function (): void {
     library.add(
@@ -60,6 +61,7 @@ export default function (): void {
         faFolderOpen,
         faUsers,
         faCodeBranch,
-        faSearch
+        faSearch,
+        faServer
     );
 }
