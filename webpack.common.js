@@ -1,7 +1,5 @@
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const webpack = require("webpack");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
@@ -23,6 +21,7 @@ module.exports = function createConfig(prodLike, github) {
         },
 
         output: {
+            clean: true,
             publicPath: publicPath,
             filename: `[name]${prodLike ? ".[contenthash]" : ""}.js`,
             path: path.resolve(__dirname, "dist")
@@ -30,26 +29,27 @@ module.exports = function createConfig(prodLike, github) {
 
         optimization: {
             minimize: prodLike,
-            minimizer: [
-                new TerserPlugin({
-                    test: /\.[jt]sx?$/
-                })
-            ],
-            runtimeChunk: "single",
             splitChunks: {
                 chunks: "all",
                 cacheGroups: {
                     packages: {
                         test: /[\\/]node_modules[\\/]/,
-                        name: "packages"
+                        idHint: "packages"
                     },
                     api: {
                         priority: 1,
                         test: /[\\/]ApiClient[\\/]/,
+                        idHint: "api",
+                        enforce: true
+                    },
+                    styles: {
+                        test: module => module.resource?.endsWith('.scss'),
+                        idHint: "styles",
                         enforce: true
                     }
                 }
-            }
+            },
+            runtimeChunk: "single"
         },
 
         devServer: {
@@ -64,7 +64,15 @@ module.exports = function createConfig(prodLike, github) {
 
         resolve: {
             extensions: [".ts", ".tsx", ".js"],
-            symlinks: false
+            symlinks: false,
+            fallback: {
+                fs: false,
+                util: require.resolve("util"),
+                buffer: require.resolve("buffer/"),
+                http: require.resolve("stream-http"),
+                https: require.resolve("https-browserify"),
+                process: "process/browser"
+            }
         },
 
         module: {
@@ -72,39 +80,17 @@ module.exports = function createConfig(prodLike, github) {
                 {
                     test: /\.css$/,
                     exclude: /node_modules/,
-                    loader: ["style-loader", "css-loader"],
+                    use: ["style-loader", "css-loader"],
                     sideEffects: true
                 },
                 {
                     test: /\.(scss)$/,
-                    use: [
-                        {
-                            loader: "style-loader"
-                        },
-                        {
-                            loader: "css-loader"
-                        },
-                        {
-                            loader: "postcss-loader",
-                            options: {
-                                plugins: function () {
-                                    return [require("autoprefixer")];
-                                }
-                            }
-                        },
-                        {
-                            loader: "fast-sass-loader"
-                        }
-                    ],
+                    use: ["style-loader", "css-loader", "postcss-loader", "fast-sass-loader"],
                     sideEffects: true
                 },
                 {
                     test: /\.(png|jpe?g|gif|svg)$/i,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                        },
-                    ],
+                    type: "asset/resource"
                 },
                 {
                     test: /\.[jt]sx?$/,
@@ -138,13 +124,12 @@ module.exports = function createConfig(prodLike, github) {
                     enforce: "pre",
                     exclude: /node_modules/,
                     test: /\.js$/,
-                    loader: "source-map-loader"
+                    use: "source-map-loader"
                 }
             ]
         },
 
         plugins: [
-            new CleanWebpackPlugin(),
             new CopyPlugin({
                 patterns: [
                     {
@@ -157,6 +142,10 @@ module.exports = function createConfig(prodLike, github) {
                 ]
             }),
             new ForkTsCheckerWebpackPlugin(),
+            new webpack.ProvidePlugin({
+                Buffer: ["buffer", "Buffer"],
+                process: 'process/browser'
+            }),
             new webpack.DefinePlugin({
                 API_VERSION: JSON.stringify(require("./src/ApiClient/generatedcode/swagger.json").info.version),
                 VERSION: JSON.stringify(github ? process.env.GITHUB_SHA : require("./package.json").version),
@@ -179,9 +168,6 @@ module.exports = function createConfig(prodLike, github) {
                     }
                 }),
             new JSONManifestPlugin({version: require("./package.json").version })
-        ].filter(Boolean),
-        node: {
-            fs: "empty"
-        }
+        ].filter(Boolean)
     };
 };
