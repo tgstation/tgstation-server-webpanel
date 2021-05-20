@@ -20,6 +20,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons/faPen";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons/faQuestion";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
+import { faServer } from "@fortawesome/free-solid-svg-icons/faServer";
 import { faSync } from "@fortawesome/free-solid-svg-icons/faSync";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { faTools } from "@fortawesome/free-solid-svg-icons/faTools";
@@ -28,7 +29,6 @@ import { faUndo } from "@fortawesome/free-solid-svg-icons/faUndo";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
 import { faUserSlash } from "@fortawesome/free-solid-svg-icons/faUserSlash";
-import { faServer } from "@fortawesome/free-solid-svg-icons/faServer";
 
 export default function (): void {
     library.add(
