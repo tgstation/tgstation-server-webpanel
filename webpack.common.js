@@ -43,7 +43,7 @@ module.exports = function createConfig(prodLike, github) {
                         enforce: true
                     },
                     styles: {
-                        test: module => module.resource?.endsWith('.scss'),
+                        test: /\.(scss)$/,
                         idHint: "styles",
                         enforce: true
                     }
