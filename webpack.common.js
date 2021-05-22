@@ -90,7 +90,10 @@ module.exports = function createConfig(prodLike, github) {
                 },
                 {
                     test: /\.(png|jpe?g|gif|svg)$/i,
-                    type: "asset/resource"
+                    type: "asset/resource",
+                    generator: {
+                        publicPath: publicPath
+                    }
                 },
                 {
                     test: /\.[jt]sx?$/,
