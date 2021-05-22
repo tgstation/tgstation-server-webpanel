@@ -403,3 +403,10 @@ $toast-header-background-color: $gray-600;
         background: rgba($gray-800, 0.2);
     }
 }
+
+.home {
+    svg path {
+        stroke: #3c3c3c;
+        stroke-width: 3px;
+    }
+}

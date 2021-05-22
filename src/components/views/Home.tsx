@@ -51,7 +51,7 @@ export default class Home extends React.Component<IProps, IState> {
                     if (val === AppRoutes.home) return;
 
                     return (
-                        <Col key={val.link || val.route} className="mb-1">
+                        <Col key={val.link || val.route} className="mb-1 home">
                             <Card
                                 as={val.cachedAuth ? Link : "div"}
                                 //@ts-expect-error //dont really know how to fix this so uhhhhhhh, this will do for now
