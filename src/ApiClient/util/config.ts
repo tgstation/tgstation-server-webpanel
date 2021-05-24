@@ -48,7 +48,15 @@ export enum jobsWidgetOptions {
     NEVER = "never"
 }
 
-const configOptions: ConfigMap = {
+//https://stackoverflow.com/questions/54598322/how-to-make-typescript-infer-the-keys-of-an-object-but-define-type-of-its-value
+//Infer the keys but restrict the values to a type
+const asElementTypesConfig = <Type>(
+    elements: {
+        [Property in keyof Type]: ConfigOption;
+    }
+) => elements;
+
+const configOptions = asElementTypesConfig({
     githubtoken: {
         id: "config.githubtoken",
         type: "pwd",
@@ -87,6 +95,6 @@ const configOptions: ConfigMap = {
         min: 1,
         max: 100
     }
-};
+});
 
 export default configOptions;
