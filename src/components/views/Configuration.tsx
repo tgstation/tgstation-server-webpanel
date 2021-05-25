@@ -8,12 +8,12 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 
-import configOptions, { ConfigMap, ConfigOption } from "../../ApiClient/util/config";
+import configOptions, { ConfigOption } from "../../ApiClient/util/config";
 import ConfigController from "../../ApiClient/util/ConfigController";
 
 interface IProps {}
 interface IState {
-    values: { [key: string]: ConfigOption };
+    values: Partial<typeof configOptions>;
     //if youre adding some state, make sure it doesnt get sent to be saved
 }
 
@@ -39,17 +39,18 @@ export default class Configuration extends React.Component<IProps, IState> {
 
         return (
             <React.Fragment>
-                {config.map(([key, currentVal]) => {
+                {config.map(([_key, currentVal]) => {
+                    const key = _key as keyof typeof configOptions;
                     //const persistRef = React.createRef<HTMLInputElement>();
                     const valueRef = React.createRef<HTMLInputElement>();
                     const enumRef = React.createRef<HTMLSelectElement>();
                     const value = this.state.values[key] || currentVal;
                     const reset = () => {
                         this.setState((prevState: IState) => {
-                            const filtered: ConfigMap = {};
+                            const filtered: Partial<typeof configOptions> = {};
                             for (const [innerkey, val] of Object.entries(prevState.values)) {
                                 if (innerkey === key) continue;
-                                filtered[innerkey] = val;
+                                filtered[innerkey as keyof typeof prevState.values] = val;
                             }
                             return {
                                 values: filtered
@@ -60,7 +61,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                     const updateValue = () => {
                         this.setState(prevstate => {
                             const obj: ConfigOption = this.state.values[key]
-                                ? { ...this.state.values[key] }
+                                ? { ...this.state.values[key]! }
                                 : {
                                       ...currentVal
                                   };

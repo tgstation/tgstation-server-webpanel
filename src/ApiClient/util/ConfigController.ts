@@ -8,14 +8,14 @@ export default new (class ConfigController {
         console.log("Configuration loaded", configOptions);
     }
 
-    public saveconfig(newconfig: { [key: string]: ConfigOption }) {
+    public saveconfig(newconfig: Partial<typeof configOptions>) {
         for (const [key, val] of Object.entries(newconfig)) {
-            this.setconfig(key, val);
+            this.setconfig(key as keyof typeof configOptions, val as ConfigOption);
         }
         console.log("Configuration saved", configOptions);
     }
 
-    private setconfig(key: string, option: ConfigOption) {
+    private setconfig(key: keyof typeof configOptions, option: ConfigOption) {
         if (option?.value === undefined) return this.deleteconfig(key);
 
         //safeties
@@ -65,7 +65,7 @@ export default new (class ConfigController {
         }
     }
 
-    private deleteconfig(key: string): void {
+    private deleteconfig(key: keyof typeof configOptions): void {
         try {
             const option = configOptions[key];
             localStorage.removeItem(option.id);
