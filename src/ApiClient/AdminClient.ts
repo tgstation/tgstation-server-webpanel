@@ -10,6 +10,7 @@ import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
 import TransferClient, { DownloadErrors } from "./TransferClient";
+import configOptions from "./util/config";
 
 interface IEvents {
     loadAdminInfo: (user: InternalStatus<AdministrationResponse, AdminInfoErrors>) => void;
@@ -262,14 +263,17 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         }
     }
 
-    public async getLogs(): Promise<InternalStatus<LogFileResponse[], LogsErrors>> {
+    public async getLogs({
+        page = 1,
+        pageSize = configOptions.itemsperpage.value as number
+    }): Promise<InternalStatus<PaginatedLogFileResponse, LogsErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
             response = await ServerClient.apiClient!.AdministrationController_ListLogs({
-                pageSize: 100,
-                page: 1
+                pageSize: pageSize,
+                page: page
             });
         } catch (stat) {
             return new InternalStatus({
@@ -282,7 +286,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as PaginatedLogFileResponse)!.content
+                    payload: response.data as PaginatedLogFileResponse
                 });
             }
             case 409: {

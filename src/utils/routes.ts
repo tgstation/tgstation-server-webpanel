@@ -395,6 +395,7 @@ export const RouteData = {
     selectedinstanceedittab: undefined as undefined | string,
 
     instancelistpage: undefined as undefined | number,
+    loglistpage: undefined as undefined | number,
 
     oautherrors: [] as InternalError<ErrorCode>[]
 };

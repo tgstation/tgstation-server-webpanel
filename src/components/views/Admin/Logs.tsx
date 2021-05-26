@@ -14,9 +14,10 @@ import { DownloadedLog } from "../../../ApiClient/models/DownloadedLog";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import { download } from "../../../utils/misc";
-import { AppRoutes } from "../../../utils/routes";
+import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
+import PageHelper from "../../utils/PageHelper";
 
 interface IProps extends RouteComponentProps<{ name: string | undefined }> {}
 
@@ -35,6 +36,8 @@ interface IState {
     viewedLog?: Log;
     errors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;
+    page: number;
+    maxPage?: number;
 }
 
 export default withRouter(
@@ -45,9 +48,18 @@ export default withRouter(
             this.state = {
                 errors: [],
                 loading: true,
-                logs: []
+                logs: [],
+                page: RouteData.loglistpage ?? 1
             };
         }
+
+        public async componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
+            if (prevState.page !== this.state.page) {
+                RouteData.loglistpage = this.state.page;
+                await this.loadLogs();
+            }
+        }
+
         public async componentDidMount(): Promise<void> {
             const param = this.props.match.params.name;
             if (param) {
@@ -81,12 +93,28 @@ export default withRouter(
                     }
                 }
             }
-            const response = await AdminClient.getLogs();
+
+            await this.loadLogs();
+        }
+
+        private async loadLogs(): Promise<void> {
+            this.setState({
+                loading: true
+            });
+            const response = await AdminClient.getLogs({ page: this.state.page });
 
             switch (response.code) {
                 case StatusCode.OK: {
+                    if (this.state.page > response.payload.totalPages) {
+                        this.setState({
+                            page: response.payload.totalPages
+                        });
+                        return;
+                    }
+
                     this.setState({
-                        logs: response.payload
+                        logs: response.payload.content,
+                        maxPage: response.payload.totalPages
                     });
                     break;
                 }
@@ -289,6 +317,11 @@ export default withRouter(
                                     })}
                                 </tbody>
                             </Table>
+                            <PageHelper
+                                selectPage={newPage => this.setState({ page: newPage })}
+                                totalPages={this.state.maxPage ?? 1}
+                                currentPage={this.state.page}
+                            />
                         </Container>
                     )}
                 </div>
