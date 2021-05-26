@@ -179,7 +179,7 @@ class Administration extends React.Component<IProps, IState> {
                             disabled={!canUpdate}
                             onClick={() => {
                                 this.props.history.push(
-                                    AppRoutes.admin_update.link || AppRoutes.admin_update.route
+                                    AppRoutes.admin_update.link ?? AppRoutes.admin_update.route
                                 );
                             }}>
                             <FormattedMessage id="view.admin.update.button" />
@@ -189,7 +189,7 @@ class Administration extends React.Component<IProps, IState> {
                             disabled={!canLogs}
                             onClick={() => {
                                 this.props.history.push(
-                                    AppRoutes.admin_logs.link || AppRoutes.admin_logs.route
+                                    AppRoutes.admin_logs.link ?? AppRoutes.admin_logs.route
                                 );
                             }}>
                             <FormattedMessage id="view.admin.logs.button" />

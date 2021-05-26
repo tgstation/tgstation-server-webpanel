@@ -53,7 +53,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         RouteData.selectedinstanceid = parseInt(this.props.match.params.id);
 
         this.state = {
-            tab: props.match.params.tab || InstanceEdit.tabs[0][0],
+            tab: props.match.params.tab ?? InstanceEdit.tabs[0][0],
             errors: new Set(),
             instance: null,
             instancePermissionSet: null,
@@ -143,12 +143,12 @@ class InstanceEdit extends React.Component<IProps, IState> {
                 return (
                     <Dropdown
                         onSelect={eventKey => {
-                            eventKey = eventKey || InstanceEdit.tabs[0][0];
+                            eventKey = eventKey ?? InstanceEdit.tabs[0][0];
                             RouteData.selectedinstanceedittab = eventKey;
                             this.props.history.push(
-                                AppRoutes.instanceedit.link || AppRoutes.instanceedit.route
+                                AppRoutes.instanceedit.link ?? AppRoutes.instanceedit.route
                             );
-                            this.setState({ tab: eventKey || InstanceEdit.tabs[0][0] });
+                            this.setState({ tab: eventKey ?? InstanceEdit.tabs[0][0] });
                         }}>
                         <Dropdown.Toggle
                             variant="secondary"
@@ -182,12 +182,12 @@ class InstanceEdit extends React.Component<IProps, IState> {
                 <Nav
                     defaultActiveKey={this.state.tab}
                     onSelect={eventKey => {
-                        eventKey = eventKey || InstanceEdit.tabs[0][0];
+                        eventKey = eventKey ?? InstanceEdit.tabs[0][0];
                         RouteData.selectedinstanceedittab = eventKey;
                         this.props.history.push(
-                            AppRoutes.instanceedit.link || AppRoutes.instanceedit.route
+                            AppRoutes.instanceedit.link ?? AppRoutes.instanceedit.route
                         );
-                        this.setState({ tab: eventKey || InstanceEdit.tabs[0][0] });
+                        this.setState({ tab: eventKey ?? InstanceEdit.tabs[0][0] });
                     }}
                     fill
                     variant="pills"

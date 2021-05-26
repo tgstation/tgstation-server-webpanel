@@ -237,7 +237,7 @@ export default withRouter(
                                                 onClick={() => {
                                                     RouteData.selecteduserid = value.id;
                                                     this.props.history.push(
-                                                        AppRoutes.useredit.link ||
+                                                        AppRoutes.useredit.link ??
                                                             AppRoutes.useredit.route
                                                     );
                                                 }}>
@@ -249,7 +249,7 @@ export default withRouter(
                             })}
                         </tbody>
                     </Table>
-                    <Button as={Link} to={AppRoutes.usercreate.link || AppRoutes.usercreate.route}>
+                    <Button as={Link} to={AppRoutes.usercreate.link ?? AppRoutes.usercreate.route}>
                         <FormattedMessage id="routes.usercreate" />
                     </Button>
                 </div>

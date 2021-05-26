@@ -44,7 +44,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                     //const persistRef = React.createRef<HTMLInputElement>();
                     const valueRef = React.createRef<HTMLInputElement>();
                     const enumRef = React.createRef<HTMLSelectElement>();
-                    const value = this.state.values[key] || currentVal;
+                    const value = this.state.values[key] ?? currentVal;
                     const reset = () => {
                         this.setState((prevState: IState) => {
                             const filtered: Partial<typeof configOptions> = {};

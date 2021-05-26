@@ -186,7 +186,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
         }
 
         RouteData.selectedinstanceid = result.payload.id;
-        this.props.history.push(AppRoutes.instancelist.link || AppRoutes.instancelist.route);
+        this.props.history.push(AppRoutes.instancelist.link ?? AppRoutes.instancelist.route);
     }
 }
 InstanceCreate.contextType = GeneralContext;

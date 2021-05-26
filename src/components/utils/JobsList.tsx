@@ -224,7 +224,7 @@ export default class JobsList extends React.Component<IProps, IState> {
                                 <div className="bg-dark p-2 text-center">
                                     <OverlayTrigger overlay={renderTooltip(instanceid)}>
                                         <React.Fragment>
-                                            {this.state.instances.get(instanceid)?.name ||
+                                            {this.state.instances.get(instanceid)?.name ??
                                                 "Unknown"}{" "}
                                             (
                                             <FormattedMessage

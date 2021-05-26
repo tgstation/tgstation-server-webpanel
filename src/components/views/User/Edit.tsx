@@ -79,7 +79,7 @@ class UserEdit extends React.Component<IProps, IState> {
             saving: false,
             permsadmin: {},
             permsinstance: {},
-            tab: props.match.params.tab || "info",
+            tab: props.match.params.tab ?? "info",
             groups: context.user.group ? [Object.assign({ users: [] }, context.user.group)] : [],
             createGroupName: "",
             newOAuthConnections: []
@@ -90,7 +90,7 @@ class UserEdit extends React.Component<IProps, IState> {
     }
 
     private get canEdit() {
-        return (
+        return !!(
             resolvePermissionSet(this.context.user).administrationRights &
             AdministrationRights.WriteUsers
         );
@@ -126,7 +126,7 @@ class UserEdit extends React.Component<IProps, IState> {
     public componentDidUpdate(prevProps: Readonly<IProps>) {
         if (prevProps.match.params.tab !== this.props.match.params.tab) {
             this.setState({
-                tab: this.props.match.params.tab || "info"
+                tab: this.props.match.params.tab ?? "info"
             });
         }
     }
@@ -258,7 +258,7 @@ class UserEdit extends React.Component<IProps, IState> {
 
             RouteData.selectedusertab = newkey;
             if (!GlobalObjects.setupMode) {
-                this.props.history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
+                this.props.history.push(AppRoutes.useredit.link ?? AppRoutes.useredit.route);
             }
             this.setState({
                 tab: newkey
@@ -318,7 +318,7 @@ class UserEdit extends React.Component<IProps, IState> {
                             </Badge>
                         ) : null}
                         <h3 className="text-capitalize">{this.state.user.name}</h3>
-                        <Button as={Link} to={AppRoutes.userlist.link || AppRoutes.userlist.route}>
+                        <Button as={Link} to={AppRoutes.userlist.link ?? AppRoutes.userlist.route}>
                             <FormattedMessage id="generic.goback" />
                         </Button>
                         <Tabs
@@ -428,7 +428,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                                 className="mr-2"
                                                 as={Link}
                                                 to={
-                                                    (AppRoutes.passwd.link ||
+                                                    (AppRoutes.passwd.link ??
                                                         AppRoutes.passwd.route) +
                                                     this.state.user.id.toString()
                                                 }>
@@ -501,7 +501,7 @@ class UserEdit extends React.Component<IProps, IState> {
     private renderOAuth(): React.ReactNode {
         const oAuthProviderInfos = this.context.serverInfo.oAuthProviderInfos;
         const currentOAuthConnections =
-            this.state.newOAuthConnections || this.state.user?.oAuthConnections;
+            this.state.newOAuthConnections ?? this.state.user?.oAuthConnections;
         if (
             this.state.user?.name.toLowerCase() === "admin" || // admin user can't have OAuthConnections
             currentOAuthConnections == null ||
@@ -675,10 +675,10 @@ class UserEdit extends React.Component<IProps, IState> {
                                 (this.state.newOAuthConnections.every(
                                     (val, idx) =>
                                         val.externalUserId ===
-                                            (this.state.user?.oAuthConnections || [])[idx]
+                                            (this.state.user?.oAuthConnections ?? [])[idx]
                                                 ?.externalUserId &&
                                         val.provider ===
-                                            (this.state.user?.oAuthConnections || [])[idx]?.provider
+                                            (this.state.user?.oAuthConnections ?? [])[idx]?.provider
                                 ) &&
                                     this.state.newOAuthConnections.length ===
                                         this.state.user?.oAuthConnections?.length)

@@ -137,7 +137,7 @@ const AppRoutes = asElementTypesAppRoute({
                           ? `${RouteData.selectedinstanceedittab}/`
                           : ""
                   }`
-                : AppRoutes.instancelist.link || AppRoutes.instancelist.route;
+                : AppRoutes.instancelist.link ?? AppRoutes.instancelist.route;
         },
 
         loose: false,
@@ -195,7 +195,7 @@ const AppRoutes = asElementTypesAppRoute({
                 ? `/users/edit/user/${RouteData.selecteduserid}/${
                       RouteData.selectedusertab !== undefined ? `${RouteData.selectedusertab}/` : ""
                   }`
-                : AppRoutes.userlist.link || AppRoutes.userlist.route;
+                : AppRoutes.userlist.link ?? AppRoutes.userlist.route;
         },
         file: "User/Edit",
 

@@ -47,7 +47,7 @@ class InstanceList extends React.Component<IProps, IState> {
             loading: true,
             instances: [],
             errors: [],
-            page: RouteData.instancelistpage || 1
+            page: RouteData.instancelistpage ?? 1
         };
     }
 
@@ -238,7 +238,7 @@ class InstanceList extends React.Component<IProps, IState> {
                                             onClick={() => {
                                                 RouteData.selectedinstanceid = value.id;
                                                 this.props.history.push(
-                                                    AppRoutes.instanceedit.link ||
+                                                    AppRoutes.instanceedit.link ??
                                                         AppRoutes.instanceedit.route
                                                 );
                                             }}
@@ -264,7 +264,7 @@ class InstanceList extends React.Component<IProps, IState> {
                 </Table>
                 <PageHelper
                     selectPage={newPage => this.setState({ page: newPage })}
-                    totalPages={this.state.maxPage || 1}
+                    totalPages={this.state.maxPage ?? 1}
                     currentPage={this.state.page}
                 />
                 <div className="align-middle">
@@ -273,7 +273,7 @@ class InstanceList extends React.Component<IProps, IState> {
                         className="mx-1"
                         onClick={() => {
                             this.props.history.push(
-                                AppRoutes.instancejobs.link || AppRoutes.instancejobs.route
+                                AppRoutes.instancejobs.link ?? AppRoutes.instancejobs.route
                             );
                         }}>
                         <FormattedMessage id="routes.instancejobs" />
@@ -304,7 +304,7 @@ class InstanceList extends React.Component<IProps, IState> {
                         variant="success"
                         onClick={() => {
                             this.props.history.push(
-                                AppRoutes.instancecreate.link || AppRoutes.instancecreate.route
+                                AppRoutes.instancecreate.link ?? AppRoutes.instancecreate.route
                             );
                         }}
                         disabled={!canCreate}

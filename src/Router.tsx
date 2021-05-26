@@ -99,7 +99,7 @@ class Router extends Component<IProps, IState> {
         }
 
         const oauthdata = JSON.parse(
-            window.sessionStorage.getItem("oauth") || "{}"
+            window.sessionStorage.getItem("oauth") ?? "{}"
         ) as OAuthStateStorage;
 
         const oauthstate = oauthdata[state];

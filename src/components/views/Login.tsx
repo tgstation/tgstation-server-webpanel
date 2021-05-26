@@ -172,7 +172,7 @@ class Login extends React.Component<IProps, IState> {
                     <hr />
                     <div className="d-flex justify-content-center">
                         <div className="d-flex flex-column align-items-stretch">
-                            {Object.keys(this.context.serverInfo.oAuthProviderInfos || {}).map(
+                            {Object.keys(this.context.serverInfo.oAuthProviderInfos ?? {}).map(
                                 provider => (
                                     <Button
                                         className="text-left my-1"
@@ -248,7 +248,7 @@ class Login extends React.Component<IProps, IState> {
         }
 
         const oauthdata = JSON.parse(
-            window.sessionStorage.getItem("oauth") || "{}"
+            window.sessionStorage.getItem("oauth") ?? "{}"
         ) as OAuthStateStorage;
         if (provider === OAuthProvider.TGForums) {
             oauthdata["tgforums"] = {

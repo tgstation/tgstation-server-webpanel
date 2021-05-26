@@ -160,7 +160,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
 
         console.error(
             `Error occured within the application: ${this.code} (${
-                this.desc?.desc || "No description"
+                this.desc?.desc ?? "No description"
             })`,
             this
         );

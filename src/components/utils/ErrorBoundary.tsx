@@ -49,7 +49,7 @@ class ErrorBoundary extends React.Component<IProps, IState> {
                             <Card.Text as={"pre"} className="bg-transparent text-danger">
                                 <code>
                                     {`Webpanel Version: ${VERSION}\nWebpanel Mode: ${MODE}\nStack trace: ${
-                                        this.state.errorInfo?.componentStack ||
+                                        this.state.errorInfo?.componentStack ??
                                         "Unable to get stack info"
                                     }`}
                                 </code>

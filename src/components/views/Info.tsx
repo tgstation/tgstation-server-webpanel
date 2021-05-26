@@ -137,7 +137,7 @@ class Info extends React.Component<IProps, IState> {
                                         <td>
                                             <h4>
                                                 {Object.keys(
-                                                    this.context.serverInfo.oAuthProviderInfos || {}
+                                                    this.context.serverInfo.oAuthProviderInfos ?? {}
                                                 ).join(", ")}
                                             </h4>
                                         </td>

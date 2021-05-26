@@ -179,7 +179,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         if (loopid !== this.currentLoop) return;
 
                         if (value.code === StatusCode.OK) {
-                            const instanceSet = this.jobsByInstance.get(instanceid) || new Map();
+                            const instanceSet = this.jobsByInstance.get(instanceid) ?? new Map();
                             this.jobsByInstance.set(instanceid, instanceSet);
                             for (const job of value.payload) {
                                 instanceSet.set(job.id, job);

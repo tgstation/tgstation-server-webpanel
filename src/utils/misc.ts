@@ -31,7 +31,7 @@ function matchesPath(path: string, target: string, exact = false): boolean {
 }
 
 function resolvePermissionSet(user: UserResponse): PermissionSet {
-    return (user.permissionSet || user.group?.permissionSet) as PermissionSet;
+    return (user.permissionSet ?? user.group?.permissionSet) as PermissionSet;
 }
 
 export { download, replaceAll, matchesPath, resolvePermissionSet };

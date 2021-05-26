@@ -181,7 +181,7 @@ export default withRouter(
                             <Button
                                 className="mr-1"
                                 as={Link}
-                                to={AppRoutes.admin_logs.link || AppRoutes.admin_logs.route}>
+                                to={AppRoutes.admin_logs.link ?? AppRoutes.admin_logs.route}>
                                 <FormattedMessage id="generic.goback" />
                             </Button>
                             <Button
@@ -283,7 +283,7 @@ export default withRouter(
                                                         className="mr-1"
                                                         onClick={() => {
                                                             this.props.history.push(
-                                                                (AppRoutes.admin_logs.link ||
+                                                                (AppRoutes.admin_logs.link ??
                                                                     AppRoutes.admin_logs.route) +
                                                                     value.name +
                                                                     "/",

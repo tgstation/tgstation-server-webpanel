@@ -46,7 +46,7 @@ class AppNavbar extends React.Component<IProps, IState> {
             loggedIn: !!CredentialsProvider.isTokenValid(),
             routes: [],
             categories: AppCategories,
-            focusedCategory: this.props.category?.name || ""
+            focusedCategory: this.props.category?.name ?? ""
         };
     }
 
@@ -107,7 +107,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                     bg="primary">
                     <Navbar.Brand
                         onClick={() => {
-                            this.props.history.push(AppRoutes.home.link || AppRoutes.home.route, {
+                            this.props.history.push(AppRoutes.home.link ?? AppRoutes.home.route, {
                                 reload: true
                             });
                         }}
@@ -122,7 +122,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                                     <Nav.Link
                                         onClick={() => {
                                             this.props.history.push(
-                                                AppRoutes.home.link || AppRoutes.home.route,
+                                                AppRoutes.home.link ?? AppRoutes.home.route,
                                                 { reload: true }
                                             );
                                         }}
@@ -165,7 +165,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                                                 <Nav.Link
                                                     onClick={() => {
                                                         this.props.history.push(
-                                                            cat.leader.link || cat.leader.route,
+                                                            cat.leader.link ?? cat.leader.route,
                                                             { reload: true }
                                                         );
                                                     }}
@@ -212,7 +212,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                                                                             <Nav.Link
                                                                                 onClick={() => {
                                                                                     this.props.history.push(
-                                                                                        val.link ||
+                                                                                        val.link ??
                                                                                             val.route,
                                                                                         {
                                                                                             reload: true
@@ -277,7 +277,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                     <Button
                         onClick={() => {
                             this.props.history.push(
-                                AppRoutes.config.link || AppRoutes.config.route,
+                                AppRoutes.config.link ?? AppRoutes.config.route,
                                 { reload: true }
                             );
                         }}
@@ -286,7 +286,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                     </Button>
                     <Button
                         onClick={() => {
-                            this.props.history.push(AppRoutes.info.link || AppRoutes.info.route, {
+                            this.props.history.push(AppRoutes.info.link ?? AppRoutes.info.route, {
                                 reload: true
                             });
                         }}
@@ -316,7 +316,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                         <Dropdown.Item
                             onClick={() => {
                                 this.props.history.push(
-                                    AppRoutes.info.link || AppRoutes.info.route,
+                                    AppRoutes.info.link ?? AppRoutes.info.route,
                                     { reload: true }
                                 );
                             }}>
@@ -325,7 +325,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                         <Dropdown.Item
                             onClick={() => {
                                 this.props.history.push(
-                                    AppRoutes.config.link || AppRoutes.config.route,
+                                    AppRoutes.config.link ?? AppRoutes.config.route,
                                     { reload: true }
                                 );
                             }}>
@@ -335,7 +335,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                             <Dropdown.Item
                                 onClick={() => {
                                     this.props.history.push(
-                                        AppRoutes.passwd.link || AppRoutes.passwd.route,
+                                        AppRoutes.passwd.link ?? AppRoutes.passwd.route,
                                         { reload: true }
                                     );
                                 }}>

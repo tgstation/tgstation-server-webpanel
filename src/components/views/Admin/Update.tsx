@@ -313,7 +313,7 @@ class Update extends React.Component<IProps, IState> {
                                 variant="link"
                                 onClick={() => {
                                     this.props.history.push(
-                                        (AppRoutes.admin_update.link ||
+                                        (AppRoutes.admin_update.link ??
                                             AppRoutes.admin_update.route) + "all/",
                                         {
                                             reload: true

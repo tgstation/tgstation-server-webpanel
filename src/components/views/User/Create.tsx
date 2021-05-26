@@ -36,7 +36,7 @@ class UserCreate extends React.Component<IProps, IState> {
     public static defaultProps = {
         postCreateAction: (user: UserResponse, history: LibHistory) => {
             RouteData.selecteduserid = user.id;
-            history.push(AppRoutes.useredit.link || AppRoutes.useredit.route);
+            history.push(AppRoutes.useredit.link ?? AppRoutes.useredit.route);
         }
     };
 

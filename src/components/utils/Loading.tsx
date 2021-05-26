@@ -53,7 +53,7 @@ export default class Loading extends React.Component<IProps, IState> {
                     <div className={center ? "text-center" : ""}>
                         <Spinner
                             variant={variant ? variant : "secondary"}
-                            className={center ? `d-block mx-auto ${className || ""}` : className}
+                            className={center ? `d-block mx-auto ${className ?? ""}` : className}
                             style={styles}
                             animation={animation ? animation : "border"}
                             {...otherprops}

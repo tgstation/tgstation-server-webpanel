@@ -125,7 +125,7 @@ class App extends React.Component<IProps, IState> {
         this.updateContextServer = this.updateContextServer.bind(this);
         this.deleteGeneralContextError = this.deleteGeneralContextError.bind(this);
 
-        this.translationFactory = this.props.translationFactory || new TranslationFactory();
+        this.translationFactory = this.props.translationFactory ?? new TranslationFactory();
 
         this.state = {
             loggedIn: !!CredentialsProvider.isTokenValid(),
@@ -296,7 +296,7 @@ class App extends React.Component<IProps, IState> {
             });
         } catch (error) {
             this.setState({
-                translationError: JSON.stringify(error) || "An unknown error occurred"
+                translationError: JSON.stringify(error) ?? "An unknown error occurred"
             });
 
             return;

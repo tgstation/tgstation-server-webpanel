@@ -60,7 +60,7 @@ export default class InputField extends React.Component<IProps, IState> {
         const changed = this.state.currentValue !== this.props.defaultValue;
 
         const commit = (_value?: string | number | boolean) => {
-            const value = _value || this.state.currentValue;
+            const value = _value ?? this.state.currentValue;
 
             switch (this.props.type) {
                 case "str":
