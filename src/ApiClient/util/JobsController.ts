@@ -18,7 +18,7 @@ import {
 import { InstanceResponse } from "../generatedcode/schemas";
 import InstanceClient from "../InstanceClient";
 import InstancePermissionSetClient from "../InstancePermissionSetClient";
-import JobsClient, { tgsJobResponse } from "../JobsClient";
+import JobsClient, { TGSJobResponse } from "../JobsClient";
 import InternalError, { ErrorCode } from "../models/InternalComms/InternalError";
 import { StatusCode } from "../models/InternalComms/InternalStatus";
 import ServerClient from "../ServerClient";
@@ -44,12 +44,12 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     private enableJobProgressWorkaround?: boolean;
 
     public errors: InternalError[] = [];
-    public jobs = new Map<number, tgsJobResponse>();
-    public jobsByInstance = new Map<number, Map<number, tgsJobResponse>>();
+    public jobs = new Map<number, TGSJobResponse>();
+    public jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
 
     public reset() {
-        this.jobs = new Map<number, tgsJobResponse>();
-        this.jobsByInstance = new Map<number, Map<number, tgsJobResponse>>();
+        this.jobs = new Map<number, TGSJobResponse>();
+        this.jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
         this.reloadAccessibleInstances()
             .then(this.restartLoop)
             .catch(e => {
@@ -168,9 +168,64 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         const work: Promise<void>[] = [];
 
         this.accessibleInstances.forEach(instanceid => {
+            const processJobs = async (jobs: TGSJobResponse[]) => {
+                const instanceSet = this.jobsByInstance.get(instanceid) ?? new Map();
+                this.jobsByInstance.set(instanceid, instanceSet);
+                for (const job of jobs) {
+                    instanceSet.set(job.id, job);
+                    this.jobs.set(job.id, job);
+                }
+
+                const remoteActive = jobs.map(job => job.id);
+                const localActive = Array.from(this.jobs.values())
+                    .filter(job => !job.stoppedAt)
+                    .filter(job => job.instanceid === instanceid)
+                    .map(job => job.id);
+                const manualIds = localActive.filter(jobId => !remoteActive.includes(jobId));
+
+                const work: Promise<void>[] = [];
+                manualIds.forEach(jobId => {
+                    work.push(
+                        JobsClient.getJob(instanceid, jobId).then(job => {
+                            if (job.code === StatusCode.ERROR) {
+                                this.errors.push(job.error);
+                                return;
+                            }
+                            instanceSet.set(job.payload.id, job.payload);
+                            this.jobs.set(job.payload.id, job.payload);
+                        })
+                    );
+                });
+                await Promise.all(work);
+
+                if (loopid !== this.currentLoop) return;
+
+                totalActiveJobs += jobs.length;
+            };
+
+            const processError = (error: InternalError) => {
+                if (
+                    error.code === ErrorCode.HTTP_DATA_INEGRITY &&
+                    error.originalErrorMessage?.errorCode === TGSErrorCode.InstanceOffline
+                ) {
+                    console.log(
+                        `[JobsController] Clearing instance ${instanceid} as it is now offline`
+                    );
+                    this.accessibleInstances.delete(instanceid);
+                    //Probably a good idea to reload the list at this point
+                    this.reloadAccessibleInstances().catch(e => {
+                        this.errors.push(
+                            new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) })
+                        );
+                    });
+                } else {
+                    this.errors.push(error);
+                }
+            };
+
             //now since this is async, it still possible that a single fire gets done after the new loop started, theres no really much that can be done about it
             work.push(
-                JobsClient.listActiveJobs(instanceid)
+                JobsClient.listActiveJobs(instanceid, { page: 1, pageSize: 100 })
                     .then(async value => {
                         //this check is here because the request itself is async and could return after
                         // the loop is terminated, we dont want to contaminate the jobs of an instance
@@ -179,59 +234,22 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         if (loopid !== this.currentLoop) return;
 
                         if (value.code === StatusCode.OK) {
-                            const instanceSet = this.jobsByInstance.get(instanceid) ?? new Map();
-                            this.jobsByInstance.set(instanceid, instanceSet);
-                            for (const job of value.payload) {
-                                instanceSet.set(job.id, job);
-                                this.jobs.set(job.id, job);
-                            }
-
-                            const remoteActive = value.payload.map(job => job.id);
-                            const localActive = Array.from(this.jobs.values())
-                                .filter(job => !job.stoppedAt)
-                                .filter(job => job.instanceid === instanceid)
-                                .map(job => job.id);
-                            const manualIds = localActive.filter(
-                                jobId => !remoteActive.includes(jobId)
-                            );
-
-                            const work: Promise<void>[] = [];
-                            manualIds.forEach(jobId => {
-                                work.push(
-                                    JobsClient.getJob(instanceid, jobId).then(job => {
-                                        if (job.code === StatusCode.ERROR) {
-                                            this.errors.push(job.error);
-                                            return;
-                                        }
-                                        instanceSet.set(job.payload.id, job.payload);
-                                        this.jobs.set(job.payload.id, job.payload);
-                                    })
-                                );
-                            });
-                            await Promise.all(work);
-
-                            if (loopid !== this.currentLoop) return;
-
-                            totalActiveJobs += value.payload.length;
-                        } else {
-                            if (
-                                value.error.code === ErrorCode.HTTP_DATA_INEGRITY &&
-                                value.error.originalErrorMessage?.errorCode ===
-                                    TGSErrorCode.InstanceOffline
-                            ) {
-                                console.log(
-                                    `[JobsController] Clearing instance ${instanceid} as it is now offline`
-                                );
-                                this.accessibleInstances.delete(instanceid);
-                                //Probably a good idea to reload the list at this point
-                                this.reloadAccessibleInstances().catch(e => {
-                                    this.errors.push(
-                                        new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) })
-                                    );
+                            for (let i = 2; i <= value.payload.totalPages; i++) {
+                                const jobs2 = await JobsClient.listActiveJobs(instanceid, {
+                                    page: i,
+                                    pageSize: 100
                                 });
-                            } else {
-                                this.errors.push(value.error);
+                                if (jobs2.code === StatusCode.ERROR) {
+                                    processError(jobs2.error);
+                                    return;
+                                } else {
+                                    value.payload.content.push(...jobs2.payload.content);
+                                }
                             }
+                            if (loopid !== this.currentLoop) return;
+                            await processJobs(value.payload.content);
+                        } else {
+                            processError(value.error);
                         }
                     })
                     .catch(reason => {
@@ -310,7 +328,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     }
 
     private async canCancel(
-        job: Readonly<tgsJobResponse>,
+        job: Readonly<TGSJobResponse>,
         errors: InternalError<ErrorCode>[]
     ): Promise<boolean> {
         //we dont need to reevalutate stuff that we already know

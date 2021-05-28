@@ -7,7 +7,7 @@ import { Rnd } from "react-rnd";
 
 import { InstanceResponse } from "../../ApiClient/generatedcode/schemas";
 import InstanceClient from "../../ApiClient/InstanceClient";
-import { tgsJobResponse } from "../../ApiClient/JobsClient";
+import { TGSJobResponse } from "../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import configOptions, { jobsWidgetOptions } from "../../ApiClient/util/config";
@@ -22,7 +22,7 @@ interface IProps {
 }
 
 interface IState {
-    jobs: Map<number, Map<number, tgsJobResponse>>;
+    jobs: Map<number, Map<number, TGSJobResponse>>;
     errors: InternalError<ErrorCode>[];
     ownerrors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;
@@ -105,7 +105,7 @@ export default class JobsList extends React.Component<IProps, IState> {
         });
     }
 
-    private async onCancel(job: tgsJobResponse) {
+    private async onCancel(job: TGSJobResponse) {
         const status = await JobsController.cancelJob(job.id, error => this.addError(error));
 
         if (!status) {
@@ -114,7 +114,7 @@ export default class JobsList extends React.Component<IProps, IState> {
         JobsController.fastmode = 5;
     }
 
-    private onClose(job: tgsJobResponse) {
+    private onClose(job: TGSJobResponse) {
         JobsController.clearJob(job.id);
     }
 

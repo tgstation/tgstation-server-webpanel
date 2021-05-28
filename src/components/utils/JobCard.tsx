@@ -10,14 +10,14 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 
 import { ErrorCode as TGSErrorCode } from "../../ApiClient/generatedcode/_enums";
-import { tgsJobResponse } from "../../ApiClient/JobsClient";
+import { TGSJobResponse } from "../../ApiClient/JobsClient";
 
 interface IState {}
 interface IProps {
-    job: tgsJobResponse;
+    job: TGSJobResponse;
     width?: string;
-    onClose: (job: tgsJobResponse) => void;
-    onCancel: (job: tgsJobResponse) => void;
+    onClose: (job: TGSJobResponse) => void;
+    onCancel: (job: TGSJobResponse) => void;
 }
 
 export default class JobCard extends React.Component<IProps, IState> {
