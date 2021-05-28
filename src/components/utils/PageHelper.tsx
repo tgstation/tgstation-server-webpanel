@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -7,11 +7,11 @@ import Pagination from "react-bootstrap/Pagination";
 import Popover from "react-bootstrap/Popover";
 import { FormattedMessage } from "react-intl";
 
-interface IProps {
+type IProps = {
     selectPage: (page: number) => void;
     totalPages: number;
     currentPage: number;
-}
+} & Partial<ComponentPropsWithoutRef<"div">>;
 
 interface IState {
     showGoto: boolean;
@@ -52,6 +52,7 @@ export default class PageHelper extends React.PureComponent<IProps, IState> {
         for (let i = min; i <= max; i++) {
             items.push(
                 <Pagination.Item
+                    key={i}
                     active={i === this.props.currentPage}
                     onClick={() => this.props.selectPage(i)}>
                     {i}
@@ -93,8 +94,11 @@ export default class PageHelper extends React.PureComponent<IProps, IState> {
             </Popover>
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { selectPage: _1, totalPages: _2, currentPage: _3, ...props } = this.props;
+
         return (
-            <div className="text-center">
+            <div className="text-center" {...props}>
                 <Pagination className="justify-content-center">
                     <Pagination.Prev
                         disabled={this.props.currentPage === 1}
