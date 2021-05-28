@@ -80,7 +80,7 @@ class InstanceList extends React.Component<IProps, IState> {
             //Safety against being on non existant pages
             if (this.state.page > instancelist.payload.totalPages) {
                 this.setState({
-                    page: instancelist.payload.totalPages
+                    page: 1
                 });
                 return;
             }

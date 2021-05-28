@@ -10,6 +10,7 @@ import {
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
+import configOptions from "./util/config";
 import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
 
@@ -165,14 +166,17 @@ export default new (class UserClient extends ApiClient<IEvents> {
         }
     }
 
-    public async listUsers(): Promise<InternalStatus<UserResponse[], GenericErrors>> {
+    public async listUsers({
+        page = 1,
+        pageSize = configOptions.itemsperpage.value as number
+    }): Promise<InternalStatus<PaginatedUserResponse, GenericErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
             response = await ServerClient.apiClient!.UserController_List({
-                page: 1,
-                pageSize: 100
+                page: page,
+                pageSize: pageSize
             });
         } catch (stat) {
             return new InternalStatus({
@@ -183,13 +187,16 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as PaginatedUserResponse)!.content.sort(
+                const payload = (response.data as PaginatedUserResponse).content.sort(
                     (a, b) => a.id - b.id
                 );
 
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload
+                    payload: {
+                        ...(response.data as PaginatedUserResponse),
+                        content: payload
+                    }
                 });
             }
             default: {

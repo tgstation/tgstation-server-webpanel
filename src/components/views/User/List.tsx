@@ -17,6 +17,7 @@ import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import Loading from "../../utils/Loading";
+import PageHelper from "../../utils/PageHelper";
 
 interface IProps extends RouteComponentProps {}
 
@@ -25,6 +26,8 @@ interface IState {
     users: UserResponse[];
     loading: boolean;
     canList: boolean;
+    page: number;
+    maxPage?: number;
 }
 
 export default withRouter(
@@ -36,7 +39,8 @@ export default withRouter(
                 errors: [],
                 users: [],
                 loading: true,
-                canList: false
+                canList: false,
+                page: RouteData.userlistpage ?? 1
             };
         }
 
@@ -50,6 +54,58 @@ export default withRouter(
             });
         }
 
+        private async loadUsers(): Promise<void> {
+            this.setState({
+                loading: true
+            });
+
+            if (this.state.canList) {
+                const res = await UserClient.listUsers({ page: this.state.page });
+                switch (res.code) {
+                    case StatusCode.OK: {
+                        if (this.state.page > res.payload.totalPages) {
+                            this.setState({
+                                page: 1
+                            });
+                        }
+
+                        this.setState({
+                            users: res.payload.content,
+                            maxPage: res.payload.totalPages
+                        });
+                        break;
+                    }
+                    case StatusCode.ERROR: {
+                        this.addError(res.error);
+                    }
+                }
+            } else {
+                const user = await UserClient.getCurrentUser();
+                if (user.code === StatusCode.OK) {
+                    //if we cant list users, add our own user to the list
+                    this.setState({
+                        users: [user.payload]
+                    });
+                } else {
+                    this.addError(user.error);
+                }
+            }
+
+            this.setState({
+                loading: false
+            });
+        }
+
+        public async componentDidUpdate(
+            prevProps: Readonly<IProps>,
+            prevState: Readonly<IState>
+        ): Promise<void> {
+            if (prevState.page !== this.state.page) {
+                RouteData.userlistpage = this.state.page;
+                await this.loadUsers();
+            }
+        }
+
         public async componentDidMount(): Promise<void> {
             const response = await UserClient.getCurrentUser();
             if (response.code == StatusCode.OK) {
@@ -61,25 +117,7 @@ export default withRouter(
                     canList
                 });
 
-                if (canList) {
-                    const res = await UserClient.listUsers();
-                    switch (res.code) {
-                        case StatusCode.OK: {
-                            this.setState({
-                                users: res.payload
-                            });
-                            break;
-                        }
-                        case StatusCode.ERROR: {
-                            this.addError(res.error);
-                        }
-                    }
-                } else {
-                    //if we cant list users, add our own user to the list
-                    this.setState({
-                        users: [response.payload]
-                    });
-                }
+                await this.loadUsers();
             } else {
                 this.addError(response.error);
             }
@@ -249,6 +287,13 @@ export default withRouter(
                             })}
                         </tbody>
                     </Table>
+
+                    <PageHelper
+                        selectPage={newPage => this.setState({ page: newPage })}
+                        totalPages={this.state.maxPage ?? 1}
+                        currentPage={this.state.page}
+                    />
+
                     <Button as={Link} to={AppRoutes.usercreate.link ?? AppRoutes.usercreate.route}>
                         <FormattedMessage id="routes.usercreate" />
                     </Button>

@@ -107,7 +107,7 @@ export default withRouter(
                 case StatusCode.OK: {
                     if (this.state.page > response.payload.totalPages) {
                         this.setState({
-                            page: response.payload.totalPages
+                            page: 1
                         });
                         return;
                     }
