@@ -154,13 +154,24 @@ class UserEdit extends React.Component<IProps, IState> {
 
     private async loadGroups() {
         if (!this.canRead) return;
-        const groups = await UserGroupClient.listGroups();
-        if (groups.code === StatusCode.OK) {
+        const groups = [];
+
+        const groups1 = await UserGroupClient.listGroups({ page: 1, pageSize: 100 });
+        if (groups1.code === StatusCode.OK) {
+            for (let i = 2; i <= groups1.payload.totalPages; i++) {
+                const groups2 = await UserGroupClient.listGroups({ page: i, pageSize: 100 });
+                if (groups2.code === StatusCode.ERROR) {
+                    this.addError(groups2.error);
+                    return;
+                } else {
+                    groups.push(...groups2.payload.content);
+                }
+            }
             this.setState({
-                groups: groups.payload
+                groups: groups
             });
         } else {
-            this.addError(groups.error);
+            this.addError(groups1.error);
         }
     }
 

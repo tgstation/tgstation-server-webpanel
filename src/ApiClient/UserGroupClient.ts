@@ -10,6 +10,7 @@ import {
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
+import configOptions from "./util/config";
 
 export type UpdateGroupErrors = GenericErrors | ErrorCode.GROUP_NOT_FOUND;
 export type listGroupsErrors = GenericErrors;
@@ -63,14 +64,17 @@ export default new (class UserGroupClient extends ApiClient {
         }
     }
 
-    public async listGroups(): Promise<InternalStatus<UserGroupResponse[], listGroupsErrors>> {
+    public async listGroups({
+        page = 1,
+        pageSize = configOptions.itemsperpage.value as number
+    }): Promise<InternalStatus<PaginatedUserGroupResponse, listGroupsErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
             response = await ServerClient.apiClient!.UserGroupController_List({
-                pageSize: 100,
-                page: 1
+                pageSize: pageSize,
+                page: page
             });
         } catch (e) {
             return new InternalStatus({
@@ -83,7 +87,7 @@ export default new (class UserGroupClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as PaginatedUserGroupResponse).content
+                    payload: response.data as PaginatedUserGroupResponse
                 });
             }
             default: {
