@@ -8,6 +8,7 @@ import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
 import TransferClient, { UploadErrors } from "./TransferClient";
+import configOptions from "./util/config";
 
 export default new (class ByondClient extends ApiClient {
     public async getActiveVersion(
@@ -46,7 +47,8 @@ export default new (class ByondClient extends ApiClient {
     }
 
     public async listAllVersions(
-        instance: number
+        instance: number,
+        { page = 1, pageSize = configOptions.itemsperpage.value as number }
     ): Promise<InternalStatus<PaginatedByondResponse, GenericErrors>> {
         await ServerClient.wait4Init();
 
@@ -54,8 +56,8 @@ export default new (class ByondClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.ByondController_List({
                 Instance: instance,
-                page: 1,
-                pageSize: 100
+                page: page,
+                pageSize: pageSize
             });
         } catch (stat) {
             return new InternalStatus({

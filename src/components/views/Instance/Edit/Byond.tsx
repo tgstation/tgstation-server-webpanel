@@ -14,9 +14,11 @@ import { ByondResponse } from "../../../../ApiClient/generatedcode/schemas";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
+import { RouteData } from "../../../../utils/routes";
 import AccessDenied from "../../../utils/AccessDenied";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import Loading from "../../../utils/Loading";
+import PageHelper from "../../../utils/PageHelper";
 
 interface IProps {}
 
@@ -28,6 +30,8 @@ interface IState {
     selectedVersion: string;
     loading: boolean;
     customFile?: File | null;
+    page: number;
+    maxPage?: number;
 }
 
 class Byond extends React.Component<IProps, IState> {
@@ -41,7 +45,8 @@ class Byond extends React.Component<IProps, IState> {
             activeVersion: "",
             latestVersion: "",
             selectedVersion: "",
-            loading: true
+            loading: true,
+            page: RouteData.byondlistpage ?? 1
         };
     }
 
@@ -56,10 +61,20 @@ class Byond extends React.Component<IProps, IState> {
     }
 
     private async loadVersions() {
-        const response = await ByondClient.listAllVersions(this.context.instance.id);
+        const response = await ByondClient.listAllVersions(this.context.instance.id, {
+            page: this.state.page
+        });
         if (response.code === StatusCode.OK) {
+            if (this.state.page > response.payload.totalPages) {
+                this.setState({
+                    page: response.payload.totalPages
+                });
+                return;
+            }
+
             this.setState({
-                versions: response.payload.content
+                versions: response.payload.content,
+                maxPage: response.payload.totalPages
             });
 
             const response2 = await ByondClient.getActiveVersion(this.context.instance.id);
@@ -72,6 +87,16 @@ class Byond extends React.Component<IProps, IState> {
             }
         } else {
             this.addError(response.error);
+        }
+    }
+
+    public async componentDidUpdate(
+        prevProps: Readonly<IProps>,
+        prevState: Readonly<IState>
+    ): Promise<void> {
+        if (prevState.page !== this.state.page) {
+            RouteData.byondlistpage = this.state.page;
+            await this.loadVersions();
         }
     }
 
@@ -215,6 +240,12 @@ class Byond extends React.Component<IProps, IState> {
                         );
                     })}
                 </div>
+                <PageHelper
+                    className="mt-4"
+                    selectPage={newPage => this.setState({ page: newPage })}
+                    totalPages={this.state.maxPage ?? 1}
+                    currentPage={this.state.page}
+                />
                 <hr />
                 <h4>
                     <FormattedMessage id="view.instance.hosting.byond.add" />
