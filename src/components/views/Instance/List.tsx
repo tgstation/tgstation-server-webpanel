@@ -78,7 +78,10 @@ class InstanceList extends React.Component<IProps, IState> {
 
         if (instancelist.code == StatusCode.OK) {
             //Safety against being on non existant pages
-            if (this.state.page > instancelist.payload.totalPages) {
+            if (
+                this.state.page > instancelist.payload.totalPages &&
+                instancelist.payload.totalPages !== 0
+            ) {
                 this.setState({
                     page: 1
                 });

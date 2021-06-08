@@ -63,7 +63,10 @@ export default withRouter(
                 const res = await UserClient.listUsers({ page: this.state.page });
                 switch (res.code) {
                     case StatusCode.OK: {
-                        if (this.state.page > res.payload.totalPages) {
+                        if (
+                            this.state.page > res.payload.totalPages &&
+                            res.payload.totalPages !== 0
+                        ) {
                             this.setState({
                                 page: 1
                             });

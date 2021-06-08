@@ -101,13 +101,13 @@ export default class PageHelper extends React.PureComponent<IProps, IState> {
             <div className="text-center" {...props}>
                 <Pagination className="justify-content-center">
                     <Pagination.Prev
-                        disabled={this.props.currentPage === 1}
+                        disabled={this.props.currentPage <= 1}
                         onClick={() =>
                             this.props.selectPage(Math.max(this.props.currentPage - 1, 1))
                         }
                     />
                     <Pagination.Item
-                        active={this.props.currentPage === 1}
+                        active={this.props.currentPage <= 1}
                         onClick={() => this.props.selectPage(1)}>
                         1
                     </Pagination.Item>
@@ -116,7 +116,7 @@ export default class PageHelper extends React.PureComponent<IProps, IState> {
                     {ellipsis}
                     {this.props.totalPages >= 2 ? (
                         <Pagination.Item
-                            active={this.props.currentPage === this.props.totalPages}
+                            active={this.props.currentPage >= this.props.totalPages}
                             onClick={() => this.props.selectPage(this.props.totalPages)}>
                             {this.props.totalPages}
                         </Pagination.Item>
@@ -139,7 +139,7 @@ export default class PageHelper extends React.PureComponent<IProps, IState> {
                         </OverlayTrigger>
                     ) : null}
                     <Pagination.Next
-                        disabled={this.props.currentPage === this.props.totalPages}
+                        disabled={this.props.currentPage >= this.props.totalPages}
                         onClick={() =>
                             this.props.selectPage(
                                 Math.min(this.props.currentPage + 1, this.props.totalPages)

@@ -65,7 +65,10 @@ class Byond extends React.Component<IProps, IState> {
             page: this.state.page
         });
         if (response.code === StatusCode.OK) {
-            if (this.state.page > response.payload.totalPages) {
+            if (
+                this.state.page > response.payload.totalPages &&
+                response.payload.totalPages !== 0
+            ) {
                 this.setState({
                     page: 1
                 });
