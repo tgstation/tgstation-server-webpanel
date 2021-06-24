@@ -53,10 +53,9 @@ module.exports = function createConfig(prodLike, github) {
         },
 
         devServer: {
-            contentBase: path.join(__dirname, "dist"),
+            static: [path.join(__dirname, "dist")],
             compress: true,
             hot: true,
-            overlay: true,
             host: "0.0.0.0", //technically insecure? don't put nudes in your app, helps to test with mobile
             port: 8080,
             historyApiFallback: true
@@ -115,7 +114,10 @@ module.exports = function createConfig(prodLike, github) {
                                 "@babel/preset-react"
                             ],
                             plugins: [
-                                ["@babel/plugin-transform-typescript", {allowDeclareFields: true}],
+                                [
+                                    "@babel/plugin-transform-typescript",
+                                    { allowDeclareFields: true }
+                                ],
                                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                                 isDevelopment && require.resolve("react-refresh/babel")
                             ].filter(Boolean)
@@ -147,30 +149,40 @@ module.exports = function createConfig(prodLike, github) {
             new ForkTsCheckerWebpackPlugin(),
             new webpack.ProvidePlugin({
                 Buffer: ["buffer", "Buffer"],
-                process: 'process/browser'
+                process: "process/browser"
             }),
             new webpack.DefinePlugin({
-                API_VERSION: JSON.stringify(require("./src/ApiClient/generatedcode/swagger.json").info.version),
-                VERSION: JSON.stringify(github ? process.env.GITHUB_SHA : require("./package.json").version),
+                API_VERSION: JSON.stringify(
+                    require("./src/ApiClient/generatedcode/swagger.json").info.version
+                ),
+                VERSION: JSON.stringify(
+                    github ? process.env.GITHUB_SHA : require("./package.json").version
+                ),
                 MODE: JSON.stringify(prodLike ? (github ? "GITHUB" : "PROD") : "DEV"),
                 //The basepath remains /app because its for the router which is located at /app/
                 DEFAULT_BASEPATH: JSON.stringify(github ? "/app/" : publicPath),
                 DEFAULT_APIPATH: JSON.stringify(prodLike ? "/" : "http://localhost:5000/")
             }),
-            github ? false : new HtmlWebpackPlugin({
-                title: "TGS Webpanel v" + require("./package.json").version,
-                filename: "index.html",
-                template: "src/index.html",
-                inject: false,
-                publicPath: github ? process.env.TGS_WEBPANEL_GITHUB_PATH : prodLike ? "/app/" : "/"
-            }),
+            github
+                ? false
+                : new HtmlWebpackPlugin({
+                      title: "TGS Webpanel v" + require("./package.json").version,
+                      filename: "index.html",
+                      template: "src/index.html",
+                      inject: false,
+                      publicPath: github
+                          ? process.env.TGS_WEBPANEL_GITHUB_PATH
+                          : prodLike
+                          ? "/app/"
+                          : "/"
+                  }),
             isDevelopment &&
                 new ReactRefreshWebpackPlugin({
                     overlay: {
                         sockIntegration: "wds"
                     }
                 }),
-            new JSONManifestPlugin({version: require("./package.json").version })
+            new JSONManifestPlugin({ version: require("./package.json").version })
         ].filter(Boolean)
     };
 };
