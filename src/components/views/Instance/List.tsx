@@ -8,6 +8,7 @@ import Table from "react-bootstrap/Table";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import { satisfies as SemverSatisfies } from "semver";
 
 import { InstanceManagerRights } from "../../../ApiClient/generatedcode/_enums";
 import { InstanceResponse } from "../../../ApiClient/generatedcode/schemas";
@@ -15,6 +16,7 @@ import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import ServerClient from "../../../ApiClient/ServerClient";
 import { GeneralContext } from "../../../contexts/GeneralContext";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
@@ -74,8 +76,11 @@ class InstanceList extends React.Component<IProps, IState> {
         });
 
         const instancelist = await InstanceClient.listInstances({ page: this.state.page });
+        const tgsversionresponse = await ServerClient.getServerInfo();
+        const enableVersionWorkaround =
+            tgsversionresponse.code === StatusCode.OK &&
+            SemverSatisfies(tgsversionresponse.payload.apiVersion, "<9.1.0");
         const modifiedlist: Array<Instance> = [];
-
         if (instancelist.code == StatusCode.OK) {
             //Safety against being on non existant pages
             if (
@@ -91,7 +96,12 @@ class InstanceList extends React.Component<IProps, IState> {
             const work: Array<Promise<void>> = [];
             for (const instance of instancelist.payload.content) {
                 const modifiedinstance = instance as Instance;
-                if (instance.online) {
+                if (!enableVersionWorkaround) {
+                    modifiedinstance.canAccess = modifiedinstance.online
+                        ? modifiedinstance.accessible
+                        : false;
+                    modifiedlist.push(modifiedinstance);
+                } else if (instance.online) {
                     work.push(
                         InstancePermissionSetClient.getCurrentInstancePermissionSet(
                             instance.id
