@@ -147,10 +147,10 @@ class InstanceList extends React.Component<IProps, IState> {
         // to determine what state we should put it in, thats intentional, if the user clicks Set Online, it needs
         // to be online, no matter what it previously was
         const desiredState = !instance.online;
-        const instanceedit = await InstanceClient.editInstance(({
+        const instanceedit = await InstanceClient.editInstance({
             id: instance.id,
             online: desiredState
-        } as unknown) as InstanceResponse);
+        } as unknown as InstanceResponse);
         if (instanceedit.code === StatusCode.OK) {
             await this.loadInstances();
         } else {

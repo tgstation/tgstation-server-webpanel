@@ -639,9 +639,10 @@ class UserEdit extends React.Component<IProps, IState> {
                                         onClick={() => {
                                             this.setState(prev => {
                                                 return {
-                                                    newOAuthConnections: prev.newOAuthConnections.filter(
-                                                        (val, idx2) => idx !== idx2
-                                                    )
+                                                    newOAuthConnections:
+                                                        prev.newOAuthConnections.filter(
+                                                            (val, idx2) => idx !== idx2
+                                                        )
                                                 };
                                             });
                                         }}>
@@ -1016,9 +1017,8 @@ class UserEdit extends React.Component<IProps, IState> {
                 }
             } else {
                 const newset = Object.assign(Object.assign({}, this.state.user.permissionSet), {
-                    [enumname == "permsadmin"
-                        ? "AdministrationRights"
-                        : "InstanceManagerRights"]: bitflag
+                    [enumname == "permsadmin" ? "AdministrationRights" : "InstanceManagerRights"]:
+                        bitflag
                 } as { AdministrationRights: AdministrationRights } | { InstanceManagerRights: InstanceManagerRights });
                 const response = await UserClient.editUser({
                     id: this.state.user.id,

@@ -10,7 +10,7 @@ export default new (class ConfigController {
 
     public saveconfig(newconfig: Partial<typeof configOptions>) {
         for (const [key, val] of Object.entries(newconfig)) {
-            this.setconfig(key as keyof typeof configOptions, val as ConfigOption);
+            this.setconfig(key as keyof typeof configOptions, val);
         }
         console.log("Configuration saved", configOptions);
     }
