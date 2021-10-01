@@ -133,6 +133,12 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
         }
         const stack = new Error().stack;
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (origin?.config.headers["Authorization"]) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            origin.config.headers["Authorization"] = "*********";
+        }
+
         let debuginfo = JSON.stringify({ addon, origin, config: configOptions, stack });
         debuginfo = debuginfo.replace(
             /Basic (?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?/g,
