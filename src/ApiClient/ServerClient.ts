@@ -95,8 +95,8 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         console.time("APIInit");
         //Object is forced typecasted to Document because i really cant be assed to figure out why it doesn't accept the json
         //The json is loaded with import to force webpack to bundle it alone
-        const defObj = ((await import("./generatedcode/swagger.json"))
-            .default as unknown) as Document;
+        const defObj = (await import("./generatedcode/swagger.json"))
+            .default as unknown as Document;
 
         this.api = new OpenAPIClientAxios({
             definition: defObj,
@@ -157,7 +157,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 // it tries to typecast the "response" we got into an error then tries to check if that "error" is
                 // the snowflake no apipath github error, if it is, it rejects the promise to send it to the catch block
                 // all endpoints have which simply returns the error wrapped in a status object
-                const snowflake = (error as unknown) as InternalError<ErrorCode.NO_APIPATH>;
+                const snowflake = error as unknown as InternalError<ErrorCode.NO_APIPATH>;
                 if (snowflake?.code === ErrorCode.NO_APIPATH) {
                     return Promise.reject(snowflake);
                 }
@@ -367,7 +367,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     public wait4Token() {
         return new Promise<TokenResponse>(resolve => {
             if (CredentialsProvider.isTokenValid()) {
-                resolve(CredentialsProvider.token);
+                resolve(CredentialsProvider.token!);
                 return;
             }
             this.on("tokenAvailable", token => {
@@ -424,7 +424,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             if (CredentialsProvider.credentials.type == CredentialsType.Password)
                 response = await this.apiClient!.HomeController_CreateToken(
                     {
-                        OAuthProvider: (undefined as unknown) as string
+                        OAuthProvider: undefined as unknown as string
                     },
                     null,
                     {

@@ -81,6 +81,8 @@ class RouteController extends TypedEmitter<IEvents> {
                         route.cachedAuth = auth;
                     })
                 );
+            } else {
+                route.cachedAuth = true;
             }
         }
 

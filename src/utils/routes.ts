@@ -28,7 +28,7 @@ export interface AppRoute {
     //if we can route to it even on the login page
     loginless?: boolean;
     //function to tell if we are authorized
-    isAuthorized: () => Promise<boolean>;
+    isAuthorized?: () => Promise<boolean>;
     //result of isAuthorized() after RouteController runs it, can be used by components but only set by RouteController
     cachedAuth?: boolean;
 
@@ -85,9 +85,6 @@ const AppRoutes = asElementTypesAppRoute({
         loose: false,
         navbarLoose: false,
 
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
-
         visibleNavbar: true,
         homeIcon: undefined,
 
@@ -143,9 +140,6 @@ const AppRoutes = asElementTypesAppRoute({
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: () => Promise.resolve(true),
-        cachedAuth: true,
-
         visibleNavbar: true,
         homeIcon: undefined,
 
@@ -159,9 +153,6 @@ const AppRoutes = asElementTypesAppRoute({
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
-
         visibleNavbar: true,
         homeIcon: undefined,
 
@@ -174,10 +165,6 @@ const AppRoutes = asElementTypesAppRoute({
 
         loose: false,
         navbarLoose: true,
-
-        //you can always read your own user
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: "user",
@@ -201,10 +188,6 @@ const AppRoutes = asElementTypesAppRoute({
 
         loose: true,
         navbarLoose: true,
-
-        //you can always read your own user
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: undefined,
@@ -237,7 +220,6 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         isAuthorized: adminRight(AdministrationRights.ChangeVersion),
-        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: "tools",
@@ -301,8 +283,6 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         loginless: true,
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
 
         visibleNavbar: false,
         homeIcon: "cogs"
@@ -316,8 +296,6 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: true,
 
         loginless: true,
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
 
         visibleNavbar: false
     },
@@ -330,8 +308,6 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: false,
 
         loginless: true,
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
 
         visibleNavbar: false
     },
@@ -344,8 +320,6 @@ const AppRoutes = asElementTypesAppRoute({
         navbarLoose: false,
 
         loginless: true,
-        isAuthorized: (): Promise<boolean> => Promise.resolve(true),
-        cachedAuth: true,
 
         visibleNavbar: true,
         homeIcon: "info-circle",
