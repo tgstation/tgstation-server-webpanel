@@ -25,6 +25,8 @@ export default class JobCard extends React.Component<IProps, IState> {
         const job = this.props.job;
         const createddate = new Date(job.startedAt);
         const createddiff = (createddate.getTime() - Date.now()) / 1000;
+        const stoppeddate = new Date(job.stoppedAt ?? 0);
+        const stoppeddiff = (stoppeddate.getTime() - Date.now()) / 1000;
         const variant =
             job.errorCode !== undefined || job.exceptionDetails !== undefined
                 ? "danger"
@@ -98,7 +100,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                                         {...triggerHandler}
                                         ref={ref as React.Ref<HTMLSpanElement>}>
                                         <FormattedRelativeTime
-                                            value={createddiff}
+                                            value={stoppeddiff}
                                             numeric="auto"
                                             updateIntervalInSeconds={1}
                                         />
