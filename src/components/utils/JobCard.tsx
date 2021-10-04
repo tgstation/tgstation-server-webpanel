@@ -48,7 +48,9 @@ export default class JobCard extends React.Component<IProps, IState> {
                 <ToastHeader closeButton={!!job.stoppedAt} className={`bg-${variant}`}>
                     #{job.id}: {job.description}
                 </ToastHeader>
-                <ToastBody>
+                <ToastBody className="pt-0">
+                    {/*STAGE*/}
+                    {job.stage ? <div className="mb-2">▶{job.stage}</div> : null}
                     {/*STARTED AT*/}
                     <FormattedMessage id="app.job.started" />
                     <OverlayTrigger
