@@ -2,7 +2,7 @@ import "./App.css";
 
 import * as React from "react";
 import Container from "react-bootstrap/Container";
-import { IntlProvider } from "react-intl";
+import { FormattedMessage, IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
 import { CredentialsType } from "./ApiClient/models/ICredentials";
@@ -23,6 +23,7 @@ import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import TranslationFactory from "./translations/TranslationFactory";
+import Alert from "react-bootstrap/Alert";
 
 interface IState {
     translation?: ITranslation;
@@ -82,6 +83,13 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                     ) : (
                         <React.Fragment>
                             <Container className="mt-5">
+                                <Alert variant="warning" className="d-block d-lg-none">
+                                    <Alert.Heading>
+                                        <FormattedMessage id="warning.screensize.header" />
+                                    </Alert.Heading>
+                                    <hr />
+                                    <FormattedMessage id="warning.screensize" />
+                                </Alert>
                                 {[...this.context.errors.values()].map((value, idx) => {
                                     return (
                                         <ErrorAlert
