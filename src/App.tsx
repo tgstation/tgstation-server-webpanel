@@ -1,6 +1,7 @@
 import "./App.css";
 
 import * as React from "react";
+import Alert from "react-bootstrap/Alert";
 import Container from "react-bootstrap/Container";
 import { FormattedMessage, IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
@@ -23,7 +24,6 @@ import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import TranslationFactory from "./translations/TranslationFactory";
-import Alert from "react-bootstrap/Alert";
 
 interface IState {
     translation?: ITranslation;
