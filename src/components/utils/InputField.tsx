@@ -113,7 +113,7 @@ export default class InputField extends React.Component<IProps, IState> {
                 <div className="flex-grow-1 w-100 w-xl-auto d-flex mb-3 mb-xl-0">
                     {this.props.type === "enum" ? (
                         <select
-                            className={`flex-fill mb-0 ${changed ? "font-weight-bold" : ""}`}
+                            className={`flex-fill mb-0 w-0 ${changed ? "font-weight-bold" : ""}`}
                             onChange={event => {
                                 if (this.props.setEditLock && !this.props.instantCommit) {
                                     if (

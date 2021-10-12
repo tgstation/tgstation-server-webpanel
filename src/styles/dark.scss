@@ -25,6 +25,7 @@ $theme-colors: map-merge(
 );
 
 $sizes: (
+    0: 0,
     40: 40%
 );
 
@@ -169,42 +170,7 @@ $toast-background-color: $gray-700;
 $toast-header-color: $toast-color;
 $toast-header-background-color: $gray-600;
 
-.nav-item {
-    &:not(:first-of-type) > .instanceedittab {
-            border-bottom-left-radius: 0 !important;
-            border-top-left-radius: 0 !important;
-            border-left: solid $gray-500 1px !important;
-    }
-    &:not(:last-of-type) > .instanceedittab {
-            border-bottom-right-radius: 0 !important;
-            border-top-right-radius: 0 !important;
-    }
-}
 
-//instanceedittab
-.instanceedittab {
-    background-color: theme-color("primary");
-    color: white;
-
-    &.wip {
-        background-color: theme-color("danger");
-        font-style: italic;
-    }
-
-    &:hover {
-        color: darken(white, 20);
-    }
-
-    &.active {
-        background-color: darken(theme-color("primary"), 12) !important;
-        &.wip {
-            background-color: darken(theme-color("danger"), 12) !important;
-        }
-        color: lightskyblue !important;
-        box-shadow: inset 0 2px 8px -2px black;
-        border: 1px solid $gray-600 !important;
-    }
-}
 
 @import "~bootstrap/scss/variables";
 
@@ -416,4 +382,70 @@ $toast-header-background-color: $gray-600;
         stroke: #3c3c3c;
         stroke-width: 3px;
     }
+}
+
+
+.nav-item {
+    &:not(:first-of-type) > .instanceedittab {
+        border-top-right-radius: 0 !important;
+        border-top-left-radius: 0 !important;
+    }
+    &:not(:last-of-type) > .instanceedittab {
+        border-bottom-right-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom: $gray-600 solid 1px;
+    }
+}
+
+//instanceedittab
+.instanceedittab {
+    background-color: theme-color("primary");
+    color: white;
+
+    &.wip {
+        background-color: theme-color("danger");
+        font-style: italic;
+    }
+
+    &:hover {
+        color: darken(white, 20);
+    }
+
+    &.active {
+        background-color: darken(theme-color("primary"), 12) !important;
+        &.wip {
+            background-color: darken(theme-color("danger"), 12) !important;
+        }
+        color: lightskyblue !important;
+        box-shadow: inset 0 2px 8px -2px black;
+        /*border: 1px solid $gray-600 !important;*/
+    }
+}
+
+.hover-bar .tab-text {
+    transition: max-width 1s, padding 1s;
+    @include media-breakpoint-up("lg") {
+        max-width: 0;
+    }
+    //IntelliJ does not recognize clip as a valid value but I assure you it is.
+    //noinspection CssInvalidPropertyValue
+    overflow: clip;
+}
+
+@include media-breakpoint-up("lg") {
+    .hover-bar:hover {
+        & .tab-text {
+            max-width: 300px;
+        }
+    }
+    .hover-bar:not(:hover) {
+        & .tab-text {
+            padding-left: 0 !important;
+        }
+    }
+}
+
+//Fix vertical align for fa icons
+* {
+    line-height: inherit;
 }
