@@ -1,8 +1,9 @@
 import "./App.css";
 
 import * as React from "react";
+import Alert from "react-bootstrap/Alert";
 import Container from "react-bootstrap/Container";
-import { IntlProvider } from "react-intl";
+import { FormattedMessage, IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
 import { CredentialsType } from "./ApiClient/models/ICredentials";
@@ -82,6 +83,13 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                     ) : (
                         <React.Fragment>
                             <Container className="mt-5">
+                                <Alert variant="warning" className="d-block d-lg-none">
+                                    <Alert.Heading>
+                                        <FormattedMessage id="warning.screensize.header" />
+                                    </Alert.Heading>
+                                    <hr />
+                                    <FormattedMessage id="warning.screensize" />
+                                </Alert>
                                 {[...this.context.errors.values()].map((value, idx) => {
                                     return (
                                         <ErrorAlert
