@@ -76,6 +76,17 @@ class InstanceEdit extends React.Component<IProps, IState> {
         await this.reloadInstance();
     }
 
+    public componentDidUpdate(prevProps: Readonly<IProps>) {
+        if (
+            this.props.match.params.tab &&
+            prevProps.match.params.tab != this.props.match.params.tab
+        ) {
+            this.setState({
+                tab: this.props.match.params.tab
+            });
+        }
+    }
+
     public async reloadInstance(): Promise<void> {
         this.setState({
             instance: null,
