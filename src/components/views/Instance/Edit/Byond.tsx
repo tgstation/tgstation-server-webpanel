@@ -14,9 +14,10 @@ import { ByondResponse } from "../../../../ApiClient/generatedcode/schemas";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
+import { hasByondRight } from "../../../../utils/misc";
 import { RouteData } from "../../../../utils/routes";
-import AccessDenied from "../../../utils/AccessDenied";
 import ErrorAlert from "../../../utils/ErrorAlert";
+import GenericAlert from "../../../utils/GenericAlert";
 import Loading from "../../../utils/Loading";
 import PageHelper from "../../../utils/PageHelper";
 
@@ -61,25 +62,31 @@ class Byond extends React.Component<IProps, IState> {
     }
 
     private async loadVersions() {
-        const response = await ByondClient.listAllVersions(this.context.instance.id, {
-            page: this.state.page
-        });
-        if (response.code === StatusCode.OK) {
-            if (
-                this.state.page > response.payload.totalPages &&
-                response.payload.totalPages !== 0
-            ) {
-                this.setState({
-                    page: 1
-                });
-                return;
-            }
-
-            this.setState({
-                versions: response.payload.content,
-                maxPage: response.payload.totalPages
+        if (hasByondRight(this.context.instancePermissionSet, ByondRights.ListInstalled)) {
+            const response = await ByondClient.listAllVersions(this.context.instance.id, {
+                page: this.state.page
             });
+            if (response.code === StatusCode.OK) {
+                if (
+                    this.state.page > response.payload.totalPages &&
+                    response.payload.totalPages !== 0
+                ) {
+                    this.setState({
+                        page: 1
+                    });
+                    return;
+                }
 
+                this.setState({
+                    versions: response.payload.content,
+                    maxPage: response.payload.totalPages
+                });
+            } else {
+                this.addError(response.error);
+            }
+        }
+
+        if (hasByondRight(this.context.instancePermissionSet, ByondRights.ReadActive)) {
             const response2 = await ByondClient.getActiveVersion(this.context.instance.id);
             if (response2.code === StatusCode.OK) {
                 this.setState({
@@ -88,8 +95,6 @@ class Byond extends React.Component<IProps, IState> {
             } else {
                 this.addError(response2.error);
             }
-        } else {
-            this.addError(response.error);
         }
     }
 
@@ -130,15 +135,22 @@ class Byond extends React.Component<IProps, IState> {
             return <Loading text="loading.instance" />;
         }
 
-        // noinspection JSBitwiseOperatorUsage
-        if (
-            !(
-                this.context.instancePermissionSet.byondRights & ByondRights.ListInstalled &&
-                this.context.instancePermissionSet.byondRights & ByondRights.ReadActive
-            )
-        ) {
-            return <AccessDenied />;
-        }
+        const canSeeVersions = hasByondRight(
+            this.context.instancePermissionSet,
+            ByondRights.ListInstalled
+        );
+        const canSeeCurrent = hasByondRight(
+            this.context.instancePermissionSet,
+            ByondRights.ReadActive
+        );
+        const canInstallCustom = hasByondRight(
+            this.context.instancePermissionSet,
+            ByondRights.InstallCustomVersion
+        );
+        const canInstallAndSwitch = hasByondRight(
+            this.context.instancePermissionSet,
+            ByondRights.InstallOfficialOrChangeActiveVersion
+        );
 
         const tooltip = (innerid?: string) => {
             if (!innerid) return <React.Fragment />;
@@ -173,82 +185,107 @@ class Byond extends React.Component<IProps, IState> {
                         />
                     );
                 })}
-                <div
-                    onChange={async (e: ChangeEvent<HTMLInputElement>) => {
-                        this.setState({
-                            loading: true
-                        });
-                        const response = await ByondClient.switchActive(
-                            this.context.instance.id,
-                            e.target.value
-                        );
-                        if (response.code === StatusCode.OK) {
-                            await this.loadVersions();
-                        } else {
-                            this.addError(response.error);
-                        }
-                        this.setState({
-                            loading: false
-                        });
-                    }}>
-                    {this.state.versions.map(version => {
-                        // noinspection JSBitwiseOperatorUsage
-                        return (
-                            <InputGroup
-                                className="w-md-25 mb-1 mx-auto d-flex"
-                                key={version.version}>
-                                <InputGroup.Prepend>
-                                    <InputGroup.Radio
-                                        disabled={
-                                            !(
-                                                this.context.instancePermissionSet.byondRights &
-                                                ByondRights.InstallOfficialOrChangeActiveVersion
-                                            )
-                                        }
-                                        name="byond"
-                                        id={version.version!}
-                                        value={version.version!}
-                                        defaultChecked={
-                                            version.version! === this.state.activeVersion
-                                        }
-                                    />
-                                </InputGroup.Prepend>
-                                <InputGroup.Append
-                                    className="flex-grow-1 m-0"
-                                    as="label"
-                                    htmlFor={version.version!}>
-                                    <OverlayTrigger
-                                        overlay={tooltip("view.instance.byond.custom")}
-                                        show={!version.version!.endsWith(".0") ? undefined : false}>
-                                        {({ ref, ...triggerHandler }) => (
-                                            <InputGroup.Text className="w-100" {...triggerHandler}>
-                                                {version.version!.endsWith(".0")
-                                                    ? version.version!.substr(
-                                                          0,
-                                                          version.version!.length - 2
-                                                      )
-                                                    : version.version}
-                                                {!version.version!.endsWith(".0") ? (
-                                                    <div
-                                                        className={"ml-auto"}
-                                                        ref={ref as React.Ref<HTMLDivElement>}>
-                                                        <FontAwesomeIcon fixedWidth icon="info" />
-                                                    </div>
-                                                ) : null}
-                                            </InputGroup.Text>
-                                        )}
-                                    </OverlayTrigger>
-                                </InputGroup.Append>
-                            </InputGroup>
-                        );
-                    })}
-                </div>
-                <PageHelper
-                    className="mt-4"
-                    selectPage={newPage => this.setState({ page: newPage })}
-                    totalPages={this.state.maxPage ?? 1}
-                    currentPage={this.state.page}
-                />
+                {canSeeVersions ? (
+                    <>
+                        {!canSeeCurrent ? (
+                            <GenericAlert title="view.instance.byond.current_denied" />
+                        ) : null}
+                        <div
+                            onChange={async (e: ChangeEvent<HTMLInputElement>) => {
+                                this.setState({
+                                    loading: true
+                                });
+                                const response = await ByondClient.switchActive(
+                                    this.context.instance.id,
+                                    e.target.value
+                                );
+                                if (response.code === StatusCode.OK) {
+                                    await this.loadVersions();
+                                } else {
+                                    this.addError(response.error);
+                                }
+                                this.setState({
+                                    loading: false
+                                });
+                            }}>
+                            {this.state.versions.map(version => {
+                                // noinspection JSBitwiseOperatorUsage
+                                return (
+                                    <InputGroup
+                                        className="w-md-25 mb-1 mx-auto d-flex"
+                                        key={version.version}>
+                                        {canInstallAndSwitch || canSeeCurrent ? (
+                                            <InputGroup.Prepend>
+                                                <InputGroup.Radio
+                                                    name="byond"
+                                                    id={version.version!}
+                                                    value={version.version!}
+                                                    disabled={!canInstallAndSwitch}
+                                                    defaultChecked={
+                                                        version.version! ===
+                                                        this.state.activeVersion
+                                                    }
+                                                />
+                                            </InputGroup.Prepend>
+                                        ) : null}
+                                        <label
+                                            className="flex-grow-1 m-0"
+                                            htmlFor={version.version!}>
+                                            <OverlayTrigger
+                                                overlay={tooltip("view.instance.byond.custom")}
+                                                show={
+                                                    !version.version!.endsWith(".0")
+                                                        ? undefined
+                                                        : false
+                                                }>
+                                                {({ ref, ...triggerHandler }) => (
+                                                    <InputGroup.Text
+                                                        className="w-100"
+                                                        {...triggerHandler}>
+                                                        {version.version!.endsWith(".0")
+                                                            ? version.version!.substr(
+                                                                  0,
+                                                                  version.version!.length - 2
+                                                              )
+                                                            : version.version}
+                                                        {!version.version!.endsWith(".0") ? (
+                                                            <div
+                                                                className={"ml-auto"}
+                                                                ref={
+                                                                    ref as React.Ref<HTMLDivElement>
+                                                                }>
+                                                                <FontAwesomeIcon
+                                                                    fixedWidth
+                                                                    icon="info"
+                                                                />
+                                                            </div>
+                                                        ) : null}
+                                                    </InputGroup.Text>
+                                                )}
+                                            </OverlayTrigger>
+                                        </label>
+                                    </InputGroup>
+                                );
+                            })}
+                        </div>
+                        <PageHelper
+                            className="mt-4"
+                            selectPage={newPage => this.setState({ page: newPage })}
+                            totalPages={this.state.maxPage ?? 1}
+                            currentPage={this.state.page}
+                        />
+                    </>
+                ) : canSeeCurrent ? (
+                    <>
+                        <GenericAlert title="view.instance.byond.list_denied" />
+                        <FormattedMessage
+                            id="view.instance.byond.current_version"
+                            values={{ version: this.state.activeVersion }}
+                        />
+                    </>
+                ) : (
+                    <GenericAlert title="view.instance.byond.current_and_list_denied" />
+                )}
                 <hr />
                 <h4>
                     <FormattedMessage id="view.instance.byond.add" />
@@ -282,54 +319,64 @@ class Byond extends React.Component<IProps, IState> {
                         }}
                     />
                     <InputGroup.Append>
-                        <Button
-                            variant="success"
-                            onClick={async () => {
-                                this.setState({
-                                    loading: true
-                                });
-                                const response = await ByondClient.switchActive(
-                                    this.context.instance.id,
-                                    this.state.selectedVersion,
-                                    this.state.customFile
-                                        ? await this.state.customFile.arrayBuffer()
-                                        : undefined
-                                );
-                                if (response.code === StatusCode.ERROR) {
-                                    this.addError(response.error);
-                                } else {
+                        <OverlayTrigger
+                            overlay={tooltip("generic.no_perm")}
+                            show={!canInstallAndSwitch ? undefined : false}>
+                            <Button
+                                variant={canInstallAndSwitch ? "success" : "danger"}
+                                disabled={!canInstallAndSwitch}
+                                onClick={async () => {
                                     this.setState({
-                                        customFile: null
+                                        loading: true
                                     });
-                                    await this.loadVersions();
-                                }
-                                this.setState({
-                                    loading: false
-                                });
-                            }}>
-                            <FontAwesomeIcon icon="plus" />
-                        </Button>
+                                    const response = await ByondClient.switchActive(
+                                        this.context.instance.id,
+                                        this.state.selectedVersion,
+                                        this.state.customFile
+                                            ? await this.state.customFile.arrayBuffer()
+                                            : undefined
+                                    );
+                                    if (response.code === StatusCode.ERROR) {
+                                        this.addError(response.error);
+                                    } else {
+                                        this.setState({
+                                            customFile: null
+                                        });
+                                        await this.loadVersions();
+                                    }
+                                    this.setState({
+                                        loading: false
+                                    });
+                                }}>
+                                <FontAwesomeIcon icon="plus" />
+                            </Button>
+                        </OverlayTrigger>
                     </InputGroup.Append>
                 </InputGroup>
                 <Form>
-                    <Form.File
-                        custom
-                        id="test"
-                        className="w-md-50 w-lg-25 text-left"
-                        label={
-                            this.state.customFile ? (
-                                this.state.customFile.name
-                            ) : (
-                                <FormattedMessage id="view.instance.byond.upload" />
-                            )
-                        }
-                        accept=".zip"
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                            this.setState({
-                                customFile: e.target.files ? e.target.files[0] : null
-                            });
-                        }}
-                    />
+                    <OverlayTrigger
+                        overlay={tooltip("generic.no_perm")}
+                        show={!canInstallCustom ? undefined : false}>
+                        <Form.File
+                            custom
+                            id="test"
+                            disabled={!canInstallCustom}
+                            className="w-md-50 w-lg-25 text-left"
+                            label={
+                                this.state.customFile ? (
+                                    this.state.customFile.name
+                                ) : (
+                                    <FormattedMessage id="view.instance.byond.upload" />
+                                )
+                            }
+                            accept=".zip"
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                this.setState({
+                                    customFile: e.target.files ? e.target.files[0] : null
+                                });
+                            }}
+                        />
+                    </OverlayTrigger>
                 </Form>
             </div>
         );
