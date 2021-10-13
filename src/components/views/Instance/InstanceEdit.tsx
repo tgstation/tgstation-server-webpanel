@@ -7,6 +7,8 @@ import Tab from "react-bootstrap/Tab";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 
+import { ByondRights } from "../../../ApiClient/generatedcode/_enums";
+import { InstancePermissionSetResponse } from "../../../ApiClient/generatedcode/schemas";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError from "../../../ApiClient/models/InternalComms/InternalError";
@@ -17,6 +19,7 @@ import {
     UnsafeInstanceEditContext
 } from "../../../contexts/InstanceEditContext";
 import { AppRoutes, RouteData } from "../../../utils/routes";
+import AccessDenied from "../../utils/AccessDenied";
 import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
@@ -29,19 +32,38 @@ type IState = Omit<UnsafeInstanceEditContext, "user" | "serverInfo"> & {
     instanceid: number;
 };
 
+const minimumByondPerms =
+    ByondRights.ReadActive |
+    ByondRights.ListInstalled |
+    ByondRights.InstallOfficialOrChangeActiveVersion |
+    ByondRights.InstallCustomVersion;
+
 class InstanceEdit extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
-    public static tabs: [string, IconProp, ComponentType?][] = [
-        ["info", "info"],
-        ["repository", "code-branch"],
-        ["deployment", "hammer"],
-        ["dd", "server"],
-        ["byond", "list-ul", Byond],
-        ["chatbots", "comments"],
-        ["files", "folder-open"],
-        ["users", "users"],
-        ["jobs", "stream", JobHistory],
-        ["config", "cogs", InstanceSettings]
+    public static tabs: [
+        string,
+        IconProp,
+        (
+            instancePermissionSet: InstancePermissionSetResponse,
+            generalContext: GeneralContext
+        ) => boolean,
+        ComponentType?
+    ][] = [
+        ["info", "info", () => true],
+        ["repository", "code-branch", () => true],
+        ["deployment", "hammer", () => true],
+        ["dd", "server", () => true],
+        [
+            "byond",
+            "list-ul",
+            instancePermissionSet => !!(instancePermissionSet.byondRights & minimumByondPerms),
+            Byond
+        ],
+        ["chatbots", "comments", () => true],
+        ["files", "folder-open", () => true],
+        ["users", "users", () => true],
+        ["jobs", "stream", () => true, JobHistory],
+        ["config", "cogs", () => true, InstanceSettings]
     ];
 
     public constructor(props: IProps) {
@@ -149,16 +171,38 @@ class InstanceEdit extends React.Component<IProps, IState> {
                     activeKey={this.state.tab}
                     className="flex-nowrap text-nowrap flex-column hover-bar sticky-top"
                     style={{ top: "8em" }}>
-                    {InstanceEdit.tabs.map(([tabKey, icon, component]) => {
+                    {InstanceEdit.tabs.map(([tabKey, icon, accessCb, component]) => {
+                        if (!this.state.instancePermissionSet) {
+                            throw Error(
+                                "this.state.instancePermissionSet is null in instanceedit nav map"
+                            );
+                        }
+                        const wip = !component;
+                        const accessDenied = !accessCb(
+                            this.state.instancePermissionSet,
+                            this.context
+                        );
+
                         return (
                             <Nav.Item key={tabKey}>
                                 <Nav.Link
                                     eventKey={tabKey}
                                     bsPrefix="nav-link instanceedittab"
-                                    className={(!component ? "wip text-white" : "") + " text-left"}>
+                                    className={
+                                        (wip ? "no-access text-white" : "") +
+                                        (accessDenied ? "no-access text-white font-italic" : "") +
+                                        " text-left"
+                                    }>
                                     <React.Fragment>
-                                        <FontAwesomeIcon icon={icon} fixedWidth />
-                                        <div className="tab-text d-inline-block">
+                                        <FontAwesomeIcon
+                                            icon={accessDenied ? "lock" : icon}
+                                            fixedWidth
+                                        />
+                                        <div
+                                            className={
+                                                "tab-text d-inline-block " +
+                                                (accessDenied ? "font-weight-lighter" : "")
+                                            }>
                                             <span className="pl-1">
                                                 <FormattedMessage
                                                     id={`view.instanceedit.tabs.${tabKey}`}
@@ -206,10 +250,26 @@ class InstanceEdit extends React.Component<IProps, IState> {
                             <Card.Body className="flex-grow-0">{nav()}</Card.Body>
                             <Card.Body className="bg-body">
                                 <Tab.Content>
-                                    {InstanceEdit.tabs.map(([tabKey, , Comp]) => {
+                                    {InstanceEdit.tabs.map(([tabKey, , accessCb, Comp]) => {
+                                        if (!this.state.instancePermissionSet) {
+                                            throw Error(
+                                                "this.state.instancePermissionSet is null in render card map"
+                                            );
+                                        }
                                         return (
                                             <Tab.Pane eventKey={tabKey} key={tabKey}>
-                                                {Comp ? <Comp /> : <WIPNotice />}
+                                                {Comp ? (
+                                                    !accessCb(
+                                                        this.state.instancePermissionSet,
+                                                        this.context
+                                                    ) ? (
+                                                        <AccessDenied />
+                                                    ) : (
+                                                        <Comp />
+                                                    )
+                                                ) : (
+                                                    <WIPNotice />
+                                                )}
                                             </Tab.Pane>
                                         );
                                     })}

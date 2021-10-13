@@ -403,9 +403,8 @@ $toast-header-background-color: $gray-600;
     background-color: theme-color("primary");
     color: white;
 
-    &.wip {
+    &.no-access {
         background-color: theme-color("danger");
-        font-style: italic;
     }
 
     &:hover {
@@ -414,8 +413,9 @@ $toast-header-background-color: $gray-600;
 
     &.active {
         background-color: darken(theme-color("primary"), 12) !important;
-        &.wip {
+        &.no-access {
             background-color: darken(theme-color("danger"), 12) !important;
+            color: white !important;
         }
         color: lightskyblue !important;
         box-shadow: inset 0 2px 8px -2px black;
