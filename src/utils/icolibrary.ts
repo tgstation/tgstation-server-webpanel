@@ -21,6 +21,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons/faQuestion";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { faServer } from "@fortawesome/free-solid-svg-icons/faServer";
+import { faStream } from "@fortawesome/free-solid-svg-icons/faStream";
 import { faSync } from "@fortawesome/free-solid-svg-icons/faSync";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { faTools } from "@fortawesome/free-solid-svg-icons/faTools";
@@ -62,6 +63,7 @@ export default function (): void {
         faUsers,
         faCodeBranch,
         faSearch,
-        faServer
+        faServer,
+        faStream
     );
 }
