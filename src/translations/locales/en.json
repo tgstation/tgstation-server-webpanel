@@ -175,6 +175,7 @@
     "view.instanceedit.tabs.chatbots": "Chat Bots",
     "view.instanceedit.tabs.files": "Files & Scripts",
     "view.instanceedit.tabs.users": "Permissions",
+    "view.instanceedit.tabs.jobs": "Jobs History",
     "view.instanceedit.tabs.config": "Config",
     "view.instance.create.loading": "Creating Instance...",
     "view.instance.create.title": "New Instance",

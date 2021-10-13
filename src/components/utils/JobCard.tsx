@@ -16,7 +16,7 @@ interface IState {}
 interface IProps {
     job: TGSJobResponse;
     width?: string;
-    onClose: (job: TGSJobResponse) => void;
+    onClose?: (job: TGSJobResponse) => void;
     onCancel: (job: TGSJobResponse) => void;
 }
 
@@ -38,14 +38,17 @@ export default class JobCard extends React.Component<IProps, IState> {
 
         return (
             <Toast
+                className="mx-auto"
                 key={job.id}
                 style={{
                     maxWidth: this.props.width
                 }}
                 onClose={() => {
-                    this.props.onClose(job);
+                    if (this.props.onClose) this.props.onClose(job);
                 }}>
-                <ToastHeader closeButton={!!job.stoppedAt} className={`bg-${variant}`}>
+                <ToastHeader
+                    closeButton={!!job.stoppedAt && !!this.props.onClose}
+                    className={`bg-${variant}`}>
                     #{job.id}: {job.description}
                 </ToastHeader>
                 <ToastBody className="pt-0">

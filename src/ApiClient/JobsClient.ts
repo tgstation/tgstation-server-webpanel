@@ -180,4 +180,54 @@ export default new (class JobsClient extends ApiClient {
             }
         }
     }
+
+    public async listJobs(
+        instanceid: number,
+        { page = 1, pageSize = configOptions.itemsperpage.value as number }
+    ): Promise<InternalStatus<PaginatedTGSJobResponse, GenericErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.JobController_List({
+                Instance: instanceid,
+                pageSize,
+                page
+            });
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+
+        switch (response.status) {
+            case 200: {
+                const newContent = (response.data as PaginatedJobResponse).content.map(job => {
+                    return {
+                        ...job,
+                        instanceid: instanceid
+                    };
+                });
+
+                return new InternalStatus<PaginatedTGSJobResponse, listJobsErrors>({
+                    code: StatusCode.OK,
+                    payload: {
+                        ...(response.data as PaginatedJobResponse),
+                        content: newContent
+                    }
+                });
+            }
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
 })();
