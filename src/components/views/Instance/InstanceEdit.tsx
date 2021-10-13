@@ -136,7 +136,8 @@ class InstanceEdit extends React.Component<IProps, IState> {
                     fill
                     variant="pills"
                     activeKey={this.state.tab}
-                    className="flex-nowrap text-nowrap flex-column hover-bar">
+                    className="flex-nowrap text-nowrap flex-column hover-bar sticky-top"
+                    style={{ top: "8em" }}>
                     {InstanceEdit.tabs.map(([tabKey, icon, component]) => {
                         return (
                             <Nav.Item key={tabKey}>
@@ -177,7 +178,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
                         ) as InstanceEditContext
                     }>
                     <Card>
-                        <Card.Header className="text-center mb-2">
+                        <Card.Header className="text-center mb-2 sticky-top">
                             <h3>
                                 <FormattedMessage
                                     id="view.instanceedit.title"

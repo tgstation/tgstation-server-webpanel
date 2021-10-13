@@ -98,7 +98,7 @@ export default class PageHelper extends React.PureComponent<IProps, IState> {
         const { selectPage: _1, totalPages: _2, currentPage: _3, ...props } = this.props;
 
         return (
-            <div className="text-center" {...props}>
+            <div className="text-center" style={{ position: "sticky", bottom: "1.5em" }} {...props}>
                 <Pagination className="justify-content-center">
                     <Pagination.Prev
                         disabled={this.props.currentPage <= 1}
