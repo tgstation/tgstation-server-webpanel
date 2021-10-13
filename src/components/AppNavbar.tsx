@@ -347,6 +347,9 @@ class AppNavbar extends React.Component<IProps, IState> {
                         <Dropdown.Item
                             onClick={() => {
                                 ServerClient.emit("purgeCache");
+                                this.props.history.replace(this.props.location.pathname, {
+                                    reload: true
+                                });
                             }}>
                             <FormattedMessage id="navbar.purgecache" />
                         </Dropdown.Item>
