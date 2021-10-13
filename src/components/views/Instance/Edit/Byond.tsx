@@ -153,7 +153,7 @@ class Byond extends React.Component<IProps, IState> {
         return (
             <div className="text-center">
                 <h1>
-                    <FormattedMessage id="view.instance.hosting.byond" />
+                    <FormattedMessage id="view.instance.byond" />
                 </h1>
                 {this.state.errors.map((err, index) => {
                     if (!err) return;
@@ -218,7 +218,7 @@ class Byond extends React.Component<IProps, IState> {
                                     as="label"
                                     htmlFor={version.version!}>
                                     <OverlayTrigger
-                                        overlay={tooltip("view.instance.hosting.byond.custom")}
+                                        overlay={tooltip("view.instance.byond.custom")}
                                         show={!version.version!.endsWith(".0") ? undefined : false}>
                                         {({ ref, ...triggerHandler }) => (
                                             <InputGroup.Text className="w-100" {...triggerHandler}>
@@ -251,7 +251,7 @@ class Byond extends React.Component<IProps, IState> {
                 />
                 <hr />
                 <h4>
-                    <FormattedMessage id="view.instance.hosting.byond.add" />
+                    <FormattedMessage id="view.instance.byond.add" />
                 </h4>
                 <InputGroup className="w-md-50 w-lg-25 mb-3 mx-auto">
                     <FormControl
@@ -320,7 +320,7 @@ class Byond extends React.Component<IProps, IState> {
                             this.state.customFile ? (
                                 this.state.customFile.name
                             ) : (
-                                <FormattedMessage id="view.instance.hosting.byond.upload" />
+                                <FormattedMessage id="view.instance.byond.upload" />
                             )
                         }
                         accept=".zip"
