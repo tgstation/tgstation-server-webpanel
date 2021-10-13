@@ -16,6 +16,7 @@ import { faInfo } from "@fortawesome/free-solid-svg-icons/faInfo";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { faKey } from "@fortawesome/free-solid-svg-icons/faKey";
 import { faListUl } from "@fortawesome/free-solid-svg-icons/faListUl";
+import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
 import { faPen } from "@fortawesome/free-solid-svg-icons/faPen";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons/faQuestion";
@@ -64,6 +65,7 @@ export default function (): void {
         faCodeBranch,
         faSearch,
         faServer,
-        faStream
+        faStream,
+        faLock
     );
 }
