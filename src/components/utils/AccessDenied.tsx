@@ -1,8 +1,9 @@
 import React, { ReactNode } from "react";
-import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
+
+import GenericAlert from "./GenericAlert";
 
 interface IProps extends RouteComponentProps {}
 
@@ -16,14 +17,11 @@ class AccessDenied extends React.Component<IProps, IState> {
             this.props.history.goBack();
         };
         return (
-            <Alert className="clearfix" variant="error">
-                <FormattedMessage id="generic.accessdenied" />
-                <hr />
-
+            <GenericAlert title="generic.accessdenied">
                 <Button variant="danger" className="float-right" onClick={goBack}>
                     <FormattedMessage id="generic.goback" />
                 </Button>
-            </Alert>
+            </GenericAlert>
         );
     }
 }
