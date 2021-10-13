@@ -163,59 +163,52 @@ class InstanceEdit extends React.Component<IProps, IState> {
             );
         };
 
-        const test = false;
-
-        if (test) {
-            const Comp = InstanceEdit.tabs.find(tab => tab[0] === this.state.tab)?.[2] ?? WIPNotice;
-            return <Comp />;
-        } else {
-            return (
-                <InstanceEditContext.Provider
-                    value={
-                        Object.assign(
-                            { user: this.context.user, serverInfo: this.context.serverInfo },
-                            this.state
-                        ) as InstanceEditContext
-                    }>
-                    <Card>
-                        <Card.Header className="text-center mb-2 sticky-top">
-                            <h3>
-                                <FormattedMessage
-                                    id="view.instanceedit.title"
-                                    values={{
-                                        instanceid: this.props.match.params.id,
-                                        instancename: this.state.instance.name
-                                    }}
-                                />
-                            </h3>
-                            <h5 className="text-white-50">
-                                <FormattedMessage id={`view.instanceedit.tabs.${this.state.tab}`} />
-                            </h5>
-                        </Card.Header>
-                        <Tab.Container
-                            mountOnEnter
-                            unmountOnExit
-                            id="instanceedit"
-                            activeKey={this.state.tab}>
-                            <div className="d-flex flex-row">
-                                <Card.Body className="flex-grow-0">{nav()}</Card.Body>
-                                <Card.Body className="bg-body">
-                                    <Tab.Content>
-                                        {InstanceEdit.tabs.map(([tabKey, , Comp]) => {
-                                            return (
-                                                <Tab.Pane eventKey={tabKey} key={tabKey}>
-                                                    {Comp ? <Comp /> : <WIPNotice />}
-                                                </Tab.Pane>
-                                            );
-                                        })}
-                                    </Tab.Content>
-                                </Card.Body>
-                            </div>
-                        </Tab.Container>
-                    </Card>
-                </InstanceEditContext.Provider>
-            );
-        }
+        return (
+            <InstanceEditContext.Provider
+                value={
+                    Object.assign(
+                        { user: this.context.user, serverInfo: this.context.serverInfo },
+                        this.state
+                    ) as InstanceEditContext
+                }>
+                <Card>
+                    <Card.Header className="text-center mb-2 sticky-top">
+                        <h3>
+                            <FormattedMessage
+                                id="view.instanceedit.title"
+                                values={{
+                                    instanceid: this.props.match.params.id,
+                                    instancename: this.state.instance.name
+                                }}
+                            />
+                        </h3>
+                        <h5 className="text-white-50">
+                            <FormattedMessage id={`view.instanceedit.tabs.${this.state.tab}`} />
+                        </h5>
+                    </Card.Header>
+                    <Tab.Container
+                        mountOnEnter
+                        unmountOnExit
+                        id="instanceedit"
+                        activeKey={this.state.tab}>
+                        <div className="d-flex flex-row">
+                            <Card.Body className="flex-grow-0">{nav()}</Card.Body>
+                            <Card.Body className="bg-body">
+                                <Tab.Content>
+                                    {InstanceEdit.tabs.map(([tabKey, , Comp]) => {
+                                        return (
+                                            <Tab.Pane eventKey={tabKey} key={tabKey}>
+                                                {Comp ? <Comp /> : <WIPNotice />}
+                                            </Tab.Pane>
+                                        );
+                                    })}
+                                </Tab.Content>
+                            </Card.Body>
+                        </div>
+                    </Tab.Container>
+                </Card>
+            </InstanceEditContext.Provider>
+        );
     }
 }
 InstanceEdit.contextType = GeneralContext;
