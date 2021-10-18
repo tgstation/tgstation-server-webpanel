@@ -10,14 +10,14 @@ import InstanceClient from "../../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
-import { resolvePermissionSet } from "../../../../utils/misc";
+import { hasInstanceManagerRight, resolvePermissionSet } from "../../../../utils/misc";
 import ErrorAlert from "../../../utils/ErrorAlert";
-import InputField from "../../../utils/InputField";
+import { FieldType } from "../../../utils/InputField";
+import InputForm from "../../../utils/InputForm";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
-    editLock: boolean;
 }
 
 class InstanceSettings extends React.Component<IProps, IState> {
@@ -26,8 +26,9 @@ class InstanceSettings extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
 
+        this.editInstance = this.editInstance.bind(this);
+
         this.state = {
-            editLock: false,
             errors: []
         };
     }
@@ -42,7 +43,7 @@ class InstanceSettings extends React.Component<IProps, IState> {
         });
     }
 
-    private async _editInstance(instance: Omit<InstanceUpdateRequest, "id">) {
+    private async editInstance(instance: Omit<InstanceUpdateRequest, "id">) {
         const response = await InstanceClient.editInstance({
             ...instance,
             id: this.context.instance.id
@@ -54,19 +55,45 @@ class InstanceSettings extends React.Component<IProps, IState> {
         }
     }
 
-    private editInstance(instance: Omit<InstanceUpdateRequest, "id">) {
-        void this._editInstance(instance);
-    }
-
     public render(): React.ReactNode {
         const checkIMFlag = (flag: InstanceManagerRights) => {
-            return resolvePermissionSet(this.context.user).instanceManagerRights & flag;
+            return hasInstanceManagerRight(resolvePermissionSet(this.context.user), flag);
         };
 
-        const setEditLock = (value: boolean) => {
-            this.setState({
-                editLock: value
-            });
+        const fields = {
+            name: {
+                name: "fields.instance.name",
+                type: FieldType.String as FieldType.String,
+                defaultValue: this.context.instance.name,
+                disabled: !checkIMFlag(InstanceManagerRights.Rename)
+            },
+            path: {
+                name: "fields.instance.path",
+                type: FieldType.String as FieldType.String,
+                defaultValue: this.context.instance.path,
+                disabled: !checkIMFlag(InstanceManagerRights.Relocate)
+            },
+            chatBotLimit: {
+                name: "fields.instance.chatbotlimit",
+                type: FieldType.Number as FieldType.Number,
+                min: 0,
+                defaultValue: this.context.instance.chatBotLimit,
+                disabled: !checkIMFlag(InstanceManagerRights.SetChatBotLimit)
+            },
+            autoUpdateInterval: {
+                name: "fields.instance.autoupdate",
+                type: FieldType.Number as FieldType.Number,
+                min: 0,
+                defaultValue: this.context.instance.autoUpdateInterval,
+                disabled: !checkIMFlag(InstanceManagerRights.SetAutoUpdate)
+            },
+            configurationType: {
+                name: "fields.instance.filemode",
+                type: FieldType.Enum as FieldType.Enum,
+                enum: ConfigurationType,
+                defaultValue: this.context.instance.configurationType,
+                disabled: !checkIMFlag(InstanceManagerRights.SetConfiguration)
+            }
         };
 
         return (
@@ -90,67 +117,7 @@ class InstanceSettings extends React.Component<IProps, IState> {
                     );
                 })}
 
-                <InputField
-                    name="instance.name"
-                    defaultValue={this.context.instance.name}
-                    type="str"
-                    onChange={newval => {
-                        this.editInstance({ name: newval });
-                    }}
-                    disabled={!checkIMFlag(InstanceManagerRights.Rename)}
-                    setEditLock={setEditLock}
-                    editLock={this.state.editLock}
-                />
-                <InputField
-                    name="instance.path"
-                    defaultValue={this.context.instance.path}
-                    type="str"
-                    onChange={newval => {
-                        this.editInstance({ path: newval });
-                    }}
-                    disabled={!checkIMFlag(InstanceManagerRights.Relocate)}
-                    setEditLock={setEditLock}
-                    editLock={this.state.editLock}
-                />
-                <InputField
-                    name="instance.chatbotlimit"
-                    defaultValue={this.context.instance.chatBotLimit}
-                    type="num"
-                    onChange={newval => {
-                        this.editInstance({ chatBotLimit: newval });
-                    }}
-                    disabled={!checkIMFlag(InstanceManagerRights.SetChatBotLimit)}
-                    setEditLock={setEditLock}
-                    editLock={this.state.editLock}
-                />
-                <InputField
-                    name="instance.autoupdate"
-                    defaultValue={this.context.instance.autoUpdateInterval}
-                    type="num"
-                    onChange={newval => {
-                        this.editInstance({
-                            autoUpdateInterval: newval
-                        });
-                    }}
-                    disabled={!checkIMFlag(InstanceManagerRights.SetAutoUpdate)}
-                    setEditLock={setEditLock}
-                    editLock={this.state.editLock}
-                />
-                <InputField
-                    name="instance.filemode"
-                    defaultValue={ConfigurationType[this.context.instance.configurationType]}
-                    type="enum"
-                    enum={ConfigurationType}
-                    onChange={newval => {
-                        this.editInstance({
-                            // @ts-expect-error typescript isnt a fan of using enums like this
-                            configurationType: ConfigurationType[newval] as 0 | 1 | 2
-                        });
-                    }}
-                    disabled={!checkIMFlag(InstanceManagerRights.SetConfiguration)}
-                    setEditLock={setEditLock}
-                    editLock={this.state.editLock}
-                />
+                <InputForm fields={fields} onSave={this.editInstance} />
             </div>
         );
     }

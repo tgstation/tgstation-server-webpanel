@@ -17,6 +17,8 @@ import {
     UserResponse
 } from "../ApiClient/generatedcode/schemas";
 
+export type DistributiveOmit<T, K extends keyof T> = T extends T ? Omit<T, K> : never;
+
 function download(filename: string, text: string): void {
     const element = document.createElement("a");
     element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
