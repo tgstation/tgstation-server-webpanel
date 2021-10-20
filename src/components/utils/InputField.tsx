@@ -127,7 +127,11 @@ const NumberControl = React.forwardRef<HTMLInputElement, NumberControlProps>(fun
     return (
         <Form.Control
             value={props.value as number}
-            onChange={e => props.onChange(parseFloat(e.target.value))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                props.onChange(
+                    isNaN(e.target.valueAsNumber) ? e.target.value : e.target.valueAsNumber
+                )
+            }
             disabled={props.disabled}
             min={props.min}
             max={props.max}
