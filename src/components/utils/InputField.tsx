@@ -29,30 +29,30 @@ export type InputFieldProps = {
     type: FieldType;
 } & (
     | {
-          defaultValue?: boolean;
+          defaultValue?: boolean | null;
           onChange: (newValue: boolean, isValid: boolean) => unknown;
           type: FieldType.Boolean;
       }
     | {
-          defaultValue?: number;
+          defaultValue?: number | null;
           onChange: (newValue: number, isValid: boolean) => unknown;
           type: FieldType.Number;
           min?: number;
           max?: number;
       }
     | {
-          defaultValue?: string;
+          defaultValue?: string | null;
           onChange: (newValue: string, isValid: boolean) => unknown;
           type: FieldType.String;
       }
     | {
-          defaultValue?: string;
+          defaultValue?: string | null;
           onChange: (newValue: string, isValid: boolean) => unknown;
           type: FieldType.Password;
       }
     | {
-          defaultValue: string | number;
-          onChange: (newValue: string, isValid: boolean) => unknown;
+          defaultValue?: number | null;
+          onChange: (newValue: number, isValid: boolean) => unknown;
           type: FieldType.Enum;
           enum: AnyEnum;
       }
@@ -206,12 +206,12 @@ export default function InputField(props: InputFieldProps): JSX.Element {
             case FieldType.Boolean:
                 props.onChange(newValue as boolean, controlRef.current?.checkValidity() ?? true);
                 return;
+            case FieldType.Enum:
             case FieldType.Number:
                 props.onChange(newValue as number, controlRef.current?.checkValidity() ?? true);
                 return;
             case FieldType.String:
             case FieldType.Password:
-            case FieldType.Enum:
                 props.onChange(newValue as string, controlRef.current?.checkValidity() ?? true);
                 return;
         }
@@ -239,7 +239,7 @@ export default function InputField(props: InputFieldProps): JSX.Element {
         [FieldType.Enum]: undefined
     };
 
-    const changed = currentValue != props.defaultValue ?? defaultValues[props.type];
+    const changed = currentValue != (props.defaultValue ?? defaultValues[props.type]);
 
     return (
         <InputGroup>
