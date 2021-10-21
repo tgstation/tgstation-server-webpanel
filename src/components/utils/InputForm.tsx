@@ -74,7 +74,8 @@ export default function InputForm<Fields extends Record<string, InputFormField>>
     for (const [id, fieldDescriptor] of fieldStateIds) {
         const [fieldValue] = fieldValueStates.get(fieldDescriptor)!;
         const fieldState = fieldStates[id];
-        if (fieldDescriptor.defaultValue != fieldValue) anyDiff = true;
+        if ((fieldDescriptor.defaultValue ?? defaultValues[fieldDescriptor.type]) != fieldValue)
+            anyDiff = true;
         if (fieldState?.invalid) anyInvalid = true;
 
         if (anyDiff && anyInvalid) break;
@@ -86,7 +87,10 @@ export default function InputForm<Fields extends Record<string, InputFormField>>
         for (const [id, fieldDescriptor] of fieldStateIds) {
             const [fieldValue] = fieldValueStates.get(fieldDescriptor)!;
 
-            if (!fieldDescriptor.alwaysInclude && fieldValue == fieldDescriptor.defaultValue)
+            if (
+                !fieldDescriptor.alwaysInclude &&
+                fieldValue == (fieldDescriptor.defaultValue ?? defaultValues[fieldDescriptor.type])
+            )
                 continue;
 
             outputObject[id] = fieldValue;
