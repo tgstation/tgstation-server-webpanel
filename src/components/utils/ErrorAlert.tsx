@@ -90,3 +90,38 @@ ${this.props.error.extendedInfo}`.replace(/\\/g, "\\\\")}
         );
     }
 }
+
+export type ErrorState = [
+    Array<InternalError<ErrorCode> | undefined>,
+    React.Dispatch<React.SetStateAction<Array<InternalError<ErrorCode> | undefined>>>
+];
+
+function addError([, setErrors]: ErrorState, error: InternalError<ErrorCode>): void {
+    setErrors(prevState => {
+        const errors = Array.from(prevState);
+        errors.push(error);
+        return errors;
+    });
+}
+
+function displayErrors([errors, setErrors]: ErrorState): Array<JSX.Element | undefined> {
+    return errors.map((err, index) => {
+        if (!err) return;
+        return (
+            <ErrorAlert
+                key={index}
+                error={err}
+                onClose={() =>
+                    setErrors(prev => {
+                        const newarr = Array.from(prev);
+                        newarr[index] = undefined;
+                        return newarr;
+                    })
+                }
+            />
+        );
+    });
+}
+
+export { displayErrors };
+export { addError };
