@@ -423,10 +423,10 @@ $toast-header-background-color: $gray-600;
     }
 }
 
-.hover-bar .tab-text {
+.hover-bar:not(.pin-open) .tab-text {
     transition: max-width 1s, padding 1s;
     @include media-breakpoint-up("lg") {
-        max-width: 0;
+            max-width: 0;
     }
     //IntelliJ does not recognize clip as a valid value but I assure you it is.
     //noinspection CssInvalidPropertyValue
@@ -434,7 +434,7 @@ $toast-header-background-color: $gray-600;
 }
 
 @include media-breakpoint-up("lg") {
-    .hover-bar:hover {
+    .hover-bar:not(.pin-close):hover {
         & .tab-text {
             max-width: 300px;
         }
