@@ -13,6 +13,7 @@ import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import configOptions, { InstanceEditSidebar } from "../../../ApiClient/util/config";
 import { GeneralContext } from "../../../contexts/GeneralContext";
 import {
     InstanceEditContext,
@@ -169,7 +170,14 @@ class InstanceEdit extends React.Component<IProps, IState> {
                     fill
                     variant="pills"
                     activeKey={this.state.tab}
-                    className="flex-nowrap text-nowrap flex-column hover-bar sticky-top"
+                    className={
+                        "flex-nowrap text-nowrap flex-column hover-bar sticky-top " +
+                        (configOptions.instanceeditsidebar.value === InstanceEditSidebar.COLLAPSE
+                            ? "pin-close"
+                            : configOptions.instanceeditsidebar.value === InstanceEditSidebar.EXPAND
+                            ? "pin-open"
+                            : "")
+                    }
                     style={{ top: "8em" }}>
                     {InstanceEdit.tabs.map(([tabKey, icon, accessCb, component]) => {
                         if (!this.state.instancePermissionSet) {

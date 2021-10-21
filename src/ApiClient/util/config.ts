@@ -48,6 +48,12 @@ export enum jobsWidgetOptions {
     NEVER = "never"
 }
 
+export enum InstanceEditSidebar {
+    AUTO = "auto",
+    COLLAPSE = "collapse",
+    EXPAND = "expand"
+}
+
 //https://stackoverflow.com/questions/54598322/how-to-make-typescript-infer-the-keys-of-an-object-but-define-type-of-its-value
 //Infer the keys but restrict the values to a type
 const asElementTypesConfig = <Type>(elements: {
@@ -92,6 +98,12 @@ const configOptions = asElementTypesConfig({
         value: 25,
         min: 1,
         max: 100
+    },
+    instanceeditsidebar: {
+        id: "config.instanceeditsidebar",
+        type: "enum",
+        possibleValues: InstanceEditSidebar,
+        value: InstanceEditSidebar.AUTO
     }
 });
 
