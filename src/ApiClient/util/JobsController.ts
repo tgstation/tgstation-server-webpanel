@@ -46,6 +46,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     public errors: InternalError[] = [];
     public jobs = new Map<number, TGSJobResponse>();
     public jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
+    private jobCallback = new Map<number, Set<(job: TGSJobResponse) => unknown>>();
 
     public reset() {
         this.jobs = new Map<number, TGSJobResponse>();
@@ -310,6 +311,17 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         if (loopid !== this.currentLoop) return;
 
         this.emit("jobsLoaded");
+
+        for (const job of this.jobs.values()) {
+            if (!job.stoppedAt) continue;
+            const callbacks = this.jobCallback.get(job.id);
+            if (!callbacks) continue;
+            for (const callback of callbacks) {
+                callback(job);
+            }
+            this.jobCallback.delete(job.id);
+        }
+
         if (this.fastmodecount && loopid === this.currentLoop) {
             window.setTimeout(() => {
                 this.loop(loopid).catch(e =>
@@ -485,5 +497,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         this.jobs.delete(jobid);
         this.emit("jobsLoaded");
         return true;
+    }
+
+    public registerCallback(jobid: number, callback: (job: TGSJobResponse) => unknown): void {
+        const set = this.jobCallback.get(jobid) ?? new Set();
+        set.add(callback);
+        this.jobCallback.set(jobid, set);
     }
 })();
