@@ -36,6 +36,7 @@ interface IProps<Fields extends Record<string, InputFormField>> {
     fields: Fields;
     onSave: (fields: FieldsOutput<Fields>) => unknown;
     readOnly?: boolean;
+    hideDisabled?: boolean;
 }
 
 interface FieldState {
@@ -99,10 +100,19 @@ export default function InputForm<Fields extends Record<string, InputFormField>>
         props.onSave(outputObject);
     };
 
+    //Don't show anything including the save button if we are hiding every single field
+    if (props.hideDisabled) {
+        if (!Object.values(props.fields).some(field => !field.disabled)) {
+            return <></>;
+        }
+    }
+
     return (
         <div>
             {Object.entries(props.fields).map(([id, field]) => {
                 const { disabled, ...innerProps } = field;
+                if (props.hideDisabled && disabled) return null;
+
                 return (
                     <InputField
                         key={id}
