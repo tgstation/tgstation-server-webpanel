@@ -252,11 +252,15 @@ export default function InputField(props: InputFieldProps): JSX.Element {
                             <span className={changed ? "font-weight-bold" : ""}>
                                 <FormattedMessage id={props.name} />
                             </span>
-                            {props.tooltip ? (
-                                <div className="ml-auto" ref={ref}>
+                            <div className="ml-auto">
+                                {props.disabled ? <FormattedMessage id="generic.readonly" /> : null}
+                                <div
+                                    ref={ref}
+                                    className="d-inline-block ml-2"
+                                    style={{ visibility: props.tooltip ? "unset" : "hidden" }}>
                                     <FontAwesomeIcon icon="info" />
                                 </div>
-                            ) : null}
+                            </div>
                         </InputGroup.Text>
                     </InputGroup.Prepend>
                 )}

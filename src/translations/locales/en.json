@@ -122,6 +122,7 @@
     "generic.goto.title": "Go to page",
     "generic.goto": "Goto",
     "generic.wip": "Work In Progress!",
+    "generic.readonly": "(Read-Only)",
     "generic.invalid_form": "This form contains invalid values!",
     "generic.no_perm": "You do not have the permission to do this",
     "generic.wip.desc": "The TGS webpanel is still a work in progress. The feature you are trying to use is not yet available. Until it becomes available, please use the TGS desktop client at ",
