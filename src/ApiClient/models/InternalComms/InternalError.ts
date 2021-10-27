@@ -71,7 +71,10 @@ export enum ErrorCode {
     GROUP_NOT_EMPTY = "error.group.not_empty", //errmessage
 
     //Instance errors
-    INSTANCE_NO_DB_ENTITY = "error.instance.no_db_entity" //errmessage
+    INSTANCE_NO_DB_ENTITY = "error.instance.no_db_entity", //errmessage
+
+    //Watchdog errors
+    WATCHDOG_NO_DB_ENTITY = "error.watchdog.no_db_entity" //errmessage
 }
 
 type errorMessage = {

@@ -7,7 +7,7 @@ import Tab from "react-bootstrap/Tab";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 
-import { ByondRights } from "../../../ApiClient/generatedcode/_enums";
+import { ByondRights, DreamDaemonRights } from "../../../ApiClient/generatedcode/_enums";
 import { InstancePermissionSetResponse } from "../../../ApiClient/generatedcode/schemas";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
@@ -26,6 +26,7 @@ import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
 import InstanceSettings from "./Edit/Config";
 import JobHistory from "./Edit/JobHistory";
+import Server from "./Edit/Server";
 
 type IProps = RouteComponentProps<{ id: string; tab?: string }>;
 type IState = Omit<UnsafeInstanceEditContext, "user" | "serverInfo"> & {
@@ -38,6 +39,24 @@ const minimumByondPerms =
     ByondRights.ListInstalled |
     ByondRights.InstallOfficialOrChangeActiveVersion |
     ByondRights.InstallCustomVersion;
+
+const minimumServerPerms =
+    DreamDaemonRights.SetPort |
+    DreamDaemonRights.SetAutoStart |
+    DreamDaemonRights.SetSecurity |
+    DreamDaemonRights.ReadMetadata |
+    DreamDaemonRights.SetWebClient |
+    DreamDaemonRights.SoftRestart |
+    DreamDaemonRights.SoftShutdown |
+    DreamDaemonRights.Restart |
+    DreamDaemonRights.Shutdown |
+    DreamDaemonRights.Start |
+    DreamDaemonRights.SetStartupTimeout |
+    DreamDaemonRights.SetHeartbeatInterval |
+    DreamDaemonRights.CreateDump |
+    DreamDaemonRights.SetTopicTimeout |
+    DreamDaemonRights.SetAdditionalParameters |
+    DreamDaemonRights.SetVisibility;
 
 class InstanceEdit extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
@@ -53,7 +72,13 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ["info", "info", () => true],
         ["repository", "code-branch", () => true],
         ["deployment", "hammer", () => true],
-        ["dd", "server", () => true],
+        [
+            "dd",
+            "server",
+            instancePermissionSet =>
+                !!(instancePermissionSet.dreamDaemonRights & minimumServerPerms),
+            Server
+        ],
         [
             "byond",
             "list-ul",
