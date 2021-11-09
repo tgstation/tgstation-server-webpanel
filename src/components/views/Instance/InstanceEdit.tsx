@@ -26,7 +26,6 @@ import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
 import InstanceSettings from "./Edit/Config";
 import JobHistory from "./Edit/JobHistory";
-import Repository from "./Edit/Repository";
 import Server from "./Edit/Server";
 
 type IProps = RouteComponentProps<{ id: string; tab?: string }>;
@@ -71,7 +70,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ComponentType?
     ][] = [
         ["info", "info", () => true],
-        ["repository", "code-branch", () => true, Repository],
+        ["repository", "code-branch", () => true],
         ["deployment", "hammer", () => true],
         [
             "dd",
