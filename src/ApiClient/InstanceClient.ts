@@ -13,8 +13,8 @@ import configOptions from "./util/config";
 
 export type ListInstancesErrors = GenericErrors;
 export type CreateInstanceErrors = GenericErrors;
-export type EditInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
-export type GetInstanceErrors = GenericErrors | ErrorCode.INSTANCE_NO_DB_ENTITY;
+export type EditInstanceErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
+export type GetInstanceErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 
 interface IEvents {
     instanceChange: (instanceId: number) => void;
@@ -88,7 +88,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
             case 410:
                 return new InternalStatus({
                     code: StatusCode.ERROR,
-                    error: new InternalError(ErrorCode.INSTANCE_NO_DB_ENTITY, {
+                    error: new InternalError(ErrorCode.NO_DB_ENTITY, {
                         errorMessage: response.data as ErrorMessageResponse
                     })
                 });
@@ -175,7 +175,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
             case 410:
                 return new InternalStatus({
                     code: StatusCode.ERROR,
-                    error: new InternalError(ErrorCode.INSTANCE_NO_DB_ENTITY, {
+                    error: new InternalError(ErrorCode.NO_DB_ENTITY, {
                         errorMessage: response.data as ErrorMessageResponse
                     })
                 });
