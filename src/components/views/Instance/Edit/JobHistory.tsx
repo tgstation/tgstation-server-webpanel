@@ -8,6 +8,7 @@ import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { RouteData } from "../../../../utils/routes";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import JobCard from "../../../utils/JobCard";
+import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 import PageHelper from "../../../utils/PageHelper";
 
@@ -68,6 +69,7 @@ export default function JobHistory(): JSX.Element {
 
     return (
         <div>
+            <DebugJsonViewer obj={jobs} />
             {errors.map((err, index) => {
                 if (!err) return;
                 return (

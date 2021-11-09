@@ -6,6 +6,7 @@ import { FormattedMessage } from "react-intl";
 
 import { GeneralContext, UnsafeGeneralContext } from "../../contexts/GeneralContext";
 import { MODE, VERSION } from "../../definitions/constants";
+import { DebugJsonViewer } from "../utils/JsonViewer";
 import Loading from "../utils/Loading";
 
 interface IProps {}
@@ -16,6 +17,7 @@ class Info extends React.Component<IProps, IState> {
     public render(): React.ReactNode {
         return (
             <div className="text-center">
+                <DebugJsonViewer obj={this.context} />
                 <h3>
                     <FormattedMessage id="view.info.client" />
                 </h3>

@@ -39,6 +39,7 @@ import { GlobalObjects } from "../../../utils/globalObjects";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
+import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
@@ -278,6 +279,7 @@ class UserEdit extends React.Component<IProps, IState> {
 
         return (
             <div className="text-center">
+                <DebugJsonViewer obj={this.state.user} />
                 {this.state.errors.map((err, index) => {
                     if (!err) return;
                     return (

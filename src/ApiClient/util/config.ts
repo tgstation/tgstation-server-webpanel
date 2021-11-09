@@ -1,4 +1,4 @@
-import { DEFAULT_APIPATH } from "../../definitions/constants";
+import { DEFAULT_APIPATH, MODE } from "../../definitions/constants";
 
 export type ConfigValue = number | string | boolean;
 
@@ -104,6 +104,11 @@ const configOptions = asElementTypesConfig({
         type: "enum",
         possibleValues: InstanceEditSidebar,
         value: InstanceEditSidebar.AUTO
+    },
+    showjson: {
+        id: "config.showjson",
+        type: "bool",
+        value: MODE === "DEV"
     }
 });
 
