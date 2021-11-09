@@ -312,6 +312,8 @@
     "config.instanceeditsidebar.enum.auto": "Expand on hover",
     "config.instanceeditsidebar.enum.collapse": "Always collapsed",
     "config.instanceeditsidebar.enum.expand": "Always expanded",
+    "config.showjson": "Show JSON objects",
+    "config.showjson.desc": "Most pages will display the underlying json data if enabled.",
     "loading.loading": "Loading...",
     "loading.login": "Logging in...",
     "loading.page": "Loading page: ",

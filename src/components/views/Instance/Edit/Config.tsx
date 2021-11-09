@@ -14,6 +14,7 @@ import { hasInstanceManagerRight, resolvePermissionSet } from "../../../../utils
 import ErrorAlert from "../../../utils/ErrorAlert";
 import { FieldType } from "../../../utils/InputField";
 import InputForm from "../../../utils/InputForm";
+import { DebugJsonViewer } from "../../../utils/JsonViewer";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
@@ -98,6 +99,7 @@ class InstanceSettings extends React.Component<IProps, IState> {
 
         return (
             <div className="text-center">
+                <DebugJsonViewer obj={this.context} />
                 {this.state.errors.map((err, index) => {
                     if (!err) return;
                     return (

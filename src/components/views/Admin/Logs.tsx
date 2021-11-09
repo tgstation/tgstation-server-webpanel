@@ -16,6 +16,7 @@ import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStat
 import { download } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
+import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 import PageHelper from "../../utils/PageHelper";
 
@@ -180,6 +181,7 @@ export default withRouter(
                         <Loading text="loading.logs" />
                     ) : this.props.match.params.name && this.state.viewedLog ? (
                         <div className="mx-5 mt-5">
+                            <DebugJsonViewer obj={this.state.viewedLog} />
                             <h3>{this.props.match.params.name}</h3>
                             <Button
                                 className="mr-1"
@@ -236,6 +238,7 @@ export default withRouter(
                         </div>
                     ) : (
                         <Container className="mt-5 mb-5">
+                            <DebugJsonViewer obj={this.state.logs} />
                             <Table striped bordered hover variant="dark" responsive>
                                 <thead>
                                     <tr>

@@ -22,6 +22,7 @@ import { addError, displayErrors } from "../../../utils/ErrorAlert";
 import GenericAlert from "../../../utils/GenericAlert";
 import InputField, { FieldType } from "../../../utils/InputField";
 import InputForm from "../../../utils/InputForm";
+import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 import WIPNotice from "../../../utils/WIPNotice";
 
@@ -117,7 +118,7 @@ export default function Server(): JSX.Element {
     }
 
     if (!watchdogSettings) {
-        return <Loading text="loading.instance.server" />;
+        return <>{displayErrors(errorState)}</>;
     }
 
     if (loading) {
@@ -256,6 +257,7 @@ export default function Server(): JSX.Element {
 
     return (
         <div>
+            <DebugJsonViewer obj={watchdogSettings} />
             {displayErrors(errorState)}
             <h2 className="text-center">
                 <FormattedMessage id="view.instance.server.status" />

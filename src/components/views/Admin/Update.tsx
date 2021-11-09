@@ -18,6 +18,7 @@ import { GeneralContext } from "../../../contexts/GeneralContext";
 import GithubClient, { TGSVersion } from "../../../utils/GithubClient";
 import { AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
+import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 
 interface IProps
@@ -222,6 +223,7 @@ class Update extends React.Component<IProps, IState> {
         const timing = typeof this.state.secondsLeft === "number";
         return (
             <React.Fragment>
+                <DebugJsonViewer obj={this.state.versions} />
                 <div className="text-center">
                     {this.state.errors.map((err, index) => {
                         if (!err) return;

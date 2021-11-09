@@ -16,6 +16,7 @@ import UserClient from "../../../ApiClient/UserClient";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
+import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 import PageHelper from "../../utils/PageHelper";
 
@@ -135,6 +136,7 @@ export default withRouter(
             }
             return (
                 <div className="text-center">
+                    <DebugJsonViewer obj={this.state.users} />
                     {!this.state.canList ? (
                         <Alert className="clearfix" variant="error">
                             <FormattedMessage id="view.user.list.cantlist" />

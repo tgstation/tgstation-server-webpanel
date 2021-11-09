@@ -18,6 +18,7 @@ import { hasByondRight } from "../../../../utils/misc";
 import { RouteData } from "../../../../utils/routes";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import GenericAlert from "../../../utils/GenericAlert";
+import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 import PageHelper from "../../../utils/PageHelper";
 
@@ -164,6 +165,7 @@ class Byond extends React.Component<IProps, IState> {
 
         return (
             <div className="text-center">
+                <DebugJsonViewer obj={this.state.versions} />
                 <h1>
                     <FormattedMessage id="view.instance.byond" />
                 </h1>

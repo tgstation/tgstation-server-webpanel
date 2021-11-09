@@ -17,6 +17,7 @@ import { GeneralContext } from "../../contexts/GeneralContext";
 import { resolvePermissionSet } from "../../utils/misc";
 import { AppRoutes } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
+import { DebugJsonViewer } from "../utils/JsonViewer";
 import Loading from "../utils/Loading";
 
 interface IProps extends RouteComponentProps {}
@@ -122,6 +123,7 @@ class Administration extends React.Component<IProps, IState> {
 
         return (
             <React.Fragment>
+                <DebugJsonViewer obj={this.state.adminInfo} />
                 <ErrorAlert
                     error={this.state.error}
                     onClose={() => this.setState({ error: undefined })}
