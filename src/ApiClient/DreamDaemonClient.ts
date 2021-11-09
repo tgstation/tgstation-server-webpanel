@@ -1,11 +1,12 @@
+import { ApiClient } from "./_base";
 import { DreamDaemonResponse, ErrorMessageResponse, JobResponse } from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
 
-export type getWatchdogStatusErrors = GenericErrors | ErrorCode.WATCHDOG_NO_DB_ENTITY;
-export type updateWatchdogStatusErrors = GenericErrors | ErrorCode.WATCHDOG_NO_DB_ENTITY;
-export default new (class DreamDaemonClient {
+export type getWatchdogStatusErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
+export type updateWatchdogStatusErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
+export default new (class DreamDaemonClient extends ApiClient {
     public async getWatchdogStatus(
         instance: number
     ): Promise<InternalStatus<DreamDaemonResponse, getWatchdogStatusErrors>> {
@@ -34,7 +35,7 @@ export default new (class DreamDaemonClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
-                        ErrorCode.WATCHDOG_NO_DB_ENTITY,
+                        ErrorCode.NO_DB_ENTITY,
                         {
                             errorMessage: response.data as ErrorMessageResponse
                         },
@@ -87,7 +88,7 @@ export default new (class DreamDaemonClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
-                        ErrorCode.WATCHDOG_NO_DB_ENTITY,
+                        ErrorCode.NO_DB_ENTITY,
                         {
                             errorMessage: response.data as ErrorMessageResponse
                         },
