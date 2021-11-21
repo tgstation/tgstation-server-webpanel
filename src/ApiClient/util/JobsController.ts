@@ -261,7 +261,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         if (loopid !== this.currentLoop) return;
 
                         if (value.code === StatusCode.OK) {
-                            fetchLoop: for (let i = 2; i <= value.payload.totalPages; i++) {
+                            for (let i = 2; i <= value.payload.totalPages; i++) {
+                                if (value.payload.content.some(job => job.id <= this.lastSeenJob)) {
+                                    break;
+                                }
                                 const jobs2 = await fetchJobs(instanceid, {
                                     page: i,
                                     pageSize: 100
@@ -271,17 +274,13 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                                     return;
                                 } else {
                                     value.payload.content.push(...jobs2.payload.content);
-                                    for (const job of jobs2.payload.content) {
-                                        //We reached the last page of usable content, break the loop
-                                        if (job.id <= this.lastSeenJob) {
-                                            break fetchLoop;
-                                        }
-                                    }
                                 }
                             }
                             if (loopid !== this.currentLoop) return;
                             await processJobs(
-                                value.payload.content.filter(job => job.id > this.lastSeenJob)
+                                value.payload.content.filter(
+                                    job => job.id > this.lastSeenJob || this.jobs.has(job.id)
+                                )
                             );
                         } else {
                             processError(value.error);
