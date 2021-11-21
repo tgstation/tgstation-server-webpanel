@@ -1,0 +1,4 @@
+# the 2 space zone
+[*]
+indent_size = 2
+indent_style = space

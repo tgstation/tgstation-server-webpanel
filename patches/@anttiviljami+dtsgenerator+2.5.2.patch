@@ -1,0 +1,307 @@
+diff --git a/node_modules/@anttiviljami/dtsgenerator/dist/core/dtsGenerator.js b/node_modules/@anttiviljami/dtsgenerator/dist/core/dtsGenerator.js
+index ebca503..22acf14 100644
+--- a/node_modules/@anttiviljami/dtsgenerator/dist/core/dtsGenerator.js
++++ b/node_modules/@anttiviljami/dtsgenerator/dist/core/dtsGenerator.js
+@@ -89,7 +89,7 @@ var DtsGenerator = (function () {
+                 try {
+                     for (var _b = tslib_1.__values(content.allOf), _c = _b.next(); !_c.done; _c = _b.next()) {
+                         var sub = _c.value;
+-                        if (typeof sub === 'object' && sub.$ref) {
++                        if (typeof sub === 'object' && sub.$ref && false) { /* do not ask me how it works ask @alexkar on discord */
+                             var ref = this.resolver.dereference(sub.$ref);
+                             sub = this.normalizeContent(ref).content;
+                         }
+@@ -170,7 +170,11 @@ var DtsGenerator = (function () {
+                     var schema = this.normalizeContent(baseSchema, '/properties/' + jsonPointer_1.tilde(propertyName));
+                     this.convertor.outputComments(schema);
+                     this.convertor.outputPropertyAttribute(schema);
+-                    this.convertor.outputPropertyName(schema, propertyName, baseSchema.content.required);
++                    this.convertor.outputPropertyName(
++                        schema,
++                        propertyName,
++                        !!schema.content.nullable
++                    );
+                     this.generateTypeProperty(schema);
+                 }
+             }
+@@ -193,7 +197,12 @@ var DtsGenerator = (function () {
+                 throw new Error('target referenced id is nothing: ' + content.$ref);
+             }
+             var refSchema = this.normalizeContent(ref);
+-            return this.convertor.outputTypeIdName(refSchema, this.currentSchema, terminate);
++            return this.convertor.outputTypeIdName(
++                refSchema,
++                this.currentSchema,
++                terminate,
++                !!content.nullable
++            );
+         }
+         if (content.anyOf || content.oneOf) {
+             this.generateArrayedType(schema, content.anyOf, '/anyOf/', terminate);
+@@ -296,7 +305,7 @@ var DtsGenerator = (function () {
+         if (outputOptional === void 0) { outputOptional = true; }
+         var type = schema.content.type;
+         if (type == null) {
+-            this.convertor.outputPrimitiveTypeName(schema, 'any', terminate, outputOptional);
++            this.convertor.outputPrimitiveTypeName(schema, "void", terminate, outputOptional);
+         }
+         else if (typeof type === 'string') {
+             this.generateTypeName(schema, type, terminate, outputOptional);
+diff --git a/node_modules/@anttiviljami/dtsgenerator/dist/core/jsonSchema.js b/node_modules/@anttiviljami/dtsgenerator/dist/core/jsonSchema.js
+index e888d95..57c415e 100644
+--- a/node_modules/@anttiviljami/dtsgenerator/dist/core/jsonSchema.js
++++ b/node_modules/@anttiviljami/dtsgenerator/dist/core/jsonSchema.js
+@@ -153,40 +153,115 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
+                 setSubId(param.schema, keys.concat(param.name));
+             }
+         }
++        var setSubIdToParameterObjectNoName = function(obj, keys) {
++            return setSubIdToAnyObject(setSubIdToParameterNoName, obj, keys);
++        };
++            
++        function setSubIdToParameterNoName(param, keys) {
++            if ("schema" in param) {
++                setSubId(param.schema, keys);
++            }
++        }
+         function setSubIdToParameters(array, keys) {
+             if (array == null) {
+                 return;
+             }
+-            var map = new Map();
++            var params = new Map();
++            var refs = new Map();
+             array.forEach(function (item) {
++                var _a, _b, _c;
+                 if ('schema' in item) {
+                     setSubIdToParameter(item, keys);
+-                    var work = map.get(item.in);
++                    var work = params.get(item.in)
+                     if (work == null) {
+                         work = [];
+-                        map.set(item.in, work);
++                        params.set(item.in, work);
++                    }
++                    work.push(item);
++                } else if ("$ref" in item) {
++                    var result = /\/([^\/]*)$/.exec(item.$ref)[1];
++                    if (
++                        ((_a = item.$ref) === null || _a === void 0
++                            ? void 0
++                            : _a.includes("Api")) ||
++                        ((_b = item.$ref) === null || _b === void 0
++                            ? void 0
++                            : _b.includes("User-Agent"))
++                    ) {
++                        return;
++                    }
++                    setSubId(item, keys.concat(result));
++                    var work = void 0;
++                    if (
++                        (_c = item.$ref) === null || _c === void 0
++                            ? void 0
++                            : _c.includes("Instance")
++                    ) {
++                        work = refs.get("header");
++                        if (work == null) {
++                            work = [];
++                            refs.set("header", work);
++                        }
++                    } else {
++                        work = refs.get("path");
++                        if (work == null) {
++                            work = [];
++                            refs.set("path", work);
++                        }
+                     }
+                     work.push(item);
+                 }
+             });
+-            addParameterSchema(map, keys);
++            addParameterSchema(params, refs, keys);
+         }
+-        function addParameterSchema(input, keys) {
+-            var e_1, _a;
++        function addParameterSchema(params, refs, keys) {
++            var e_1, _a, e_2, _b;
+             try {
+-                for (var input_1 = tslib_1.__values(input), input_1_1 = input_1.next(); !input_1_1.done; input_1_1 = input_1.next()) {
+-                    var _b = tslib_1.__read(input_1_1.value, 2), key = _b[0], params = _b[1];
+-                    var _c = tslib_1.__read(buildParameterSchema(key, params, keys), 2), paths = _c[0], obj = _c[1];
++                for (
++                    var params_1 = tslib_1.__values(params), params_1_1 = params_1.next();
++                    !params_1_1.done;
++                    params_1_1 = params_1.next()
++                ) {
++                    var _c = tslib_1.__read(params_1_1.value, 2),
++                        key = _c[0],
++                        param = _c[1];
++                    var _d = tslib_1.__read(buildParameterSchema(key, param, keys), 2),
++                        paths = _d[0],
++                        obj = _d[1];
+                     setSubId(obj, paths);
+                 }
+             }
+             catch (e_1_1) { e_1 = { error: e_1_1 }; }
+             finally {
+                 try {
+-                    if (input_1_1 && !input_1_1.done && (_a = input_1.return)) _a.call(input_1);
++                    if (params_1_1 && !params_1_1.done && (_a = params_1.return))
++                        _a.call(params_1);
+                 }
+                 finally { if (e_1) throw e_1.error; }
+             }
++            try {
++                for (
++                    var refs_1 = tslib_1.__values(refs), refs_1_1 = refs_1.next();
++                    !refs_1_1.done;
++                    refs_1_1 = refs_1.next()
++                ) {
++                    var _e = tslib_1.__read(refs_1_1.value, 2),
++                        key = _e[0],
++                        ref = _e[1];
++                    var _f = tslib_1.__read(buildParameterSchemaRefs(key, ref, keys), 2),
++                        paths = _f[0],
++                        obj = _f[1];
++                    setSubId(obj, paths);
++                }
++            } catch (e_2_1) {
++                e_2 = { error: e_2_1 };
++            } finally {
++                try {
++                    if (refs_1_1 && !refs_1_1.done && (_b = refs_1.return)) _b.call(refs_1);
++                } finally {
++                    if (e_2) throw e_2.error;
++                }
++            }
+         }
+         function buildParameterSchema(inType, params, keys) {
+             var paths = keys.slice(0, keys.length - 1).concat(inType + 'Parameters');
+@@ -201,6 +276,27 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
+                     required: params.filter(function (item) { return item.required === true; }).map(function (item) { return item.name; }),
+                 }];
+         }
++        function buildParameterSchemaRefs(inType, refs, keys) {
++            var paths = keys.slice(0, keys.length - 1).concat(inType + "Parameters");
++            var properties = {};
++            refs.forEach(function(item) {
++                if (item.$ref != null) {
++                    var result = /\/([^\/]*)$/.exec(item.$ref)[1];
++                    properties[result] = { $ref: createId(keys.concat(result)) };
++                }
++            });
++            return [
++                paths,
++                {
++                    id: createId(paths),
++                    type: "object",
++                    properties: properties,
++                    required: refs.map(function(item) {
++                        return /\/([^\/]*)$/.exec(item.$ref)[1];
++                    })
++                }
++            ];
++        }
+         var setSubIdToResponsesV2 = function (responses, keys) { return setSubIdToAnyObject(setSubIdToResponseV2, responses, keys); };
+         function setSubIdToResponseV2(response, keys) {
+             if (response == null) {
+@@ -266,9 +362,12 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
+             if ('content' in body) {
+                 setSubIdToMediaTypes(body.content, keys);
+             }
+-            if ('$ref' in body) {
++            else if ("$ref" in body) {
+                 setSubId(body, keys);
+             }
++            else {
++                setSubId({}, keys);
++            }
+         }
+         var setSubIdToResponsesV3 = function (responses, keys) { return setSubIdToAnyObject(setSubIdToResponseV3, responses, keys); };
+         function setSubIdToResponseV3(response, keys) {
+@@ -278,9 +377,12 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
+             if ('content' in response) {
+                 setSubIdToMediaTypes(response.content, keys);
+             }
+-            if ('$ref' in response) {
++            else if ("$ref" in response) {
+                 setSubId(response, keys);
+             }
++            else {
++                setSubId({}, keys);
++            }
+         }
+         function setSubIdToOperationV3(ops, keys) {
+             if (ops == null) {
+@@ -320,7 +422,8 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
+                 return;
+             }
+             if (typeof s.$ref === 'string') {
+-                var schemaId = new schemaId_1.default(s.$ref);
++                var thing = "#" + s.$ref.slice(1).split("/").map(convertKeyToTypeName).join("/");
++                var schemaId = new schemaId_1.default(thing);
+                 s.$ref = schemaId.getAbsoluteId();
+                 onFoundReference(schemaId);
+             }
+@@ -339,7 +442,10 @@ function searchAllSubSchema(schema, onFoundSchema, onFoundReference) {
+                 var components = openApi.components;
+                 setSubIdToObject(components.schemas, ['components', 'schemas']);
+                 setSubIdToResponsesV3(components.responses, ['components', 'responses']);
+-                setSubIdToParameterObject(components.parameters, ['components', 'parameters']);
++                setSubIdToParameterObjectNoName(components.parameters, [
++                    "components",
++                    "parameters"
++                ]);
+                 setSubIdToRequestBodies(components.requestBodies, ['components', 'requestBodies']);
+             }
+             if (openApi.paths) {
+diff --git a/node_modules/@anttiviljami/dtsgenerator/dist/core/schemaConvertor.js b/node_modules/@anttiviljami/dtsgenerator/dist/core/schemaConvertor.js
+index 6a21ace..db5843e 100644
+--- a/node_modules/@anttiviljami/dtsgenerator/dist/core/schemaConvertor.js
++++ b/node_modules/@anttiviljami/dtsgenerator/dist/core/schemaConvertor.js
+@@ -166,9 +166,8 @@ var SchemaConvertor = (function () {
+         }
+         (_a = this.processor).outputJSDoc.apply(_a, tslib_1.__spread(comments));
+     };
+-    SchemaConvertor.prototype.outputPropertyName = function (_schema, propertyName, required) {
+-        var optionalProperty = required == null || required.indexOf(propertyName) < 0;
+-        this.processor.outputKey(propertyName, optionalProperty).output(': ');
++    SchemaConvertor.prototype.outputPropertyName = function (_schema, propertyName, optional) {
++        this.processor.outputKey(propertyName, optional).output(": ");
+     };
+     SchemaConvertor.prototype.outputPropertyAttribute = function (schema) {
+         var content = schema.content;
+@@ -193,9 +192,10 @@ var SchemaConvertor = (function () {
+         }
+         this.outputTypeNameTrailer(schema, terminate, outputOptional);
+     };
+-    SchemaConvertor.prototype.outputTypeIdName = function (schema, currentSchema, terminate, outputOptional) {
++    SchemaConvertor.prototype.outputTypeIdName = function (schema, currentSchema, terminate, nullable, outputOptional) {
+         var _this = this;
+         if (terminate === void 0) { terminate = true; }
++        if (nullable === void 0) { nullable = false; }
+         if (outputOptional === void 0) { outputOptional = true; }
+         var typeName = this.getTypename(schema.id, currentSchema);
+         typeName.forEach(function (type, index) {
+@@ -205,7 +205,7 @@ var SchemaConvertor = (function () {
+                 _this.processor.output('.');
+             }
+         });
+-        this.outputTypeNameTrailer(schema, terminate, outputOptional);
++        this.outputTypeNameTrailer(schema, terminate, outputOptional, nullable);
+     };
+     SchemaConvertor.prototype.getTypename = function (id, baseSchema) {
+         var e_3, _a;
+@@ -251,7 +251,11 @@ var SchemaConvertor = (function () {
+         }
+         this.outputTypeNameTrailer(schema, terminate, outputOptional);
+     };
+-    SchemaConvertor.prototype.outputTypeNameTrailer = function (schema, terminate, outputOptional) {
++    SchemaConvertor.prototype.outputTypeNameTrailer = function (schema, terminate, outputOptional, nullable) {
++        if (nullable === void 0) { nullable = false; }
++        if (nullable) {
++            this.processor.output(" | null");
++        }
+         if (terminate) {
+             this.processor.output(';');
+         }

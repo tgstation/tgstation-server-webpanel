@@ -22,7 +22,8 @@
         "webpack*.js",
         "scripts/patcher/",
         "scripts/api_download.js",
-        "scripts/generate_enums.js"
+        "scripts/generate_enums.js",
+        "scripts/api_build.js"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
