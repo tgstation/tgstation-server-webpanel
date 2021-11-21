@@ -74,13 +74,6 @@ export default class JobCard extends React.Component<IProps, IState> {
                         )}
                     </OverlayTrigger>
                     <br />
-
-                    {/*ERROR*/}
-                    {job.errorCode !== undefined || job.exceptionDetails !== undefined ? (
-                        <JobError job={job} />
-                    ) : (
-                        ""
-                    )}
                     {/*CREATED BY*/}
                     <FormattedMessage id="app.job.startedby" />
                     <OverlayTrigger
@@ -146,6 +139,13 @@ export default class JobCard extends React.Component<IProps, IState> {
                             </OverlayTrigger>
                             <br />
                         </React.Fragment>
+                    ) : (
+                        ""
+                    )}
+
+                    {/*ERROR*/}
+                    {job.errorCode !== undefined || job.exceptionDetails !== undefined ? (
+                        <JobError job={job} />
                     ) : (
                         ""
                     )}

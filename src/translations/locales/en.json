@@ -84,7 +84,7 @@
     "generic.savepage": "Save Page",
     "generic.saveall": "Save All",
     "generic.details": "Details",
-    "generic.details.info": "Details ({info})",
+    "generic.errordetails": "Error Details ({info})",
     "generic.debugwarn": "Be careful to censor out any credentials or tokens when copying errors!",
     "generic.close": "Close",
     "generic.goback": "Go Back",

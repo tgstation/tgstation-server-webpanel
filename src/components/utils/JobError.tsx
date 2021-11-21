@@ -17,11 +17,11 @@ export default function JobError(props: IProps): JSX.Element {
         <>
             <Button
                 variant="danger"
-                className="d-block float-right"
+                className="d-inline-block"
                 onClick={() => setOpen(true)}
                 size="sm">
                 <FormattedMessage
-                    id="generic.details.info"
+                    id="generic.errordetails"
                     values={{
                         info:
                             props.job.errorCode !== undefined && props.job.errorCode !== null
