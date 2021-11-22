@@ -16,6 +16,8 @@ let SWAGGER_FILE_IMPORT = {};
 const ENUM_FILE = fs.createWriteStream(path.resolve(__dirname, API_GEN_PATH, '_enums.ts'));
 // exports
 const EXPORTS_FILE = fs.createWriteStream(path.resolve(__dirname, API_GEN_PATH, 'schemas.d.ts'));
+// dts file
+const GENERATED_FILE = path.resolve(__dirname, API_GEN_PATH, '_generated.d.ts');
 
 // the entire "build chain" in one convinient file!
 async function build() {
@@ -129,13 +131,13 @@ async function apiDownload(type, value) {
 }
 
 async function typegen() {
-  fse.removeSync('../src/ApiClient/generatedcode/_generated.d.ts');
+  fse.removeSync(GENERATED_FILE);
   console.log(`🔵 Generating API types. If this takes longer than a minuite or so, ask LetterN on discord **immediately**.`);
-  const { stdout, stderr } = await exec('yarn typegen src/ApiClient/generatedcode/swagger.json > src/ApiClient/generatedcode/_generated.d.ts', { shell: true });
+  const { stdout, stderr } = await exec(`yarn typegen ${SWAGGER_FILE.path} > ${GENERATED_FILE}`, { shell: true });
   if (stderr) {
     console.error(`❌ API Schema typegen Error: ${stderr}`);
   }
-  console.log(`\x1b[32m✔\x1b[0m API Schema type generation written to src/ApiClient/generatedcode/_generated.d.ts`);
+  console.log(`\x1b[32m✔\x1b[0m API Schema type generation written to ${GENERATED_FILE}`);
 }
 
 function generateEnums() {

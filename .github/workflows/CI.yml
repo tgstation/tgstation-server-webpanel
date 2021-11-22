@@ -23,7 +23,7 @@ jobs:
       run: npm install -g npm
 
     - name: Install Yarn Dependencies
-      run: yarn install --frozen-lockfile
+      run: yarn install --immutable
 
     - name: Compile
       run: yarn run build
@@ -47,7 +47,7 @@ jobs:
       run: npm install -g npm
 
     - name: Install Yarn Dependencies
-      run: yarn install --frozen-lockfile
+      run: yarn install --immutable
 
     - name: Run ESLint
       uses: stefanoeb/eslint-action@1.0.2
