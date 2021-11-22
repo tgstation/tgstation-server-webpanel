@@ -1,4 +1,4 @@
-# TGS Webpanel 
+# TGS Webpanel
 
 React web app to control TGS
 
