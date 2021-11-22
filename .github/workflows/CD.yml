@@ -18,13 +18,14 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: 14.x
-        
+
             - name: Upgrade NPM
               run: npm install -g npm
 
-            - run: npm ci
+            - name: Install Yarn Dependencies
+              run: yarn install --frozen-lockfile
 
-            - run: npm run build-github
+            - run: yarn run build-github
 
             #Safety against pushing broken code
             - name: Run ESLint
