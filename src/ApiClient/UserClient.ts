@@ -5,7 +5,7 @@ import type {
     PaginatedUserResponse,
     UserCreateRequest,
     UserResponse,
-    UserUpdateRequest,
+    UserUpdateRequest
 } from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -29,7 +29,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
         return this._cachedUser;
     }
     private loadingUserInfo = false;
-    // If set to true, all created users will default to having all permissions granted, used by the setup
+    //If set to true, all created users will default to having all permissions granted, used by the setup
     public createAllUsersWithAA = false;
 
     public constructor() {
@@ -48,38 +48,38 @@ export default new (class UserClient extends ApiClient<IEvents> {
         await ServerClient.wait4Init();
         let response;
         try {
-            response = await ServerClient.apiClient!["UserController.Update"](null, newUser);
+            response = await ServerClient.apiClient!.UserController_Update(null, newUser);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<EditUserErrors>,
+                error: stat as InternalError<EditUserErrors>
             });
         }
         // noinspection DuplicatedCode
         switch (response.status) {
             case 200: {
                 const current = await this.getCurrentUser();
-                if (current.code === StatusCode.OK) {
-                    if (current.payload.id === newUser.id) {
-                        // if we are editing ourselves, clear cached data to reload permissions on the app
+                if (current.code == StatusCode.OK) {
+                    if (current.payload.id == newUser.id) {
+                        //if we are editing ourselves, clear cached data to reload permissions on the app
                         ServerClient.emit("purgeCache");
                     }
                 } else {
                     return new InternalStatus({
                         code: StatusCode.ERROR,
-                        error: current.error,
+                        error: current.error
                     });
                 }
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as UserResponse,
+                    payload: response.data as UserResponse
                 });
             }
             case 404: {
                 const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
-                    error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage }),
+                    error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
                 });
             }
             default: {
@@ -89,7 +89,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -104,8 +104,8 @@ export default new (class UserClient extends ApiClient<IEvents> {
             return new InternalStatus({
                 code: StatusCode.ERROR,
                 error: new InternalError(ErrorCode.HTTP_ACCESS_DENIED, {
-                    void: true,
-                }),
+                    void: true
+                })
             });
         }
 
@@ -127,11 +127,11 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["UserController.Read"]();
+            response = await ServerClient.apiClient!.UserController_Read();
         } catch (stat) {
             const res = new InternalStatus<UserResponse, GenericErrors>({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
             this.emit("loadUserInfo", res);
             this.loadingUserInfo = false;
@@ -142,7 +142,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 200: {
                 const thing = new InternalStatus<UserResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data as UserResponse,
+                    payload: response.data as UserResponse
                 });
 
                 this._cachedUser = thing;
@@ -157,7 +157,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
                 this.emit("loadUserInfo", res);
                 this.loadingUserInfo = false;
@@ -168,20 +168,20 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
     public async listUsers({
         page = 1,
-        pageSize = configOptions.itemsperpage.value as number,
+        pageSize = configOptions.itemsperpage.value as number
     }): Promise<InternalStatus<PaginatedUserResponse, GenericErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!["UserController.List"]({
+            response = await ServerClient.apiClient!.UserController_List({
                 page: page,
-                pageSize: pageSize,
+                pageSize: pageSize
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
 
@@ -195,8 +195,8 @@ export default new (class UserClient extends ApiClient<IEvents> {
                     code: StatusCode.OK,
                     payload: {
                         ...(response.data as PaginatedUserResponse),
-                        content: payload,
-                    },
+                        content: payload
+                    }
                 });
             }
             default: {
@@ -206,7 +206,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -217,11 +217,11 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["UserController.GetId"]({ id: id });
+            response = await ServerClient.apiClient!.UserController_GetId({ id: id });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
         // noinspection DuplicatedCode
@@ -229,14 +229,14 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as UserResponse,
+                    payload: response.data as UserResponse
                 });
             }
             case 404: {
                 const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
-                    error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage }),
+                    error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
                 });
             }
             default: {
@@ -246,7 +246,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -288,14 +288,14 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["UserController.Create"](
+            response = await ServerClient.apiClient!.UserController_Create(
                 null,
                 newuser as UserCreateRequest
             );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
 
@@ -303,14 +303,14 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 201: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as UserResponse,
+                    payload: response.data as UserResponse
                 });
             }
             case 410: {
                 const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
-                    error: new InternalError(ErrorCode.USER_NO_SYS_IDENT, { errorMessage }),
+                    error: new InternalError(ErrorCode.USER_NO_SYS_IDENT, { errorMessage })
                 });
             }
             default: {
@@ -320,7 +320,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }

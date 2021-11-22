@@ -40,10 +40,7 @@ Make sure to run `npm install` again if you pull in new changes from the repo
 
 ## IMPORTANT NOTICE
 
-The lockfile `yarn.lock` has been tampered directly, as the patch only works on `openapi-client-axios@npm:4.1.0`. If clearing and re-doing the lockfile, make sure that `openapi-client-axios@npm:*` resolution & version is at `4.1.0`
-
-Another package that has been tampered directly is `"react-intl@npm:^5.11.0"`, as `@formatjs/intl` MUST be `1.14.2`, it's latest version is a breaking change.
-
+The lockfile `yarn.lock` has been tampered directly, as the patch only works on `openapi-client-axios@npm:4.1.0`. If clearing and re-doing the lockfile, make sure that `openapi-client-axios@npm:*` resolution & version is at `4.1.0`. Anything higher will break typegen, which is needed.
 
 # License
 

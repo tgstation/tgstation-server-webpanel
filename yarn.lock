@@ -6956,7 +6956,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-client-axios@npm:*, openapi-client-axios@npm:4.1.0":
+"openapi-client-axios@npm:*":
   version: 4.1.0
   resolution: "openapi-client-axios@npm:4.1.0"
   dependencies:
@@ -9054,7 +9054,6 @@ __metadata:
     html-webpack-plugin: ^5.5.0
     https-browserify: ^1.0.0
     jquery: ^3.5.1
-    openapi-client-axios: 4.1.0
     openapi-client-axios-ts: 3.9.9
     openapi-client-axios-typegen: 3.14.1
     patch-package: ^6.4.7

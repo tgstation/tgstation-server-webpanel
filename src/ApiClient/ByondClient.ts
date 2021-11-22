@@ -2,15 +2,10 @@ import { ApiClient } from "./_base";
 import type {
     ByondInstallResponse,
     ByondResponse,
-    PaginatedByondResponse,
+    PaginatedByondResponse
 } from "./generatedcode/schemas";
-import InternalError, {
-    ErrorCode,
-    GenericErrors,
-} from "./models/InternalComms/InternalError";
-import InternalStatus, {
-    StatusCode,
-} from "./models/InternalComms/InternalStatus";
+import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
+import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
 import TransferClient, { UploadErrors } from "./TransferClient";
 import configOptions from "./util/config";
@@ -23,13 +18,11 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["ByondController.Read"]({
-                Instance: instance,
-            });
+            response = await ServerClient.apiClient!.ByondController_Read({ Instance: instance });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
 
@@ -37,7 +30,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as ByondResponse,
+                    payload: response.data as ByondResponse
                 });
             }
             default: {
@@ -47,7 +40,7 @@ export default new (class ByondClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -61,15 +54,15 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["ByondController.List"]({
+            response = await ServerClient.apiClient!.ByondController_List({
                 Instance: instance,
                 page: page,
-                pageSize: pageSize,
+                pageSize: pageSize
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
 
@@ -77,7 +70,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as PaginatedByondResponse,
+                    payload: response.data as PaginatedByondResponse
                 });
             }
             default: {
@@ -87,7 +80,7 @@ export default new (class ByondClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -102,14 +95,14 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["ByondController.Update"](
+            response = await ServerClient.apiClient!.ByondController_Update(
                 { Instance: instance },
                 { version: version, uploadCustomZip: !!file }
             );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
 
@@ -126,12 +119,12 @@ export default new (class ByondClient extends ApiClient {
                         if (response2.code === StatusCode.OK) {
                             return new InternalStatus({
                                 code: StatusCode.OK,
-                                payload: responseData,
+                                payload: responseData
                             });
                         } else {
                             return new InternalStatus({
                                 code: StatusCode.ERROR,
-                                error: response2.error,
+                                error: response2.error
                             });
                         }
                     } else {
@@ -140,15 +133,15 @@ export default new (class ByondClient extends ApiClient {
                             error: new InternalError(ErrorCode.APP_FAIL, {
                                 jsError: Error(
                                     "switchActive is uploading a custom zip without actually having a zip file to upload"
-                                ),
-                            }),
+                                )
+                            })
                         });
                     }
                 }
 
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as ByondInstallResponse,
+                    payload: response.data as ByondInstallResponse
                 });
             }
             default: {
@@ -158,7 +151,7 @@ export default new (class ByondClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }

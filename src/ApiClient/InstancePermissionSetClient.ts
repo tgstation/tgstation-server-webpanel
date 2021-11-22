@@ -55,13 +55,13 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         let response;
         try {
-            response = await ServerClient.apiClient!["InstancePermissionSetController.Read"]({
-                Instance: instanceid,
+            response = await ServerClient.apiClient!.InstancePermissionSetController_Read({
+                Instance: instanceid
             });
         } catch (stat) {
             const res = new InternalStatus<InstancePermissionSetResponse, GenericErrors>({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
             this.emit("loadInstancePermissionSet", res);
             this.loadingInstancePermissionSetInfo.set(instanceid, false);
@@ -72,7 +72,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
             case 200: {
                 const res = new InternalStatus<InstancePermissionSetResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data as InstancePermissionSetResponse,
+                    payload: response.data as InstancePermissionSetResponse
                 });
 
                 this._cachedInstancePermissionSet.set(instanceid, res);
@@ -87,7 +87,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
                 this.emit("loadInstancePermissionSet", res);
                 this.loadingInstancePermissionSetInfo.set(instanceid, false);

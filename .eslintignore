@@ -4,6 +4,7 @@ webpack.*.js
 
 /src/ApiClient/generatedcode/**
 /dist/**
+/scripts/**
 
 *.css
 *.scss

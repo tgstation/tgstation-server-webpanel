@@ -89,7 +89,6 @@
         "follow-redirects": "^1.13.2",
         "fork-ts-checker-webpack-plugin": "^6.4.0",
         "html-webpack-plugin": "^5.5.0",
-        "openapi-client-axios": "4.1.0",
         "openapi-client-axios-ts": "3.9.9",
         "openapi-client-axios-typegen": "3.14.1",
         "patch-package": "^6.4.7",

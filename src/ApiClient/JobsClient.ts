@@ -29,15 +29,15 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["JobController.Read"]({
+            response = await ServerClient.apiClient!.JobController_Read({
                 Instance: instanceid,
                 page: page,
-                pageSize: pageSize,
+                pageSize: pageSize
             });
         } catch (stat) {
             return new InternalStatus<PaginatedTGSJobResponse, listJobsErrors>({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
 
@@ -46,7 +46,7 @@ export default new (class JobsClient extends ApiClient {
                 const newContent = (response.data as PaginatedJobResponse).content.map(job => {
                     return {
                         ...job,
-                        instanceid: instanceid,
+                        instanceid: instanceid
                     };
                 });
 
@@ -54,8 +54,8 @@ export default new (class JobsClient extends ApiClient {
                     code: StatusCode.OK,
                     payload: {
                         ...(response.data as PaginatedJobResponse),
-                        content: newContent,
-                    },
+                        content: newContent
+                    }
                 });
             }
             default: {
@@ -65,7 +65,7 @@ export default new (class JobsClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -79,14 +79,14 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["JobController.GetId"]({
+            response = await ServerClient.apiClient!.JobController_GetId({
                 Instance: instanceid,
-                id: jobid,
+                id: jobid
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
 
@@ -94,19 +94,19 @@ export default new (class JobsClient extends ApiClient {
             case 200: {
                 const job = {
                     ...(response.data as JobResponse),
-                    instanceid: instanceid,
+                    instanceid: instanceid
                 };
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: job,
+                    payload: job
                 });
             }
             case 404: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.JOB_JOB_NOT_FOUND, {
-                        errorMessage: response.data as ErrorMessageResponse,
-                    }),
+                        errorMessage: response.data as ErrorMessageResponse
+                    })
                 });
             }
             default: {
@@ -116,7 +116,7 @@ export default new (class JobsClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -130,14 +130,14 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["JobController.Delete"]({
+            response = await ServerClient.apiClient!.JobController_Delete({
                 Instance: instanceid,
-                id: jobid,
+                id: jobid
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
 
@@ -145,27 +145,27 @@ export default new (class JobsClient extends ApiClient {
             case 202: {
                 const job = {
                     ...(response.data as JobResponse),
-                    instanceid: instanceid,
+                    instanceid: instanceid
                 };
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: job,
+                    payload: job
                 });
             }
             case 404: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.JOB_JOB_NOT_FOUND, {
-                        errorMessage: response.data as ErrorMessageResponse,
-                    }),
+                        errorMessage: response.data as ErrorMessageResponse
+                    })
                 });
             }
             case 410: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.JOB_JOB_COMPLETE, {
-                        void: true,
-                    }),
+                        void: true
+                    })
                 });
             }
             default: {
@@ -175,7 +175,7 @@ export default new (class JobsClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -189,15 +189,15 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["JobController.List"]({
+            response = await ServerClient.apiClient!.JobController_List({
                 Instance: instanceid,
                 pageSize,
-                page,
+                page
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
 
@@ -206,7 +206,7 @@ export default new (class JobsClient extends ApiClient {
                 const newContent = (response.data as PaginatedJobResponse).content.map(job => {
                     return {
                         ...job,
-                        instanceid: instanceid,
+                        instanceid: instanceid
                     };
                 });
 
@@ -214,8 +214,8 @@ export default new (class JobsClient extends ApiClient {
                     code: StatusCode.OK,
                     payload: {
                         ...(response.data as PaginatedJobResponse),
-                        content: newContent,
-                    },
+                        content: newContent
+                    }
                 });
             }
             default: {
@@ -225,7 +225,7 @@ export default new (class JobsClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }

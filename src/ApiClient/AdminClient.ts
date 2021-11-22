@@ -3,7 +3,7 @@ import type {
     AdministrationResponse,
     ErrorMessageResponse,
     LogFileResponse,
-    PaginatedLogFileResponse,
+    PaginatedLogFileResponse
 } from "./generatedcode/schemas";
 import { DownloadedLog } from "./models/DownloadedLog";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
@@ -70,11 +70,11 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["AdministrationController.Read"]();
+            response = await ServerClient.apiClient!.AdministrationController_Read();
         } catch (stat) {
             const res = new InternalStatus<AdministrationResponse, AdminInfoErrors>({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<AdminInfoErrors>,
+                error: stat as InternalError<AdminInfoErrors>
             });
             this.emit("loadAdminInfo", res);
             this.loadingAdminInfo = false;
@@ -85,7 +85,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             case 200: {
                 const thing = new InternalStatus<AdministrationResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data as AdministrationResponse,
+                    payload: response.data as AdministrationResponse
                 });
 
                 this._cachedAdminInfo = thing;
@@ -104,7 +104,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.ADMIN_GITHUB_RATE,
                         { errorMessage },
                         response
-                    ),
+                    )
                 });
                 this.emit("loadAdminInfo", thing);
                 this.loadingAdminInfo = false;
@@ -121,7 +121,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.ADMIN_GITHUB_ERROR,
                         { errorMessage },
                         response
-                    ),
+                    )
                 });
                 this.emit("loadAdminInfo", thing);
                 this.loadingAdminInfo = false;
@@ -137,7 +137,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
                 this.emit("loadAdminInfo", res);
                 this.loadingAdminInfo = false;
@@ -151,11 +151,11 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["AdministrationController.Delete"]();
+            response = await ServerClient.apiClient!.AdministrationController_Delete();
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<RestartErrors>,
+                error: stat as InternalError<RestartErrors>
             });
         }
 
@@ -171,7 +171,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.ADMIN_WATCHDOG_UNAVAIL,
                         { errorMessage },
                         response
-                    ),
+                    )
                 });
             }
             default: {
@@ -181,7 +181,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -192,13 +192,13 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["AdministrationController.Update"](null, {
-                newVersion,
+            response = await ServerClient.apiClient!.AdministrationController_Update(null, {
+                newVersion
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<UpdateErrors>,
+                error: stat as InternalError<UpdateErrors>
             });
         }
 
@@ -214,7 +214,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.ADMIN_VERSION_NOT_FOUND,
                         { errorMessage },
                         response
-                    ),
+                    )
                 });
             }
             case 422: {
@@ -225,7 +225,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.ADMIN_WATCHDOG_UNAVAIL,
                         { errorMessage },
                         response
-                    ),
+                    )
                 });
             }
             case 424: {
@@ -236,7 +236,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.ADMIN_GITHUB_RATE,
                         { errorMessage },
                         response
-                    ),
+                    )
                 });
             }
             case 429: {
@@ -247,7 +247,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.ADMIN_GITHUB_ERROR,
                         { errorMessage },
                         response
-                    ),
+                    )
                 });
             }
             default: {
@@ -257,7 +257,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -265,20 +265,20 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
     public async getLogs({
         page = 1,
-        pageSize = configOptions.itemsperpage.value as number,
+        pageSize = configOptions.itemsperpage.value as number
     }): Promise<InternalStatus<PaginatedLogFileResponse, LogsErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!["AdministrationController.ListLogs"]({
+            response = await ServerClient.apiClient!.AdministrationController_ListLogs({
                 pageSize: pageSize,
-                page: page,
+                page: page
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<LogsErrors>,
+                error: stat as InternalError<LogsErrors>
             });
         }
 
@@ -286,7 +286,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as PaginatedLogFileResponse,
+                    payload: response.data as PaginatedLogFileResponse
                 });
             }
             case 409: {
@@ -297,7 +297,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.ADMIN_LOGS_IO_ERROR,
                         { errorMessage },
                         response
-                    ),
+                    )
                 });
             }
             default: {
@@ -307,7 +307,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
@@ -320,13 +320,13 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!["AdministrationController.GetLog"]({
-                path: logName,
+            response = await ServerClient.apiClient!.AdministrationController_GetLog({
+                path: logName
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>,
+                error: stat as InternalError<GenericErrors>
             });
         }
         switch (response.status) {
@@ -335,19 +335,19 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                     (response.data as LogFileResponse).fileTicket
                 );
                 if (contents.code === StatusCode.OK) {
-                    // Object.assign() is a funky function but all it does is copy everything from the second object to the first object
+                    //Object.assign() is a funky function but all it does is copy everything from the second object to the first object
                     const temp: DownloadedLog = Object.assign(
                         { content: contents.payload },
                         response.data as LogFileResponse
                     );
                     return new InternalStatus({
                         code: StatusCode.OK,
-                        payload: temp,
+                        payload: temp
                     });
                 } else {
                     return new InternalStatus({
                         code: StatusCode.ERROR,
-                        error: contents.error,
+                        error: contents.error
                     });
                 }
             }
@@ -359,7 +359,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.ADMIN_LOGS_IO_ERROR,
                         { errorMessage },
                         response
-                    ),
+                    )
                 });
             }
             default: {
@@ -369,7 +369,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    ),
+                    )
                 });
             }
         }
