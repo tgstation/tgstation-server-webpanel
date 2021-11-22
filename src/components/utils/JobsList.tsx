@@ -5,7 +5,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import { Rnd } from "react-rnd";
 
-import { InstanceResponse } from "../../ApiClient/generatedcode/schemas";
+import type { InstanceResponse } from "../../ApiClient/generatedcode/schemas";
 import InstanceClient from "../../ApiClient/InstanceClient";
 import { TGSJobResponse } from "../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";

@@ -10,7 +10,7 @@ import { withRouter } from "react-router-dom";
 
 import AdminClient from "../../ApiClient/AdminClient";
 import { AdministrationRights } from "../../ApiClient/generatedcode/_enums";
-import { AdministrationResponse } from "../../ApiClient/generatedcode/schemas";
+import type { AdministrationResponse } from "../../ApiClient/generatedcode/schemas";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import { GeneralContext } from "../../contexts/GeneralContext";

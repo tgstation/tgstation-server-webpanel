@@ -23,7 +23,7 @@ import {
     InstanceManagerRights,
     OAuthProvider
 } from "../../../ApiClient/generatedcode/_enums";
-import {
+import type {
     OAuthConnection,
     PermissionSet,
     UserGroup,

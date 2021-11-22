@@ -15,7 +15,7 @@ import {
     RepositoryRights,
     RightsType
 } from "../generatedcode/_enums";
-import { InstanceResponse } from "../generatedcode/schemas";
+import type { InstanceResponse } from "../generatedcode/schemas";
 import InstanceClient from "../InstanceClient";
 import InstancePermissionSetClient from "../InstancePermissionSetClient";
 import JobsClient, { TGSJobResponse } from "../JobsClient";

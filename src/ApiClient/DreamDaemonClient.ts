@@ -1,5 +1,5 @@
 import { ApiClient } from "./_base";
-import { DreamDaemonResponse, ErrorMessageResponse, JobResponse } from "./generatedcode/schemas";
+import type { DreamDaemonResponse, ErrorMessageResponse, JobResponse } from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -14,13 +14,13 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Read({
-                Instance: instance
+            response = await ServerClient.apiClient!["DreamDaemonController.Read"]({
+                Instance: instance,
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
 
@@ -28,7 +28,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as DreamDaemonResponse
+                    payload: response.data as DreamDaemonResponse,
                 });
             }
             case 410: {
@@ -37,10 +37,10 @@ export default new (class DreamDaemonClient extends ApiClient {
                     error: new InternalError(
                         ErrorCode.NO_DB_ENTITY,
                         {
-                            errorMessage: response.data as ErrorMessageResponse
+                            errorMessage: response.data as ErrorMessageResponse,
                         },
                         response
-                    )
+                    ),
                 });
             }
             default: {
@@ -50,7 +50,7 @@ export default new (class DreamDaemonClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -64,16 +64,16 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Update(
+            response = await ServerClient.apiClient!["DreamDaemonController.Update"](
                 {
-                    Instance: instance
+                    Instance: instance,
                 },
                 newSettings
             );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
 
@@ -81,7 +81,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as DreamDaemonResponse
+                    payload: response.data as DreamDaemonResponse,
                 });
             }
             case 410: {
@@ -90,10 +90,10 @@ export default new (class DreamDaemonClient extends ApiClient {
                     error: new InternalError(
                         ErrorCode.NO_DB_ENTITY,
                         {
-                            errorMessage: response.data as ErrorMessageResponse
+                            errorMessage: response.data as ErrorMessageResponse,
                         },
                         response
-                    )
+                    ),
                 });
             }
             default: {
@@ -103,7 +103,7 @@ export default new (class DreamDaemonClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -116,13 +116,13 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Create({
-                Instance: instance
+            response = await ServerClient.apiClient!["DreamDaemonController.Create"]({
+                Instance: instance,
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
 
@@ -130,7 +130,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as JobResponse
+                    payload: response.data as JobResponse,
                 });
             }
             default: {
@@ -140,7 +140,7 @@ export default new (class DreamDaemonClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -151,13 +151,13 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Delete({
-                Instance: instance
+            response = await ServerClient.apiClient!["DreamDaemonController.Delete"]({
+                Instance: instance,
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
 
@@ -165,7 +165,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 204: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: null
+                    payload: null,
                 });
             }
             default: {
@@ -175,7 +175,7 @@ export default new (class DreamDaemonClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -188,13 +188,13 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Restart({
-                Instance: instance
+            response = await ServerClient.apiClient!["DreamDaemonController.Restart"]({
+                Instance: instance,
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
 
@@ -202,7 +202,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as JobResponse
+                    payload: response.data as JobResponse,
                 });
             }
             default: {
@@ -212,7 +212,7 @@ export default new (class DreamDaemonClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -225,13 +225,13 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_CreateDump({
-                Instance: instance
+            response = await ServerClient.apiClient!["DreamDaemonController.CreateDump"]({
+                Instance: instance,
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
 
@@ -239,7 +239,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as JobResponse
+                    payload: response.data as JobResponse,
                 });
             }
             default: {
@@ -249,7 +249,7 @@ export default new (class DreamDaemonClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }

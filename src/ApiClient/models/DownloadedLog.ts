@@ -1,4 +1,4 @@
-import { LogFileResponse } from "../generatedcode/schemas";
+import type { LogFileResponse } from "../generatedcode/schemas";
 
 export type DownloadedLog = LogFileResponse & {
     content: string;

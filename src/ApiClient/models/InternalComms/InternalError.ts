@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 
 import { replaceAll } from "../../../utils/misc";
 import { ErrorCode as TGSErrorCode } from "../../generatedcode/_enums";
-import { ErrorMessageResponse } from "../../generatedcode/schemas";
+import type { ErrorMessageResponse } from "../../generatedcode/schemas";
 import configOptions from "../../util/config";
 import CredentialsProvider from "../../util/CredentialsProvider";
 

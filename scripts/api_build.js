@@ -6,7 +6,7 @@ const pkg = require("../package.json");
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-const API_GEN_PATH = "../src/ApiClient/api-gen";
+const API_GEN_PATH = "../src/ApiClient/generatedcode";
 
 // swagger
 const SWAGGER_FILE = fs.createWriteStream(path.resolve(__dirname, API_GEN_PATH, 'swagger.json'));
@@ -24,7 +24,7 @@ async function build() {
 
   await new Promise(resolve => { //DO NOT REMOVE THIS
     setTimeout(() => {
-      console.log("🟡 Pausing for 1 second (fs has to wake up and know that the schema json updated).")
+      console.log("⏲ Pausing for 1 second (fs has to wake up and know that the schema json updated).")
       resolve();
     }, 1000);
   });
@@ -129,13 +129,13 @@ async function apiDownload(type, value) {
 }
 
 async function typegen() {
-  fse.removeSync('../src/ApiClient/api-gen/_generated.d.ts');
+  fse.removeSync('../src/ApiClient/generatedcode/_generated.d.ts');
   console.log(`🔵 Generating API types. If this takes longer than a minuite or so, ask LetterN on discord **immediately**.`);
-  const { stdout, stderr } = await exec('yarn typegen src/ApiClient/api-gen/swagger.json > src/ApiClient/api-gen/_generated.d.ts', { shell: true });
+  const { stdout, stderr } = await exec('yarn typegen src/ApiClient/generatedcode/swagger.json > src/ApiClient/generatedcode/_generated.d.ts', { shell: true });
   if (stderr) {
     console.error(`❌ API Schema typegen Error: ${stderr}`);
   }
-  console.log(`\x1b[32m✔\x1b[0m API Schema type generation written to src/ApiClient/api-gen/_generated.d.ts`);
+  console.log(`\x1b[32m✔\x1b[0m API Schema type generation written to src/ApiClient/generatedcode/_generated.d.ts`);
 }
 
 function generateEnums() {

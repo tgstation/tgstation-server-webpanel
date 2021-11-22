@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ServerInformationResponse, UserResponse } from "../ApiClient/generatedcode/schemas";
+import type { ServerInformationResponse, UserResponse } from "../ApiClient/generatedcode/schemas";
 import InternalError from "../ApiClient/models/InternalComms/InternalError";
 
 export type GeneralContext = {

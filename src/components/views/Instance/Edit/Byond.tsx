@@ -10,7 +10,7 @@ import { FormattedMessage } from "react-intl";
 
 import ByondClient from "../../../../ApiClient/ByondClient";
 import { ByondRights } from "../../../../ApiClient/generatedcode/_enums";
-import { ByondResponse } from "../../../../ApiClient/generatedcode/schemas";
+import type { ByondResponse } from "../../../../ApiClient/generatedcode/schemas";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";

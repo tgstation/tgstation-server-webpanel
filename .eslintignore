@@ -1,0 +1,13 @@
+/.yarn/**
+/**/node_modules
+webpack.*.js
+
+/src/ApiClient/generatedcode/**
+/dist/**
+
+*.css
+*.scss
+*.json
+*.svg
+*.png
+*.html

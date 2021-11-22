@@ -1,10 +1,10 @@
 import { ApiClient } from "./_base";
-import {
+import type {
     ErrorMessageResponse,
     InstanceCreateRequest,
     InstanceResponse,
     InstanceUpdateRequest,
-    PaginatedInstanceResponse
+    PaginatedInstanceResponse,
 } from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -23,20 +23,20 @@ interface IEvents {
 export default new (class InstanceClient extends ApiClient<IEvents> {
     public async listInstances({
         page = 1,
-        pageSize = configOptions.itemsperpage.value as number
+        pageSize = configOptions.itemsperpage.value as number,
     } = {}): Promise<InternalStatus<PaginatedInstanceResponse, ListInstancesErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_List({
+            response = await ServerClient.apiClient!["InstanceController.List"]({
                 pageSize: pageSize,
-                page: page
+                page: page,
             });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
 
@@ -44,7 +44,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as PaginatedInstanceResponse
+                    payload: response.data as PaginatedInstanceResponse,
                 });
             }
             default: {
@@ -54,7 +54,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -67,12 +67,12 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_Update(null, instance);
+            response = await ServerClient.apiClient!["InstanceController.Update"](null, instance);
             this.emit("instanceChange", instance.id);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
         switch (response.status) {
@@ -82,15 +82,15 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: instance
+                    payload: instance,
                 });
             }
             case 410:
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.NO_DB_ENTITY, {
-                        errorMessage: response.data as ErrorMessageResponse
-                    })
+                        errorMessage: response.data as ErrorMessageResponse,
+                    }),
                 });
             default: {
                 return new InternalStatus({
@@ -99,7 +99,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -112,11 +112,11 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_Create(null, instance);
+            response = await ServerClient.apiClient!["InstanceController.Create"](null, instance);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
         switch (response.status) {
@@ -128,15 +128,15 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: instance
+                    payload: instance,
                 });
             }
             case 409:
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.HTTP_DATA_INEGRITY, {
-                        errorMessage: response.data as ErrorMessageResponse
-                    })
+                        errorMessage: response.data as ErrorMessageResponse,
+                    }),
                 });
             default: {
                 return new InternalStatus({
@@ -145,7 +145,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -158,26 +158,26 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_GetId({ id: instanceid });
+            response = await ServerClient.apiClient!["InstanceController.GetId"]({ id: instanceid });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
         switch (response.status) {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as InstanceResponse
+                    payload: response.data as InstanceResponse,
                 });
             }
             case 410:
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.NO_DB_ENTITY, {
-                        errorMessage: response.data as ErrorMessageResponse
-                    })
+                        errorMessage: response.data as ErrorMessageResponse,
+                    }),
                 });
             default: {
                 return new InternalStatus({
@@ -186,7 +186,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }

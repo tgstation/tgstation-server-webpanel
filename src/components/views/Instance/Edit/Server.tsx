@@ -12,7 +12,7 @@ import {
     DreamDaemonVisibility,
     WatchdogStatus
 } from "../../../../ApiClient/generatedcode/_enums";
-import { DreamDaemonResponse } from "../../../../ApiClient/generatedcode/schemas";
+import type { DreamDaemonResponse } from "../../../../ApiClient/generatedcode/schemas";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import JobsController from "../../../../ApiClient/util/JobsController";

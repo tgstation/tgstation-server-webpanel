@@ -15,8 +15,8 @@ package-lock.json
 !/.yarn/lock.yml
 
 ## api gen (folder exlude, contents include)
-!src/ApiClient/api-gen
-src/ApiClient/api-gen/*
+!/src/ApiClient/generatedcode
+/src/ApiClient/generatedcode/*
 
 # testing
 /coverage
@@ -44,6 +44,3 @@ yarn-error.log*
 *.tgz
 
 /tgstation-server-control-panel-.*\.tgz
-
-#generated code
-src/ApiClient/generatedcode

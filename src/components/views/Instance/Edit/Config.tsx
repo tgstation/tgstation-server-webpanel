@@ -5,7 +5,7 @@ import {
     ConfigurationType,
     InstanceManagerRights
 } from "../../../../ApiClient/generatedcode/_enums";
-import { InstanceUpdateRequest } from "../../../../ApiClient/generatedcode/schemas";
+import type { InstanceUpdateRequest } from "../../../../ApiClient/generatedcode/schemas";
 import InstanceClient from "../../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";

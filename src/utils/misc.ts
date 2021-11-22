@@ -11,7 +11,7 @@ import {
     InstancePermissionSetRights,
     RepositoryRights
 } from "../ApiClient/generatedcode/_enums";
-import {
+import type {
     InstancePermissionSetResponse,
     PermissionSet,
     UserResponse

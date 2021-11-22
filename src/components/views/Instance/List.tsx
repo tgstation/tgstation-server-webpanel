@@ -11,7 +11,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { satisfies as SemverSatisfies } from "semver";
 
 import { InstanceManagerRights } from "../../../ApiClient/generatedcode/_enums";
-import { InstanceResponse } from "../../../ApiClient/generatedcode/schemas";
+import type { InstanceResponse } from "../../../ApiClient/generatedcode/schemas";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";

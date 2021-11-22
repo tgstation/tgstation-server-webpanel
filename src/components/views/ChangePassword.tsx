@@ -6,7 +6,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
-import { UserResponse } from "../../ApiClient/generatedcode/schemas";
+import type { UserResponse } from "../../ApiClient/generatedcode/schemas";
 import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";

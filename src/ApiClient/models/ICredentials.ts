@@ -2,7 +2,7 @@ import { OAuthProvider } from "../generatedcode/_enums";
 
 export enum CredentialsType {
     Password,
-    OAuth
+    OAuth,
 }
 
 export interface IPasswordCredentials {

@@ -1,5 +1,5 @@
 import { ApiClient } from "./_base";
-import { ErrorMessageResponse } from "./generatedcode/schemas";
+import type { ErrorMessageResponse } from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -16,21 +16,21 @@ export default new (class TransferClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.TransferController_Download(
+            response = await ServerClient.apiClient!["TransferController.Download"](
                 {
-                    ticket: ticket
+                    ticket: ticket,
                 },
                 null,
                 {
                     headers: {
-                        Accept: "application/json, application/octet-stream"
-                    }
+                        Accept: "application/json, application/octet-stream",
+                    },
                 }
             );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
+                error: stat as InternalError<GenericErrors>,
             });
         }
 
@@ -38,15 +38,15 @@ export default new (class TransferClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as unknown as string
+                    payload: response.data as unknown as string,
                 });
             }
             case 410: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: response.data as ErrorMessageResponse
-                    })
+                        errorMessage: response.data as ErrorMessageResponse,
+                    }),
                 });
             }
             default: {
@@ -56,7 +56,7 @@ export default new (class TransferClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -70,20 +70,20 @@ export default new (class TransferClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.TransferController_Upload(
+            response = await ServerClient.apiClient!["TransferController.Upload"](
                 { ticket: ticket },
                 null,
                 {
                     data: file,
                     headers: {
-                        "Content-Type": "application/octect-stream"
-                    }
+                        "Content-Type": "application/octect-stream",
+                    },
                 }
             );
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: e as InternalError<GenericErrors>
+                error: e as InternalError<GenericErrors>,
             });
         }
 
@@ -91,23 +91,23 @@ export default new (class TransferClient extends ApiClient {
             case 204: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: null
+                    payload: null,
                 });
             }
             case 409: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.UPLOAD_FAILED, {
-                        void: true
-                    })
+                        void: true,
+                    }),
                 });
             }
             case 410: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: response.data as ErrorMessageResponse
-                    })
+                        errorMessage: response.data as ErrorMessageResponse,
+                    }),
                 });
             }
             default: {
@@ -117,7 +117,7 @@ export default new (class TransferClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }

@@ -1,11 +1,11 @@
 import { ApiClient } from "./_base";
-import {
+import type {
     ErrorMessageResponse,
     PaginatedUserGroupResponse,
     PermissionSet,
     UserGroupCreateRequest,
     UserGroupResponse,
-    UserGroupUpdateRequest
+    UserGroupUpdateRequest,
 } from "./generatedcode/schemas";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -28,11 +28,11 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserGroupController_Update(null, group);
+            response = await ServerClient.apiClient!["UserGroupController.Update"](null, group);
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: e as InternalError<GenericErrors>
+                error: e as InternalError<GenericErrors>,
             });
         }
 
@@ -40,15 +40,15 @@ export default new (class UserGroupClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as UserGroupResponse
+                    payload: response.data as UserGroupResponse,
                 });
             }
             case 410: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.GROUP_NOT_FOUND, {
-                        errorMessage: response.data as ErrorMessageResponse
-                    })
+                        errorMessage: response.data as ErrorMessageResponse,
+                    }),
                 });
             }
             default: {
@@ -58,7 +58,7 @@ export default new (class UserGroupClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -66,20 +66,20 @@ export default new (class UserGroupClient extends ApiClient {
 
     public async listGroups({
         page = 1,
-        pageSize = configOptions.itemsperpage.value as number
+        pageSize = configOptions.itemsperpage.value as number,
     }): Promise<InternalStatus<PaginatedUserGroupResponse, listGroupsErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserGroupController_List({
+            response = await ServerClient.apiClient!["UserGroupController.List"]({
                 pageSize: pageSize,
-                page: page
+                page: page,
             });
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: e as InternalError<GenericErrors>
+                error: e as InternalError<GenericErrors>,
             });
         }
 
@@ -87,7 +87,7 @@ export default new (class UserGroupClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as PaginatedUserGroupResponse
+                    payload: response.data as PaginatedUserGroupResponse,
                 });
             }
             default: {
@@ -97,7 +97,7 @@ export default new (class UserGroupClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -111,14 +111,14 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserGroupController_Create(null, {
+            response = await ServerClient.apiClient!["UserGroupController.Create"](null, {
                 name: name,
-                permissionSet: permissionSet
+                permissionSet: permissionSet,
             } as UserGroupCreateRequest);
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: e as InternalError<GenericErrors>
+                error: e as InternalError<GenericErrors>,
             });
         }
 
@@ -126,7 +126,7 @@ export default new (class UserGroupClient extends ApiClient {
             case 201: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as UserGroupResponse
+                    payload: response.data as UserGroupResponse,
                 });
             }
             default: {
@@ -136,7 +136,7 @@ export default new (class UserGroupClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }
@@ -147,11 +147,11 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserGroupController_Delete({ id: id });
+            response = await ServerClient.apiClient!["UserGroupController.Delete"]({ id: id });
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: e as InternalError<GenericErrors>
+                error: e as InternalError<GenericErrors>,
             });
         }
 
@@ -159,23 +159,23 @@ export default new (class UserGroupClient extends ApiClient {
             case 204: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: null
+                    payload: null,
                 });
             }
             case 409: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.GROUP_NOT_EMPTY, {
-                        errorMessage: response.data as ErrorMessageResponse
-                    })
+                        errorMessage: response.data as ErrorMessageResponse,
+                    }),
                 });
             }
             case 410: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.GROUP_NOT_FOUND, {
-                        errorMessage: response.data as ErrorMessageResponse
-                    })
+                        errorMessage: response.data as ErrorMessageResponse,
+                    }),
                 });
             }
             default: {
@@ -185,7 +185,7 @@ export default new (class UserGroupClient extends ApiClient {
                         ErrorCode.UNHANDLED_RESPONSE,
                         { axiosResponse: response },
                         response
-                    )
+                    ),
                 });
             }
         }

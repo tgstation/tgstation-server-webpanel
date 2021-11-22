@@ -8,7 +8,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 
 import { ByondRights, DreamDaemonRights } from "../../../ApiClient/generatedcode/_enums";
-import { InstancePermissionSetResponse } from "../../../ApiClient/generatedcode/schemas";
+import type { InstancePermissionSetResponse } from "../../../ApiClient/generatedcode/schemas";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError from "../../../ApiClient/models/InternalComms/InternalError";
