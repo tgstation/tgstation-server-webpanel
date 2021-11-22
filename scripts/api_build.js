@@ -11,13 +11,26 @@ const API_GEN_PATH = "../src/ApiClient/generatedcode";
 // swagger
 const SWAGGER_FILE = fs.createWriteStream(path.resolve(__dirname, API_GEN_PATH, 'swagger.json'));
 let SWAGGER_FILE_IMPORT = {};
+// safety (real)
+if(!fs.existsSync(SWAGGER_FILE.path)) {
+  fs.mkdirSync(SWAGGER_FILE.path, {recursive: true})
+}
 
 // enum
 const ENUM_FILE = fs.createWriteStream(path.resolve(__dirname, API_GEN_PATH, '_enums.ts'));
+if(!fs.existsSync(ENUM_FILE.path)) {
+  fs.mkdirSync(ENUM_FILE.path, {recursive: true})
+}
 // exports
 const EXPORTS_FILE = fs.createWriteStream(path.resolve(__dirname, API_GEN_PATH, 'schemas.d.ts'));
+if(!fs.existsSync(EXPORTS_FILE.path)) {
+  fs.mkdirSync(EXPORTS_FILE.path, {recursive: true})
+}
 // dts file
 const GENERATED_FILE = path.resolve(__dirname, API_GEN_PATH, '_generated.d.ts');
+if(!fs.existsSync(GENERATED_FILE)) {
+  fs.mkdirSync(GENERATED_FILE, {recursive: true})
+}
 
 // the entire "build chain" in one convinient file!
 async function build() {
