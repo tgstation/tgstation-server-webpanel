@@ -11,38 +11,56 @@ const API_GEN_PATH = "../src/ApiClient/generatedcode";
 // swagger
 const SWAGGER_FILE = fs.createWriteStream(path.resolve(__dirname, API_GEN_PATH, 'swagger.json'));
 let SWAGGER_FILE_IMPORT = {};
-// safety (real)
-if(!fs.existsSync(SWAGGER_FILE.path)) {
-  fs.mkdirSync(SWAGGER_FILE.path, {recursive: true})
-}
 
 // enum
 const ENUM_FILE = fs.createWriteStream(path.resolve(__dirname, API_GEN_PATH, '_enums.ts'));
-if(!fs.existsSync(ENUM_FILE.path)) {
-  fs.mkdirSync(ENUM_FILE.path, {recursive: true})
-}
+
 // exports
 const EXPORTS_FILE = fs.createWriteStream(path.resolve(__dirname, API_GEN_PATH, 'schemas.d.ts'));
-if(!fs.existsSync(EXPORTS_FILE.path)) {
-  fs.mkdirSync(EXPORTS_FILE.path, {recursive: true})
-}
+
 // dts file
 const GENERATED_FILE = path.resolve(__dirname, API_GEN_PATH, '_generated.d.ts');
-if(!fs.existsSync(GENERATED_FILE)) {
-  fs.mkdirSync(GENERATED_FILE, {recursive: true})
-}
 
 // the entire "build chain" in one convinient file!
 async function build() {
+  console.log("⏲ Pausing until fs opens up.");
+  await Promise.all([
+    await new Promise(fsResolve => {
+      SWAGGER_FILE.once('open', () => {
+        fsResolve();
+      })
+      if (!SWAGGER_FILE.pending) {
+        fsResolve();
+      }
+    }),
+    await new Promise(fsResolve => {
+      ENUM_FILE.once('open', () => {
+        fsResolve()
+      })
+      if (!ENUM_FILE.pending) {
+        fsResolve();
+      }
+    }),
+    await new Promise(fsResolve => {
+      EXPORTS_FILE.once('open', () => {
+        fsResolve()
+      })
+      if (!EXPORTS_FILE.pending) {
+        fsResolve();
+      }
+    }),
+  ]);
+  console.log("\x1b[32m✔\x1b[0m All fs open.");
+
   await apiDownload(pkg.tgs_api.type, pkg.tgs_api.value);
   codeZeroOrBreak();
 
-  await new Promise(resolve => { //DO NOT REMOVE THIS
-    setTimeout(() => {
-      console.log("⏲ Pausing for 1 second (fs has to wake up and know that the schema json updated).")
-      resolve();
-    }, 1000);
-  });
+  // await new Promise(resolve => { //DO NOT REMOVE THIS
+  //   setTimeout(() => {
+  //     console.log("⏲ Pausing for 1 second (fs has to wake up and know that the schema json updated).")
+  //     resolve();
+  //   }, 1000);
+  // });
 
   await typegen();
   codeZeroOrBreak();
