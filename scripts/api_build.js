@@ -22,7 +22,7 @@ const EXPORTS_FILE = createWriteStreamSafe(path.resolve(__dirname, API_GEN_PATH,
 const GENERATED_FILE = path.resolve(__dirname, API_GEN_PATH, '_generated.d.ts');
 
 function createWriteStreamSafe(path) {
-  fs.writeFileSync(path, ""); // blank it
+  fs.openSync(path, "w+"); // blank it
   return fs.createWriteStream(path);
 }
 
