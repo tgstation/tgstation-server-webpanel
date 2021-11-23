@@ -15,8 +15,9 @@ package-lock.json
 !/.yarn/lock.yml
 
 ## api gen (folder exlude, contents include)
-!/src/ApiClient/generatedcode
 /src/ApiClient/generatedcode/*
+!/src/ApiClient/generatedcode/.gitkeep
+!/src/ApiClient/generatedcode/README.md
 
 # testing
 /coverage
