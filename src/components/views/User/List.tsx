@@ -8,8 +8,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 
-import { AdministrationRights } from "../../../ApiClient/generatedcode/_enums";
-import type { UserResponse } from "../../../ApiClient/generatedcode/schemas";
+import { AdministrationRights, UserResponse } from "../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
@@ -65,7 +64,7 @@ export default withRouter(
                 switch (res.code) {
                     case StatusCode.OK: {
                         if (
-                            this.state.page > res.payload.totalPages &&
+                            this.state.page > res.payload.totalPages! &&
                             res.payload.totalPages !== 0
                         ) {
                             this.setState({
@@ -74,7 +73,7 @@ export default withRouter(
                         }
 
                         this.setState({
-                            users: res.payload.content,
+                            users: res.payload.content!,
                             maxPage: res.payload.totalPages
                         });
                         break;
@@ -114,7 +113,7 @@ export default withRouter(
             const response = await UserClient.getCurrentUser();
             if (response.code == StatusCode.OK) {
                 const canList = !!(
-                    resolvePermissionSet(response.payload).administrationRights &
+                    resolvePermissionSet(response.payload).administrationRights! &
                     AdministrationRights.ReadUsers
                 );
                 this.setState({
@@ -188,7 +187,7 @@ export default withRouter(
                         </thead>
                         <tbody>
                             {this.state.users.map(value => {
-                                const createddate = new Date(value.createdAt);
+                                const createddate = new Date(value.createdAt!);
                                 const createddiff = (createddate.getTime() - Date.now()) / 1000;
 
                                 return (
@@ -223,7 +222,7 @@ export default withRouter(
                                         {value.group ? (
                                             <OverlayTrigger
                                                 overlay={
-                                                    <Tooltip id={`${value.name}-tooltip-group`}>
+                                                    <Tooltip id={`${value.name!}-tooltip-group`}>
                                                         <FormattedMessage
                                                             id="generic.groupid"
                                                             values={{ id: value.group.id }}
@@ -244,7 +243,7 @@ export default withRouter(
                                         )}
                                         <OverlayTrigger
                                             overlay={
-                                                <Tooltip id={`${value.name}-tooltip`}>
+                                                <Tooltip id={`${value.name!}-tooltip`}>
                                                     {createddate.toLocaleString()}
                                                 </Tooltip>
                                             }>
@@ -262,15 +261,15 @@ export default withRouter(
                                         </OverlayTrigger>
                                         <OverlayTrigger
                                             overlay={
-                                                <Tooltip id={`${value.name}-tooltip-createdby`}>
+                                                <Tooltip id={`${value.name!}-tooltip-createdby`}>
                                                     <FormattedMessage id="generic.userid" />
-                                                    {value.createdBy.id}
+                                                    {value.createdBy!.id}
                                                 </Tooltip>
                                             }>
                                             {({ ref, ...triggerHandler }) => (
                                                 <td {...triggerHandler}>
                                                     <span ref={ref as React.Ref<HTMLSpanElement>}>
-                                                        {value.createdBy.name}
+                                                        {value.createdBy!.name}
                                                     </span>
                                                 </td>
                                             )}

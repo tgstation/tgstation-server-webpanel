@@ -5,7 +5,7 @@ import type {
     InstanceResponse,
     ServerInformationResponse,
     UserResponse
-} from "../ApiClient/generatedcode/schemas";
+} from "../ApiClient/generatedcode/generated";
 import InternalError from "../ApiClient/models/InternalComms/InternalError";
 
 export type InstanceEditContext = {

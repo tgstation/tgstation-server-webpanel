@@ -7,8 +7,7 @@ import Tab from "react-bootstrap/Tab";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 
-import { ByondRights, DreamDaemonRights } from "../../../ApiClient/generatedcode/_enums";
-import type { InstancePermissionSetResponse } from "../../../ApiClient/generatedcode/schemas";
+import { ByondRights, DreamDaemonRights, InstancePermissionSetResponse } from "../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError from "../../../ApiClient/models/InternalComms/InternalError";
@@ -76,13 +75,13 @@ class InstanceEdit extends React.Component<IProps, IState> {
             "dd",
             "server",
             instancePermissionSet =>
-                !!(instancePermissionSet.dreamDaemonRights & minimumServerPerms),
+                !!(instancePermissionSet.dreamDaemonRights! & minimumServerPerms),
             Server
         ],
         [
             "byond",
             "list-ul",
-            instancePermissionSet => !!(instancePermissionSet.byondRights & minimumByondPerms),
+            instancePermissionSet => !!(instancePermissionSet.byondRights! & minimumByondPerms),
             Byond
         ],
         ["chatbots", "comments", () => true],

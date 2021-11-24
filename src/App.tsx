@@ -268,7 +268,7 @@ class App extends React.Component<IProps, IState> {
         ServerClient.on("purgeCache", this.updateContextUser);
 
         await this.loadTranslation();
-        await ServerClient.initApi();
+        ServerClient.initApi();
         await this.updateContextServer();
 
         this.onMount();

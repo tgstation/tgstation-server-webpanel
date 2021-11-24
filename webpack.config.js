@@ -145,16 +145,7 @@ module.exports = (env, argv) => ({
                 },
             ],
         }),
-        new ForkTsCheckerWebpackPlugin({
-            issue: {
-                exclude: [
-                    { origin: 'typescript', code: "TS2306" },
-                ],
-            },
-            typescript: {
-                configFile: path.resolve(__dirname, 'tsconfig.json'),
-            },
-        }),
+        new ForkTsCheckerWebpackPlugin(),
         new DefinePlugin({
             'API_VERSION': JSON.stringify(
                 require("./src/ApiClient/generatedcode/swagger.json").info.version

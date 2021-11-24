@@ -1,5 +1,5 @@
 import { ApiClient } from "./_base";
-import type { ErrorMessageResponse } from "./generatedcode/schemas";
+import type { ErrorMessageResponse } from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -16,11 +16,10 @@ export default new (class TransferClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.TransferController_Download(
+            response = await ServerClient.apiClient!.transfer.transferControllerDownload(
                 {
                     ticket: ticket
                 },
-                null,
                 {
                     headers: {
                         Accept: "application/json, application/octet-stream"
@@ -70,11 +69,12 @@ export default new (class TransferClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.TransferController_Upload(
-                { ticket: ticket },
-                null,
+            response = await ServerClient.apiClient!.transfer.transferControllerUpload(
                 {
-                    data: file,
+                    ticket: ticket,
+                },
+                (file as unknown as File),
+                {
                     headers: {
                         "Content-Type": "application/octect-stream"
                     }
@@ -106,7 +106,7 @@ export default new (class TransferClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: response.data as ErrorMessageResponse
+                        errorMessage: (response.data as unknown as ErrorMessageResponse)
                     })
                 });
             }

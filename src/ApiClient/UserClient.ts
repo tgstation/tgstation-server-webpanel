@@ -1,12 +1,13 @@
 import { ApiClient } from "./_base";
-import { AdministrationRights, InstanceManagerRights } from "./generatedcode/_enums";
-import type {
+import {
+    AdministrationRights,
     ErrorMessageResponse,
+    InstanceManagerRights ,
     PaginatedUserResponse,
     UserCreateRequest,
     UserResponse,
     UserUpdateRequest
-} from "./generatedcode/schemas";
+    } from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -48,7 +49,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
         await ServerClient.wait4Init();
         let response;
         try {
-            response = await ServerClient.apiClient!.UserController_Update(null, newUser);
+            response = await ServerClient.apiClient!.user.userControllerUpdate(newUser);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -72,7 +73,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
                 }
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as UserResponse
+                    payload: response.data
                 });
             }
             case 404: {
@@ -126,8 +127,8 @@ export default new (class UserClient extends ApiClient<IEvents> {
         this.loadingUserInfo = true;
 
         let response;
-        try {
-            response = await ServerClient.apiClient!.UserController_Read();
+        try { // UserController_Read
+            response = await ServerClient.apiClient!.user.userControllerRead();
         } catch (stat) {
             const res = new InternalStatus<UserResponse, GenericErrors>({
                 code: StatusCode.ERROR,
@@ -142,7 +143,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 200: {
                 const thing = new InternalStatus<UserResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data as UserResponse
+                    payload: response.data
                 });
 
                 this._cachedUser = thing;
@@ -174,7 +175,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserController_List({
+            response = await ServerClient.apiClient!.user.userControllerList({
                 page: page,
                 pageSize: pageSize
             });
@@ -187,14 +188,14 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as PaginatedUserResponse).content.sort(
-                    (a, b) => a.id - b.id
+                const payload = response.data.content!.sort(
+                    (a, b) => (a.id || 0) - (b.id || 0)
                 );
 
                 return new InternalStatus({
                     code: StatusCode.OK,
                     payload: {
-                        ...(response.data as PaginatedUserResponse),
+                        ...(response.data),
                         content: payload
                     }
                 });
@@ -217,7 +218,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserController_GetId({ id: id });
+            response = await ServerClient.apiClient!.user.userControllerGetId(id);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -229,7 +230,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as UserResponse
+                    payload: response.data
                 });
             }
             case 404: {
@@ -288,8 +289,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserController_Create(
-                null,
+            response = await ServerClient.apiClient!.user.userControllerCreate(
                 newuser as UserCreateRequest
             );
         } catch (stat) {
@@ -303,7 +303,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 201: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as UserResponse
+                    payload: response.data
                 });
             }
             case 410: {

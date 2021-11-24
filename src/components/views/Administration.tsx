@@ -9,8 +9,7 @@ import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
 import AdminClient from "../../ApiClient/AdminClient";
-import { AdministrationRights } from "../../ApiClient/generatedcode/_enums";
-import type { AdministrationResponse } from "../../ApiClient/generatedcode/schemas";
+import { AdministrationResponse,AdministrationRights } from "../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import { GeneralContext } from "../../contexts/GeneralContext";
@@ -109,15 +108,15 @@ class Administration extends React.Component<IProps, IState> {
         const handleOpen = () => this.setState({ showRebootModal: true });
 
         const canReboot = !!(
-            resolvePermissionSet(this.context.user).administrationRights &
+            resolvePermissionSet(this.context.user).administrationRights! &
             AdministrationRights.RestartHost
         );
         const canUpdate = !!(
-            resolvePermissionSet(this.context.user).administrationRights &
+            resolvePermissionSet(this.context.user).administrationRights! &
             AdministrationRights.ChangeVersion
         );
         const canLogs = !!(
-            resolvePermissionSet(this.context.user).administrationRights &
+            resolvePermissionSet(this.context.user).administrationRights! &
             AdministrationRights.DownloadLogs
         );
 
@@ -147,8 +146,8 @@ class Administration extends React.Component<IProps, IState> {
                             <FormattedMessage id="view.admin.version.current" />
                             <span
                                 className={
-                                    this.context.serverInfo.version <
-                                    this.state.adminInfo.latestVersion
+                                    this.context.serverInfo.version! <
+                                    this.state.adminInfo.latestVersion!
                                         ? "text-danger"
                                         : ""
                                 }>
@@ -159,8 +158,8 @@ class Administration extends React.Component<IProps, IState> {
                             <FormattedMessage id="view.admin.version.latest" />
                             <span
                                 className={
-                                    this.context.serverInfo.version <
-                                    this.state.adminInfo.latestVersion
+                                    this.context.serverInfo.version! <
+                                    this.state.adminInfo.latestVersion!
                                         ? "text-danger"
                                         : ""
                                 }>

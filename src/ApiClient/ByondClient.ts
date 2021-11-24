@@ -1,9 +1,9 @@
 import { ApiClient } from "./_base";
-import type {
+import {
     ByondInstallResponse,
     ByondResponse,
     PaginatedByondResponse
-} from "./generatedcode/schemas";
+} from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -18,7 +18,11 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.ByondController_Read({ Instance: instance });
+            response = await ServerClient.apiClient!.byond.byondControllerRead({
+                headers: {
+                    Instance: (instance as unknown as string) // hacky way of forcing strings
+                }
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -30,7 +34,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as ByondResponse
+                    payload: response.data
                 });
             }
             default: {
@@ -54,10 +58,14 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.ByondController_List({
-                Instance: instance,
+            response = await ServerClient.apiClient!.byond.byondControllerList({
                 page: page,
-                pageSize: pageSize
+                pageSize: pageSize,
+            },
+            {
+                headers: {
+                    Instance: (instance as unknown as string)
+                }
             });
         } catch (stat) {
             return new InternalStatus({
@@ -70,7 +78,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as PaginatedByondResponse
+                    payload: response.data
                 });
             }
             default: {
@@ -95,9 +103,16 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.ByondController_Update(
-                { Instance: instance },
-                { version: version, uploadCustomZip: !!file }
+            response = await ServerClient.apiClient!.byond.byondControllerUpdate(
+                {
+                    version: version,
+                    uploadCustomZip: !!file
+                },
+                {
+                    headers: {
+                        Instance: (instance as unknown as string)
+                    }
+                }
             );
         } catch (stat) {
             return new InternalStatus({
@@ -109,7 +124,7 @@ export default new (class ByondClient extends ApiClient {
         switch (response.status) {
             case 200:
             case 202: {
-                const responseData = response.data as ByondInstallResponse;
+                const responseData = response.data;
                 if (responseData.fileTicket) {
                     if (file) {
                         const response2 = await TransferClient.Upload(
@@ -141,7 +156,7 @@ export default new (class ByondClient extends ApiClient {
 
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as ByondInstallResponse
+                    payload: response.data
                 });
             }
             default: {

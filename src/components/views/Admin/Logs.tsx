@@ -9,7 +9,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 import { Link } from "react-router-dom";
 
 import AdminClient from "../../../ApiClient/AdminClient";
-import type { LogFileResponse } from "../../../ApiClient/generatedcode/schemas";
+import type { LogFileResponse } from "../../../ApiClient/generatedcode/generated";
 import { DownloadedLog } from "../../../ApiClient/models/DownloadedLog";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
@@ -107,7 +107,7 @@ export default withRouter(
             switch (response.code) {
                 case StatusCode.OK: {
                     if (
-                        this.state.page > response.payload.totalPages &&
+                        this.state.page > response.payload.totalPages! &&
                         response.payload.totalPages !== 0
                     ) {
                         this.setState({
@@ -117,7 +117,7 @@ export default withRouter(
                     }
 
                     this.setState({
-                        logs: response.payload.content,
+                        logs: response.payload.content!,
                         maxPage: response.payload.totalPages
                     });
                     break;
@@ -256,7 +256,7 @@ export default withRouter(
                                 </thead>
                                 <tbody>
                                     {this.state.logs.map((value, index) => {
-                                        const logdate = new Date(value.lastModified);
+                                        const logdate = new Date(value.lastModified!);
                                         const logdiff = (logdate.getTime() - Date.now()) / 1000;
 
                                         return (
@@ -265,7 +265,7 @@ export default withRouter(
                                                 <td>{value.name}</td>
                                                 <OverlayTrigger
                                                     overlay={
-                                                        <Tooltip id={`${value.name}-tooltip`}>
+                                                        <Tooltip id={`${value.name!}-tooltip`}>
                                                             {logdate.toLocaleString()}
                                                         </Tooltip>
                                                     }>
@@ -291,7 +291,7 @@ export default withRouter(
                                                             this.props.history.push(
                                                                 (AppRoutes.admin_logs.link ??
                                                                     AppRoutes.admin_logs.route) +
-                                                                    value.name +
+                                                                    value.name! +
                                                                     "/",
                                                                 {
                                                                     reload: true
@@ -302,7 +302,7 @@ export default withRouter(
                                                     </Button>
                                                     <Button
                                                         onClick={() => {
-                                                            this.downloadLog(value.name).catch(
+                                                            this.downloadLog(value.name!).catch(
                                                                 (e: Error) => {
                                                                     this.addError(
                                                                         new InternalError<ErrorCode.APP_FAIL>(

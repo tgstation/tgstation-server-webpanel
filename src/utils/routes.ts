@@ -1,6 +1,6 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
-import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/_enums";
+import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../ApiClient/UserClient";
@@ -55,7 +55,7 @@ function adminRight(right: AdministrationRights) {
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {
-            return !!(resolvePermissionSet(response.payload).administrationRights & right);
+            return !!(resolvePermissionSet(response.payload).administrationRights! & right);
         }
         return false;
     };
@@ -67,7 +67,7 @@ function instanceManagerRight(right: InstanceManagerRights) {
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {
-            return !!(resolvePermissionSet(response.payload).instanceManagerRights & right);
+            return !!(resolvePermissionSet(response.payload).instanceManagerRights! & right);
         }
         return false;
     };

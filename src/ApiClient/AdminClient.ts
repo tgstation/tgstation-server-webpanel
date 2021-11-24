@@ -2,9 +2,8 @@ import { ApiClient } from "./_base";
 import type {
     AdministrationResponse,
     ErrorMessageResponse,
-    LogFileResponse,
     PaginatedLogFileResponse
-} from "./generatedcode/schemas";
+} from "./generatedcode/generated";
 import { DownloadedLog } from "./models/DownloadedLog";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -70,7 +69,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_Read();
+            response = await ServerClient.apiClient!.administration.administrationControllerRead();
         } catch (stat) {
             const res = new InternalStatus<AdministrationResponse, AdminInfoErrors>({
                 code: StatusCode.ERROR,
@@ -85,7 +84,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             case 200: {
                 const thing = new InternalStatus<AdministrationResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data as AdministrationResponse
+                    payload: response.data
                 });
 
                 this._cachedAdminInfo = thing;
@@ -151,7 +150,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_Delete();
+            response = await ServerClient.apiClient!.administration.administrationControllerDelete();
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -164,7 +163,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return new InternalStatus({ code: StatusCode.OK, payload: null });
             }
             case 422: {
-                const errorMessage = response.data as ErrorMessageResponse;
+                const errorMessage = response.data as unknown as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -192,7 +191,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_Update(null, {
+            response = await ServerClient.apiClient!.administration.administrationControllerUpdate({
                 newVersion
             });
         } catch (stat) {
@@ -271,7 +270,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_ListLogs({
+            response = await ServerClient.apiClient!.administration.administrationControllerListLogs({
                 pageSize: pageSize,
                 page: page
             });
@@ -286,7 +285,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as PaginatedLogFileResponse
+                    payload: response.data
                 });
             }
             case 409: {
@@ -320,9 +319,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_GetLog({
-                path: logName
-            });
+            response = await ServerClient.apiClient!.administration.administrationControllerGetLog(logName);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -332,13 +329,13 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200: {
                 const contents = await TransferClient.Download(
-                    (response.data as LogFileResponse).fileTicket
+                    (response.data).fileTicket! // trust me guys it exists
                 );
                 if (contents.code === StatusCode.OK) {
                     //Object.assign() is a funky function but all it does is copy everything from the second object to the first object
                     const temp: DownloadedLog = Object.assign(
                         { content: contents.payload },
-                        response.data as LogFileResponse
+                        response.data
                     );
                     return new InternalStatus({
                         code: StatusCode.OK,

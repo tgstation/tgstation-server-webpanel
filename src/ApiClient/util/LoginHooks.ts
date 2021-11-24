@@ -1,6 +1,6 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 
-import type { TokenResponse } from "../generatedcode/schemas";
+import type { TokenResponse } from "../generatedcode/generated";
 
 interface IEvents {
     //tasks once the user is fully logged in

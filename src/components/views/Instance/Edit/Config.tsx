@@ -3,9 +3,9 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import {
     ConfigurationType,
-    InstanceManagerRights
-} from "../../../../ApiClient/generatedcode/_enums";
-import type { InstanceUpdateRequest } from "../../../../ApiClient/generatedcode/schemas";
+    InstanceManagerRights,
+    InstanceUpdateRequest
+} from "../../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";

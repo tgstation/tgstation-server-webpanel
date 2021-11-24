@@ -1,5 +1,5 @@
 import { MODE } from "../../definitions/constants";
-import type { TokenResponse } from "../generatedcode/schemas";
+import type { TokenResponse } from "../generatedcode/generated";
 import { ICredentials } from "../models/ICredentials";
 
 //Data structure meant to help against circular dependencies within the ApiClient

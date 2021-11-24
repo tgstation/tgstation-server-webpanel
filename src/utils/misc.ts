@@ -8,14 +8,12 @@ import {
     DreamDaemonRights,
     DreamMakerRights,
     InstanceManagerRights,
-    InstancePermissionSetRights,
-    RepositoryRights
-} from "../ApiClient/generatedcode/_enums";
-import type {
     InstancePermissionSetResponse,
+    InstancePermissionSetRights,
     PermissionSet,
+    RepositoryRights,
     UserResponse
-} from "../ApiClient/generatedcode/schemas";
+} from "../ApiClient/generatedcode/generated";
 
 export type DistributiveOmit<T, K extends keyof T> = T extends T ? Omit<T, K> : never;
 
@@ -56,60 +54,60 @@ function bitflagIsTrue(bitfield: number, bitflag: number): boolean {
 }
 
 function hasAdminRight(permissionSet: PermissionSet, right: AdministrationRights): boolean {
-    return bitflagIsTrue(permissionSet.administrationRights, right);
+    return bitflagIsTrue((permissionSet.administrationRights as number), right);
 }
 
 function hasInstanceManagerRight(
     permissionSet: PermissionSet,
     right: InstanceManagerRights
 ): boolean {
-    return bitflagIsTrue(permissionSet.instanceManagerRights, right);
+    return bitflagIsTrue((permissionSet.instanceManagerRights as number), right);
 }
 
 function hasByondRight(permissionSet: InstancePermissionSetResponse, right: ByondRights): boolean {
-    return bitflagIsTrue(permissionSet.byondRights, right);
+    return bitflagIsTrue((permissionSet.byondRights as number), right);
 }
 
 function hasChatBotRight(
     permissionSet: InstancePermissionSetResponse,
     right: ChatBotRights
 ): boolean {
-    return bitflagIsTrue(permissionSet.chatBotRights, right);
+    return bitflagIsTrue((permissionSet.chatBotRights as number), right);
 }
 
 function hasConfigRight(
     permissionSet: InstancePermissionSetResponse,
     right: ConfigurationRights
 ): boolean {
-    return bitflagIsTrue(permissionSet.configurationRights, right);
+    return bitflagIsTrue((permissionSet.configurationRights as number), right);
 }
 
 function hasDreamDaemonRight(
     permissionSet: InstancePermissionSetResponse,
     right: DreamDaemonRights
 ): boolean {
-    return bitflagIsTrue(permissionSet.dreamDaemonRights, right);
+    return bitflagIsTrue((permissionSet.dreamDaemonRights as number), right);
 }
 
 function hasDreamMakerRight(
     permissionSet: InstancePermissionSetResponse,
     right: DreamMakerRights
 ): boolean {
-    return bitflagIsTrue(permissionSet.dreamMakerRights, right);
+    return bitflagIsTrue((permissionSet.dreamMakerRights as number), right);
 }
 
 function hasInstancePermRight(
     permissionSet: InstancePermissionSetResponse,
     right: InstancePermissionSetRights
 ): boolean {
-    return bitflagIsTrue(permissionSet.instancePermissionSetRights, right);
+    return bitflagIsTrue((permissionSet.instancePermissionSetRights as number), right);
 }
 
 function hasRepoRight(
     permissionSet: InstancePermissionSetResponse,
     right: RepositoryRights
 ): boolean {
-    return bitflagIsTrue(permissionSet.repositoryRights, right);
+    return bitflagIsTrue((permissionSet.repositoryRights as number), right);
 }
 
 export {

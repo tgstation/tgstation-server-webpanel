@@ -6,7 +6,7 @@ import Form from "react-bootstrap/Form";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import type { UserResponse } from "../../../ApiClient/generatedcode/schemas";
+import type { UserResponse } from "../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
@@ -58,7 +58,7 @@ class UserCreate extends React.Component<IProps, IState> {
     // noinspection DuplicatedCode
     private validate(): boolean {
         let err = false;
-        if (this.state.password1.length < this.context.serverInfo.minimumPasswordLength) {
+        if (this.state.password1.length < this.context.serverInfo.minimumPasswordLength!) {
             err = true;
             this.setState({
                 lengthError: true

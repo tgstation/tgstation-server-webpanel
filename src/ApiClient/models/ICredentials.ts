@@ -1,4 +1,4 @@
-import { OAuthProvider } from "../generatedcode/_enums";
+import { OAuthProvider } from "../generatedcode/generated";
 
 export enum CredentialsType {
     Password,

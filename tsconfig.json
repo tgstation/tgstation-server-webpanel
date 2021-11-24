@@ -26,8 +26,11 @@
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true
   },
+  "exclude": [
+    "./src/**/*generated.ts"
+  ],
   "include": [
     "./*.d.ts",
-    "src/**/*"
+    "./src"
   ]
 }

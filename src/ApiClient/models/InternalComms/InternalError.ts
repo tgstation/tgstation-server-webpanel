@@ -1,8 +1,7 @@
 import { AxiosResponse } from "axios";
 
 import { replaceAll } from "../../../utils/misc";
-import { ErrorCode as TGSErrorCode } from "../../generatedcode/_enums";
-import type { ErrorMessageResponse } from "../../generatedcode/schemas";
+import { ErrorCode as TGSErrorCode, ErrorMessageResponse } from "../../generatedcode/generated";
 import configOptions from "../../util/config";
 import CredentialsProvider from "../../util/CredentialsProvider";
 
@@ -112,15 +111,12 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             this.desc = {
                 type: DescType.TEXT,
                 desc:
-                    TGSErrorCode[err.errorCode] +
-                    ": " +
-                    err.message +
-                    (err.additionalData ? ": " + err.additionalData : "")
+                    `${TGSErrorCode[err.errorCode!]} : ${err.message!} ${(err.additionalData ? ": " + err.additionalData : "")}`
             };
             if (!err.message) {
                 this.desc = {
                     type: DescType.TEXT,
-                    desc: TGSErrorCode[err.errorCode]
+                    desc: TGSErrorCode[err.errorCode!]
                 };
             }
         }
@@ -133,9 +129,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
         }
         const stack = new Error().stack;
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if (origin?.config.headers["Authorization"]) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (origin?.config.headers!["Authorization"]) {
             origin.config.headers["Authorization"] = "*********";
         }
 
@@ -151,7 +145,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
         if (CredentialsProvider.isTokenValid()) {
             debuginfo = replaceAll(
                 debuginfo,
-                CredentialsProvider.token?.bearer as string,
+                CredentialsProvider.token!.bearer!,
                 "**************"
             );
         }

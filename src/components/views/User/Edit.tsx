@@ -21,15 +21,13 @@ import { Link } from "react-router-dom";
 import {
     AdministrationRights,
     InstanceManagerRights,
-    OAuthProvider
-} from "../../../ApiClient/generatedcode/_enums";
-import type {
     OAuthConnection,
+    OAuthProvider,
     PermissionSet,
     UserGroup,
     UserGroupResponse,
     UserResponse
-} from "../../../ApiClient/generatedcode/schemas";
+} from "../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
@@ -92,14 +90,14 @@ class UserEdit extends React.Component<IProps, IState> {
 
     private get canEdit() {
         return !!(
-            resolvePermissionSet(this.context.user).administrationRights &
+            resolvePermissionSet(this.context.user).administrationRights! &
             AdministrationRights.WriteUsers
         );
     }
 
     private get canRead() {
         return !!(
-            resolvePermissionSet(this.context.user).administrationRights &
+            resolvePermissionSet(this.context.user).administrationRights! &
             AdministrationRights.ReadUsers
         );
     }
@@ -108,7 +106,7 @@ class UserEdit extends React.Component<IProps, IState> {
         const userid = parseInt(this.props.match.params.id);
         return (
             !!(
-                resolvePermissionSet(this.context.user).administrationRights &
+                resolvePermissionSet(this.context.user).administrationRights! &
                 AdministrationRights.EditOwnPassword
             ) && this.context.user.id === userid
         );
@@ -118,7 +116,7 @@ class UserEdit extends React.Component<IProps, IState> {
         const userid = parseInt(this.props.match.params.id);
         return (
             !!(
-                resolvePermissionSet(this.context.user).administrationRights &
+                resolvePermissionSet(this.context.user).administrationRights! &
                 AdministrationRights.EditOwnOAuthConnections
             ) && this.context.user.id === userid
         );
@@ -158,14 +156,14 @@ class UserEdit extends React.Component<IProps, IState> {
 
         const groups1 = await UserGroupClient.listGroups({ page: 1, pageSize: 100 });
         if (groups1.code === StatusCode.OK) {
-            const groups = [...groups1.payload.content];
-            for (let i = 2; i <= groups1.payload.totalPages; i++) {
+            const groups = [...groups1.payload.content!];
+            for (let i = 2; i <= groups1.payload.totalPages!; i++) {
                 const groups2 = await UserGroupClient.listGroups({ page: i, pageSize: 100 });
                 if (groups2.code === StatusCode.ERROR) {
                     this.addError(groups2.error);
                     return;
                 } else {
-                    groups.push(...groups2.payload.content);
+                    groups.push(...groups2.payload.content!);
                 }
             }
             this.setState({
@@ -205,7 +203,7 @@ class UserEdit extends React.Component<IProps, IState> {
             if (key == "none") return;
 
             const currentVal = !!(
-                resolvePermissionSet(this.state.user!).administrationRights & val
+                resolvePermissionSet(this.state.user!).administrationRights! & val
             );
             this.setState(prevState => {
                 return {
@@ -230,7 +228,7 @@ class UserEdit extends React.Component<IProps, IState> {
             if (key == "none") return;
 
             const currentVal = !!(
-                resolvePermissionSet(this.state.user!).instanceManagerRights & val
+                resolvePermissionSet(this.state.user!).instanceManagerRights! & val
             );
             this.setState(prevState => {
                 return {
@@ -372,7 +370,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                             </h5>
                                         </Col>
                                         <Col className="text-capitalize mb-2">
-                                            {this.state.user.enabled.toString()}
+                                            {this.state.user.enabled!.toString()}
                                         </Col>
                                     </Row>
                                     <Row xs={1} md={2}>
@@ -383,9 +381,9 @@ class UserEdit extends React.Component<IProps, IState> {
                                         </Col>
                                         <OverlayTrigger
                                             overlay={
-                                                <Tooltip id={`${this.state.user.name}-tooltip`}>
+                                                <Tooltip id={`${this.state.user.name!}-tooltip`}>
                                                     {new Date(
-                                                        this.state.user.createdAt
+                                                        this.state.user.createdAt!
                                                     ).toLocaleString()}
                                                 </Tooltip>
                                             }>
@@ -397,7 +395,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                                         <FormattedRelativeTime
                                                             value={
                                                                 (new Date(
-                                                                    this.state.user!.createdAt
+                                                                    this.state.user!.createdAt!
                                                                 ).getTime() -
                                                                     Date.now()) /
                                                                 1000
@@ -419,9 +417,9 @@ class UserEdit extends React.Component<IProps, IState> {
                                         <OverlayTrigger
                                             overlay={
                                                 <Tooltip
-                                                    id={`${this.state.user.name}-tooltip-createdby`}>
+                                                    id={`${this.state.user.name!}-tooltip-createdby`}>
                                                     <FormattedMessage id="generic.userid" />
-                                                    {this.state.user.createdBy.id}
+                                                    {this.state.user.createdBy!.id}
                                                 </Tooltip>
                                             }>
                                             {({ ref, ...triggerHandler }) => (
@@ -429,7 +427,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                                     className="text-capitalize mb-2"
                                                     {...triggerHandler}>
                                                     <span ref={ref as React.Ref<HTMLSpanElement>}>
-                                                        {this.state.user!.createdBy.name}
+                                                        {this.state.user!.createdBy!.name}
                                                     </span>
                                                 </Col>
                                             )}
@@ -443,7 +441,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                                 to={
                                                     (AppRoutes.passwd.link ??
                                                         AppRoutes.passwd.route) +
-                                                    this.state.user.id.toString()
+                                                    this.state.user.id!.toString()
                                                 }>
                                                 <FormattedMessage id="routes.passwd" />
                                             </Button>
@@ -516,7 +514,7 @@ class UserEdit extends React.Component<IProps, IState> {
         const currentOAuthConnections =
             this.state.newOAuthConnections ?? this.state.user?.oAuthConnections;
         if (
-            this.state.user?.name.toLowerCase() === "admin" || // admin user can't have OAuthConnections
+            this.state.user?.name!.toLowerCase() === "admin" || // admin user can't have OAuthConnections
             currentOAuthConnections == null ||
             !oAuthProviderInfos ||
             !Object.keys(oAuthProviderInfos).length
@@ -683,7 +681,7 @@ class UserEdit extends React.Component<IProps, IState> {
                             variant="success"
                             disabled={
                                 this.state.newOAuthConnections.some(
-                                    x => x.externalUserId.trim().length === 0
+                                    x => x.externalUserId!.trim().length === 0
                                 ) ||
                                 //If all values match up, and the lenght is the same, there has been no change, disable the button
                                 (this.state.newOAuthConnections.every(
@@ -762,7 +760,7 @@ class UserEdit extends React.Component<IProps, IState> {
                             <InputGroup className="justify-content-center mb-1" key={group.id}>
                                 <InputGroup.Prepend>
                                     <InputGroup.Radio
-                                        id={"group-" + group.id.toString()}
+                                        id={"group-" + group.id!.toString()}
                                         name="group"
                                         defaultChecked={this.state.user!.group?.id === group.id}
                                         disabled={!this.canEdit}
@@ -772,7 +770,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                     <InputGroup.Text
                                         className="flex-fill"
                                         as="label"
-                                        htmlFor={"group-" + group.id.toString()}>
+                                        htmlFor={"group-" + group.id!.toString()}>
                                         <span>{group.name}</span>
                                         <div className="text-right ml-auto">
                                             <FormattedMessage
@@ -787,7 +785,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                     </InputGroup.Text>
                                     <OverlayTrigger
                                         overlay={
-                                            <Tooltip id={`${group.id}-tooltip`}>
+                                            <Tooltip id={`${group.id!}-tooltip`}>
                                                 <FormattedMessage id="perms.group.delete.warning" />
                                             </Tooltip>
                                         }
@@ -806,7 +804,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                                     !this.canEdit ||
                                                     group.id === this.state.user!.group?.id
                                                 }
-                                                onClick={() => void this.deleteGroup(group.id)}
+                                                onClick={() => void this.deleteGroup(group.id!)}
                                                 {...triggerHandler}>
                                                 <div ref={ref as React.Ref<HTMLDivElement>}>
                                                     <FontAwesomeIcon icon={faTrash} />
@@ -1008,7 +1006,7 @@ class UserEdit extends React.Component<IProps, IState> {
                     permissionSet: newset
                 });
                 if (response.code == StatusCode.OK) {
-                    const response2 = await UserClient.getUser(this.state.user.id);
+                    const response2 = await UserClient.getUser(this.state.user.id!);
                     if (response2.code == StatusCode.OK) {
                         this.loadUser(response2.payload);
                     } else {
@@ -1044,7 +1042,7 @@ class UserEdit extends React.Component<IProps, IState> {
                         <FormattedMessage
                             id="perms.group.warning"
                             values={{
-                                group: `${this.state.user.group.name} (${this.state.user.group.id})`
+                                group: `${this.state.user.group.name!} (${this.state.user.group.id!})`
                             }}
                         />
                     </Alert>

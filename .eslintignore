@@ -1,8 +1,10 @@
 /.yarn/**
 /**/node_modules
 webpack.*.js
+babel.*.js
+jsonmanifest-plugin.js
 
-/src/ApiClient/generatedcode/**
+/src/ApiClient/generatedcode/**.ts
 /dist/**
 /scripts/**
 
@@ -12,3 +14,4 @@ webpack.*.js
 *.svg
 *.png
 *.html
+*.md

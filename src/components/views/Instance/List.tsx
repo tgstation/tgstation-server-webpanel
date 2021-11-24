@@ -10,8 +10,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { satisfies as SemverSatisfies } from "semver";
 
-import { InstanceManagerRights } from "../../../ApiClient/generatedcode/_enums";
-import type { InstanceResponse } from "../../../ApiClient/generatedcode/schemas";
+import { InstanceManagerRights, InstanceResponse } from "../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
@@ -80,12 +79,12 @@ class InstanceList extends React.Component<IProps, IState> {
         const tgsversionresponse = await ServerClient.getServerInfo();
         const enableVersionWorkaround =
             tgsversionresponse.code === StatusCode.OK &&
-            SemverSatisfies(tgsversionresponse.payload.apiVersion, "<9.1.0");
+            SemverSatisfies(tgsversionresponse.payload.apiVersion!, "<9.1.0");
         const modifiedlist: Array<Instance> = [];
         if (instancelist.code == StatusCode.OK) {
             //Safety against being on non existant pages
             if (
-                this.state.page > instancelist.payload.totalPages &&
+                this.state.page > instancelist.payload.totalPages! &&
                 instancelist.payload.totalPages !== 0
             ) {
                 this.setState({
@@ -95,17 +94,17 @@ class InstanceList extends React.Component<IProps, IState> {
             }
 
             const work: Array<Promise<void>> = [];
-            for (const instance of instancelist.payload.content) {
+            for (const instance of instancelist.payload.content!) {
                 const modifiedinstance = instance as Instance;
                 if (!enableVersionWorkaround) {
                     modifiedinstance.canAccess = modifiedinstance.online
-                        ? modifiedinstance.accessible
+                        ? !!modifiedinstance.accessible
                         : false;
                     modifiedlist.push(modifiedinstance);
                 } else if (instance.online) {
                     work.push(
                         InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                            instance.id
+                            instance.id!
                         ).then(permissionset => {
                             if (permissionset.code == StatusCode.OK) {
                                 modifiedinstance.canAccess = true;
@@ -127,7 +126,7 @@ class InstanceList extends React.Component<IProps, IState> {
             await Promise.all(work);
 
             this.setState({
-                instances: modifiedlist.sort((a, b) => a.id - b.id),
+                instances: modifiedlist.sort((a, b) => a.id! - b.id!),
                 maxPage: instancelist.payload.totalPages
             });
         } else {
@@ -165,7 +164,7 @@ class InstanceList extends React.Component<IProps, IState> {
         }
 
         const canOnline = !!(
-            resolvePermissionSet(this.context.user).instanceManagerRights &
+            resolvePermissionSet(this.context.user).instanceManagerRights! &
             InstanceManagerRights.SetOnline
         );
 
@@ -244,7 +243,7 @@ class InstanceList extends React.Component<IProps, IState> {
                                     </td>
                                     <td style={tablecellstyling}>
                                         <FormattedMessage
-                                            id={`view.instance.configmode.${value.configurationType.toString()}`}
+                                            id={`view.instance.configmode.${value.configurationType!.toString()}`}
                                         />
                                     </td>
                                     <td className="align-middle p-1" style={tablecellstyling}>
@@ -300,7 +299,7 @@ class InstanceList extends React.Component<IProps, IState> {
 
     private renderAddInstance(): React.ReactNode {
         const canCreate = !!(
-            resolvePermissionSet(this.context.user).instanceManagerRights &
+            resolvePermissionSet(this.context.user).instanceManagerRights! &
             InstanceManagerRights.Create
         );
 
