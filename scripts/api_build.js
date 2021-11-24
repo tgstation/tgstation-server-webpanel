@@ -65,6 +65,24 @@ async function buidlAPI() {
     },
     defaultResponseType: "void",
     singleHttpClient: true,
+    hooks: {
+      onParseSchema: (originalSchema, parsedSchema) => {
+        if (parsedSchema["type"] != "object") {
+          return;
+        }
+        parsedSchema["allFieldsAreOptional"] = false;
+        if(!parsedSchema.content){
+          return;
+        }
+        parsedSchema.content.map(v => {
+          if (v.isNullable) {
+            return;
+          }
+          v.field = v.field.replace("?:", ":");
+        })
+        return parsedSchema;
+      },
+    }
   }).catch(e => {
     console.error("❌  ", e);
     process.exitCode = 1;
