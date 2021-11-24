@@ -19,14 +19,14 @@ export default function JobHistory(): JSX.Element {
     const [errors, setErrors] = useState<Array<InternalError<ErrorCode> | undefined>>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(
-        RouteData.jobhistorypage.get(instanceEditContext.instance.id!) ?? 1
+        RouteData.jobhistorypage.get(instanceEditContext.instance.id) ?? 1
     );
     const [maxPage, setMaxPage] = useState<number | undefined>(undefined);
 
     //const [];
 
     useEffect(() => {
-        RouteData.jobhistorypage.set(instanceEditContext.instance.id!, page);
+        RouteData.jobhistorypage.set(instanceEditContext.instance.id, page);
         setLoading(true);
         void loadJobs();
     }, [page]);
@@ -34,9 +34,9 @@ export default function JobHistory(): JSX.Element {
     useEffect(() => {}, [errors]);
 
     async function loadJobs() {
-        const response = await JobsClient.listJobs(instanceEditContext.instance.id!, { page: page });
+        const response = await JobsClient.listJobs(instanceEditContext.instance.id, { page: page });
         if (response.code === StatusCode.OK) {
-            if (page > response.payload.totalPages! && response.payload.totalPages !== 0) setPage(1);
+            if (page > response.payload.totalPages && response.payload.totalPages !== 0) setPage(1);
             setJobs(response.payload.content);
             setMaxPage(response.payload.totalPages);
         } else {
@@ -54,7 +54,7 @@ export default function JobHistory(): JSX.Element {
     }
 
     async function onCancel(job: TGSJobResponse) {
-        const status = await JobsClient.deleteJob(job.instanceid, job.id!);
+        const status = await JobsClient.deleteJob(job.instanceid, job.id);
 
         if (status.code === StatusCode.OK) {
             JobsController.fastmode = 5;
@@ -87,7 +87,7 @@ export default function JobHistory(): JSX.Element {
                 );
             })}
             {jobs
-                .sort((a, b) => b.id! - a.id!)
+                .sort((a, b) => b.id - a.id)
                 .filter(job => !!job.stoppedAt)
                 .map(job => (
                     <JobCard job={job} key={job.id} onCancel={onCancel} />

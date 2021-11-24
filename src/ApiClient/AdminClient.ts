@@ -93,7 +93,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return thing;
             }
             case 424: {
-                const errorMessage = response.data as ErrorMessageResponse;
+                const errorMessage = (response.data as unknown as ErrorMessageResponse);
                 const thing = new InternalStatus<
                     AdministrationResponse,
                     ErrorCode.ADMIN_GITHUB_RATE
@@ -110,7 +110,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return thing;
             }
             case 429: {
-                const errorMessage = response.data as ErrorMessageResponse;
+                const errorMessage = (response.data as unknown as ErrorMessageResponse);
                 const thing = new InternalStatus<
                     AdministrationResponse,
                     ErrorCode.ADMIN_GITHUB_ERROR
@@ -206,7 +206,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return new InternalStatus({ code: StatusCode.OK, payload: null });
             }
             case 410: {
-                const errorMessage = response.data as ErrorMessageResponse;
+                const errorMessage = response.data as unknown as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -217,7 +217,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 });
             }
             case 422: {
-                const errorMessage = response.data as ErrorMessageResponse;
+                const errorMessage = response.data as unknown as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -228,7 +228,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 });
             }
             case 424: {
-                const errorMessage = response.data as ErrorMessageResponse;
+                const errorMessage = response.data as unknown as ErrorMessageResponse;
                 return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_RATE>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -239,7 +239,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 });
             }
             case 429: {
-                const errorMessage = response.data as ErrorMessageResponse;
+                const errorMessage = response.data as unknown as ErrorMessageResponse;
                 return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_ERROR>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -289,7 +289,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 });
             }
             case 409: {
-                const errorMessage = response.data as ErrorMessageResponse;
+                const errorMessage = response.data as unknown as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
@@ -329,7 +329,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200: {
                 const contents = await TransferClient.Download(
-                    (response.data).fileTicket! // trust me guys it exists
+                    (response.data).fileTicket // trust me guys it exists
                 );
                 if (contents.code === StatusCode.OK) {
                     //Object.assign() is a funky function but all it does is copy everything from the second object to the first object
@@ -349,7 +349,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 }
             }
             case 409: {
-                const errorMessage = response.data as ErrorMessageResponse;
+                const errorMessage = response.data as unknown as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(

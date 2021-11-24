@@ -82,20 +82,20 @@ export default class JobsList extends React.Component<IProps, IState> {
             this.addError(response1.error);
             return;
         } else {
-            instances.push(...response1.payload.content!);
+            instances.push(...response1.payload.content);
         }
-        for (let i = 2; i <= response1.payload.totalPages!; i++) {
+        for (let i = 2; i <= response1.payload.totalPages; i++) {
             const response2 = await InstanceClient.listInstances({ page: i, pageSize: 100 });
             if (response2.code === StatusCode.ERROR) {
                 this.addError(response2.error);
                 return;
             } else {
-                instances.push(...response2.payload.content!);
+                instances.push(...response2.payload.content);
             }
         }
 
         const instanceMap = new Map<number, InstanceResponse>();
-        instances.forEach(instance => instanceMap.set(instance.id!, instance));
+        instances.forEach(instance => instanceMap.set(instance.id, instance));
 
         this.setState({
             jobs: JobsController.jobsByInstance,
@@ -106,7 +106,7 @@ export default class JobsList extends React.Component<IProps, IState> {
     }
 
     private async onCancel(job: TGSJobResponse) {
-        const status = await JobsController.cancelJob(job.id!, error => this.addError(error));
+        const status = await JobsController.cancelJob(job.id, error => this.addError(error));
 
         if (!status) {
             return;
@@ -115,7 +115,7 @@ export default class JobsList extends React.Component<IProps, IState> {
     }
 
     private onClose(job: TGSJobResponse) {
-        JobsController.clearJob(job.id!);
+        JobsController.clearJob(job.id);
     }
 
     public render(): ReactNode {
@@ -236,7 +236,7 @@ export default class JobsList extends React.Component<IProps, IState> {
                                     </OverlayTrigger>
                                 </div>
                                 {Array.from(jobMap, ([, job]) => job)
-                                    .sort((a, b) => b.id! - a.id!)
+                                    .sort((a, b) => b.id - a.id)
                                     .map(job => (
                                         <JobCard
                                             job={job}

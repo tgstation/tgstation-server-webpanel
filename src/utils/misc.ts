@@ -54,60 +54,60 @@ function bitflagIsTrue(bitfield: number, bitflag: number): boolean {
 }
 
 function hasAdminRight(permissionSet: PermissionSet, right: AdministrationRights): boolean {
-    return bitflagIsTrue((permissionSet.administrationRights as number), right);
+    return bitflagIsTrue(permissionSet.administrationRights, right);
 }
 
 function hasInstanceManagerRight(
     permissionSet: PermissionSet,
     right: InstanceManagerRights
 ): boolean {
-    return bitflagIsTrue((permissionSet.instanceManagerRights as number), right);
+    return bitflagIsTrue(permissionSet.instanceManagerRights, right);
 }
 
 function hasByondRight(permissionSet: InstancePermissionSetResponse, right: ByondRights): boolean {
-    return bitflagIsTrue((permissionSet.byondRights as number), right);
+    return bitflagIsTrue(permissionSet.byondRights, right);
 }
 
 function hasChatBotRight(
     permissionSet: InstancePermissionSetResponse,
     right: ChatBotRights
 ): boolean {
-    return bitflagIsTrue((permissionSet.chatBotRights as number), right);
+    return bitflagIsTrue(permissionSet.chatBotRights, right);
 }
 
 function hasConfigRight(
     permissionSet: InstancePermissionSetResponse,
     right: ConfigurationRights
 ): boolean {
-    return bitflagIsTrue((permissionSet.configurationRights as number), right);
+    return bitflagIsTrue(permissionSet.configurationRights, right);
 }
 
 function hasDreamDaemonRight(
     permissionSet: InstancePermissionSetResponse,
     right: DreamDaemonRights
 ): boolean {
-    return bitflagIsTrue((permissionSet.dreamDaemonRights as number), right);
+    return bitflagIsTrue(permissionSet.dreamDaemonRights, right);
 }
 
 function hasDreamMakerRight(
     permissionSet: InstancePermissionSetResponse,
     right: DreamMakerRights
 ): boolean {
-    return bitflagIsTrue((permissionSet.dreamMakerRights as number), right);
+    return bitflagIsTrue(permissionSet.dreamMakerRights, right);
 }
 
 function hasInstancePermRight(
     permissionSet: InstancePermissionSetResponse,
     right: InstancePermissionSetRights
 ): boolean {
-    return bitflagIsTrue((permissionSet.instancePermissionSetRights as number), right);
+    return bitflagIsTrue(permissionSet.instancePermissionSetRights, right);
 }
 
 function hasRepoRight(
     permissionSet: InstancePermissionSetResponse,
     right: RepositoryRights
 ): boolean {
-    return bitflagIsTrue((permissionSet.repositoryRights as number), right);
+    return bitflagIsTrue(permissionSet.repositoryRights, right);
 }
 
 export {

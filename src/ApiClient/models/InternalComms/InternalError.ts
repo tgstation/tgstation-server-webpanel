@@ -111,12 +111,12 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             this.desc = {
                 type: DescType.TEXT,
                 desc:
-                    `${TGSErrorCode[err.errorCode!]} : ${err.message!} ${(err.additionalData ? ": " + err.additionalData : "")}`
+                    `${TGSErrorCode[err.errorCode]} : ${err.message} ${(err.additionalData ? ": " + err.additionalData : "")}`
             };
             if (!err.message) {
                 this.desc = {
                     type: DescType.TEXT,
-                    desc: TGSErrorCode[err.errorCode!]
+                    desc: TGSErrorCode[err.errorCode]
                 };
             }
         }
@@ -147,7 +147,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
         if (CredentialsProvider.isTokenValid()) {
             debuginfo = replaceAll(
                 debuginfo,
-                CredentialsProvider.token!.bearer!,
+                CredentialsProvider.token!.bearer,
                 "**************"
             );
         }

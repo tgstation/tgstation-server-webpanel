@@ -45,7 +45,7 @@ class ChangePassword extends React.Component<IProps, IState> {
         if (props.match.params.id) {
             id = parseInt(props.match.params.id);
         } else {
-            id = context.user.id!;
+            id = context.user.id;
         }
 
         this.state = {
@@ -98,7 +98,7 @@ class ChangePassword extends React.Component<IProps, IState> {
 
         event.preventDefault();
         let err = false;
-        if (this.state.password1.length < this.context.serverInfo.minimumPasswordLength!) {
+        if (this.state.password1.length < this.context.serverInfo.minimumPasswordLength) {
             err = true;
             this.setState({
                 lengthError: true
@@ -134,7 +134,7 @@ class ChangePassword extends React.Component<IProps, IState> {
                     // noinspection ES6MissingAwait //we just dont care about what happens, it can fail or succeed
                     void ServerClient.login({
                         type: CredentialsType.Password,
-                        userName: this.state.user.name!,
+                        userName: this.state.user.name,
                         password: this.state.password1
                     });
                 }

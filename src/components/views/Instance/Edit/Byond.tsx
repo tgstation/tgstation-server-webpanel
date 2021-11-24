@@ -63,12 +63,12 @@ class Byond extends React.Component<IProps, IState> {
 
     private async loadVersions() {
         if (hasByondRight(this.context.instancePermissionSet, ByondRights.ListInstalled)) {
-            const response = await ByondClient.listAllVersions(this.context.instance.id!, {
+            const response = await ByondClient.listAllVersions(this.context.instance.id, {
                 page: this.state.page
             });
             if (response.code === StatusCode.OK) {
                 if (
-                    this.state.page > response.payload.totalPages! &&
+                    this.state.page > response.payload.totalPages &&
                     response.payload.totalPages !== 0
                 ) {
                     this.setState({
@@ -78,7 +78,7 @@ class Byond extends React.Component<IProps, IState> {
                 }
 
                 this.setState({
-                    versions: response.payload.content!,
+                    versions: response.payload.content,
                     maxPage: response.payload.totalPages
                 });
             } else {
@@ -87,7 +87,7 @@ class Byond extends React.Component<IProps, IState> {
         }
 
         if (hasByondRight(this.context.instancePermissionSet, ByondRights.ReadActive)) {
-            const response2 = await ByondClient.getActiveVersion(this.context.instance.id!);
+            const response2 = await ByondClient.getActiveVersion(this.context.instance.id);
             if (response2.code === StatusCode.OK) {
                 this.setState({
                     activeVersion: response2.payload.version
@@ -197,7 +197,7 @@ class Byond extends React.Component<IProps, IState> {
                                     loading: true
                                 });
                                 const response = await ByondClient.switchActive(
-                                    this.context.instance.id!,
+                                    this.context.instance.id,
                                     e.target.value
                                 );
                                 if (response.code === StatusCode.OK) {
@@ -331,7 +331,7 @@ class Byond extends React.Component<IProps, IState> {
                                         loading: true
                                     });
                                     const response = await ByondClient.switchActive(
-                                        this.context.instance.id!,
+                                        this.context.instance.id,
                                         this.state.selectedVersion,
                                         this.state.customFile
                                             ? await this.state.customFile.arrayBuffer()

@@ -216,32 +216,32 @@ class Login extends React.Component<IProps, IState> {
         switch (provider) {
             case OAuthProvider.Discord: {
                 url = `https://discord.com/api/oauth2/authorize?response_type=code&client_id=${e(
-                    this.context.serverInfo.oAuthProviderInfos!.Discord!.clientId!
+                    this.context.serverInfo.oAuthProviderInfos.Discord.clientId
                 )}&scope=identify&state=${e(state)}&redirect_uri=${e(
-                    this.context.serverInfo.oAuthProviderInfos!.Discord!.redirectUri!
+                    this.context.serverInfo.oAuthProviderInfos.Discord.redirectUri
                 )}`;
                 break;
             }
             case OAuthProvider.GitHub: {
                 url = `https://github.com/login/oauth/authorize?client_id=${e(
-                    this.context.serverInfo.oAuthProviderInfos!.GitHub!.clientId!
+                    this.context.serverInfo.oAuthProviderInfos.GitHub.clientId
                 )}&redirect_uri=${e(
-                    this.context.serverInfo.oAuthProviderInfos!.GitHub!.redirectUri!
+                    this.context.serverInfo.oAuthProviderInfos.GitHub.redirectUri
                 )}&state=${e(state)}&allow_signup=false`;
                 break;
             }
             case OAuthProvider.Keycloak: {
-                url = `${this.context.serverInfo.oAuthProviderInfos!.Keycloak!
+                url = `${this.context.serverInfo.oAuthProviderInfos.Keycloak
                     .serverUrl!}/protocol/openid-connect/auth?response_type=code&client_id=${e(
-                    this.context.serverInfo.oAuthProviderInfos!.Keycloak!.clientId!
+                    this.context.serverInfo.oAuthProviderInfos.Keycloak.clientId
                 )}&scope=openid&state=${e(state)}&redirect_uri=${e(
-                    this.context.serverInfo.oAuthProviderInfos!.Keycloak!.redirectUri!
+                    this.context.serverInfo.oAuthProviderInfos.Keycloak.redirectUri
                 )}`;
                 break;
             }
             case OAuthProvider.TGForums: {
                 url = `https://tgstation13.org/phpBB/oauth.php?session_public_token=${e(
-                    this.context.serverInfo.oAuthProviderInfos!.TGForums!.clientId!
+                    this.context.serverInfo.oAuthProviderInfos.TGForums.clientId
                 )}`;
                 break;
             }
@@ -254,7 +254,7 @@ class Login extends React.Component<IProps, IState> {
             oauthdata["tgforums"] = {
                 provider: provider,
                 url: this.props.location.pathname,
-                state: this.context.serverInfo.oAuthProviderInfos!.TGForums!.clientId!
+                state: this.context.serverInfo.oAuthProviderInfos.TGForums.clientId
             };
         } else {
             oauthdata[state] = {

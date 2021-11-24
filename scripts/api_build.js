@@ -70,7 +70,7 @@ async function buidlAPI() {
         if (parsedSchema["type"] != "object") {
           return;
         }
-        parsedSchema["allFieldsAreOptional"] = false;
+        // parsedSchema["allFieldsAreOptional"] = false; // currently setting this is useless
         if(!parsedSchema.content){
           return;
         }

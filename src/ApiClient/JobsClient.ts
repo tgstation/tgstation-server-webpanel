@@ -47,7 +47,7 @@ export default new (class JobsClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
-                const newContent = response.data.content!.map(job => {
+                const newContent = response.data.content.map(job => {
                     return {
                         ...job,
                         instanceid: instanceid
@@ -215,7 +215,7 @@ export default new (class JobsClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
-                const newContent = response.data.content!.map(job => {
+                const newContent = response.data.content.map(job => {
                     return {
                         ...job,
                         instanceid: instanceid

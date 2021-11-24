@@ -188,7 +188,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = response.data.content!.sort(
+                const payload = response.data.content.sort(
                     (a, b) => (a.id || 0) - (b.id || 0)
                 );
 

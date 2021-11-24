@@ -92,7 +92,7 @@ class Update extends React.Component<IProps, IState> {
                 return this.addError(adminInfo.error);
             }
             case StatusCode.OK: {
-                const url = (adminInfo.payload.trackedRepositoryUrl as string);
+                const url = adminInfo.payload.trackedRepositoryUrl;
                 const matcher = /https?:\/\/(github\.com)\/(.*?)\/(.*)/;
                 const results = matcher.exec(url);
 
@@ -121,7 +121,7 @@ class Update extends React.Component<IProps, IState> {
                 const versionInfo = await GithubClient.getVersions({
                     owner: results[2],
                     repo: results[3],
-                    current: this.context.serverInfo.version!,
+                    current: this.context.serverInfo.version,
                     all: !!this.props.match.params.all
                 });
                 console.log("Version info: ", versionInfo);

@@ -58,7 +58,7 @@ class UserCreate extends React.Component<IProps, IState> {
     // noinspection DuplicatedCode
     private validate(): boolean {
         let err = false;
-        if (this.state.password1.length < this.context.serverInfo.minimumPasswordLength!) {
+        if (this.state.password1.length < this.context.serverInfo.minimumPasswordLength) {
             err = true;
             this.setState({
                 lengthError: true

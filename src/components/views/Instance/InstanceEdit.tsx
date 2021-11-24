@@ -75,13 +75,13 @@ class InstanceEdit extends React.Component<IProps, IState> {
             "dd",
             "server",
             instancePermissionSet =>
-                !!(instancePermissionSet.dreamDaemonRights! & minimumServerPerms),
+                !!(instancePermissionSet.dreamDaemonRights & minimumServerPerms),
             Server
         ],
         [
             "byond",
             "list-ul",
-            instancePermissionSet => !!(instancePermissionSet.byondRights! & minimumByondPerms),
+            instancePermissionSet => !!(instancePermissionSet.byondRights & minimumByondPerms),
             Byond
         ],
         ["chatbots", "comments", () => true],

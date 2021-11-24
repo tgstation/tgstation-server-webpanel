@@ -55,7 +55,7 @@ function adminRight(right: AdministrationRights) {
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {
-            return !!(resolvePermissionSet(response.payload).administrationRights! & right);
+            return !!(resolvePermissionSet(response.payload).administrationRights & right);
         }
         return false;
     };
@@ -67,7 +67,7 @@ function instanceManagerRight(right: InstanceManagerRights) {
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {
-            return !!(resolvePermissionSet(response.payload).instanceManagerRights! & right);
+            return !!(resolvePermissionSet(response.payload).instanceManagerRights & right);
         }
         return false;
     };

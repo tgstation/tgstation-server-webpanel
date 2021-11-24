@@ -108,15 +108,15 @@ class Administration extends React.Component<IProps, IState> {
         const handleOpen = () => this.setState({ showRebootModal: true });
 
         const canReboot = !!(
-            resolvePermissionSet(this.context.user).administrationRights! &
+            resolvePermissionSet(this.context.user).administrationRights &
             AdministrationRights.RestartHost
         );
         const canUpdate = !!(
-            resolvePermissionSet(this.context.user).administrationRights! &
+            resolvePermissionSet(this.context.user).administrationRights &
             AdministrationRights.ChangeVersion
         );
         const canLogs = !!(
-            resolvePermissionSet(this.context.user).administrationRights! &
+            resolvePermissionSet(this.context.user).administrationRights &
             AdministrationRights.DownloadLogs
         );
 
@@ -146,8 +146,8 @@ class Administration extends React.Component<IProps, IState> {
                             <FormattedMessage id="view.admin.version.current" />
                             <span
                                 className={
-                                    this.context.serverInfo.version! <
-                                    this.state.adminInfo.latestVersion!
+                                    this.context.serverInfo.version <
+                                    this.state.adminInfo.latestVersion
                                         ? "text-danger"
                                         : ""
                                 }>
@@ -158,8 +158,8 @@ class Administration extends React.Component<IProps, IState> {
                             <FormattedMessage id="view.admin.version.latest" />
                             <span
                                 className={
-                                    this.context.serverInfo.version! <
-                                    this.state.adminInfo.latestVersion!
+                                    this.context.serverInfo.version <
+                                    this.state.adminInfo.latestVersion
                                         ? "text-danger"
                                         : ""
                                 }>

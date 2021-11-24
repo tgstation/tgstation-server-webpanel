@@ -49,7 +49,7 @@ export default function Server(): JSX.Element {
             return setWatchdogSettings({});
         }
 
-        const response = await DreamDaemonClient.getWatchdogStatus(instanceEditContext.instance.id!);
+        const response = await DreamDaemonClient.getWatchdogStatus(instanceEditContext.instance.id);
         if (response.code === StatusCode.ERROR) {
             addError(errorState, response.error);
         } else {
@@ -59,7 +59,7 @@ export default function Server(): JSX.Element {
     async function saveWatchdogSettings(newSettings: DreamDaemonResponse): Promise<void> {
         setLoading(true);
         const response = await DreamDaemonClient.updateWatchdogStatus(
-            instanceEditContext.instance.id!,
+            instanceEditContext.instance.id,
             newSettings
         );
         if (response.code === StatusCode.ERROR) {
@@ -71,11 +71,11 @@ export default function Server(): JSX.Element {
 
     async function startWatchdog(): Promise<void> {
         setLoading(true);
-        const response = await DreamDaemonClient.startWatchdog(instanceEditContext.instance.id!);
+        const response = await DreamDaemonClient.startWatchdog(instanceEditContext.instance.id);
         if (response.code === StatusCode.ERROR) {
             addError(errorState, response.error);
         } else {
-            JobsController.registerCallback(response.payload.id!, () => void loadWatchdogSettings());
+            JobsController.registerCallback(response.payload.id, () => void loadWatchdogSettings());
             JobsController.fastmode = 5;
             await loadWatchdogSettings();
         }
@@ -84,7 +84,7 @@ export default function Server(): JSX.Element {
 
     async function stopWatchdog(): Promise<void> {
         setLoading(true);
-        const response = await DreamDaemonClient.stopWatchdog(instanceEditContext.instance.id!);
+        const response = await DreamDaemonClient.stopWatchdog(instanceEditContext.instance.id);
         if (response.code === StatusCode.ERROR) {
             addError(errorState, response.error);
         } else {
@@ -95,11 +95,11 @@ export default function Server(): JSX.Element {
 
     async function restartWatchdog(): Promise<void> {
         setLoading(true);
-        const response = await DreamDaemonClient.restartWatchdog(instanceEditContext.instance.id!);
+        const response = await DreamDaemonClient.restartWatchdog(instanceEditContext.instance.id);
         if (response.code === StatusCode.ERROR) {
             addError(errorState, response.error);
         } else {
-            JobsController.registerCallback(response.payload.id!, () => void loadWatchdogSettings());
+            JobsController.registerCallback(response.payload.id, () => void loadWatchdogSettings());
             JobsController.fastmode = 5;
             await loadWatchdogSettings();
         }
@@ -108,7 +108,7 @@ export default function Server(): JSX.Element {
 
     async function dumpWatchdog(): Promise<void> {
         setLoading(true);
-        const response = await DreamDaemonClient.dumpWatchdog(instanceEditContext.instance.id!);
+        const response = await DreamDaemonClient.dumpWatchdog(instanceEditContext.instance.id);
         if (response.code === StatusCode.ERROR) {
             addError(errorState, response.error);
         } else {

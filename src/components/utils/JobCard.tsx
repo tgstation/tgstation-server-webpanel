@@ -23,7 +23,7 @@ interface IProps {
 export default class JobCard extends React.Component<IProps, IState> {
     public render(): ReactNode {
         const job = this.props.job;
-        const createddate = new Date(job.startedAt!);
+        const createddate = new Date(job.startedAt);
         const createddiff = (createddate.getTime() - Date.now()) / 1000;
         const stoppeddate = new Date(job.stoppedAt ?? 0);
         const stoppeddiff = (stoppeddate.getTime() - Date.now()) / 1000;
@@ -58,7 +58,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                     <FormattedMessage id="app.job.started" />
                     <OverlayTrigger
                         overlay={
-                            <Tooltip id={`${job.id!}-tooltip-started`}>
+                            <Tooltip id={`${job.id}-tooltip-started`}>
                                 {createddate.toLocaleString()}
                             </Tooltip>
                         }>
@@ -77,14 +77,14 @@ export default class JobCard extends React.Component<IProps, IState> {
                     <FormattedMessage id="app.job.startedby" />
                     <OverlayTrigger
                         overlay={
-                            <Tooltip id={`${job.id!}-tooltip-startedby`}>
+                            <Tooltip id={`${job.id}-tooltip-startedby`}>
                                 <FormattedMessage id="generic.userid" />
-                                {job.startedBy!.id}
+                                {job.startedBy.id}
                             </Tooltip>
                         }>
                         {({ ref, ...triggerHandler }) => (
                             <span ref={ref as React.Ref<HTMLSpanElement>} {...triggerHandler}>
-                                {job.startedBy!.name}
+                                {job.startedBy.name}
                             </span>
                         )}
                     </OverlayTrigger>
@@ -96,7 +96,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                             <FormattedMessage id="app.job.stopped" />
                             <OverlayTrigger
                                 overlay={
-                                    <Tooltip id={`${job.id!}-tooltip-stopped`}>
+                                    <Tooltip id={`${job.id}-tooltip-stopped`}>
                                         {createddate.toLocaleString()}
                                     </Tooltip>
                                 }>
@@ -123,9 +123,9 @@ export default class JobCard extends React.Component<IProps, IState> {
                             <FormattedMessage id="app.job.stoppedby" />
                             <OverlayTrigger
                                 overlay={
-                                    <Tooltip id={`${job.id!}-tooltip-createdby`}>
+                                    <Tooltip id={`${job.id}-tooltip-createdby`}>
                                         <FormattedMessage id="generic.userid" />
-                                        {job.startedBy!.id}
+                                        {job.startedBy.id}
                                     </Tooltip>
                                 }>
                                 {({ ref, ...triggerHandler }) => (
