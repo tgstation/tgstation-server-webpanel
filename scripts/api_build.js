@@ -26,14 +26,6 @@ async function buidlAPI() {
         fsResolve();
       }
     }),
-    await new Promise(fsResolve => {
-      ENUM_FILE.once('open', () => {
-        fsResolve()
-      })
-      if (!ENUM_FILE.pending) {
-        fsResolve();
-      }
-    }),
   ]);
   console.log("✅   All fs open.");
 
