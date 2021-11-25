@@ -154,7 +154,7 @@ class Login extends React.Component<IProps, IState> {
                 <Card body>
                     <Card.Title>Login to Continue</Card.Title>
                     <Card body>
-                        <Card.Title>Database Login</Card.Title>
+                        <Card.Title>Password Login</Card.Title>
                         <Form validated={this.state.validated} onSubmit={this.submit}>
                             <Form.Group controlId="username">
                                 <Form.Label>
