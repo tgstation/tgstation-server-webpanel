@@ -500,7 +500,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     error: new InternalError(
                         ErrorCode.LOGIN_RATELIMIT,
                         {
-                            errorMessage: response.data as ErrorMessageResponse
+                            errorMessage: response.data as unknown as ErrorMessageResponse
                         },
                         response
                     )

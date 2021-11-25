@@ -47,7 +47,7 @@ export default new (class UserGroupClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.GROUP_NOT_FOUND, {
-                        errorMessage: response.data as ErrorMessageResponse
+                        errorMessage: response.data as unknown as ErrorMessageResponse
                     })
                 });
             }

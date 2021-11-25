@@ -89,7 +89,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.NO_DB_ENTITY, {
-                        errorMessage: response.data as ErrorMessageResponse
+                        errorMessage: response.data as unknown as ErrorMessageResponse
                     })
                 });
             default: {
@@ -135,7 +135,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.HTTP_DATA_INEGRITY, {
-                        errorMessage: response.data as ErrorMessageResponse
+                        errorMessage: response.data as unknown as ErrorMessageResponse
                     })
                 });
             default: {
@@ -176,7 +176,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.NO_DB_ENTITY, {
-                        errorMessage: response.data as ErrorMessageResponse
+                        errorMessage: response.data as unknown as ErrorMessageResponse
                     })
                 });
             default: {
