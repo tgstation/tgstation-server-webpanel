@@ -124,6 +124,13 @@ class Login extends React.Component<IProps, IState> {
             )
         };
 
+        const providersTheme: Record<OAuthProvider, string | undefined> = {
+            GitHub: "#161b22",
+            Discord: "#7289da",
+            TGForums: undefined,
+            Keycloak: undefined
+        };
+
         return (
             <Col className="mx-auto" lg={5} md={8}>
                 {this.state.errors.map((err, index) => {
@@ -187,21 +194,25 @@ class Login extends React.Component<IProps, IState> {
                             <Card body>
                                 <Card.Title>OAuth Login</Card.Title>
                                 {Object.keys(this.context.serverInfo.oAuthProviderInfos ?? {}).map(
-                                    provider => (
-                                        <Button
-                                            key={provider}
-                                            block
-                                            onClick={() =>
-                                                this.startOAuth(provider as OAuthProvider)
-                                            }>
-                                            {providers[provider as OAuthProvider]}
-                                            &nbsp;
-                                            <FormattedMessage
-                                                id="login.oauth"
-                                                values={{ provider }}
-                                            />
-                                        </Button>
-                                    )
+                                    provider => {
+                                        const ptheme = providersTheme[provider as OAuthProvider];
+                                        return (
+                                            <Button
+                                                key={provider}
+                                                block
+                                                style={ptheme ? { background: ptheme } : undefined}
+                                                onClick={() =>
+                                                    this.startOAuth(provider as OAuthProvider)
+                                                }>
+                                                {providers[provider as OAuthProvider]}
+                                                &nbsp;
+                                                <FormattedMessage
+                                                    id="login.oauth"
+                                                    values={{ provider }}
+                                                />
+                                            </Button>
+                                        );
+                                    }
                                 )}
                             </Card>
                         </>
