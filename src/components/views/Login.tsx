@@ -211,7 +211,6 @@ class Login extends React.Component<IProps, IState> {
                                                     this.startOAuth(provider as OAuthProvider)
                                                 }>
                                                 {providers[provider as OAuthProvider]}
-                                                &nbsp;
                                                 <span className="ml-1">
                                                     <FormattedMessage
                                                         id="login.oauth"
