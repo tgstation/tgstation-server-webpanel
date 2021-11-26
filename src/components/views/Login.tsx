@@ -152,9 +152,13 @@ class Login extends React.Component<IProps, IState> {
                     );
                 })}
                 <Card body>
-                    <Card.Title>Login to Continue</Card.Title>
+                    <Card.Title>
+                        <FormattedMessage id="login.header" />
+                    </Card.Title>
                     <Card body>
-                        <Card.Title>Password Login</Card.Title>
+                        <Card.Title>
+                            <FormattedMessage id="login.type.generic" />
+                        </Card.Title>
                         <Form validated={this.state.validated} onSubmit={this.submit}>
                             <Form.Group controlId="username">
                                 <Form.Label>
@@ -192,7 +196,9 @@ class Login extends React.Component<IProps, IState> {
                         <>
                             <hr />
                             <Card body>
-                                <Card.Title>OAuth Login</Card.Title>
+                                <Card.Title>
+                                    <FormattedMessage id="login.type.generic" />
+                                </Card.Title>
                                 {Object.keys(this.context.serverInfo.oAuthProviderInfos ?? {}).map(
                                     provider => {
                                         const ptheme = providersTheme[provider as OAuthProvider];
