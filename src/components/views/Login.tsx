@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, FormEvent, ReactNode } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/esm/Card";
 import Form from "react-bootstrap/Form";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
@@ -123,75 +124,108 @@ class Login extends React.Component<IProps, IState> {
             )
         };
 
+        const providersTheme: Record<OAuthProvider, string | undefined> = {
+            GitHub: "#161b22",
+            Discord: "#7289da",
+            TGForums: undefined,
+            Keycloak: undefined
+        };
+
         return (
-            <Form validated={this.state.validated} onSubmit={this.submit}>
-                <Col className="mx-auto" lg={5} md={8}>
-                    {this.state.errors.map((err, index) => {
-                        if (!err) return;
-                        return (
-                            <ErrorAlert
-                                key={index}
-                                error={err}
-                                onClose={() =>
-                                    this.setState(prev => {
-                                        const newarr = Array.from(prev.errors);
-                                        newarr[index] = undefined;
-                                        return {
-                                            errors: newarr
-                                        };
-                                    })
-                                }
-                            />
-                        );
-                    })}
-                    <Form.Group controlId="username">
-                        <Form.Label>
-                            <FormattedMessage id="login.username" />
-                        </Form.Label>
-                        <Form.Control
-                            type="text"
-                            onChange={handleUsrInput}
-                            value={this.state.username}
-                            required
+            <Col className="mx-auto" lg={5} md={8}>
+                {this.state.errors.map((err, index) => {
+                    if (!err) return;
+                    return (
+                        <ErrorAlert
+                            key={index}
+                            error={err}
+                            onClose={() =>
+                                this.setState(prev => {
+                                    const newarr = Array.from(prev.errors);
+                                    newarr[index] = undefined;
+                                    return {
+                                        errors: newarr
+                                    };
+                                })
+                            }
                         />
-                    </Form.Group>
-                    <Form.Group controlId="password">
-                        <Form.Label>
-                            <FormattedMessage id="login.password" />
-                        </Form.Label>
-                        <Form.Control
-                            type="password"
-                            onChange={handlePwdInput}
-                            value={this.state.password}
-                            required
-                        />
-                    </Form.Group>
-                    <Button type="submit">
-                        <FormattedMessage id="login.submit" />
-                    </Button>
-                    <hr />
-                    <div className="d-flex justify-content-center">
-                        <div className="d-flex flex-column align-items-stretch">
-                            {Object.keys(this.context.serverInfo.oAuthProviderInfos ?? {}).map(
-                                provider => (
-                                    <Button
-                                        className="text-left my-1"
-                                        key={provider}
-                                        onClick={() => this.startOAuth(provider as OAuthProvider)}>
-                                        {providers[provider as OAuthProvider]}
-                                        <span className="ml-2">
-                                            <FormattedMessage
-                                                id="login.oauth"
-                                                values={{ provider }}
-                                            />
-                                        </span>
-                                    </Button>
-                                )
-                            )}
-                        </div>
-                    </div>
-                </Col>
-            </Form>
+                    );
+                })}
+                <Card body>
+                    <Card.Title>
+                        <FormattedMessage id="login.header" />
+                    </Card.Title>
+                    <Card body>
+                        <Card.Title>
+                            <FormattedMessage id="login.type.generic" />
+                        </Card.Title>
+                        <Form validated={this.state.validated} onSubmit={this.submit}>
+                            <Form.Group controlId="username">
+                                <Form.Label>
+                                    <FormattedMessage id="login.username" />
+                                </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Enter username"
+                                    onChange={handleUsrInput}
+                                    value={this.state.username}
+                                    required
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="password">
+                                <Form.Label>
+                                    <FormattedMessage id="login.password" />
+                                </Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    placeholder="Password"
+                                    onChange={handlePwdInput}
+                                    value={this.state.password}
+                                    required
+                                />
+                            </Form.Group>
+                            <Button type="submit" block>
+                                <FormattedMessage id="login.submit" />
+                            </Button>
+                        </Form>
+                    </Card>
+                    {(this.context.serverInfo?.oAuthProviderInfos?.Discord ||
+                        this.context.serverInfo?.oAuthProviderInfos?.GitHub ||
+                        this.context.serverInfo?.oAuthProviderInfos?.Keycloak ||
+                        this.context.serverInfo?.oAuthProviderInfos?.TGForums) && (
+                        <>
+                            <hr />
+                            <Card body>
+                                <Card.Title>
+                                    <FormattedMessage id="login.type.oauth" />
+                                </Card.Title>
+                                {Object.keys(this.context.serverInfo.oAuthProviderInfos ?? {}).map(
+                                    provider => {
+                                        const ptheme = providersTheme[provider as OAuthProvider];
+                                        return (
+                                            <Button
+                                                key={provider}
+                                                block
+                                                style={ptheme ? { background: ptheme } : undefined}
+                                                onClick={() =>
+                                                    this.startOAuth(provider as OAuthProvider)
+                                                }>
+                                                {providers[provider as OAuthProvider]}
+                                                <span className="ml-1">
+                                                    <FormattedMessage
+                                                        id="login.oauth"
+                                                        values={{ provider }}
+                                                    />
+                                                </span>
+                                            </Button>
+                                        );
+                                    }
+                                )}
+                            </Card>
+                        </>
+                    )}
+                </Card>
+            </Col>
         );
     }
 
