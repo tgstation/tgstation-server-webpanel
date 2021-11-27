@@ -110,8 +110,9 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             this.originalErrorMessage = err;
             this.desc = {
                 type: DescType.TEXT,
-                desc:
-                    `${TGSErrorCode[err.errorCode]} : ${err.message} ${(err.additionalData ? ": " + err.additionalData : "")}`
+                desc: `${TGSErrorCode[err.errorCode]} : ${err.message} ${
+                    err.additionalData ? ": " + err.additionalData : ""
+                }`
             };
             if (!err.message) {
                 this.desc = {
@@ -145,11 +146,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             '{"username":"*******","password":"*******"}'
         );
         if (CredentialsProvider.isTokenValid()) {
-            debuginfo = replaceAll(
-                debuginfo,
-                CredentialsProvider.token!.bearer,
-                "**************"
-            );
+            debuginfo = replaceAll(debuginfo, CredentialsProvider.token!.bearer, "**************");
         }
         if (configOptions.githubtoken.value) {
             debuginfo = replaceAll(

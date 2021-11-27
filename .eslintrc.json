@@ -27,7 +27,7 @@
         "tsconfigRootDir": ".",
         "project": ["./tsconfig.json"]
     },
-    "plugins": ["react", "@typescript-eslint", "simple-import-sort"],
+    "plugins": ["react", "@typescript-eslint", "simple-import-sort", "prettier"],
     "rules": {
         "simple-import-sort/sort": "error",
         "@typescript-eslint/explicit-member-accessibility": [
@@ -49,7 +49,9 @@
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-empty-function": "off",
-        "react/prop-types": "off"
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "react/prop-types": "off",
+        "prettier/prettier": "error"
     },
     "settings": {
         "react": {

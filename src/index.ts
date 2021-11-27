@@ -22,8 +22,8 @@ JobsController.init();
 
 if (window.loadedChannelFromWebpack && MODE !== "DEV") {
     alert(
-        "Warning: channel.json was served from bundled files instead of TGS, the webpanel is running from the local version instead of the github update repo.\nPlease report this to your server host.\nIf you are the server host, please report this to alexkar598#2712 on discord\n\nWebpanel version: "
-                + VERSION
+        "Warning: channel.json was served from bundled files instead of TGS, the webpanel is running from the local version instead of the github update repo.\nPlease report this to your server host.\nIf you are the server host, please report this to alexkar598#2712 on discord\n\nWebpanel version: " +
+            VERSION
     );
 }
 
@@ -39,7 +39,6 @@ try {
     (() => {})();
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
     ReactDOM.render(IndexApp, document.getElementById("root"));
 });
-

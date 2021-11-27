@@ -7,7 +7,8 @@ import {
     ErrorMessageResponse,
     HttpClient,
     ServerInformationResponse,
-    TokenResponse } from "./generatedcode/generated";
+    TokenResponse
+} from "./generatedcode/generated";
 import { CredentialsType, ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -67,8 +68,9 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             // if its currently sending a request to the login endpoint...
             if (!(value.url === "/" || value.url === "")) {
                 const tok = await this.wait4Token();
-                (value.headers as { [key: string]: string })["Authorization"] =
-                    `Bearer ${tok.bearer || ""}`;
+                (value.headers as { [key: string]: string })["Authorization"] = `Bearer ${
+                    tok.bearer || ""
+                }`;
             }
             return value;
         },
@@ -76,7 +78,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         onRejected: (error: unknown) => {
             return Promise.reject(error);
         }
-    }
+    };
 
     public apiResponseInterceptor = {
         onFulfilled: (val: AxiosResponse) => val,
@@ -132,10 +134,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 // user and kick them to the login page. Snowflake behaviour: Acts as a failed login for the login endpoint
                 case 401: {
                     const request = error.config;
-                    if (
-                        (request.url === "/" || request.url === "") &&
-                        request.method === "post"
-                    ) {
+                    if ((request.url === "/" || request.url === "") && request.method === "post") {
                         return Promise.resolve(error.response);
                     }
 
@@ -143,7 +142,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         return this.login().then(status => {
                             switch (status.code) {
                                 case StatusCode.OK: {
-                                    return (axiosServer.request(error.config));
+                                    return axiosServer.request(error.config);
                                 }
                                 case StatusCode.ERROR: {
                                     this.emit("accessDenied");
@@ -170,10 +169,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 }
                 case 403: {
                     const request = error.config;
-                    if (
-                        (request.url === "/" || request.url === "") &&
-                        request.method === "post"
-                    ) {
+                    if ((request.url === "/" || request.url === "") && request.method === "post") {
                         return Promise.resolve(error.response);
                     } else {
                         this.emit("accessDenied");
@@ -240,7 +236,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     console.log("Server not ready, delaying request", error.config);
                     return new Promise(resolve => {
                         setTimeout(resolve, 5000);
-                    }).then(() => (axiosServer.request(error.config)));
+                    }).then(() => axiosServer.request(error.config));
                     /*const errorobj = new InternalError(
                         ErrorCode.HTTP_SERVER_NOT_READY,
                             {
@@ -260,7 +256,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 }
             }
         }
-    }
+    };
 
     private initialized = false;
     private loadingServerInfo = false;
@@ -324,7 +320,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         this.apiHttpClient.instance.interceptors.response.use(
             this.apiResponseInterceptor.onFulfilled,
             error => this.apiResponseInterceptor.onRejected(error, this.apiHttpClient!.instance)
-        )
+        );
 
         this.apiClient = new Api(this.apiHttpClient);
 
@@ -403,23 +399,19 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         let response;
         try {
             if (CredentialsProvider.credentials.type == CredentialsType.Password)
-                response = await this.apiClient!.homeControllerCreateToken(
-                    {
-                        auth: {
-                            username: CredentialsProvider.credentials.userName,
-                            password: CredentialsProvider.credentials.password
-                        }
+                response = await this.apiClient!.homeControllerCreateToken({
+                    auth: {
+                        username: CredentialsProvider.credentials.userName,
+                        password: CredentialsProvider.credentials.password
                     }
-                )
+                });
             else {
-                response = await this.apiClient!.homeControllerCreateToken(
-                    {
-                        headers: {
-                            OAuthProvider: CredentialsProvider.credentials.provider,
-                            Authorization: `OAuth ${CredentialsProvider.credentials.token}`
-                        }
+                response = await this.apiClient!.homeControllerCreateToken({
+                    headers: {
+                        OAuthProvider: CredentialsProvider.credentials.provider,
+                        Authorization: `OAuth ${CredentialsProvider.credentials.token}`
                     }
-                )
+                });
             }
         } catch (stat) {
             const res = new InternalStatus<TokenResponse, GenericErrors>({

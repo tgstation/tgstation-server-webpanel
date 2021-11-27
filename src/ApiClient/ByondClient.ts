@@ -20,7 +20,7 @@ export default new (class ByondClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.byond.byondControllerRead({
                 headers: {
-                    Instance: (instance as unknown as string) // hacky way of forcing strings
+                    Instance: instance as unknown as string // hacky way of forcing strings
                 }
             });
         } catch (stat) {
@@ -58,15 +58,17 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.byond.byondControllerList({
-                page: page,
-                pageSize: pageSize,
-            },
-            {
-                headers: {
-                    Instance: (instance as unknown as string)
+            response = await ServerClient.apiClient!.byond.byondControllerList(
+                {
+                    page: page,
+                    pageSize: pageSize
+                },
+                {
+                    headers: {
+                        Instance: instance as unknown as string
+                    }
                 }
-            });
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -110,7 +112,7 @@ export default new (class ByondClient extends ApiClient {
                 },
                 {
                     headers: {
-                        Instance: (instance as unknown as string)
+                        Instance: instance as unknown as string
                     }
                 }
             );

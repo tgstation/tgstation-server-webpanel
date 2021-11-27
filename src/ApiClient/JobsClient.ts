@@ -1,5 +1,9 @@
 import { ApiClient } from "./_base";
-import type { ErrorMessageResponse, JobResponse, PaginatedJobResponse } from "./generatedcode/generated";
+import type {
+    ErrorMessageResponse,
+    JobResponse,
+    PaginatedJobResponse
+} from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -29,15 +33,17 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.job.jobControllerRead({
-                page: page,
-                pageSize: pageSize
-            },
-            {
-                headers: {
-                    Instance: (instanceid as unknown as string)
+            response = await ServerClient.apiClient!.job.jobControllerRead(
+                {
+                    page: page,
+                    pageSize: pageSize
+                },
+                {
+                    headers: {
+                        Instance: instanceid as unknown as string
+                    }
                 }
-            });
+            );
         } catch (stat) {
             return new InternalStatus<PaginatedTGSJobResponse, listJobsErrors>({
                 code: StatusCode.ERROR,
@@ -57,7 +63,7 @@ export default new (class JobsClient extends ApiClient {
                 return new InternalStatus<PaginatedTGSJobResponse, listJobsErrors>({
                     code: StatusCode.OK,
                     payload: {
-                        ...(response.data),
+                        ...response.data,
                         content: newContent
                     }
                 });
@@ -83,12 +89,11 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.job.jobControllerGetId(jobid,
-                {
-                    headers: {
-                        Instance: (instanceid as unknown as string)
-                    }
-                });
+            response = await ServerClient.apiClient!.job.jobControllerGetId(jobid, {
+                headers: {
+                    Instance: instanceid as unknown as string
+                }
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -99,7 +104,7 @@ export default new (class JobsClient extends ApiClient {
         switch (response.status) {
             case 200: {
                 const job = {
-                    ...(response.data),
+                    ...response.data,
                     instanceid: instanceid
                 };
                 return new InternalStatus({
@@ -136,12 +141,11 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.job.jobControllerDelete(jobid,
-                {
-                    headers: {
-                        Instance: (instanceid as unknown as string)
-                    }
-                });
+            response = await ServerClient.apiClient!.job.jobControllerDelete(jobid, {
+                headers: {
+                    Instance: instanceid as unknown as string
+                }
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -152,7 +156,7 @@ export default new (class JobsClient extends ApiClient {
         switch (response.status) {
             case 202: {
                 const job = {
-                    ...(response.data),
+                    ...response.data,
                     instanceid: instanceid
                 };
                 return new InternalStatus({
@@ -197,15 +201,17 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.job.jobControllerList({
-                pageSize,
-                page
-            },
-            {
-                headers: {
-                    Instance: (instanceid as unknown as string)
+            response = await ServerClient.apiClient!.job.jobControllerList(
+                {
+                    pageSize,
+                    page
+                },
+                {
+                    headers: {
+                        Instance: instanceid as unknown as string
+                    }
                 }
-            });
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

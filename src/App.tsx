@@ -59,14 +59,14 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
 
     public componentDidMount() {
         // I can't be assed to remember the default admin password
-        document.addEventListener("keydown", (event) => {
+        document.addEventListener("keydown", event => {
             if (event.key === "L" && event.ctrlKey && event.shiftKey) {
                 // alert("ISolemlySwearToDeleteTheDataDirectory");
                 ServerClient.logout();
                 void ServerClient.login({
                     type: CredentialsType.Password,
                     userName: "admin",
-                    password: "ISolemlySwearToDeleteTheDataDirectory",
+                    password: "ISolemlySwearToDeleteTheDataDirectory"
                 });
             }
         });
@@ -87,14 +87,17 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                                 <Alert variant="warning" className="d-block d-lg-none">
                                     <Alert.Heading>
                                         <FormattedMessage
-                                            defaultMessage="Screen size warning" id="warning.screensize.header"
-                                            description="Short message about the screen size" />
+                                            defaultMessage="Screen size warning"
+                                            id="warning.screensize.header"
+                                            description="Short message about the screen size"
+                                        />
                                     </Alert.Heading>
                                     <hr />
                                     <FormattedMessage
                                         id="warning.screensize"
                                         defaultMessage="The TGS webpanel does not guarentee support for viewports with a width of under 992px."
-                                        description="Detailed message about the user's screen size" />
+                                        description="Detailed message about the user's screen size"
+                                    />
                                 </Alert>
                                 {Array.from(this.context.errors.values()).map((value, idx) => {
                                     return (
@@ -112,8 +115,8 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                                     this.setState({
                                         passdownCat: {
                                             name: cat,
-                                            key: Math.random().toString(),
-                                        },
+                                            key: Math.random().toString()
+                                        }
                                     });
                                 }}
                             />
@@ -148,8 +151,8 @@ class App extends React.Component<IProps, IState> {
                 errors: new Set(),
                 user: null,
                 serverInfo: null,
-                deleteError: this.deleteGeneralContextError,
-            },
+                deleteError: this.deleteGeneralContextError
+            }
         };
     }
 
@@ -162,8 +165,8 @@ class App extends React.Component<IProps, IState> {
                         errors: prev.GeneralContextInfo.errors,
                         user: response.payload,
                         serverInfo: prev.GeneralContextInfo.serverInfo,
-                        deleteError: prev.GeneralContextInfo.deleteError,
-                    },
+                        deleteError: prev.GeneralContextInfo.deleteError
+                    }
                 };
             });
         } else {
@@ -174,8 +177,8 @@ class App extends React.Component<IProps, IState> {
                             user: null,
                             serverInfo: prev.GeneralContextInfo.serverInfo,
                             deleteError: prev.GeneralContextInfo.deleteError,
-                            errors: prev.GeneralContextInfo.errors,
-                        },
+                            errors: prev.GeneralContextInfo.errors
+                        }
                     };
                 });
             } else {
@@ -188,8 +191,8 @@ class App extends React.Component<IProps, IState> {
                             errors: newSet,
                             deleteError: prev.GeneralContextInfo.deleteError,
                             user: null,
-                            serverInfo: prev.GeneralContextInfo.serverInfo,
-                        },
+                            serverInfo: prev.GeneralContextInfo.serverInfo
+                        }
                     };
                 });
             }
@@ -205,8 +208,8 @@ class App extends React.Component<IProps, IState> {
                         errors: prev.GeneralContextInfo.errors,
                         user: prev.GeneralContextInfo.user,
                         serverInfo: response.payload,
-                        deleteError: prev.GeneralContextInfo.deleteError,
-                    },
+                        deleteError: prev.GeneralContextInfo.deleteError
+                    }
                 };
             });
         } else {
@@ -219,8 +222,8 @@ class App extends React.Component<IProps, IState> {
                         errors: newSet,
                         deleteError: prev.GeneralContextInfo.deleteError,
                         user: prev.GeneralContextInfo.user,
-                        serverInfo: null,
-                    },
+                        serverInfo: null
+                    }
                 };
             });
         }
@@ -235,8 +238,8 @@ class App extends React.Component<IProps, IState> {
                     deleteError: prev.GeneralContextInfo.deleteError,
                     user: prev.GeneralContextInfo.user,
                     serverInfo: prev.GeneralContextInfo.serverInfo,
-                    errors: newSet,
-                },
+                    errors: newSet
+                }
             };
         });
     }
@@ -248,13 +251,13 @@ class App extends React.Component<IProps, IState> {
         void this.updateContextUser();
         this.setState({
             loggedIn: true,
-            loading: false,
+            loading: false
         });
     }
 
     private finishLogout() {
         this.setState({
-            loggedIn: false,
+            loggedIn: false
         });
 
         void this.updateContextUser();
@@ -277,7 +280,7 @@ class App extends React.Component<IProps, IState> {
     // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-did-mount-set-state.md
     private onMount() {
         this.setState({
-            loading: false,
+            loading: false
         });
     }
 
@@ -315,11 +318,11 @@ class App extends React.Component<IProps, IState> {
         try {
             const translation = await this.translationFactory.loadTranslation(this.props.locale);
             this.setState({
-                translation,
+                translation
             });
         } catch (error) {
             this.setState({
-                translationError: JSON.stringify(error) ?? "An unknown error occurred",
+                translationError: JSON.stringify(error) ?? "An unknown error occurred"
             });
 
             return;

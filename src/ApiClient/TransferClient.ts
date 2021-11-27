@@ -71,9 +71,9 @@ export default new (class TransferClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.transfer.transferControllerUpload(
                 {
-                    ticket: ticket,
+                    ticket: ticket
                 },
-                (file as unknown as File),
+                file as unknown as File,
                 {
                     headers: {
                         "Content-Type": "application/octect-stream"
@@ -106,7 +106,7 @@ export default new (class TransferClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: (response.data as unknown as ErrorMessageResponse)
+                        errorMessage: response.data as unknown as ErrorMessageResponse
                     })
                 });
             }
