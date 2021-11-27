@@ -73,11 +73,11 @@ export default new (class UserClient extends ApiClient<IEvents> {
                 }
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: (response.data as UserResponse)
                 });
             }
             case 404: {
-                const errorMessage = response.data as unknown as ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
@@ -144,7 +144,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 200: {
                 const thing = new InternalStatus<UserResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: (response.data as UserResponse)
                 });
 
                 this._cachedUser = thing;
@@ -189,12 +189,12 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = response.data.content.sort((a, b) => (a.id || 0) - (b.id || 0));
+                const payload = (response.data as PaginatedUserResponse).content.sort((a, b) => (a.id || 0) - (b.id || 0));
 
                 return new InternalStatus({
                     code: StatusCode.OK,
                     payload: {
-                        ...response.data,
+                        ...(response.data as PaginatedUserResponse),
                         content: payload
                     }
                 });
@@ -229,11 +229,11 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: (response.data as UserResponse)
                 });
             }
             case 404: {
-                const errorMessage = response.data as unknown as ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NOT_FOUND, { errorMessage })
@@ -302,11 +302,11 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 201: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: (response.data as UserResponse)
                 });
             }
             case 410: {
-                const errorMessage = response.data as unknown as ErrorMessageResponse;
+                const errorMessage = response.data as ErrorMessageResponse;
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.USER_NO_SYS_IDENT, { errorMessage })

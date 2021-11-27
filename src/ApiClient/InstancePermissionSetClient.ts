@@ -77,7 +77,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
             case 200: {
                 const res = new InternalStatus<InstancePermissionSetResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as InstancePermissionSetResponse
                 });
 
                 this._cachedInstancePermissionSet.set(instanceid, res);

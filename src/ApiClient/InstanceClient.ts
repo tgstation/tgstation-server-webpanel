@@ -44,7 +44,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as PaginatedInstanceResponse
                 });
             }
             default: {
@@ -82,14 +82,14 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: instance
+                    payload: instance as InstanceResponse
                 });
             }
             case 410:
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.NO_DB_ENTITY, {
-                        errorMessage: response.data as unknown as ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             default: {
@@ -122,9 +122,9 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200:
             case 201: {
-                const instance = response.data;
+                const instance = (response.data as InstanceResponse);
 
-                this.emit("instanceChange", instance.id || NaN);
+                this.emit("instanceChange", instance.id);
 
                 return new InternalStatus({
                     code: StatusCode.OK,
@@ -135,7 +135,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.HTTP_DATA_INEGRITY, {
-                        errorMessage: response.data as unknown as ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             default: {
@@ -169,14 +169,14 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as InstanceResponse
                 });
             }
             case 410:
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.NO_DB_ENTITY, {
-                        errorMessage: response.data as unknown as ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             default: {

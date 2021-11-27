@@ -27,7 +27,7 @@
         "tsconfigRootDir": ".",
         "project": ["./tsconfig.json"]
     },
-    "plugins": ["react", "@typescript-eslint", "simple-import-sort", "prettier"],
+    "plugins": ["react", "@typescript-eslint", "simple-import-sort"],
     "rules": {
         "simple-import-sort/sort": "error",
         "@typescript-eslint/explicit-member-accessibility": [
@@ -51,7 +51,14 @@
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "react/prop-types": "off",
-        "prettier/prettier": "error"
+        "react/jsx-closing-bracket-location": ["error", {
+            "selfClosing": false,
+            "nonEmpty": "after-props"
+        }],
+        "no-extra-semi": "error",
+        "jsx-quotes": ["error", "prefer-double"],
+        "comma-dangle": ["error", "never"]
+
     },
     "settings": {
         "react": {

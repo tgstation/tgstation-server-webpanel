@@ -34,7 +34,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as ByondResponse
                 });
             }
             default: {
@@ -80,7 +80,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as PaginatedByondResponse
                 });
             }
             default: {
@@ -126,7 +126,7 @@ export default new (class ByondClient extends ApiClient {
         switch (response.status) {
             case 200:
             case 202: {
-                const responseData = response.data;
+                const responseData = (response.data as ByondInstallResponse);
                 if (responseData.fileTicket) {
                     if (file) {
                         const response2 = await TransferClient.Upload(
@@ -158,7 +158,7 @@ export default new (class ByondClient extends ApiClient {
 
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: responseData
                 });
             }
             default: {

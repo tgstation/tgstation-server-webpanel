@@ -53,7 +53,7 @@ export default new (class JobsClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
-                const newContent = response.data.content.map(job => {
+                const newContent = (response.data as PaginatedJobResponse).content.map(job => {
                     return {
                         ...job,
                         instanceid: instanceid
@@ -63,7 +63,7 @@ export default new (class JobsClient extends ApiClient {
                 return new InternalStatus<PaginatedTGSJobResponse, listJobsErrors>({
                     code: StatusCode.OK,
                     payload: {
-                        ...response.data,
+                        ...(response.data as PaginatedJobResponse),
                         content: newContent
                     }
                 });
@@ -104,7 +104,7 @@ export default new (class JobsClient extends ApiClient {
         switch (response.status) {
             case 200: {
                 const job = {
-                    ...response.data,
+                    ...(response.data as JobResponse),
                     instanceid: instanceid
                 };
                 return new InternalStatus({
@@ -116,7 +116,7 @@ export default new (class JobsClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.JOB_JOB_NOT_FOUND, {
-                        errorMessage: response.data as unknown as ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             }
@@ -156,7 +156,7 @@ export default new (class JobsClient extends ApiClient {
         switch (response.status) {
             case 202: {
                 const job = {
-                    ...response.data,
+                    ...(response.data as JobResponse),
                     instanceid: instanceid
                 };
                 return new InternalStatus({
@@ -168,7 +168,7 @@ export default new (class JobsClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.JOB_JOB_NOT_FOUND, {
-                        errorMessage: response.data as unknown as ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             }
@@ -221,7 +221,7 @@ export default new (class JobsClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
-                const newContent = response.data.content.map(job => {
+                const newContent = (response.data as PaginatedJobResponse).content.map(job => {
                     return {
                         ...job,
                         instanceid: instanceid
@@ -231,7 +231,7 @@ export default new (class JobsClient extends ApiClient {
                 return new InternalStatus<PaginatedTGSJobResponse, listJobsErrors>({
                     code: StatusCode.OK,
                     payload: {
-                        ...response.data,
+                        ...(response.data as PaginatedJobResponse),
                         content: newContent
                     }
                 });

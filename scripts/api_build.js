@@ -32,13 +32,13 @@ async function buildAPI() {
     codeZeroOrBreak();
 
     await new Promise(resolve => {
-        //DO NOT REMOVE THIS
-        setTimeout(() => {
-            console.log(
-                "⏲   Pausing for 1 second (fs has to wake up and know that the schema json updated)."
-            );
-            resolve();
-        }, 1000);
+        console.log("⏲   Pausing until FS finishes writing.");
+        SWAGGER_FILE.once("finish", () => {
+          resolve();
+        })
+        if (SWAGGER_FILE.writableFinished) {
+          resolve();
+        }
     });
 
     // we (should) exist already, if not then goddamit
@@ -46,7 +46,7 @@ async function buildAPI() {
         SWAGGER_FILE_IMPORT = require(path.resolve(SWAGGER_FILE.path));
     } catch (error) {
         process.exitCode = 1;
-        console.error(`❌ Resolved swagger.json is bad!\n❌ Error: ${error}`);
+        console.error(`❌   Resolved swagger.json is bad!\n❌   Error: ${error}`);
     }
     codeZeroOrBreak();
 
@@ -67,6 +67,7 @@ async function buildAPI() {
         },
         defaultResponseType: "void",
         singleHttpClient: true,
+        templates: path.resolve(__dirname, "./templates/default"),
         hooks: {
             onParseSchema: (originalSchema, parsedSchema) => {
                 if (parsedSchema["type"] !== "object") {

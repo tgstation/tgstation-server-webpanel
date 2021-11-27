@@ -37,14 +37,14 @@ export default new (class TransferClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as unknown as string
+                    payload: (response.data as File).name
                 });
             }
             case 410: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: response.data as unknown as ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             }
@@ -106,7 +106,7 @@ export default new (class TransferClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(ErrorCode.TRANSFER_NOT_AVAILABLE, {
-                        errorMessage: response.data as unknown as ErrorMessageResponse
+                        errorMessage: response.data as ErrorMessageResponse
                     })
                 });
             }
