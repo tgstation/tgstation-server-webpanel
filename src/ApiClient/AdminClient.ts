@@ -93,7 +93,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return thing;
             }
             case 424: {
-                const errorMessage = (response.data as unknown as ErrorMessageResponse);
+                const errorMessage = response.data as unknown as ErrorMessageResponse;
                 const thing = new InternalStatus<
                     AdministrationResponse,
                     ErrorCode.ADMIN_GITHUB_RATE
@@ -110,7 +110,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 return thing;
             }
             case 429: {
-                const errorMessage = (response.data as unknown as ErrorMessageResponse);
+                const errorMessage = response.data as unknown as ErrorMessageResponse;
                 const thing = new InternalStatus<
                     AdministrationResponse,
                     ErrorCode.ADMIN_GITHUB_ERROR
@@ -150,7 +150,8 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.administration.administrationControllerDelete();
+            response =
+                await ServerClient.apiClient!.administration.administrationControllerDelete();
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -160,7 +161,10 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 204: {
-                return new InternalStatus({ code: StatusCode.OK, payload: null });
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: null
+                });
             }
             case 422: {
                 const errorMessage = response.data as unknown as ErrorMessageResponse;
@@ -203,7 +207,10 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 202: {
-                return new InternalStatus({ code: StatusCode.OK, payload: null });
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: null
+                });
             }
             case 410: {
                 const errorMessage = response.data as unknown as ErrorMessageResponse;
@@ -270,10 +277,11 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.administration.administrationControllerListLogs({
-                pageSize: pageSize,
-                page: page
-            });
+            response =
+                await ServerClient.apiClient!.administration.administrationControllerListLogs({
+                    pageSize: pageSize,
+                    page: page
+                });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -319,7 +327,9 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.administration.administrationControllerGetLog(logName);
+            response = await ServerClient.apiClient!.administration.administrationControllerGetLog(
+                logName
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -329,7 +339,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200: {
                 const contents = await TransferClient.Download(
-                    (response.data).fileTicket // trust me guys it exists
+                    response.data.fileTicket // trust me guys it exists
                 );
                 if (contents.code === StatusCode.OK) {
                     //Object.assign() is a funky function but all it does is copy everything from the second object to the first object

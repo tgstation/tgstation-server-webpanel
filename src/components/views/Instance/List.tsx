@@ -10,7 +10,10 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { satisfies as SemverSatisfies } from "semver";
 
-import { InstanceManagerRights, InstanceResponse } from "../../../ApiClient/generatedcode/generated";
+import {
+    InstanceManagerRights,
+    InstanceResponse
+} from "../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";

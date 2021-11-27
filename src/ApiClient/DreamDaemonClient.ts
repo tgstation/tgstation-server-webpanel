@@ -1,5 +1,9 @@
 import { ApiClient } from "./_base";
-import type { DreamDaemonResponse, ErrorMessageResponse, JobResponse } from "./generatedcode/generated";
+import type {
+    DreamDaemonResponse,
+    ErrorMessageResponse,
+    JobResponse
+} from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -16,7 +20,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerRead({
                 headers: {
-                    Instance: (instance as unknown as string)
+                    Instance: instance as unknown as string
                 }
             });
         } catch (stat) {
@@ -70,7 +74,7 @@ export default new (class DreamDaemonClient extends ApiClient {
                 newSettings,
                 {
                     headers: {
-                        Instance: (instance as unknown as string)
+                        Instance: instance as unknown as string
                     }
                 }
             );
@@ -122,7 +126,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerCreate({
                 headers: {
-                    Instance: (instance as unknown as string)
+                    Instance: instance as unknown as string
                 }
             });
         } catch (stat) {
@@ -159,7 +163,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerDelete({
                 headers: {
-                    Instance: (instance as unknown as string)
+                    Instance: instance as unknown as string
                 }
             });
         } catch (stat) {
@@ -198,7 +202,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerRestart({
                 headers: {
-                    Instance: (instance as unknown as string)
+                    Instance: instance as unknown as string
                 }
             });
         } catch (stat) {
@@ -237,7 +241,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerCreateDump({
                 headers: {
-                    Instance: (instance as unknown as string)
+                    Instance: instance as unknown as string
                 }
             });
         } catch (stat) {

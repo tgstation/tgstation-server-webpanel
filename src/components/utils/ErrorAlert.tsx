@@ -7,7 +7,7 @@ import { FormattedMessage } from "react-intl";
 
 import InternalError, {
     DescType,
-    ErrorCode,
+    ErrorCode
 } from "../../ApiClient/models/InternalComms/InternalError";
 import { API_VERSION, MODE, VERSION } from "../../definitions/constants";
 
@@ -24,7 +24,7 @@ class ErrorAlert extends Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
         this.state = {
-            popup: false,
+            popup: false
         };
     }
     public render(): ReactNode {
@@ -118,7 +118,8 @@ function displayErrors([errors, setErrors]: ErrorState): Array<JSX.Element | und
                         const newarr = Array.from(prev);
                         newarr[index] = undefined;
                         return newarr;
-                    })}
+                    })
+                }
             />
         );
     });
