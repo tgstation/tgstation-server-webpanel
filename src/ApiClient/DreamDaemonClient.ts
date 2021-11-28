@@ -34,7 +34,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as DreamDaemonResponse
                 });
             }
             case 410: {
@@ -89,7 +89,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as DreamDaemonResponse
                 });
             }
             case 410: {
@@ -140,7 +140,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as JobResponse
                 });
             }
             default: {
@@ -216,7 +216,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as JobResponse
                 });
             }
             default: {
@@ -255,7 +255,7 @@ export default new (class DreamDaemonClient extends ApiClient {
             case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data
+                    payload: response.data as JobResponse
                 });
             }
             default: {
