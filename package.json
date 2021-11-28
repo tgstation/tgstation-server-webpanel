@@ -39,6 +39,7 @@
         "axios": "0.21.4",
         "bootstrap": "^4.6.1",
         "buffer": "^6.0.3",
+        "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-prettier": "^4.0.0",
         "fs-extra": "^9.1.0",
         "https-browserify": "^1.0.0",

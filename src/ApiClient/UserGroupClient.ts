@@ -40,7 +40,7 @@ export default new (class UserGroupClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as UserGroupResponse)
+                    payload: response.data as UserGroupResponse
                 });
             }
             case 410: {
@@ -87,7 +87,7 @@ export default new (class UserGroupClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as PaginatedUserGroupResponse)
+                    payload: response.data as PaginatedUserGroupResponse
                 });
             }
             default: {
@@ -126,7 +126,7 @@ export default new (class UserGroupClient extends ApiClient {
             case 201: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as UserGroupResponse)
+                    payload: response.data as UserGroupResponse
                 });
             }
             default: {

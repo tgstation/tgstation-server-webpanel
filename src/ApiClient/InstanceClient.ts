@@ -122,7 +122,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200:
             case 201: {
-                const instance = (response.data as InstanceResponse);
+                const instance = response.data as InstanceResponse;
 
                 this.emit("instanceChange", instance.id);
 

@@ -126,7 +126,7 @@ export default new (class ByondClient extends ApiClient {
         switch (response.status) {
             case 200:
             case 202: {
-                const responseData = (response.data as ByondInstallResponse);
+                const responseData = response.data as ByondInstallResponse;
                 if (responseData.fileTicket) {
                     if (file) {
                         const response2 = await TransferClient.Upload(

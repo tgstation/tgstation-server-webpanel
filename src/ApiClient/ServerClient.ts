@@ -426,7 +426,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200: {
                 console.log("Login success");
-                const token = (response.data as TokenResponse);
+                const token = response.data as TokenResponse;
 
                 // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
                 CredentialsProvider.token = token;
@@ -571,7 +571,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         }
         switch (response.status) {
             case 200: {
-                const info = (response.data as ServerInformationResponse);
+                const info = response.data as ServerInformationResponse;
                 const cache = new InternalStatus<ServerInformationResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: info

@@ -73,7 +73,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
                 }
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as UserResponse)
+                    payload: response.data as UserResponse
                 });
             }
             case 404: {
@@ -144,7 +144,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 200: {
                 const thing = new InternalStatus<UserResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
-                    payload: (response.data as UserResponse)
+                    payload: response.data as UserResponse
                 });
 
                 this._cachedUser = thing;
@@ -189,7 +189,9 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 200: {
-                const payload = (response.data as PaginatedUserResponse).content.sort((a, b) => (a.id || 0) - (b.id || 0));
+                const payload = (response.data as PaginatedUserResponse).content.sort(
+                    (a, b) => (a.id || 0) - (b.id || 0)
+                );
 
                 return new InternalStatus({
                     code: StatusCode.OK,
@@ -229,7 +231,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as UserResponse)
+                    payload: response.data as UserResponse
                 });
             }
             case 404: {
@@ -302,7 +304,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
             case 201: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as UserResponse)
+                    payload: response.data as UserResponse
                 });
             }
             case 410: {
