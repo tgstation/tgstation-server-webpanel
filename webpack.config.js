@@ -6,6 +6,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const { createBabelConfig } = require('./babel.config.js');
 const { DefinePlugin, ProvidePlugin } = require("webpack");
+const JSONManifestPlugin = require("./jsonmanifest-plugin");
 
 const createStats = verbose => ({
     assets: verbose,
@@ -101,24 +102,23 @@ module.exports = (env, argv) => ({
         ],
         splitChunks: {
             chunks: "all",
-            name: 'panel-common',
-            // cacheGroups: {
-            //     packages: {
-            //         test: /[\\/]node_modules[\\/]/,
-            //         name: 'panel-packages',
-            //     },
-            //     api: {
-            //         priority: 1,
-            //         test: /[\\/]ApiClient[\\/]/,
-            //         name: 'panel-api',
-            //         enforce: true,
-            //     },
-            //     styles: {
-            //         test: /\.(scss)$/,
-            //         name: 'panel-styles',
-            //         enforce: true,
-            //     },
-            // },
+            cacheGroups: {
+                packages: {
+                    test: /[\\/]node_modules[\\/]/,
+                    idHint: 'packages',
+                },
+                api: {
+                    priority: 1,
+                    test: /[\\/]ApiClient[\\/]/,
+                    idHint: 'api',
+                    enforce: true,
+                },
+                styles: {
+                    test: /\.(scss)$/,
+                    idHint: 'styles',
+                    enforce: true,
+                },
+            },
         },
     },
 
@@ -174,6 +174,6 @@ module.exports = (env, argv) => ({
                 sockIntegration: "wds",
             },
         })),
-    // new JSONManifestPlugin({version: require("./package.json").version })
+        new JSONManifestPlugin({version: require("./package.json").version })
     ].filter(Boolean),
 });

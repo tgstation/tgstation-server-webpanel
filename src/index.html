@@ -38,14 +38,10 @@
         <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet" />
         <% } %>
 
-        <script src="<%= htmlWebpackPlugin.files.publicPath %>main.bundle.js"></script>
-        <script src="<%= htmlWebpackPlugin.files.publicPath %>panel-common.bundle.js"></script>
-        <!-- <script src="<%= htmlWebpackPlugin.files.publicPath %>panel-api.bundle.js"></script>
-        <script src="<%= htmlWebpackPlugin.files.publicPath %>panel-styles.bundle.js"></script> -->
     </head>
     <body>
         <div id="root"></div>
-        <!-- <script>
+        <script>
             try {
                 function loadChannel(channel) {
                     const handler = (e) => {
@@ -96,6 +92,6 @@
             }catch (e) {
                 alert("An error has occured within the webpanel bootstraper: \n" + e)
             }
-        </script> -->
+        </script>
     </body>
 </html>
