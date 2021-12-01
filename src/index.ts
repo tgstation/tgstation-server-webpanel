@@ -39,6 +39,12 @@ try {
     (() => {})();
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+function mountApp() {
+    console.log("Mounting app");
     ReactDOM.render(IndexApp, document.getElementById("root"));
-});
+}
+
+window.addEventListener("DOMContentLoaded", mountApp);
+if (document.readyState === "interactive" || document.readyState === "complete") {
+    mountApp();
+}
