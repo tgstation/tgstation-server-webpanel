@@ -20,7 +20,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerRead({
                 headers: {
-                    Instance: instance as unknown as string
+                    Instance: instance.toString()
                 }
             });
         } catch (stat) {
@@ -74,7 +74,7 @@ export default new (class DreamDaemonClient extends ApiClient {
                 newSettings,
                 {
                     headers: {
-                        Instance: instance as unknown as string
+                        Instance: instance.toString()
                     }
                 }
             );
@@ -126,7 +126,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerCreate({
                 headers: {
-                    Instance: instance as unknown as string
+                    Instance: instance.toString()
                 }
             });
         } catch (stat) {
@@ -163,7 +163,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerDelete({
                 headers: {
-                    Instance: instance as unknown as string
+                    Instance: instance.toString()
                 }
             });
         } catch (stat) {
@@ -202,7 +202,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerRestart({
                 headers: {
-                    Instance: instance as unknown as string
+                    Instance: instance.toString()
                 }
             });
         } catch (stat) {
@@ -241,7 +241,7 @@ export default new (class DreamDaemonClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerCreateDump({
                 headers: {
-                    Instance: instance as unknown as string
+                    Instance: instance.toString()
                 }
             });
         } catch (stat) {

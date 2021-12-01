@@ -40,7 +40,7 @@ export default new (class JobsClient extends ApiClient {
                 },
                 {
                     headers: {
-                        Instance: instanceid as unknown as string
+                        Instance: instanceid.toString()
                     }
                 }
             );
@@ -91,7 +91,7 @@ export default new (class JobsClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.job.jobControllerGetId(jobid, {
                 headers: {
-                    Instance: instanceid as unknown as string
+                    Instance: instanceid.toString()
                 }
             });
         } catch (stat) {
@@ -143,7 +143,7 @@ export default new (class JobsClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.job.jobControllerDelete(jobid, {
                 headers: {
-                    Instance: instanceid as unknown as string
+                    Instance: instanceid.toString()
                 }
             });
         } catch (stat) {
@@ -208,7 +208,7 @@ export default new (class JobsClient extends ApiClient {
                 },
                 {
                     headers: {
-                        Instance: instanceid as unknown as string
+                        Instance: instanceid.toString()
                     }
                 }
             );

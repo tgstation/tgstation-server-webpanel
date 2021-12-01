@@ -20,7 +20,7 @@ export default new (class ByondClient extends ApiClient {
         try {
             response = await ServerClient.apiClient!.byond.byondControllerRead({
                 headers: {
-                    Instance: instance as unknown as string // hacky way of forcing strings
+                    Instance: instance.toString()
                 }
             });
         } catch (stat) {
@@ -65,7 +65,7 @@ export default new (class ByondClient extends ApiClient {
                 },
                 {
                     headers: {
-                        Instance: instance as unknown as string
+                        Instance: instance.toString()
                     }
                 }
             );
@@ -112,7 +112,7 @@ export default new (class ByondClient extends ApiClient {
                 },
                 {
                     headers: {
-                        Instance: instance as unknown as string
+                        Instance: instance.toString()
                     }
                 }
             );

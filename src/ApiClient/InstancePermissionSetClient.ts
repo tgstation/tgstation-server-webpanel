@@ -59,7 +59,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
                 await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerRead(
                     {
                         headers: {
-                            Instance: instanceid as unknown as string
+                            Instance: instanceid.toString()
                         }
                     }
                 );
