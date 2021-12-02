@@ -170,10 +170,10 @@ module.exports = (env, argv) => {
                 ),
                 'MODE': JSON.stringify(prodLike ? (github ? "GITHUB" : "PROD") : "DEV"),
                 // The basepath remains /app because its for the router which is located at /app/
-                'DEFAULT_BASEPATH': JSON.stringify(github ? "/app/" : (prodLike ? "/app/" : "/")),
+                'DEFAULT_BASEPATH': JSON.stringify(prodLike ? "/app/" : "/"),
                 'DEFAULT_APIPATH': JSON.stringify(prodLike ? "/" : "http://localhost:5000/"),
             }),
-            (argv.mode !== 'production' && new HtmlWebPackPlugin({
+            (!github && new HtmlWebPackPlugin({
                 title: "TGS Webpanel v" + require("./package.json").version,
                 filename: "index.html",
                 template: "./src/index.html",
