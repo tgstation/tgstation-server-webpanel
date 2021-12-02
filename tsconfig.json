@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
     "outDir": "build/lib",
-    "module": "esnext",
+    "module": "ESNext",
     "target": "es6",
     "lib": [
-      "es5",
-      "es6",
+      "ESNext",
       "dom",
       "dom.iterable"
     ],
@@ -27,7 +26,10 @@
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true
   },
+  "exclude": [
+    "./src/**/*generated.ts"
+  ],
   "include": [
-    "src/**/*"
+    "./src"
   ]
 }

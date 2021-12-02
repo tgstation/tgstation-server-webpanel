@@ -1,5 +1,9 @@
 import { ApiClient } from "./_base";
-import { ErrorMessageResponse, JobResponse, PaginatedJobResponse } from "./generatedcode/schemas";
+import type {
+    ErrorMessageResponse,
+    JobResponse,
+    PaginatedJobResponse
+} from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -29,11 +33,17 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.JobController_Read({
-                Instance: instanceid,
-                page: page,
-                pageSize: pageSize
-            });
+            response = await ServerClient.apiClient!.job.jobControllerRead(
+                {
+                    page: page,
+                    pageSize: pageSize
+                },
+                {
+                    headers: {
+                        Instance: instanceid.toString()
+                    }
+                }
+            );
         } catch (stat) {
             return new InternalStatus<PaginatedTGSJobResponse, listJobsErrors>({
                 code: StatusCode.ERROR,
@@ -79,9 +89,10 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.JobController_GetId({
-                Instance: instanceid,
-                id: jobid
+            response = await ServerClient.apiClient!.job.jobControllerGetId(jobid, {
+                headers: {
+                    Instance: instanceid.toString()
+                }
             });
         } catch (stat) {
             return new InternalStatus({
@@ -130,9 +141,10 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.JobController_Delete({
-                Instance: instanceid,
-                id: jobid
+            response = await ServerClient.apiClient!.job.jobControllerDelete(jobid, {
+                headers: {
+                    Instance: instanceid.toString()
+                }
             });
         } catch (stat) {
             return new InternalStatus({
@@ -189,11 +201,17 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.JobController_List({
-                Instance: instanceid,
-                pageSize,
-                page
-            });
+            response = await ServerClient.apiClient!.job.jobControllerList(
+                {
+                    pageSize,
+                    page
+                },
+                {
+                    headers: {
+                        Instance: instanceid.toString()
+                    }
+                }
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

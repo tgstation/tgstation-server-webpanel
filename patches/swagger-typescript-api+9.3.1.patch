@@ -1,0 +1,13 @@
+diff --git a/node_modules/swagger-typescript-api/src/index.js b/node_modules/swagger-typescript-api/src/index.js
+index ecb8c59..cf37fe3 100644
+--- a/node_modules/swagger-typescript-api/src/index.js
++++ b/node_modules/swagger-typescript-api/src/index.js
+@@ -161,7 +161,7 @@ module.exports = {
+           const sortSchemas = (schemas) => {
+             if(config.sortTypes) {
+               return schemas.sort(sortByTypeName).map((schema) => {
+-                if(schema.rawTypeData?.properties) {
++                if(schema.rawTypeData && schema.rawTypeData.properties) {
+                   return {
+                     ...schema,
+                     rawTypeData: {

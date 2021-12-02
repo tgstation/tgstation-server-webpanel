@@ -1,7 +1,23 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
+## NPM garbage
+node_modules
+*.log
+package-lock.json
+
+## Yarn stuff
+/.pnp.*
+/.yarn/*
+!/.yarn/releases
+!/.yarn/plugins
+!/.yarn/sdks
+!/.yarn/versions
+!/.yarn/lock.yml
+
+## api gen (folder exlude, contents include)
+/src/ApiClient/generatedcode/*
+!/src/ApiClient/generatedcode/.gitkeep
+!/src/ApiClient/generatedcode/README.md
 
 # testing
 /coverage
@@ -29,6 +45,3 @@ yarn-error.log*
 *.tgz
 
 /tgstation-server-control-panel-.*\.tgz
-
-#generated code
-src/ApiClient/generatedcode

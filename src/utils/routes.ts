@@ -1,6 +1,6 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
-import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/_enums";
+import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../ApiClient/UserClient";

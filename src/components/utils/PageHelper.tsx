@@ -29,7 +29,7 @@ export default class PageHelper extends React.PureComponent<IProps, IState> {
     }
 
     public render(): React.ReactNode {
-        const items: React.ReactNodeArray = [];
+        const items: React.ReactNode[] = [];
 
         const maxRight = Math.max(this.props.totalPages - this.props.currentPage - 1, 0);
         const maxLeft = Math.max(this.props.currentPage - 2, 0);

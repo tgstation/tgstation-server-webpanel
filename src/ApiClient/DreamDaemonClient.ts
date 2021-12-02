@@ -1,5 +1,9 @@
 import { ApiClient } from "./_base";
-import { DreamDaemonResponse, ErrorMessageResponse, JobResponse } from "./generatedcode/schemas";
+import type {
+    DreamDaemonResponse,
+    ErrorMessageResponse,
+    JobResponse
+} from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -14,8 +18,10 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Read({
-                Instance: instance
+            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerRead({
+                headers: {
+                    Instance: instance.toString()
+                }
             });
         } catch (stat) {
             return new InternalStatus({
@@ -64,11 +70,13 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Update(
+            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerUpdate(
+                newSettings,
                 {
-                    Instance: instance
-                },
-                newSettings
+                    headers: {
+                        Instance: instance.toString()
+                    }
+                }
             );
         } catch (stat) {
             return new InternalStatus({
@@ -116,8 +124,10 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Create({
-                Instance: instance
+            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerCreate({
+                headers: {
+                    Instance: instance.toString()
+                }
             });
         } catch (stat) {
             return new InternalStatus({
@@ -151,8 +161,10 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Delete({
-                Instance: instance
+            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerDelete({
+                headers: {
+                    Instance: instance.toString()
+                }
             });
         } catch (stat) {
             return new InternalStatus({
@@ -188,8 +200,10 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_Restart({
-                Instance: instance
+            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerRestart({
+                headers: {
+                    Instance: instance.toString()
+                }
             });
         } catch (stat) {
             return new InternalStatus({
@@ -225,8 +239,10 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.DreamDaemonController_CreateDump({
-                Instance: instance
+            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerCreateDump({
+                headers: {
+                    Instance: instance.toString()
+                }
             });
         } catch (stat) {
             return new InternalStatus({

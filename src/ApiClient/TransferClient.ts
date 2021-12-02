@@ -1,5 +1,5 @@
 import { ApiClient } from "./_base";
-import { ErrorMessageResponse } from "./generatedcode/schemas";
+import type { ErrorMessageResponse } from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -16,11 +16,10 @@ export default new (class TransferClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.TransferController_Download(
+            response = await ServerClient.apiClient!.transfer.transferControllerDownload(
                 {
                     ticket: ticket
                 },
-                null,
                 {
                     headers: {
                         Accept: "application/json, application/octet-stream"
@@ -38,7 +37,7 @@ export default new (class TransferClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as unknown as string
+                    payload: (response.data as unknown) as string
                 });
             }
             case 410: {
@@ -70,11 +69,12 @@ export default new (class TransferClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.TransferController_Upload(
-                { ticket: ticket },
-                null,
+            response = await ServerClient.apiClient!.transfer.transferControllerUpload(
                 {
-                    data: file,
+                    ticket: ticket
+                },
+                (file as unknown) as File,
+                {
                     headers: {
                         "Content-Type": "application/octect-stream"
                     }

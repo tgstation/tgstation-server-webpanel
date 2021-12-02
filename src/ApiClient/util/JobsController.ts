@@ -12,10 +12,10 @@ import {
     ErrorCode as TGSErrorCode,
     InstanceManagerRights,
     InstancePermissionSetRights,
+    InstanceResponse,
     RepositoryRights,
     RightsType
-} from "../generatedcode/_enums";
-import { InstanceResponse } from "../generatedcode/schemas";
+} from "../generatedcode/generated";
 import InstanceClient from "../InstanceClient";
 import InstancePermissionSetClient from "../InstancePermissionSetClient";
 import JobsClient, { TGSJobResponse } from "../JobsClient";
@@ -376,10 +376,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.Byond: {
-                const InstancePermissionSet =
-                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                        job.instanceid
-                    );
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                    job.instanceid
+                );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ByondRights;
                     return !!(InstancePermissionSet.payload.byondRights & required);
@@ -389,10 +388,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.ChatBots: {
-                const InstancePermissionSet =
-                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                        job.instanceid
-                    );
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                    job.instanceid
+                );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ChatBotRights;
                     return !!(InstancePermissionSet.payload.chatBotRights & required);
@@ -402,10 +400,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.Configuration: {
-                const InstancePermissionSet =
-                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                        job.instanceid
-                    );
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                    job.instanceid
+                );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ConfigurationRights;
                     return !!(InstancePermissionSet.payload.configurationRights & required);
@@ -415,10 +412,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.DreamDaemon: {
-                const InstancePermissionSet =
-                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                        job.instanceid
-                    );
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                    job.instanceid
+                );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamDaemonRights;
                     return !!(InstancePermissionSet.payload.dreamDaemonRights & required);
@@ -428,10 +424,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.DreamMaker: {
-                const InstancePermissionSet =
-                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                        job.instanceid
-                    );
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                    job.instanceid
+                );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamMakerRights;
                     return !!(InstancePermissionSet.payload.dreamMakerRights & required);
@@ -441,10 +436,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.InstancePermissionSet: {
-                const InstancePermissionSet =
-                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                        job.instanceid
-                    );
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                    job.instanceid
+                );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as InstancePermissionSetRights;
                     return !!(InstancePermissionSet.payload.instancePermissionSetRights & required);
@@ -454,10 +448,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.Repository: {
-                const InstancePermissionSet =
-                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                        job.instanceid
-                    );
+                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                    job.instanceid
+                );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as RepositoryRights;
                     return !!(InstancePermissionSet.payload.repositoryRights & required);

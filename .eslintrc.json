@@ -1,4 +1,5 @@
 {
+    "root": true,
     "env": {
         "browser": true,
         "es6": true
@@ -16,25 +17,17 @@
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
-    "ignorePatterns": [
-        "node_modules/",
-        "src/ApiClient/generatedcode/",
-        "webpack*.js",
-        "scripts/patcher/",
-        "scripts/api_download.js",
-        "scripts/generate_enums.js"
-    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
         },
-        "ecmaVersion": 2018,
+        "ecmaVersion": 2020,
         "sourceType": "module",
         "tsconfigRootDir": ".",
         "project": ["./tsconfig.json"]
     },
-    "plugins": ["react", "@typescript-eslint", "prettier", "simple-import-sort"],
+    "plugins": ["react", "@typescript-eslint", "simple-import-sort", "prettier"],
     "rules": {
         "simple-import-sort/sort": "error",
         "@typescript-eslint/explicit-member-accessibility": [
@@ -45,7 +38,6 @@
         ],
         "linebreak-style": "off",
         "no-unused-vars": "off",
-        "prettier/prettier": "error",
         "import/no-cycle": "error",
         "@typescript-eslint/unbound-method": "off",
         "@typescript-eslint/ban-ts-comment": [
@@ -57,7 +49,8 @@
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-empty-function": "off",
-        "react/prop-types": "off"
+        "prettier/prettier": "error"
+
     },
     "settings": {
         "react": {

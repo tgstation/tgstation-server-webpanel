@@ -10,7 +10,7 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
-import { OAuthProvider } from "../../ApiClient/generatedcode/_enums";
+import { OAuthProvider } from "../../ApiClient/generatedcode/generated";
 import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";

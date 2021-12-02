@@ -3,49 +3,66 @@ name: Node.js CI
 on: [push, pull_request]
 
 jobs:
-  build:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [12.x, 14.x, 15.x, 16.x]
 
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x, 15.x, 16.x]
+        steps:
+            - uses: actions/checkout@v2
 
-    steps:
-    - uses: actions/checkout@v2
+            - name: Restore Yarn cache
+              uses: actions/cache@v2
+              with:
+                  path: .yarn/cache
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-        
-    - name: Upgrade NPM
-      run: npm install -g npm
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
 
-    - run: npm ci
+            - name: Upgrade NPM
+              run: npm install -g npm
 
-    - run: npm run build
-  lint:
-    runs-on: ubuntu-latest
+            - name: Install Yarn Dependencies
+              run: yarn install --immutable
 
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x, 15.x, 16.x]
+            - name: Compile
+              run: yarn run build
 
-    steps:
-    - uses: actions/checkout@v2
+    lint:
+        name: Run Linter
+        runs-on: ubuntu-latest
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-        
-    - name: Upgrade NPM
-      run: npm install -g npm
+        strategy:
+            matrix:
+                node-version: [12.x, 14.x, 15.x, 16.x]
 
-    - run: npm ci
+        steps:
+            - uses: actions/checkout@v2
 
-    - name: Run ESLint
-      uses: stefanoeb/eslint-action@1.0.2
-      with:
-        files: ./src
+            - name: Restore Yarn cache
+              uses: actions/cache@v2
+              with:
+                  path: .yarn/cache
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Upgrade NPM
+              run: npm install -g npm
+
+            - name: Install Yarn Dependencies
+              run: yarn install --immutable
+
+            - name: Run ESLint
+              uses: stefanoeb/eslint-action@1.0.2
+              with:
+                  files: ./src

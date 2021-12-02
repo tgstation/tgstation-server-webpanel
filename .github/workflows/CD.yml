@@ -14,17 +14,27 @@ jobs:
         steps:
             - uses: actions/checkout@v2
 
+            - name: Restore Yarn cache
+              uses: actions/cache@v2
+              with:
+                  path: .yarn/cache
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
             - name: Use Node.js
               uses: actions/setup-node@v1
               with:
                   node-version: 14.x
-        
+
             - name: Upgrade NPM
               run: npm install -g npm
 
-            - run: npm ci
+            - name: Install Yarn Dependencies
+              run: yarn install --immutable
 
-            - run: npm run build-github
+            - name: Compile
+              env:
+                  GITHUB_CD: true
+              run: yarn run build
 
             #Safety against pushing broken code
             - name: Run ESLint
