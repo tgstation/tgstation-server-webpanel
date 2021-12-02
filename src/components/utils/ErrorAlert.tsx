@@ -20,7 +20,7 @@ interface IState {
     popup: boolean;
 }
 
-export default class ErrorAlert extends Component<IProps, IState> {
+class ErrorAlert extends Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
         this.state = {
@@ -41,7 +41,7 @@ export default class ErrorAlert extends Component<IProps, IState> {
                 variant="error"
                 dismissible={!!this.props.onClose}
                 onClose={this.props.onClose}>
-                <FormattedMessage id={this.props.error.code} />
+                <FormattedMessage id={this.props.error.code || "error.app.undefined"} />
                 <hr />
 
                 <Button variant="danger" className="float-right" onClick={handleOpen}>
@@ -51,12 +51,14 @@ export default class ErrorAlert extends Component<IProps, IState> {
                 <Modal centered show={this.state.popup} onHide={handleClose} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>
-                            <FormattedMessage id={this.props.error.code} />
+                            <FormattedMessage id={this.props.error.code || "error.app.undefined"} />
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body className="text-danger pb-0">
-                        {this.props.error.desc?.type == DescType.LOCALE ? (
-                            <FormattedMessage id={this.props.error.desc.desc} />
+                        {this.props.error.desc?.type === DescType.LOCALE ? (
+                            <FormattedMessage
+                                id={this.props.error.desc.desc || "error.api.empty"}
+                            />
                         ) : this.props.error.desc?.desc ? (
                             this.props.error.desc.desc
                         ) : (
@@ -91,6 +93,8 @@ ${this.props.error.extendedInfo}`.replace(/\\/g, "\\\\")}
     }
 }
 
+export default ErrorAlert;
+
 export type ErrorState = [
     Array<InternalError<ErrorCode> | undefined>,
     React.Dispatch<React.SetStateAction<Array<InternalError<ErrorCode> | undefined>>>
@@ -123,5 +127,4 @@ function displayErrors([errors, setErrors]: ErrorState): Array<JSX.Element | und
     });
 }
 
-export { displayErrors };
-export { addError };
+export { displayErrors, addError };

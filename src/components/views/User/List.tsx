@@ -8,8 +8,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 
-import { AdministrationRights } from "../../../ApiClient/generatedcode/_enums";
-import { UserResponse } from "../../../ApiClient/generatedcode/schemas";
+import { AdministrationRights, UserResponse } from "../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";

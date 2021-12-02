@@ -1,12 +1,12 @@
 import { ApiClient } from "./_base";
-import {
+import type {
     ErrorMessageResponse,
     PaginatedUserGroupResponse,
     PermissionSet,
     UserGroupCreateRequest,
     UserGroupResponse,
     UserGroupUpdateRequest
-} from "./generatedcode/schemas";
+} from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -28,7 +28,7 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserGroupController_Update(null, group);
+            response = await ServerClient.apiClient!.userGroup.userGroupControllerUpdate(group);
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -72,7 +72,7 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserGroupController_List({
+            response = await ServerClient.apiClient!.userGroup.userGroupControllerList({
                 pageSize: pageSize,
                 page: page
             });
@@ -111,7 +111,7 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserGroupController_Create(null, {
+            response = await ServerClient.apiClient!.userGroup.userGroupControllerCreate({
                 name: name,
                 permissionSet: permissionSet
             } as UserGroupCreateRequest);
@@ -147,7 +147,7 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.UserGroupController_Delete({ id: id });
+            response = await ServerClient.apiClient!.userGroup.userGroupControllerDelete(id);
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

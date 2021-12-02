@@ -9,8 +9,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 
 import ByondClient from "../../../../ApiClient/ByondClient";
-import { ByondRights } from "../../../../ApiClient/generatedcode/_enums";
-import { ByondResponse } from "../../../../ApiClient/generatedcode/schemas";
+import { ByondResponse, ByondRights } from "../../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";

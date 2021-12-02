@@ -9,7 +9,7 @@ import ToastHeader from "react-bootstrap/ToastHeader";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 
-import { ErrorCode as TGSErrorCode } from "../../ApiClient/generatedcode/_enums";
+import { ErrorCode as TGSErrorCode } from "../../ApiClient/generatedcode/generated";
 import { TGSJobResponse } from "../../ApiClient/JobsClient";
 
 interface IState {}

@@ -18,10 +18,10 @@ $theme-colors: (
     "darker": darken(#212529, 5%)
 );
 $theme-colors: map-merge(
-        $theme-colors,
-        (
-            "darkblue": rgba(scale-color(map-get($theme-colors, "primary"), $lightness: -20%), 1)
-        )
+    $theme-colors,
+    (
+        "darkblue": rgba(scale-color(map-get($theme-colors, "primary"), $lightness: -20%), 1)
+    )
 );
 
 $sizes: (
@@ -125,7 +125,7 @@ $body-color: $gray-200;
 
 $card-bg: $gray-700;
 $card-cap-color: $white;
-$card-cap-bg: #474E54;
+$card-cap-bg: #474e54;
 
 $code-color: inherit;
 
@@ -153,10 +153,10 @@ $navbar-dark-color: rgba($white, 0.75);
     font-weight: bold;
 }
 
-$nav-tabs-border-color:             $gray-700;
-$nav-tabs-link-hover-border-color:  $gray-700 $gray-700 $nav-tabs-border-color;
-$nav-tabs-link-active-color:        theme-color("secondary"); //$gray-200;
-$nav-tabs-link-active-bg:           $body-bg;
+$nav-tabs-border-color: $gray-700;
+$nav-tabs-link-hover-border-color: $gray-700 $gray-700 $nav-tabs-border-color;
+$nav-tabs-link-active-color: theme-color("secondary"); //$gray-200;
+$nav-tabs-link-active-bg: $body-bg;
 $nav-tabs-link-active-border-color: $gray-500 $gray-500 $nav-tabs-link-active-bg;
 
 $pre-color: inherit;
@@ -170,8 +170,6 @@ $toast-color: $black;
 $toast-background-color: $gray-700;
 $toast-header-color: $toast-color;
 $toast-header-background-color: $gray-600;
-
-
 
 @import "~bootstrap/scss/variables";
 
@@ -223,12 +221,12 @@ $toast-header-background-color: $gray-600;
 .nav-tabs .nav-link {
     color: $gray-200;
     border: $nav-tabs-border-width solid $gray-700;
-    margin-right: 0.10rem;
-    margin-left: 0.10rem;
+    margin-right: 0.1rem;
+    margin-left: 0.1rem;
 }
 
 @include media-breakpoint-down("sm") {
-    .nav-tabs .nav-link{
+    .nav-tabs .nav-link {
         margin-bottom: 0;
     }
 }
@@ -287,8 +285,6 @@ $toast-header-background-color: $gray-600;
     }
 }
 
-
-
 .anim-fade-appear {
     opacity: 0;
 }
@@ -303,7 +299,8 @@ $toast-header-background-color: $gray-600;
     opacity: 0;
 }
 
-.anim-fade-appear-active, .anim-fade-exit-active {
+.anim-fade-appear-active,
+.anim-fade-exit-active {
     transition: opacity 600ms;
 }
 
@@ -342,7 +339,8 @@ $toast-header-background-color: $gray-600;
     overflow: hidden;
 }
 
-.anim-collapse-enter-active, .anim-collapse-exit-active {
+.anim-collapse-enter-active,
+.anim-collapse-exit-active {
     transition: flex-grow 200ms;
 }
 
@@ -385,7 +383,6 @@ $toast-header-background-color: $gray-600;
     }
 }
 
-
 .nav-item {
     &:not(:first-of-type) > .instanceedittab {
         border-top-right-radius: 0 !important;
@@ -426,7 +423,7 @@ $toast-header-background-color: $gray-600;
 .hover-bar:not(.pin-open) .tab-text {
     transition: max-width 1s, padding 1s;
     @include media-breakpoint-up("lg") {
-            max-width: 0;
+        max-width: 0;
     }
     //IntelliJ does not recognize clip as a valid value but I assure you it is.
     //noinspection CssInvalidPropertyValue

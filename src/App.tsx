@@ -23,6 +23,7 @@ import { DEFAULT_BASEPATH } from "./definitions/constants";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
+import Locales from "./translations/Locales";
 import TranslationFactory from "./translations/TranslationFactory";
 
 interface IState {
@@ -57,10 +58,10 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
     }
 
     public componentDidMount() {
-        //I can't be assed to remember the default admin password
-        document.addEventListener("keydown", function (event) {
-            if (event.key == "L" && event.ctrlKey && event.shiftKey) {
-                //alert("ISolemlySwearToDeleteTheDataDirectory");
+        // I can't be assed to remember the default admin password
+        document.addEventListener("keydown", event => {
+            if (event.key === "L" && event.ctrlKey && event.shiftKey) {
+                // alert("ISolemlySwearToDeleteTheDataDirectory");
                 ServerClient.logout();
                 void ServerClient.login({
                     type: CredentialsType.Password,
@@ -81,7 +82,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                             <Loading text="loading.app" />
                         </Container>
                     ) : (
-                        <React.Fragment>
+                        <>
                             <Container className="mt-5">
                                 <Alert variant="warning" className="d-block d-lg-none">
                                     <Alert.Heading>
@@ -90,7 +91,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                                     <hr />
                                     <FormattedMessage id="warning.screensize" />
                                 </Alert>
-                                {[...this.context.errors.values()].map((value, idx) => {
+                                {Array.from(this.context.errors.values()).map((value, idx) => {
                                     return (
                                         <ErrorAlert
                                             error={value}
@@ -111,7 +112,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                                     });
                                 }}
                             />
-                        </React.Fragment>
+                        </>
                     )}
                     {this.props.loggedIn ? <JobsList /> : null}
                 </ErrorBoundary>
@@ -238,7 +239,7 @@ class App extends React.Component<IProps, IState> {
     private finishLogin() {
         console.log("Logging in");
 
-        void UserClient.getCurrentUser(); //preload the user, we dont particularly care about the content, just that its preloaded
+        void UserClient.getCurrentUser(); // preload the user, we dont particularly care about the content, just that its preloaded
         void this.updateContextUser();
         this.setState({
             loggedIn: true,
@@ -262,7 +263,7 @@ class App extends React.Component<IProps, IState> {
         ServerClient.on("purgeCache", this.updateContextUser);
 
         await this.loadTranslation();
-        await ServerClient.initApi();
+        ServerClient.initApi();
         await this.updateContextServer();
 
         this.setState({
@@ -280,14 +281,18 @@ class App extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
-        if (this.state.translationError != null)
+        if (this.state.translationError) {
             return <p className="App-error">{this.state.translationError}</p>;
+        }
 
-        if (this.state.translation == null) return <Loading>Loading translations...</Loading>;
+        if (!this.state.translation) {
+            return <Loading>Loading translations...</Loading>;
+        }
         return (
             <IntlProvider
                 locale={this.state.translation.locale}
-                messages={this.state.translation.messages}>
+                messages={this.state.translation.messages}
+                defaultLocale="en">
                 <GeneralContext.Provider value={this.state.GeneralContextInfo as GeneralContext}>
                     <InnerApp loading={this.state.loading} loggedIn={this.state.loggedIn} />
                 </GeneralContext.Provider>
@@ -309,8 +314,15 @@ class App extends React.Component<IProps, IState> {
 
             return;
         }
+
         console.timeEnd("LoadTranslations");
     }
 }
 
 export default App;
+
+export const IndexApp = (
+    <React.StrictMode>
+        <App locale={Locales.en} />
+    </React.StrictMode>
+);

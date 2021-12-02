@@ -1,5 +1,5 @@
 import { MODE } from "../../definitions/constants";
-import { TokenResponse } from "../generatedcode/schemas";
+import type { TokenResponse } from "../generatedcode/generated";
 import { ICredentials } from "../models/ICredentials";
 
 //Data structure meant to help against circular dependencies within the ApiClient
@@ -14,7 +14,10 @@ export default new (class CredentialsProvider {
 
     public isTokenValid() {
         return (
-            this.credentials && this.token && this.token.bearer /* &&
+            this.credentials &&
+            this.token &&
+            this.token
+                .bearer /* &&
             (!this.token.expiresAt || new Date(this.token.expiresAt) > new Date(Date.now()))*/
         );
     }

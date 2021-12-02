@@ -8,14 +8,12 @@ import {
     DreamDaemonRights,
     DreamMakerRights,
     InstanceManagerRights,
-    InstancePermissionSetRights,
-    RepositoryRights
-} from "../ApiClient/generatedcode/_enums";
-import {
     InstancePermissionSetResponse,
+    InstancePermissionSetRights,
     PermissionSet,
+    RepositoryRights,
     UserResponse
-} from "../ApiClient/generatedcode/schemas";
+} from "../ApiClient/generatedcode/generated";
 
 export type DistributiveOmit<T, K extends keyof T> = T extends T ? Omit<T, K> : never;
 

@@ -21,15 +21,13 @@ import { Link } from "react-router-dom";
 import {
     AdministrationRights,
     InstanceManagerRights,
-    OAuthProvider
-} from "../../../ApiClient/generatedcode/_enums";
-import {
     OAuthConnection,
+    OAuthProvider,
     PermissionSet,
     UserGroup,
     UserGroupResponse,
     UserResponse
-} from "../../../ApiClient/generatedcode/schemas";
+} from "../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../../../ApiClient/UserClient";
@@ -641,10 +639,9 @@ class UserEdit extends React.Component<IProps, IState> {
                                         onClick={() => {
                                             this.setState(prev => {
                                                 return {
-                                                    newOAuthConnections:
-                                                        prev.newOAuthConnections.filter(
-                                                            (val, idx2) => idx !== idx2
-                                                        )
+                                                    newOAuthConnections: prev.newOAuthConnections.filter(
+                                                        (val, idx2) => idx !== idx2
+                                                    )
                                                 };
                                             });
                                         }}>
@@ -1019,8 +1016,9 @@ class UserEdit extends React.Component<IProps, IState> {
                 }
             } else {
                 const newset = Object.assign(Object.assign({}, this.state.user.permissionSet), {
-                    [enumname == "permsadmin" ? "AdministrationRights" : "InstanceManagerRights"]:
-                        bitflag
+                    [enumname == "permsadmin"
+                        ? "AdministrationRights"
+                        : "InstanceManagerRights"]: bitflag
                 } as { AdministrationRights: AdministrationRights } | { InstanceManagerRights: InstanceManagerRights });
                 const response = await UserClient.editUser({
                     id: this.state.user.id,

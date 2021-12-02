@@ -9,7 +9,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 import { Link } from "react-router-dom";
 
 import AdminClient from "../../../ApiClient/AdminClient";
-import { LogFileResponse } from "../../../ApiClient/generatedcode/schemas";
+import type { LogFileResponse } from "../../../ApiClient/generatedcode/generated";
 import { DownloadedLog } from "../../../ApiClient/models/DownloadedLog";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";

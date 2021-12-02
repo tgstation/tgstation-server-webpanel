@@ -7,8 +7,11 @@ import Tab from "react-bootstrap/Tab";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 
-import { ByondRights, DreamDaemonRights } from "../../../ApiClient/generatedcode/_enums";
-import { InstancePermissionSetResponse } from "../../../ApiClient/generatedcode/schemas";
+import {
+    ByondRights,
+    DreamDaemonRights,
+    InstancePermissionSetResponse
+} from "../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError from "../../../ApiClient/models/InternalComms/InternalError";

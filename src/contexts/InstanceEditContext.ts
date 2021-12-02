@@ -1,11 +1,11 @@
 import React from "react";
 
-import {
+import type {
     InstancePermissionSetResponse,
     InstanceResponse,
     ServerInformationResponse,
     UserResponse
-} from "../ApiClient/generatedcode/schemas";
+} from "../ApiClient/generatedcode/generated";
 import InternalError from "../ApiClient/models/InternalComms/InternalError";
 
 export type InstanceEditContext = {
@@ -30,5 +30,5 @@ export type UnsafeInstanceEditContext = {
 };
 
 export const InstanceEditContext = React.createContext<InstanceEditContext>(
-    undefined as unknown as InstanceEditContext
+    (undefined as unknown) as InstanceEditContext
 );

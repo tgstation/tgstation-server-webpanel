@@ -1,23 +1,21 @@
-//definition files
-import "./custom.d";
-//css
+// definition files
+// css
 import "./styles/dark.scss";
-//polyfills
+// polyfills
 import "@formatjs/intl-relativetimeformat/polyfill";
 import "@formatjs/intl-relativetimeformat/locale-data/en";
 import "@formatjs/intl-pluralrules/polyfill";
 import "@formatjs/intl-pluralrules/locale-data/en";
 
-import * as React from "react";
-import { render as ReactDOMRender } from "react-dom";
+import ReactDOM from "react-dom";
 
 import ConfigController from "./ApiClient/util/ConfigController";
 import JobsController from "./ApiClient/util/JobsController";
-import App from "./App";
+import { IndexApp } from "./App";
 import { MODE, VERSION } from "./definitions/constants";
-import Locales from "./translations/Locales";
 import initIcons from "./utils/icolibrary";
 
+// dont lag the dom
 initIcons();
 ConfigController.loadconfig();
 JobsController.init();
@@ -29,7 +27,7 @@ if (window.loadedChannelFromWebpack && MODE !== "DEV") {
     );
 }
 
-//At some point, the webpanel had the ability to save passwords, this is however,
+// At some point, the webpanel had the ability to save passwords, this is however,
 // insecure as compromised webhosts can lead to code being served from an untrusted source,
 // leaking the saved password. Makes sure it's not there anymore
 try {
@@ -41,11 +39,12 @@ try {
     (() => {})();
 }
 
-const rootNode = document.getElementById("root") as HTMLElement;
-const appTsx = (
-    <React.StrictMode>
-        <App locale={Locales.en} />
-    </React.StrictMode>
-);
+function mountApp() {
+    console.log("Mounting app");
+    ReactDOM.render(IndexApp, document.getElementById("root"));
+}
 
-ReactDOMRender(appTsx, rootNode);
+window.addEventListener("DOMContentLoaded", mountApp);
+if (document.readyState === "interactive" || document.readyState === "complete") {
+    mountApp();
+}

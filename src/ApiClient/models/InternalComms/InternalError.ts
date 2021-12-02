@@ -1,8 +1,7 @@
 import { AxiosResponse } from "axios";
 
 import { replaceAll } from "../../../utils/misc";
-import { ErrorCode as TGSErrorCode } from "../../generatedcode/_enums";
-import { ErrorMessageResponse } from "../../generatedcode/schemas";
+import { ErrorCode as TGSErrorCode, ErrorMessageResponse } from "../../generatedcode/generated";
 import configOptions from "../../util/config";
 import CredentialsProvider from "../../util/CredentialsProvider";
 
@@ -111,11 +110,9 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             this.originalErrorMessage = err;
             this.desc = {
                 type: DescType.TEXT,
-                desc:
-                    TGSErrorCode[err.errorCode] +
-                    ": " +
-                    err.message +
-                    (err.additionalData ? ": " + err.additionalData : "")
+                desc: `${TGSErrorCode[err.errorCode]}: ${err.message}${
+                    err.additionalData ? ": " + err.additionalData : ""
+                }`
             };
             if (!err.message) {
                 this.desc = {
@@ -149,11 +146,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             '{"username":"*******","password":"*******"}'
         );
         if (CredentialsProvider.isTokenValid()) {
-            debuginfo = replaceAll(
-                debuginfo,
-                CredentialsProvider.token?.bearer as string,
-                "**************"
-            );
+            debuginfo = replaceAll(debuginfo, CredentialsProvider.token!.bearer, "**************");
         }
         if (configOptions.githubtoken.value) {
             debuginfo = replaceAll(

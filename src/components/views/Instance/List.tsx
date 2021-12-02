@@ -10,8 +10,10 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { satisfies as SemverSatisfies } from "semver";
 
-import { InstanceManagerRights } from "../../../ApiClient/generatedcode/_enums";
-import { InstanceResponse } from "../../../ApiClient/generatedcode/schemas";
+import {
+    InstanceManagerRights,
+    InstanceResponse
+} from "../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
@@ -98,9 +100,8 @@ class InstanceList extends React.Component<IProps, IState> {
             for (const instance of instancelist.payload.content) {
                 const modifiedinstance = instance as Instance;
                 if (!enableVersionWorkaround) {
-                    modifiedinstance.canAccess = modifiedinstance.online
-                        ? modifiedinstance.accessible
-                        : false;
+                    modifiedinstance.canAccess =
+                        modifiedinstance.online && modifiedinstance.accessible;
                     modifiedlist.push(modifiedinstance);
                 } else if (instance.online) {
                     work.push(
@@ -148,10 +149,10 @@ class InstanceList extends React.Component<IProps, IState> {
         // to determine what state we should put it in, thats intentional, if the user clicks Set Online, it needs
         // to be online, no matter what it previously was
         const desiredState = !instance.online;
-        const instanceedit = await InstanceClient.editInstance({
+        const instanceedit = await InstanceClient.editInstance(({
             id: instance.id,
             online: desiredState
-        } as unknown as InstanceResponse);
+        } as unknown) as InstanceResponse);
         if (instanceedit.code === StatusCode.OK) {
             await this.loadInstances();
         } else {

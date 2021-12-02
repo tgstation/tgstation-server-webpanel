@@ -1,11 +1,11 @@
 import { ApiClient } from "./_base";
-import {
+import type {
     ErrorMessageResponse,
     InstanceCreateRequest,
     InstanceResponse,
     InstanceUpdateRequest,
     PaginatedInstanceResponse
-} from "./generatedcode/schemas";
+} from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -29,7 +29,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_List({
+            response = await ServerClient.apiClient!.instance.instanceControllerList({
                 pageSize: pageSize,
                 page: page
             });
@@ -67,7 +67,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_Update(null, instance);
+            response = await ServerClient.apiClient!.instance.instanceControllerUpdate(instance);
             this.emit("instanceChange", instance.id);
         } catch (stat) {
             return new InternalStatus({
@@ -78,11 +78,9 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200:
             case 202: {
-                const instance = response.data as InstanceResponse;
-
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: instance
+                    payload: response.data as InstanceResponse
                 });
             }
             case 410:
@@ -112,7 +110,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_Create(null, instance);
+            response = await ServerClient.apiClient!.instance.instanceControllerCreate(instance);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -158,7 +156,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstanceController_GetId({ id: instanceid });
+            response = await ServerClient.apiClient!.instance.instanceControllerGetId(instanceid);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

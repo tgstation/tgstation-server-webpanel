@@ -1,10 +1,10 @@
 import { ApiClient } from "./_base";
-import {
+import type {
     AdministrationResponse,
     ErrorMessageResponse,
     LogFileResponse,
     PaginatedLogFileResponse
-} from "./generatedcode/schemas";
+} from "./generatedcode/generated";
 import { DownloadedLog } from "./models/DownloadedLog";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -70,7 +70,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_Read();
+            response = await ServerClient.apiClient!.administration.administrationControllerRead();
         } catch (stat) {
             const res = new InternalStatus<AdministrationResponse, AdminInfoErrors>({
                 code: StatusCode.ERROR,
@@ -151,7 +151,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_Delete();
+            response = await ServerClient.apiClient!.administration.administrationControllerDelete();
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -161,7 +161,10 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 204: {
-                return new InternalStatus({ code: StatusCode.OK, payload: null });
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: null
+                });
             }
             case 422: {
                 const errorMessage = response.data as ErrorMessageResponse;
@@ -192,7 +195,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_Update(null, {
+            response = await ServerClient.apiClient!.administration.administrationControllerUpdate({
                 newVersion
             });
         } catch (stat) {
@@ -204,7 +207,10 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         switch (response.status) {
             case 202: {
-                return new InternalStatus({ code: StatusCode.OK, payload: null });
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: null
+                });
             }
             case 410: {
                 const errorMessage = response.data as ErrorMessageResponse;
@@ -271,10 +277,12 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_ListLogs({
-                pageSize: pageSize,
-                page: page
-            });
+            response = await ServerClient.apiClient!.administration.administrationControllerListLogs(
+                {
+                    pageSize: pageSize,
+                    page: page
+                }
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -320,9 +328,9 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.AdministrationController_GetLog({
-                path: logName
-            });
+            response = await ServerClient.apiClient!.administration.administrationControllerGetLog(
+                logName
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

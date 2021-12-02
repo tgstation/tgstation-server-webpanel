@@ -1,5 +1,5 @@
 import { ApiClient } from "./_base";
-import { InstancePermissionSetResponse } from "./generatedcode/schemas";
+import type { InstancePermissionSetResponse } from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -55,9 +55,13 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         let response;
         try {
-            response = await ServerClient.apiClient!.InstancePermissionSetController_Read({
-                Instance: instanceid
-            });
+            response = await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerRead(
+                {
+                    headers: {
+                        Instance: instanceid.toString()
+                    }
+                }
+            );
         } catch (stat) {
             const res = new InternalStatus<InstancePermissionSetResponse, GenericErrors>({
                 code: StatusCode.ERROR,

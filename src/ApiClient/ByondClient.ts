@@ -3,7 +3,7 @@ import {
     ByondInstallResponse,
     ByondResponse,
     PaginatedByondResponse
-} from "./generatedcode/schemas";
+} from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -18,7 +18,11 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.ByondController_Read({ Instance: instance });
+            response = await ServerClient.apiClient!.byond.byondControllerRead({
+                headers: {
+                    Instance: instance.toString()
+                }
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -54,11 +58,17 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.ByondController_List({
-                Instance: instance,
-                page: page,
-                pageSize: pageSize
-            });
+            response = await ServerClient.apiClient!.byond.byondControllerList(
+                {
+                    page: page,
+                    pageSize: pageSize
+                },
+                {
+                    headers: {
+                        Instance: instance.toString()
+                    }
+                }
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -95,9 +105,16 @@ export default new (class ByondClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.ByondController_Update(
-                { Instance: instance },
-                { version: version, uploadCustomZip: !!file }
+            response = await ServerClient.apiClient!.byond.byondControllerUpdate(
+                {
+                    version: version,
+                    uploadCustomZip: !!file
+                },
+                {
+                    headers: {
+                        Instance: instance.toString()
+                    }
+                }
             );
         } catch (stat) {
             return new InternalStatus({
@@ -141,7 +158,7 @@ export default new (class ByondClient extends ApiClient {
 
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as ByondInstallResponse
+                    payload: responseData
                 });
             }
             default: {

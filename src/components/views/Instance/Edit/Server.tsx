@@ -7,12 +7,12 @@ import { FormattedMessage } from "react-intl";
 
 import DreamDaemonClient from "../../../../ApiClient/DreamDaemonClient";
 import {
+    DreamDaemonResponse,
     DreamDaemonRights,
     DreamDaemonSecurity,
     DreamDaemonVisibility,
     WatchdogStatus
-} from "../../../../ApiClient/generatedcode/_enums";
-import { DreamDaemonResponse } from "../../../../ApiClient/generatedcode/schemas";
+} from "../../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import JobsController from "../../../../ApiClient/util/JobsController";
