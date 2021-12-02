@@ -9,6 +9,7 @@ import "@formatjs/intl-pluralrules/locale-data/en";
 
 import ReactDOM from "react-dom";
 
+import AuthController from "./ApiClient/util/AuthController";
 import ConfigController from "./ApiClient/util/ConfigController";
 import JobsController from "./ApiClient/util/JobsController";
 import { IndexApp } from "./App";
@@ -18,6 +19,7 @@ import initIcons from "./utils/icolibrary";
 // dont lag the dom
 initIcons();
 ConfigController.loadconfig();
+AuthController.Initialize();
 JobsController.init();
 
 if (window.loadedChannelFromWebpack && MODE !== "DEV") {

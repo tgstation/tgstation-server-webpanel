@@ -15,7 +15,7 @@ import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
-import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
+import AuthController from "../../ApiClient/util/AuthController";
 import { GeneralContext, UnsafeGeneralContext } from "../../contexts/GeneralContext";
 import { MODE } from "../../definitions/constants";
 import KeycloakLogo from "../../images/keycloak_icon_64px.png";
@@ -101,7 +101,7 @@ class Login extends React.Component<IProps, IState> {
         const handlePwdInput = (event: ChangeEvent<HTMLInputElement>) =>
             this.setState({ password: event.target.value });
 
-        if (this.state.busy || CredentialsProvider.isTokenValid()) {
+        if (this.state.busy || AuthController.isTokenValid()) {
             return <Loading text="loading.login" />;
         }
 
@@ -318,6 +318,7 @@ class Login extends React.Component<IProps, IState> {
             this.setState({
                 busy: false
             });
+            console.log(response);
             this.addError(response.error);
         } else {
             if (this.props.postLoginAction) {

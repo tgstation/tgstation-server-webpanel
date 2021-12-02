@@ -2,8 +2,8 @@ import { AxiosResponse } from "axios";
 
 import { replaceAll } from "../../../utils/misc";
 import { ErrorCode as TGSErrorCode, ErrorMessageResponse } from "../../generatedcode/generated";
+import AuthController from "../../util/AuthController";
 import configOptions from "../../util/config";
-import CredentialsProvider from "../../util/CredentialsProvider";
 
 export type GenericErrors =
     | ErrorCode.HTTP_BAD_REQUEST
@@ -46,6 +46,7 @@ export enum ErrorCode {
     LOGIN_DISABLED = "error.login.user_disabled", //void
     LOGIN_BAD_OAUTH = "error.login.bad_oauth", //jserror
     LOGIN_RATELIMIT = "error.login.rate_limit", //errmessage
+    LOGIN_LOGGING_IN = "error.auth.logging_in", // debounce msg // void
 
     //User errors
     USER_NO_SYS_IDENT = "error.user.no_sys_ident", //errmessage
@@ -136,17 +137,20 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             origin.config.headers["Authorization"] = "*********";
         }
 
-        let debuginfo = JSON.stringify({ addon, origin, config: configOptions, stack });
+        let debuginfo = JSON.stringify({ addon, origin, config: configOptions, stack }, null, 2);
+        debuginfo = debuginfo.replace(/\\n/g, String.fromCharCode(10)); // replace with a litteral newline
         debuginfo = debuginfo.replace(
             /Basic (?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?/g,
             "Basic **************"
         );
-        debuginfo = debuginfo.replace(
-            /{"username":".+?","password":".+?"}/g,
-            '{"username":"*******","password":"*******"}'
-        );
-        if (CredentialsProvider.isTokenValid()) {
-            debuginfo = replaceAll(debuginfo, CredentialsProvider.token!.bearer, "**************");
+        debuginfo = debuginfo.replace(/"username":.".+?"/g, '"username":"*******"');
+        debuginfo = debuginfo.replace(/"password":.".+?"/g, '"password":"*******"');
+        if (AuthController.isTokenValid()) {
+            debuginfo = replaceAll(
+                debuginfo,
+                AuthController.getTokenUnsafe()!.bearer,
+                "**************"
+            );
         }
         if (configOptions.githubtoken.value) {
             debuginfo = replaceAll(

@@ -4,7 +4,7 @@ import { AdministrationRights, InstanceManagerRights } from "../ApiClient/genera
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import UserClient from "../ApiClient/UserClient";
-import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
+import AuthController from "../ApiClient/util/AuthController";
 import { resolvePermissionSet } from "./misc";
 
 export interface AppRoute {
@@ -51,7 +51,7 @@ export interface AppRoute {
 
 function adminRight(right: AdministrationRights) {
     return async (): Promise<boolean> => {
-        if (!CredentialsProvider.isTokenValid()) return false;
+        if (!AuthController.isTokenValid()) return false;
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {
@@ -63,7 +63,7 @@ function adminRight(right: AdministrationRights) {
 
 function instanceManagerRight(right: InstanceManagerRights) {
     return async (): Promise<boolean> => {
-        if (!CredentialsProvider.isTokenValid()) return false;
+        if (!AuthController.isTokenValid()) return false;
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {

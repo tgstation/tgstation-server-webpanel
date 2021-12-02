@@ -9,7 +9,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 import CSSTransition from "react-transition-group/CSSTransition";
 
 import ServerClient from "../ApiClient/ServerClient";
-import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
+import AuthController from "../ApiClient/util/AuthController";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import { GeneralContext, UnsafeGeneralContext } from "../contexts/GeneralContext";
 import { matchesPath } from "../utils/misc";
@@ -43,7 +43,7 @@ class AppNavbar extends React.Component<IProps, IState> {
         this.refresh = this.refresh.bind(this);
 
         this.state = {
-            loggedIn: !!CredentialsProvider.isTokenValid(),
+            loggedIn: AuthController.isTokenValid(),
             routes: [],
             categories: AppCategories,
             focusedCategory: this.props.category?.name ?? ""

@@ -11,7 +11,7 @@ import InternalError, { ErrorCode } from "./ApiClient/models/InternalComms/Inter
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
-import CredentialsProvider from "./ApiClient/util/CredentialsProvider";
+import AuthController from "./ApiClient/util/AuthController";
 import LoginHooks from "./ApiClient/util/LoginHooks";
 import AppNavbar from "./components/AppNavbar";
 import ErrorAlert from "./components/utils/ErrorAlert";
@@ -19,7 +19,7 @@ import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
 import { GeneralContext, UnsafeGeneralContext } from "./contexts/GeneralContext";
-import { DEFAULT_BASEPATH } from "./definitions/constants";
+import { DEFAULT_BASEPATH, MODE } from "./definitions/constants";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
@@ -59,6 +59,9 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
 
     public componentDidMount() {
         // I can't be assed to remember the default admin password
+        if (MODE !== "DEV") {
+            return;
+        }
         document.addEventListener("keydown", event => {
             if (event.key === "L" && event.ctrlKey && event.shiftKey) {
                 // alert("ISolemlySwearToDeleteTheDataDirectory");
@@ -72,7 +75,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
         });
     }
 
-    public render(): React.ReactNode {
+    public render() {
         return (
             <BrowserRouter basename={DEFAULT_BASEPATH}>
                 <ErrorBoundary>
@@ -137,7 +140,7 @@ class App extends React.Component<IProps, IState> {
         this.translationFactory = this.props.translationFactory ?? new TranslationFactory();
 
         this.state = {
-            loggedIn: !!CredentialsProvider.isTokenValid(),
+            loggedIn: AuthController.isTokenValid(),
             loading: true,
             GeneralContextInfo: {
                 errors: new Set(),

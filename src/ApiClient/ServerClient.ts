@@ -1,4 +1,4 @@
-import { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { API_VERSION, VERSION } from "../definitions/constants";
 import { ApiClient } from "./_base";
@@ -9,11 +9,11 @@ import {
     ServerInformationResponse,
     TokenResponse
 } from "./generatedcode/generated";
-import { CredentialsType, ICredentials } from "./models/ICredentials";
+import { ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
+import AuthController, { LoginErrors } from "./util/AuthController";
 import configOptions from "./util/config";
-import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
 
 interface IEvents {
@@ -30,18 +30,10 @@ interface IEvents {
     //purge all caches
     purgeCache: () => void;
     //internal event, queues logins
-    loadLoginInfo: (loginInfo: InternalStatus<TokenResponse, LoginErrors>) => void;
+    loadLoginInfo: (loginInfo: InternalStatus<undefined, LoginErrors>) => void;
     //internal event fired for wait4Token(), external things should be using LoginHooks#LoginSuccess or a login hook
     tokenAvailable: (token: TokenResponse) => void;
 }
-
-export type LoginErrors =
-    | GenericErrors
-    | ErrorCode.LOGIN_DISABLED
-    | ErrorCode.LOGIN_FAIL
-    | ErrorCode.LOGIN_NOCREDS
-    | ErrorCode.LOGIN_BAD_OAUTH
-    | ErrorCode.LOGIN_RATELIMIT;
 
 export type ServerInfoErrors = GenericErrors;
 
@@ -62,16 +54,6 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 });
                 return Promise.reject(errorobj);
             }
-
-            //This applies the authorization header, it will wait however long it needs until
-            // theres a token available. It obviously won't wait for a token before sending the request
-            // if its currently sending a request to the login endpoint...
-            if (!(value.url === "/" || value.url === "")) {
-                const tok = await this.wait4Token();
-                (value.headers as { [key: string]: string })["Authorization"] = `Bearer ${
-                    tok.bearer || ""
-                }`;
-            }
             return value;
         },
         // it is real, we do not know what type though
@@ -83,13 +65,13 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     public apiResponseInterceptor = {
         onFulfilled: (val: AxiosResponse) => val,
         // it is real, we do not know what type though
-        onRejected: (error: AxiosError, axiosServer: AxiosInstance): Promise<AxiosResponse> => {
+        onRejected: async (error: AxiosError, axiosServer: HttpClient): Promise<AxiosResponse> => {
             //THIS IS SNOWFLAKE KEKW
             //As the above comment mentions, this shitcode is very snowflake
             // it tries to typecast the "response" we got into an error then tries to check if that "error" is
             // the snowflake no apipath github error, if it is, it rejects the promise to send it to the catch block
             // all endpoints have which simply returns the error wrapped in a status object
-            const snowflake = (error as unknown) as InternalError<ErrorCode.NO_APIPATH>;
+            const snowflake = error as unknown as InternalError<ErrorCode.NO_APIPATH>;
             if (snowflake?.code === ErrorCode.NO_APIPATH) {
                 return Promise.reject(snowflake);
             }
@@ -139,47 +121,48 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     }
 
                     if (this.autoLogin) {
-                        return this.login().then(status => {
-                            switch (status.code) {
-                                case StatusCode.OK: {
-                                    return axiosServer.request(error.config);
-                                }
-                                case StatusCode.ERROR: {
-                                    this.emit("accessDenied");
-                                    //time to kick out the user
-                                    this.logout();
-                                    const errorobj = new InternalError(
-                                        ErrorCode.HTTP_ACCESS_DENIED,
-                                        { void: true },
-                                        res
-                                    );
-                                    return Promise.reject(errorobj);
-                                }
+                        const status = await this.login();
+                        switch (status.code) {
+                            case StatusCode.OK: {
+                                return axiosServer.request({
+                                    secure: true,
+                                    path: request.url!,
+                                    ...request
+                                });
                             }
-                        });
-                    } else {
-                        this.emit("accessDenied");
-                        const errorobj = new InternalError(
-                            ErrorCode.HTTP_ACCESS_DENIED,
-                            { void: true },
-                            res
-                        );
-                        return Promise.reject(errorobj);
+                            case StatusCode.ERROR: {
+                                this.emit("accessDenied");
+                                //time to kick out the user
+                                this.logout();
+                                const errorobj = new InternalError(
+                                    ErrorCode.HTTP_ACCESS_DENIED,
+                                    { void: true },
+                                    res
+                                );
+                                return Promise.reject(errorobj);
+                            }
+                        }
                     }
+                    this.emit("accessDenied");
+                    const errorobj = new InternalError(
+                        ErrorCode.HTTP_ACCESS_DENIED,
+                        { void: true },
+                        res
+                    );
+                    return Promise.reject(errorobj);
                 }
                 case 403: {
                     const request = error.config;
                     if ((request.url === "/" || request.url === "") && request.method === "post") {
                         return Promise.resolve(error.response);
-                    } else {
-                        this.emit("accessDenied");
-                        const errorobj = new InternalError(
-                            ErrorCode.HTTP_ACCESS_DENIED,
-                            { void: true },
-                            res
-                        );
-                        return Promise.reject(errorobj);
                     }
+                    this.emit("accessDenied");
+                    const errorobj = new InternalError(
+                        ErrorCode.HTTP_ACCESS_DENIED,
+                        { void: true },
+                        res
+                    );
+                    return Promise.reject(errorobj);
                 }
                 case 406: {
                     const errorobj = new InternalError(
@@ -234,9 +217,14 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 }
                 case 503: {
                     console.log("Server not ready, delaying request", error.config);
-                    return new Promise(resolve => {
+                    await new Promise(resolve => {
                         setTimeout(resolve, 5000);
-                    }).then(() => axiosServer.request(error.config));
+                    });
+                    return await axiosServer.request({
+                        secure: true,
+                        path: error.config.url!,
+                        ...error.config
+                    });
                     /*const errorobj = new InternalError(
                         ErrorCode.HTTP_SERVER_NOT_READY,
                             {
@@ -268,8 +256,9 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         LoginHooks.addHook(this.getServerInfo);
         this.on("purgeCache", () => {
             this._serverInfo = undefined;
-            if (CredentialsProvider.token) {
-                void LoginHooks.runHooks(CredentialsProvider.token);
+            const token = AuthController.getTokenUnsafe();
+            if (token) {
+                LoginHooks.runHooks(token);
             }
         });
 
@@ -303,6 +292,17 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 Api: `Tgstation.Server.Api/` + API_VERSION,
                 "Webpanel-Version": VERSION
             },
+            securityWorker: async () => {
+                const tok = await this.wait4Token();
+                if (!tok) {
+                    return; // undefined is valid. Also it means that we logged out
+                }
+                return {
+                    headers: {
+                        Authorization: `Bearer ${tok.bearer}`
+                    }
+                };
+            },
             //Global errors are handled via the catch clause and endpoint specific response codes are handled normally
             validateStatus: status => {
                 return !ServerClient.globalHandledCodes.includes(status);
@@ -314,7 +314,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         );
         this.apiHttpClient.instance.interceptors.response.use(
             this.apiResponseInterceptor.onFulfilled,
-            error => this.apiResponseInterceptor.onRejected(error, this.apiHttpClient!.instance)
+            error => this.apiResponseInterceptor.onRejected(error, this.apiHttpClient!)
         );
 
         this.apiClient = new Api(this.apiHttpClient);
@@ -337,187 +337,30 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
     //Utility function that returns a promise which resolves with the token whenever theres valid credentials(could be immediatly)
     public wait4Token() {
-        return new Promise<TokenResponse>(resolve => {
-            if (CredentialsProvider.isTokenValid()) {
-                resolve(CredentialsProvider.token!);
-                return;
-            }
-            this.on("tokenAvailable", token => {
-                resolve(token);
-            });
-        });
+        return AuthController.getToken();
     }
 
-    public async login(
-        newCreds?: ICredentials
-    ): Promise<InternalStatus<TokenResponse, LoginErrors>> {
-        //Shouldn't really happen edge cases
-        await this.wait4Init();
-
+    /**
+     * Login handler. Will NOT return the token, you must get the token by yourself.
+     */
+    public async login(newCreds?: ICredentials): Promise<InternalStatus<undefined, LoginErrors>> {
         console.log("Attempting login");
+        const r = newCreds
+            ? await AuthController.authenticate(newCreds)
+            : await AuthController.authenticateCached();
 
-        //Newcreds is optional, if its missing its going to try to reuse the last used credentials,
-        // if newCreds exists, its going to use newCreds
-        let oauthAutoLogin = false;
-        if (newCreds) {
-            CredentialsProvider.credentials = newCreds;
-        } else if (CredentialsProvider.credentials?.type === CredentialsType.OAuth) {
-            // autologin doesn't work with OAuth
-            this.logout();
-            oauthAutoLogin = true;
+        if (r.code === StatusCode.OK) {
+            const token = AuthController.getTokenUnsafe()!;
+            // i dont like events :(
+            this.emit("tokenAvailable", token);
+            LoginHooks.runHooks(token);
         }
-
-        //This is thrown if you try to reuse the last credentials without actually having last used credentials
-        //or you let an oauth login expire
-        if (oauthAutoLogin || !CredentialsProvider.credentials)
-            return new InternalStatus<TokenResponse, ErrorCode.LOGIN_NOCREDS>({
-                code: StatusCode.ERROR,
-                error: new InternalError(ErrorCode.LOGIN_NOCREDS, { void: true })
-            });
-
-        //This block is here to prevent duplication of login requests at the same time, when you start logging in,
-        // it sets loggingIn to true and fires an event once its done logging in, successful or not, if you try to login
-        // while another login request is ongoing, it listens to that event and returns the output normally.
-        //
-        // Basically, make two calls, receive two identical return values, make only one request
-        if (this.loggingIn) {
-            return await new Promise(resolve => {
-                const resolver = (info: InternalStatus<TokenResponse, LoginErrors>) => {
-                    resolve(info);
-                    this.removeListener("loadLoginInfo", resolver);
-                };
-                this.on("loadLoginInfo", resolver);
-            });
-        }
-        this.loggingIn = true;
-
-        let response;
-        try {
-            if (CredentialsProvider.credentials.type == CredentialsType.Password)
-                response = await this.apiClient!.homeControllerCreateToken({
-                    auth: {
-                        username: CredentialsProvider.credentials.userName,
-                        password: CredentialsProvider.credentials.password
-                    }
-                });
-            else {
-                response = await this.apiClient!.homeControllerCreateToken({
-                    headers: {
-                        OAuthProvider: CredentialsProvider.credentials.provider,
-                        Authorization: `OAuth ${CredentialsProvider.credentials.token}`
-                    }
-                });
-            }
-        } catch (stat) {
-            const res = new InternalStatus<TokenResponse, GenericErrors>({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-            this.emit("loadLoginInfo", res);
-            return res;
-        } finally {
-            this.loggingIn = false;
-        }
-        switch (response.status) {
-            case 200: {
-                console.log("Login success");
-                const token = response.data as TokenResponse;
-
-                // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
-                CredentialsProvider.token = token;
-                this.emit("tokenAvailable", token);
-
-                //LoginHooks are a way of running several async tasks at the same time whenever the user is authenticated,
-                // we cannot use events here as events wait on each listener before proceeding which has a noticable performance
-                // cost when it comes to several different requests to TGS,
-                // we cant directly call what we need to run here as it would violate isolation of
-                // ApiClient(the apiclient is independent from the rest of the app to avoid circular dependency
-                // (example: Component requires ServerClient to login and but the ServerClient requires Component to
-                // update it once the server info is loaded))
-                //
-                // TL;DR; Runs shit when you login
-
-                LoginHooks.runHooks(token);
-                const res = new InternalStatus<TokenResponse, ErrorCode.OK>({
-                    code: StatusCode.OK,
-                    payload: token
-                });
-                //Deduplication
-                this.emit("loadLoginInfo", res);
-
-                return res;
-            }
-            case 401: {
-                this.logout();
-                console.log("Failed to login");
-                const res = new InternalStatus<TokenResponse, ErrorCode.LOGIN_FAIL>({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.LOGIN_FAIL,
-                        {
-                            void: true
-                        },
-                        response
-                    )
-                });
-                this.emit("loadLoginInfo", res);
-                return res;
-            }
-            case 403: {
-                this.logout();
-                console.log("Account disabled");
-                const res = new InternalStatus<TokenResponse, ErrorCode.LOGIN_DISABLED>({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.LOGIN_DISABLED,
-                        {
-                            void: true
-                        },
-                        response
-                    )
-                });
-                this.emit("loadLoginInfo", res);
-                return res;
-            }
-            case 429: {
-                this.logout();
-                console.log("rate limited");
-                const res = new InternalStatus<TokenResponse, ErrorCode.LOGIN_RATELIMIT>({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.LOGIN_RATELIMIT,
-                        {
-                            errorMessage: response.data as ErrorMessageResponse
-                        },
-                        response
-                    )
-                });
-                this.emit("loadLoginInfo", res);
-                return res;
-            }
-            default: {
-                const res = new InternalStatus<TokenResponse, ErrorCode.UNHANDLED_RESPONSE>({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-                this.emit("loadLoginInfo", res);
-                return res;
-            }
-        }
+        return r;
     }
 
     public logout() {
-        //If theres no token it means theres nothing to clear
-        if (!CredentialsProvider.isTokenValid()) {
-            return;
-        }
+        AuthController.logout();
         console.log("Logging out");
-        CredentialsProvider.credentials = undefined;
-        CredentialsProvider.token = undefined;
         //events to clear the app state as much as possible for the next user
         this.emit("purgeCache");
         this.emit("logout");

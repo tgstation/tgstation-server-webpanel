@@ -141,7 +141,6 @@ module.exports = (env, argv) => {
             host: "0.0.0.0", // technically insecure? don't put nudes in your app, helps to test with mobile
             port: 8080,
             historyApiFallback: true,
-            stats: createStats(false),
         },
 
         stats: createStats(true),

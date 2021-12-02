@@ -11,8 +11,8 @@ import {
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
+import AuthController from "./util/AuthController";
 import configOptions from "./util/config";
-import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
 
 interface IEvents {
@@ -101,7 +101,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
     ): Promise<InternalStatus<UserResponse, GetCurrentUserErrors>> {
         await ServerClient.wait4Init();
 
-        if (!CredentialsProvider.isTokenValid()) {
+        if (!AuthController.isTokenValid()) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
                 error: new InternalError(ErrorCode.HTTP_ACCESS_DENIED, {
