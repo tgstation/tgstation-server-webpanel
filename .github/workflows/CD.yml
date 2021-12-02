@@ -34,7 +34,7 @@ jobs:
             - name: Compile
               env:
                   GITHUB_CD: true
-              run: yarn run build-github
+              run: yarn run build
 
             #Safety against pushing broken code
             - name: Run ESLint
