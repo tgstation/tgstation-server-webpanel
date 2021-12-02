@@ -14,7 +14,10 @@ export default new (class CredentialsProvider {
 
     public isTokenValid() {
         return (
-            this.credentials && this.token && this.token.bearer /* &&
+            this.credentials &&
+            this.token &&
+            this.token
+                .bearer /* &&
             (!this.token.expiresAt || new Date(this.token.expiresAt) > new Date(Date.now()))*/
         );
     }

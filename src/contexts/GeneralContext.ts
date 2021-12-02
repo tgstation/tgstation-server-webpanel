@@ -19,5 +19,5 @@ export type UnsafeGeneralContext = {
 };
 
 export const GeneralContext = React.createContext<GeneralContext>(
-    undefined as unknown as GeneralContext
+    (undefined as unknown) as GeneralContext
 );

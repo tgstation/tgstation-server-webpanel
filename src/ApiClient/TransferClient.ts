@@ -37,7 +37,7 @@ export default new (class TransferClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as unknown as string
+                    payload: (response.data as unknown) as string
                 });
             }
             case 410: {
@@ -73,7 +73,7 @@ export default new (class TransferClient extends ApiClient {
                 {
                     ticket: ticket
                 },
-                file as unknown as File,
+                (file as unknown) as File,
                 {
                     headers: {
                         "Content-Type": "application/octect-stream"

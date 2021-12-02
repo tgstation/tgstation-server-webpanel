@@ -17,12 +17,12 @@ export interface InternalStatusOK<T> {
 
 type InternalStatus<T, Codes extends ErrorCode> = InternalStatusOK<T> | InternalStatusErr<Codes>;
 
-const InternalStatus = function InternalStatus<T, Codes extends ErrorCode>(
+const InternalStatus = (function InternalStatus<T, Codes extends ErrorCode>(
     this: InternalStatus<T, Codes>,
     args: InternalStatus<T, Codes>
 ): Readonly<InternalStatus<T, Codes>> {
     return Object.freeze(Object.assign({}, args));
-} as unknown as {
+} as unknown) as {
     new <T, Codes extends ErrorCode>(args: InternalStatus<T, Codes>): Readonly<
         InternalStatus<T, Codes>
     >;

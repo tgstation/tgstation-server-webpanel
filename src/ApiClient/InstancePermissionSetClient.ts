@@ -55,14 +55,13 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         let response;
         try {
-            response =
-                await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerRead(
-                    {
-                        headers: {
-                            Instance: instanceid.toString()
-                        }
+            response = await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerRead(
+                {
+                    headers: {
+                        Instance: instanceid.toString()
                     }
-                );
+                }
+            );
         } catch (stat) {
             const res = new InternalStatus<InstancePermissionSetResponse, GenericErrors>({
                 code: StatusCode.ERROR,

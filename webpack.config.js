@@ -153,8 +153,8 @@ module.exports = (env, argv) => {
                         toType: "dir",
                         globOptions: {
                             ignore: (prodLike
-                                ? ["**/index.html"]
-                                : ["**/index.html", "channel.json"])
+                                ? ["**/channel.json"]
+                                : [])
                         },
                     },
                 ],

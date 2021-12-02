@@ -30,5 +30,5 @@ export type UnsafeInstanceEditContext = {
 };
 
 export const InstanceEditContext = React.createContext<InstanceEditContext>(
-    undefined as unknown as InstanceEditContext
+    (undefined as unknown) as InstanceEditContext
 );

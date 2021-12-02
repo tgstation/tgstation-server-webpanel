@@ -151,8 +151,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response =
-                await ServerClient.apiClient!.administration.administrationControllerDelete();
+            response = await ServerClient.apiClient!.administration.administrationControllerDelete();
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -278,11 +277,12 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response =
-                await ServerClient.apiClient!.administration.administrationControllerListLogs({
+            response = await ServerClient.apiClient!.administration.administrationControllerListLogs(
+                {
                     pageSize: pageSize,
                     page: page
-                });
+                }
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
