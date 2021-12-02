@@ -140,6 +140,7 @@ module.exports = (env, argv) => {
             host: "0.0.0.0", // technically insecure? don't put nudes in your app, helps to test with mobile
             port: 8080,
             historyApiFallback: true,
+            stats: createStats(false),
         },
 
         stats: createStats(true),
@@ -151,10 +152,9 @@ module.exports = (env, argv) => {
                         from: "public",
                         toType: "dir",
                         globOptions: {
-                            ignore: [
-                                "**/index.html",
-                                (prodLike ? undefined : "channel.json")
-                            ],
+                            ignore: (prodLike
+                                ? ["**/index.html"]
+                                : ["**/index.html", "channel.json"])
                         },
                     },
                 ],
