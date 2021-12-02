@@ -27,8 +27,9 @@ const createStats = verbose => ({
 const TGS_WEBPANEL_GITHUB_PATH = "https://tgstation.github.io/tgstation-server-webpanel/webpanel/" + version + "/";
 
 module.exports = (env, argv) => {
-    const prodLike = (argv.github || argv.mode === "production");
-    const publicPath = (argv.github ? TGS_WEBPANEL_GITHUB_PATH : (prodLike ? "/app/" : "/"));
+    const github = env.GITHUB_CD;
+    const prodLike = (github || argv.mode === "production");
+    const publicPath = (github ? TGS_WEBPANEL_GITHUB_PATH : (prodLike ? "/app/" : "/"));
 
     return {
         context: path.resolve(__dirname),
@@ -165,11 +166,11 @@ module.exports = (env, argv) => {
                     require("./src/ApiClient/generatedcode/swagger.json").info.version
                 ),
                 'VERSION': JSON.stringify(
-                    argv.github ? process.env.GITHUB_SHA : require("./package.json").version
+                    github ? env.GITHUB_SHA : require("./package.json").version
                 ),
-                'MODE': JSON.stringify(prodLike ? (argv.github ? "GITHUB" : "PROD") : "DEV"),
+                'MODE': JSON.stringify(prodLike ? (github ? "GITHUB" : "PROD") : "DEV"),
                 // The basepath remains /app because its for the router which is located at /app/
-                'DEFAULT_BASEPATH': JSON.stringify(argv.github ? "/app/" : (prodLike ? "/app/" : "/")),
+                'DEFAULT_BASEPATH': JSON.stringify(github ? "/app/" : (prodLike ? "/app/" : "/")),
                 'DEFAULT_APIPATH': JSON.stringify(prodLike ? "/" : "http://localhost:5000/"),
             }),
             (argv.mode !== 'production' && new HtmlWebPackPlugin({

@@ -111,7 +111,7 @@
         "build": "yarn webpack --mode production",
         "msbuild": "yarn run build && node scripts/msbuild.js",
         "build-dev": "yarn webpack --mode development",
-        "build-github": "yarn webpack --mode production --git 1",
+        "build-github": "yarn webpack --mode production",
         "lint": "yarn tsc && yarn eslint src --ext \".js,.cjs,.ts,.tsx\" --max-warnings=0",
         "lint-fix": "yarn eslint src --ext \".js,.cjs,.ts,.tsx\" --max-warnings=0 --fix",
         "test": "yarn run lint && yarn run build",
