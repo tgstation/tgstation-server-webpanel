@@ -71,7 +71,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             // it tries to typecast the "response" we got into an error then tries to check if that "error" is
             // the snowflake no apipath github error, if it is, it rejects the promise to send it to the catch block
             // all endpoints have which simply returns the error wrapped in a status object
-            const snowflake = error as unknown as InternalError<ErrorCode.NO_APIPATH>;
+            const snowflake = (error as unknown) as InternalError<ErrorCode.NO_APIPATH>;
             if (snowflake?.code === ErrorCode.NO_APIPATH) {
                 return Promise.reject(snowflake);
             }
