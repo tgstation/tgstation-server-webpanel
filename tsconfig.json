@@ -30,7 +30,6 @@
     "./src/**/*generated.ts"
   ],
   "include": [
-    "./*.d.ts",
     "./src"
   ]
 }

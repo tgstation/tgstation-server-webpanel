@@ -37,7 +37,7 @@ export default new (class TransferClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as File).name
+                    payload: response.data as unknown as string
                 });
             }
             case 410: {

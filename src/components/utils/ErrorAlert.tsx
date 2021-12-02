@@ -41,7 +41,7 @@ class ErrorAlert extends Component<IProps, IState> {
                 variant="error"
                 dismissible={!!this.props.onClose}
                 onClose={this.props.onClose}>
-                <FormattedMessage id={this.props.error.code || "error.app"} />
+                <FormattedMessage id={this.props.error.code || "error.app.undefined"} />
                 <hr />
 
                 <Button variant="danger" className="float-right" onClick={handleOpen}>
@@ -51,12 +51,14 @@ class ErrorAlert extends Component<IProps, IState> {
                 <Modal centered show={this.state.popup} onHide={handleClose} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>
-                            <FormattedMessage id={this.props.error.code || "error.app"} />
+                            <FormattedMessage id={this.props.error.code || "error.app.undefined"} />
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body className="text-danger pb-0">
                         {this.props.error.desc?.type === DescType.LOCALE ? (
-                            <FormattedMessage id={this.props.error.desc.desc} />
+                            <FormattedMessage
+                                id={this.props.error.desc.desc || "error.api.empty"}
+                            />
                         ) : this.props.error.desc?.desc ? (
                             this.props.error.desc.desc
                         ) : (

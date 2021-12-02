@@ -69,6 +69,7 @@
     "error.notfound": "This page has not been found!",
     "error.github": "An error occured while interacting with the Github API",
     "error.app": "An error occured in the application",
+    "error.app.undefined": "A \"Ghost\" error occured in the application",
     "error.job.not_found": "The specified job could not be found",
     "error.job.complete": "Unable to delete the job, perhaps it already completed",
     "error.transfer.not_available": "Unable to transfer file as it is no longer or never was valid",

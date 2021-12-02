@@ -110,7 +110,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             this.originalErrorMessage = err;
             this.desc = {
                 type: DescType.TEXT,
-                desc: `${TGSErrorCode[err.errorCode]} : ${err.message} ${
+                desc: `${TGSErrorCode[err.errorCode]}: ${err.message}${
                     err.additionalData ? ": " + err.additionalData : ""
                 }`
             };

@@ -514,7 +514,7 @@ class UserEdit extends React.Component<IProps, IState> {
         const currentOAuthConnections =
             this.state.newOAuthConnections ?? this.state.user?.oAuthConnections;
         if (
-            this.state.user?.name!.toLowerCase() === "admin" || // admin user can't have OAuthConnections
+            this.state.user?.name.toLowerCase() === "admin" || // admin user can't have OAuthConnections
             currentOAuthConnections == null ||
             !oAuthProviderInfos ||
             !Object.keys(oAuthProviderInfos).length

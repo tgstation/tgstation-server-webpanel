@@ -86,18 +86,10 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                             <Container className="mt-5">
                                 <Alert variant="warning" className="d-block d-lg-none">
                                     <Alert.Heading>
-                                        <FormattedMessage
-                                            defaultMessage="Screen size warning"
-                                            id="warning.screensize.header"
-                                            description="Short message about the screen size"
-                                        />
+                                        <FormattedMessage id="warning.screensize.header" />
                                     </Alert.Heading>
                                     <hr />
-                                    <FormattedMessage
-                                        id="warning.screensize"
-                                        defaultMessage="The TGS webpanel does not guarentee support for viewports with a width of under 992px."
-                                        description="Detailed message about the user's screen size"
-                                    />
+                                    <FormattedMessage id="warning.screensize" />
                                 </Alert>
                                 {Array.from(this.context.errors.values()).map((value, idx) => {
                                     return (
@@ -274,11 +266,6 @@ class App extends React.Component<IProps, IState> {
         ServerClient.initApi();
         await this.updateContextServer();
 
-        this.onMount();
-    }
-
-    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-did-mount-set-state.md
-    private onMount() {
         this.setState({
             loading: false
         });
@@ -327,7 +314,7 @@ class App extends React.Component<IProps, IState> {
 
             return;
         }
-        // REDO THIS
+
         console.timeEnd("LoadTranslations");
     }
 }

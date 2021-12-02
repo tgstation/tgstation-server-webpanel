@@ -68,7 +68,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
         let response;
         try {
             response = await ServerClient.apiClient!.instance.instanceControllerUpdate(instance);
-            this.emit("instanceChange", instance.id || NaN);
+            this.emit("instanceChange", instance.id);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -78,11 +78,9 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200:
             case 202: {
-                const instance = response.data;
-
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: instance as InstanceResponse
+                    payload: response.data as InstanceResponse
                 });
             }
             case 410:

@@ -7,11 +7,3 @@ jsonmanifest-plugin.js
 /src/ApiClient/generatedcode/**.ts
 /dist/**
 /scripts/**
-
-*.css
-*.scss
-*.json
-*.svg
-*.png
-*.html
-*.md

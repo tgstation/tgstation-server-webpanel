@@ -67,7 +67,7 @@ async function buildAPI() {
         },
         defaultResponseType: "void",
         singleHttpClient: true,
-        templates: path.resolve(__dirname, "./templates/default"),
+        templates: path.resolve(__dirname, "./templates"),
         hooks: {
             onParseSchema: (originalSchema, parsedSchema) => {
                 if (parsedSchema["type"] !== "object") {

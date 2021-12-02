@@ -275,13 +275,8 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
         //Why is this here? Because otherwise it creates an import loop, grrrrr
         configOptions.apipath.callback = (): void => {
-            console.log("Reinitializing API");
-            try {
-                this.initApi();
-                console.log("API Reinitialized");
-            } catch (error) {
-                window.location.reload();
-            }
+            console.log("API path changed");
+            window.location.reload();
         };
     }
 

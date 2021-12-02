@@ -100,9 +100,8 @@ class InstanceList extends React.Component<IProps, IState> {
             for (const instance of instancelist.payload.content) {
                 const modifiedinstance = instance as Instance;
                 if (!enableVersionWorkaround) {
-                    modifiedinstance.canAccess = modifiedinstance.online
-                        ? !!modifiedinstance.accessible
-                        : false;
+                    modifiedinstance.canAccess =
+                        modifiedinstance.online && modifiedinstance.accessible;
                     modifiedlist.push(modifiedinstance);
                 } else if (instance.online) {
                     work.push(
