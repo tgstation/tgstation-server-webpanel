@@ -6,10 +6,8 @@ import { FormattedMessage } from "react-intl";
 import { Rnd } from "react-rnd";
 
 import type { InstanceResponse } from "../../ApiClient/generatedcode/generated";
-import InstanceClient from "../../ApiClient/InstanceClient";
 import { TGSJobResponse } from "../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
-import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import configOptions, { jobsWidgetOptions } from "../../ApiClient/util/config";
 import JobsController from "../../ApiClient/util/JobsController";
 import ErrorAlert from "./ErrorAlert";
@@ -65,43 +63,21 @@ export default class JobsList extends React.Component<IProps, IState> {
         });
     }
 
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         JobsController.on("jobsLoaded", this.handleUpdate);
-        await this.handleUpdate();
+        this.handleUpdate();
     }
 
     public componentWillUnmount(): void {
         JobsController.removeListener("jobsLoaded", this.handleUpdate);
     }
 
-    public async handleUpdate(): Promise<void> {
-        const instances: InstanceResponse[] = [];
-
-        const response1 = await InstanceClient.listInstances({ pageSize: 100 });
-        if (response1.code === StatusCode.ERROR) {
-            this.addError(response1.error);
-            return;
-        } else {
-            instances.push(...response1.payload.content);
-        }
-        for (let i = 2; i <= response1.payload.totalPages; i++) {
-            const response2 = await InstanceClient.listInstances({ page: i, pageSize: 100 });
-            if (response2.code === StatusCode.ERROR) {
-                this.addError(response2.error);
-                return;
-            } else {
-                instances.push(...response2.payload.content);
-            }
-        }
-
-        const instanceMap = new Map<number, InstanceResponse>();
-        instances.forEach(instance => instanceMap.set(instance.id, instance));
-
+    public handleUpdate(): void {
         this.setState({
             jobs: JobsController.jobsByInstance,
             errors: JobsController.errors,
             loading: false,
-            instances: instanceMap
+            instances: JobsController.accessibleInstances
         });
     }
 
