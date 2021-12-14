@@ -9,8 +9,8 @@ import ToastHeader from "react-bootstrap/ToastHeader";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 
-import { ErrorCode as TGSErrorCode } from "../../ApiClient/generatedcode/generated";
 import { TGSJobResponse } from "../../ApiClient/JobsClient";
+import JobError from "./JobError";
 
 interface IState {}
 interface IProps {
@@ -51,7 +51,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                     className={`bg-${variant}`}>
                     #{job.id}: {job.description}
                 </ToastHeader>
-                <ToastBody className="pt-0">
+                <ToastBody className="pt-1 text-white">
                     {/*STAGE*/}
                     {job.stage ? <div className="mb-2">▶{job.stage}</div> : null}
                     {/*STARTED AT*/}
@@ -73,6 +73,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                         )}
                     </OverlayTrigger>
                     <br />
+
                     {/*CREATED BY*/}
                     <FormattedMessage id="app.job.startedby" />
                     <OverlayTrigger
@@ -141,24 +142,10 @@ export default class JobCard extends React.Component<IProps, IState> {
                     ) : (
                         ""
                     )}
-                    {(job.stoppedAt || job.cancelledBy) &&
-                    (job.errorCode !== undefined || job.exceptionDetails !== undefined) ? (
-                        <br />
-                    ) : (
-                        ""
-                    )}
+
                     {/*ERROR*/}
                     {job.errorCode !== undefined || job.exceptionDetails !== undefined ? (
-                        <React.Fragment>
-                            <span>
-                                <FormattedMessage id="view.instance.jobs.error" />(
-                                {job.errorCode !== undefined && job.errorCode !== null
-                                    ? TGSErrorCode[job.errorCode]
-                                    : "NoCode"}
-                                ): {job.exceptionDetails}
-                            </span>
-                            <br />
-                        </React.Fragment>
+                        <JobError job={job} />
                     ) : (
                         ""
                     )}
