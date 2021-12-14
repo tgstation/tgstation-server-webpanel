@@ -4,7 +4,7 @@ import {
     RepositoryCreateRequest,
     RepositoryResponse,
     RepositoryUpdateRequest
-} from "./generatedcode/schemas";
+} from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
@@ -23,11 +23,9 @@ export default new (class RepositoryClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.RepositoryController_Create(
-                {
-                    Instance: instanceid
-                },
-                settings
+            response = await ServerClient.apiClient!.repository.repositoryControllerCreate(
+                settings,
+                { headers: { Instance: instanceid.toString() } }
             );
         } catch (stat) {
             return new InternalStatus({
@@ -75,8 +73,10 @@ export default new (class RepositoryClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.RepositoryController_Delete({
-                Instance: instanceid
+            response = await ServerClient.apiClient!.repository.repositoryControllerDelete({
+                headers: {
+                    Instance: instanceid
+                }
             });
         } catch (stat) {
             return new InternalStatus({
@@ -126,8 +126,10 @@ export default new (class RepositoryClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.RepositoryController_Read({
-                Instance: instanceid
+            response = await ServerClient.apiClient!.repository.repositoryControllerRead({
+                headers: {
+                    Instance: instanceid
+                }
             });
         } catch (stat) {
             return new InternalStatus({
@@ -187,11 +189,13 @@ export default new (class RepositoryClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.RepositoryController_Update(
+            response = await ServerClient.apiClient!.repository.repositoryControllerUpdate(
+                newSettings,
                 {
-                    Instance: instanceid
-                },
-                newSettings
+                    headers: {
+                        Instance: instanceid
+                    }
+                }
             );
         } catch (stat) {
             return new InternalStatus({

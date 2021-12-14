@@ -13,6 +13,7 @@ import {
     InstanceManagerRights,
     InstancePermissionSetRights,
     InstanceResponse,
+    JobResponse,
     RepositoryRights,
     RightsType
 } from "../generatedcode/generated";

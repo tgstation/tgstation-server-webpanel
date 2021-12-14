@@ -1,20 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 
-import { ErrorCode as TGSErrorCode } from "../../../../ApiClient/generatedcode/_enums";
-import { RepositoryResponse } from "../../../../ApiClient/generatedcode/schemas";
+import {
+    ErrorCode as TGSErrorCode,
+    RepositoryResponse
+} from "../../../../ApiClient/generatedcode/generated";
+import JobsClient from "../../../../ApiClient/JobsClient";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import RepositoryClient from "../../../../ApiClient/RepositoryClient";
 import JobsController from "../../../../ApiClient/util/JobsController";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { addError, displayErrors } from "../../../utils/ErrorAlert";
+import GenericAlert from "../../../utils/GenericAlert";
 import { FieldType } from "../../../utils/InputField";
 import InputForm from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
-import JobsClient from "../../../../ApiClient/JobsClient";
-import GenericAlert from "../../../utils/GenericAlert";
 
 export default function Repository(): JSX.Element {
     const instanceEditContext = useContext(InstanceEditContext);
