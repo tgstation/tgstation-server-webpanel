@@ -37,6 +37,7 @@ interface IProps<Fields extends Record<string, InputFormField>> {
     onSave: (fields: FieldsOutput<Fields>) => unknown;
     readOnly?: boolean;
     hideDisabled?: boolean;
+    includeAll?: boolean;
 }
 
 interface FieldState {
@@ -90,7 +91,9 @@ export default function InputForm<Fields extends Record<string, InputFormField>>
 
             if (
                 !fieldDescriptor.alwaysInclude &&
-                fieldValue == (fieldDescriptor.defaultValue ?? defaultValues[fieldDescriptor.type])
+                fieldValue ==
+                    (fieldDescriptor.defaultValue ?? defaultValues[fieldDescriptor.type]) &&
+                !props.includeAll
             )
                 continue;
 
