@@ -4,7 +4,7 @@ const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin"
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const { createBabelConfig } = require('./babel.config.js');
+const { createBabelConfig } = require("./babel.config.js");
 const { DefinePlugin } = require("webpack");
 const JSONManifestPlugin = require("./jsonmanifest-plugin");
 const { version } = require("./package.json");
@@ -21,25 +21,26 @@ const createStats = verbose => ({
     modules: false,
     performance: false,
     timings: verbose,
-    version: verbose,
+    version: verbose
 });
 
-const TGS_WEBPANEL_GITHUB_PATH = "https://tgstation.github.io/tgstation-server-webpanel/webpanel/" + version + "/";
+const TGS_WEBPANEL_GITHUB_PATH =
+    "https://tgstation.github.io/tgstation-server-webpanel/webpanel/" + version + "/";
 
-module.exports = (env, argv) => {
+module.exports = (env, options) => {
     const github = env.GITHUB_CD;
-    const prodLike = (github || argv.mode === "production");
-    const publicPath = (github ? TGS_WEBPANEL_GITHUB_PATH : (prodLike ? "/app/" : "/"));
+    const prodLike = github || options.mode === "production";
+    const publicPath = github ? TGS_WEBPANEL_GITHUB_PATH : prodLike ? "/app/" : "/";
+
+    console.log(`Building in mode ${options.mode}${github ? "-GITHUB" : ""}`);
 
     return {
         context: path.resolve(__dirname),
         // Our application entry point.
         entry: {
-            main: [
-                "./src",
-            ],
+            main: ["./src"]
         },
-        devtool: 'source-map',
+        devtool: "source-map",
         module: {
             rules: [
                 {
@@ -48,40 +49,40 @@ module.exports = (env, argv) => {
                     use: [
                         {
                             loader: "babel-loader",
-                            options: createBabelConfig({ mode: argv.mode }),
-                        },
-                    ],
+                            options: createBabelConfig({ mode: options.mode })
+                        }
+                    ]
                 },
                 {
                     test: /\.css$/,
                     exclude: /node_modules/,
                     use: ["style-loader", "css-loader"],
-                    sideEffects: true,
+                    sideEffects: true
                 },
                 {
                     test: /\.(scss)$/,
                     use: ["style-loader", "css-loader", "postcss-loader", "fast-sass-loader"],
-                    sideEffects: true,
+                    sideEffects: true
                 },
                 {
                     test: /\.(png|jpe?g|gif|svg)$/i,
-                    type: 'asset/resource',
+                    type: "asset/resource",
                     generator: {
                         publicPath: publicPath
                     }
-                },
-            ],
+                }
+            ]
         },
 
         resolve: {
-            extensions: ['.tsx', '.ts', '.jsx', '.js'],
+            extensions: [".tsx", ".ts", ".jsx", ".js"],
             // polyfill
             fallback: {
                 http: require.resolve("stream-http"),
                 https: require.resolve("https-browserify"),
                 buffer: require.resolve("buffer"),
-                util: require.resolve("util"),
-            },
+                util: require.resolve("util")
+            }
         },
 
         output: {
@@ -89,14 +90,14 @@ module.exports = (env, argv) => {
             publicPath: publicPath,
             filename: `[name]${prodLike ? ".[contenthash]" : ""}.bundle.js`,
             chunkLoadTimeout: 15000,
-            clean: true,
+            clean: true
         },
         cache: {
-            type: 'filesystem',
-            cacheLocation: path.resolve(__dirname, `.yarn/webpack/${argv.mode}`),
+            type: "filesystem",
+            cacheLocation: path.resolve(__dirname, `.yarn/webpack/${options.mode}`),
             buildDependencies: {
-                config: [__filename],
-            },
+                config: [__filename]
+            }
         },
 
         optimization: {
@@ -107,31 +108,31 @@ module.exports = (env, argv) => {
                     terserOptions: {
                         output: {
                             ascii_only: true,
-                            comments: false,
-                        },
-                    },
-                }),
+                            comments: false
+                        }
+                    }
+                })
             ],
             splitChunks: {
                 chunks: "all",
                 cacheGroups: {
                     packages: {
                         test: /[\\/]node_modules[\\/]/,
-                        idHint: 'packages',
+                        idHint: "packages"
                     },
                     api: {
                         priority: 1,
                         test: /[\\/]ApiClient[\\/]/,
-                        idHint: 'api',
-                        enforce: true,
+                        idHint: "api",
+                        enforce: true
                     },
                     styles: {
                         test: /\.(scss)$/,
-                        idHint: 'styles',
-                        enforce: true,
-                    },
-                },
-            },
+                        idHint: "styles",
+                        enforce: true
+                    }
+                }
+            }
         },
 
         devServer: {
@@ -140,7 +141,7 @@ module.exports = (env, argv) => {
             hot: true,
             host: "0.0.0.0", // technically insecure? don't put nudes in your app, helps to test with mobile
             port: 8080,
-            historyApiFallback: true,
+            historyApiFallback: true
         },
 
         stats: createStats(true),
@@ -152,39 +153,39 @@ module.exports = (env, argv) => {
                         from: "public",
                         toType: "dir",
                         globOptions: {
-                            ignore: (prodLike
-                                ? ["**/channel.json"]
-                                : [])
-                        },
-                    },
-                ],
+                            ignore: prodLike ? ["**/channel.json"] : []
+                        }
+                    }
+                ]
             }),
             new ForkTsCheckerWebpackPlugin(),
             new DefinePlugin({
-                'API_VERSION': JSON.stringify(
+                API_VERSION: JSON.stringify(
                     require("./src/ApiClient/generatedcode/swagger.json").info.version
                 ),
-                'VERSION': JSON.stringify(
+                VERSION: JSON.stringify(
                     github ? env.GITHUB_SHA : require("./package.json").version
                 ),
-                'MODE': JSON.stringify(prodLike ? (github ? "GITHUB" : "PROD") : "DEV"),
+                MODE: JSON.stringify(prodLike ? (github ? "GITHUB" : "PROD") : "DEV"),
                 // The basepath remains /app because its for the router which is located at /app/
-                'DEFAULT_BASEPATH': JSON.stringify(prodLike ? "/app/" : "/"),
-                'DEFAULT_APIPATH': JSON.stringify(prodLike ? "/" : "http://localhost:5000/"),
+                DEFAULT_BASEPATH: JSON.stringify(prodLike ? "/app/" : "/"),
+                DEFAULT_APIPATH: JSON.stringify(prodLike ? "/" : "http://localhost:5000/")
             }),
-            (!github && new HtmlWebPackPlugin({
-                title: "TGS Webpanel v" + require("./package.json").version,
-                filename: "index.html",
-                template: "./src/index.html",
-                inject: false,
-                publicPath: publicPath,
-            })),
-            (argv.mode !== 'production' && new ReactRefreshWebpackPlugin({
-                overlay: {
-                    sockIntegration: "wds",
-                },
-            })),
-            new JSONManifestPlugin({version: require("./package.json").version })
-        ].filter(Boolean),
-    }
+            !github &&
+                new HtmlWebPackPlugin({
+                    title: "TGS Webpanel v" + require("./package.json").version,
+                    filename: "index.html",
+                    template: "./src/index.html",
+                    inject: false,
+                    publicPath: publicPath
+                }),
+            options.mode !== "production" &&
+                new ReactRefreshWebpackPlugin({
+                    overlay: {
+                        sockIntegration: "wds"
+                    }
+                }),
+            new JSONManifestPlugin({ version: require("./package.json").version })
+        ].filter(Boolean)
+    };
 };
