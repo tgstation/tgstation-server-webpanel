@@ -318,7 +318,6 @@ class Login extends React.Component<IProps, IState> {
             this.setState({
                 busy: false
             });
-            console.log(response);
             this.addError(response.error);
         } else {
             if (this.props.postLoginAction) {

@@ -30,9 +30,7 @@ interface IEvents {
     //purge all caches
     purgeCache: () => void;
     //internal event, queues logins
-    loadLoginInfo: (loginInfo: InternalStatus<undefined, LoginErrors>) => void;
-    //internal event fired for wait4Token(), external things should be using LoginHooks#LoginSuccess or a login hook
-    tokenAvailable: (token: TokenResponse) => void;
+    loadLoginInfo: (loginInfo: InternalStatus<null, LoginErrors>) => void;
 }
 
 export type ServerInfoErrors = GenericErrors;
@@ -277,7 +275,6 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     }
 
     public autoLogin = true;
-    private loggingIn = false;
 
     public initApi() {
         console.log("Initializing API client");
@@ -293,7 +290,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 "Webpanel-Version": VERSION
             },
             securityWorker: async () => {
-                const tok = await this.wait4Token();
+                const tok = await AuthController.getToken();
                 if (!tok) {
                     return; // undefined is valid. Also it means that we logged out
                 }
@@ -335,27 +332,20 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         });
     }
 
-    //Utility function that returns a promise which resolves with the token whenever theres valid credentials(could be immediatly)
-    public wait4Token() {
-        return AuthController.getToken();
-    }
-
     /**
      * Login handler. Will NOT return the token, you must get the token by yourself.
      */
-    public async login(newCreds?: ICredentials): Promise<InternalStatus<undefined, LoginErrors>> {
+    public async login(newCreds?: ICredentials): Promise<InternalStatus<null, LoginErrors>> {
         console.log("Attempting login");
-        const r = newCreds
+        const response = newCreds
             ? await AuthController.authenticate(newCreds)
             : await AuthController.authenticateCached();
 
-        if (r.code === StatusCode.OK) {
+        if (response.code === StatusCode.OK) {
             const token = AuthController.getTokenUnsafe()!;
-            // i dont like events :(
-            this.emit("tokenAvailable", token);
             LoginHooks.runHooks(token);
         }
-        return r;
+        return response;
     }
 
     public logout() {

@@ -145,13 +145,12 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
         );
         debuginfo = debuginfo.replace(/"username":.".+?"/g, '"username": "*******"');
         debuginfo = debuginfo.replace(/"password":.".+?"/g, '"password": "*******"');
-        if (AuthController.isTokenValid()) {
-            debuginfo = replaceAll(
-                debuginfo,
-                AuthController.getTokenUnsafe()!.bearer,
-                "**************"
-            );
-        }
+
+        debuginfo = replaceAll(
+            debuginfo,
+            AuthController.getTokenUnsafe()!.bearer,
+            "**************"
+        );
         if (configOptions.githubtoken.value) {
             debuginfo = replaceAll(
                 debuginfo,
