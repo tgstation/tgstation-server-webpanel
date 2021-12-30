@@ -11,10 +11,6 @@ const createBabelConfig = options => {
     }
     return {
         presets: [
-            [require.resolve('@babel/preset-env'), {
-                modules: false,
-                loose: true,
-            }],
             [require.resolve('@babel/preset-typescript'), {
                 allowDeclareFields: true,
             }],
@@ -22,7 +18,6 @@ const createBabelConfig = options => {
             ...presets,
         ],
         plugins: [
-            [require.resolve("@babel/plugin-transform-runtime")],
             [require.resolve("@babel/plugin-transform-typescript"), {
                 allowDeclareFields: true,
             }],

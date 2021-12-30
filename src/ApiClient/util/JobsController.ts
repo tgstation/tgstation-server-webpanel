@@ -13,6 +13,7 @@ import {
     InstanceManagerRights,
     InstancePermissionSetRights,
     InstanceResponse,
+    JobResponse,
     RepositoryRights,
     RightsType
 } from "../generatedcode/generated";
@@ -39,7 +40,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     }
 
     private currentLoop: Date = new Date(0);
-    private accessibleInstances = new Set<number>();
+    public accessibleInstances = new Map<number, InstanceResponse>();
 
     private enableJobProgressWorkaround?: boolean;
 
@@ -47,10 +48,13 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     public jobs = new Map<number, TGSJobResponse>();
     public jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
     private jobCallback = new Map<number, Set<(job: TGSJobResponse) => unknown>>();
+    private lastSeenJob = -1;
 
-    public reset() {
-        this.jobs = new Map<number, TGSJobResponse>();
-        this.jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
+    public reset(clearJobs = true) {
+        if (clearJobs) {
+            this.jobs = new Map<number, TGSJobResponse>();
+            this.jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
+        }
         this.reloadAccessibleInstances()
             .then(this.restartLoop)
             .catch(e => {
@@ -72,9 +76,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         //technically not a "cache" but we might as well reload it
         ServerClient.on("purgeCache", this.reset);
 
-        InstanceClient.on("instanceChange", this.reset);
+        InstanceClient.on("instanceChange", () => this.reset(false));
         // eslint-disable-next-line @typescript-eslint/require-await
-        LoginHooks.addHook(async () => this.reset());
+        LoginHooks.addHook(async () => this.reset(false));
 
         ServerClient.getServerInfo()
             .then(response => {
@@ -109,7 +113,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             }
         }
 
-        const updatedSet = new Set<number>();
+        const updatedSet = new Map<number, InstanceResponse>();
 
         const work = allInstances
             .filter(instance => instance.online)
@@ -124,7 +128,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         }
                         return;
                     }
-                    updatedSet.add(instance.id);
+                    updatedSet.set(instance.id, instance);
                 });
             });
 
@@ -153,6 +157,26 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }, 0);
     }
 
+    private _registerJob(job: TGSJobResponse, instanceid?: number): void;
+    // noinspection JSUnusedLocalSymbols
+    private _registerJob(job: JobResponse, instanceid: number): void;
+    private _registerJob(_job: JobResponse | TGSJobResponse, instanceid?: number) {
+        const job = _job as TGSJobResponse;
+        if (instanceid) job.instanceid = instanceid;
+        const instanceSet = this.jobsByInstance.get(job.instanceid) ?? new Map();
+        this.jobsByInstance.set(job.instanceid, instanceSet);
+        instanceSet.set(job.id, job);
+        this.jobs.set(job.id, job);
+    }
+
+    public registerJob(job: TGSJobResponse, instanceid?: number): void;
+    public registerJob(job: JobResponse, instanceid: number): void;
+    public registerJob(_job: JobResponse | TGSJobResponse, instanceid?: number) {
+        // @ts-expect-error The signature is the same
+        this._registerJob(_job, instanceid);
+        this.restartLoop();
+    }
+
     private async loop(loopid: Date) {
         //so loops get initialiazed with the current time, it keeps track of which loop to run with
         // that initialization date in currentLoop if the currentLoop isnt equal to the one provided
@@ -168,13 +192,13 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         let totalActiveJobs = 0;
         const work: Promise<void>[] = [];
 
-        this.accessibleInstances.forEach(instanceid => {
+        //We can't update the value immediatly or instances will conflict with each other and prevent some jobs from fetching
+        let tempLastSeenJob = this.lastSeenJob;
+        for (const instanceid of this.accessibleInstances.keys()) {
             const processJobs = async (jobs: TGSJobResponse[]) => {
-                const instanceSet = this.jobsByInstance.get(instanceid) ?? new Map();
-                this.jobsByInstance.set(instanceid, instanceSet);
                 for (const job of jobs) {
-                    instanceSet.set(job.id, job);
-                    this.jobs.set(job.id, job);
+                    this._registerJob(job);
+                    tempLastSeenJob = Math.max(tempLastSeenJob, job.id);
                 }
 
                 const remoteActive = jobs.map(job => job.id);
@@ -184,6 +208,8 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     .map(job => job.id);
                 const manualIds = localActive.filter(jobId => !remoteActive.includes(jobId));
 
+                const instanceSet = this.jobsByInstance.get(instanceid) ?? new Map();
+                this.jobsByInstance.set(instanceid, instanceSet);
                 const work: Promise<void>[] = [];
                 manualIds.forEach(jobId => {
                     work.push(
@@ -224,9 +250,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             };
 
+            const fetchJobs =
+                this.lastSeenJob === -1 ? JobsClient.listActiveJobs : JobsClient.listJobs;
             //now since this is async, it still possible that a single fire gets done after the new loop started, theres no really much that can be done about it
             work.push(
-                JobsClient.listActiveJobs(instanceid, { page: 1, pageSize: 100 })
+                fetchJobs(instanceid, { page: 1, pageSize: 10 })
                     .then(async value => {
                         //this check is here because the request itself is async and could return after
                         // the loop is terminated, we dont want to contaminate the jobs of an instance
@@ -235,20 +263,32 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         if (loopid !== this.currentLoop) return;
 
                         if (value.code === StatusCode.OK) {
-                            for (let i = 2; i <= value.payload.totalPages; i++) {
-                                const jobs2 = await JobsClient.listActiveJobs(instanceid, {
+                            let lastPayload = value.payload.content;
+                            fetchLoop: for (let i = 2; i <= value.payload.totalPages; i++) {
+                                for (const job of lastPayload) {
+                                    //We reached the last page of usable content, break the loop
+                                    if (job.id <= this.lastSeenJob) {
+                                        break fetchLoop;
+                                    }
+                                }
+                                const jobs2 = await fetchJobs(instanceid, {
                                     page: i,
-                                    pageSize: 100
+                                    pageSize: 10
                                 });
                                 if (jobs2.code === StatusCode.ERROR) {
                                     processError(jobs2.error);
                                     return;
                                 } else {
                                     value.payload.content.push(...jobs2.payload.content);
+                                    lastPayload = value.payload.content;
                                 }
                             }
                             if (loopid !== this.currentLoop) return;
-                            await processJobs(value.payload.content);
+                            await processJobs(
+                                value.payload.content.filter(
+                                    job => job.id > this.lastSeenJob || this.jobs.has(job.id)
+                                )
+                            );
                         } else {
                             processError(value.error);
                         }
@@ -257,9 +297,11 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                         console.error(reason);
                     })
             );
-        });
+        }
 
         await Promise.all(work);
+
+        this.lastSeenJob = tempLastSeenJob;
 
         work.length = 0;
         for (const job of this.jobs.values()) {
@@ -480,7 +522,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
     }
 
-    public clearJob(jobid: number): boolean {
+    public clearJob(jobid: number, noEmit = false): boolean {
         const job = this.jobs.get(jobid);
 
         //no we cant cancel jobs we arent aware of yet
@@ -488,7 +530,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
         this.jobsByInstance.get(job.instanceid)?.delete(jobid);
         this.jobs.delete(jobid);
-        this.emit("jobsLoaded");
+        if (!noEmit) {
+            this.emit("jobsLoaded");
+        }
         return true;
     }
 
