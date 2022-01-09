@@ -144,7 +144,8 @@ $dropdown-link-hover-bg: darken($dropdown-bg, 5%);
 
 $hr-border-color: rgba($white, 0.2);
 
-$link-color: theme-color("secondary");
+$link-color: scale-color(theme-color("secondary"), $lightness: 50%);
+$link-decoration: underline;
 
 $modal-content-bg: $dark;
 
@@ -443,7 +444,22 @@ $toast-header-background-color: $gray-600;
     }
 }
 
+.reset-table {
+    & tr {
+        background-color: initial !important;
+    }
+    & th, & td {
+        border-color: initial !important;
+        padding: initial !important;
+        vertical-align: initial !important;
+        border-top: initial !important;
+    }
+}
+
+
 //Fix vertical align for fa icons
 * {
     line-height: inherit;
 }
+
+@import "./select.scss";

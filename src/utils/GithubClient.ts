@@ -1,7 +1,7 @@
 import { retry } from "@octokit/plugin-retry";
 import { throttling } from "@octokit/plugin-throttling";
 import { RequestError } from "@octokit/request-error";
-import { Octokit } from "@octokit/rest";
+import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
@@ -15,6 +15,29 @@ export interface TGSVersion {
     current: boolean;
     old: boolean;
 }
+
+export interface Commit {
+    name: string;
+    sha: string;
+    url: string;
+}
+
+export interface PullRequest {
+    number: number;
+    title: string;
+    author: string;
+    state: "open" | "closed" | "merged";
+    link: string;
+    head: string;
+    tail: string;
+    testmergelabel: boolean;
+}
+
+type ExtractArrayType<A> = A extends Array<infer ArrayType> ? ArrayType : never;
+export type GithubPullRequest = ExtractArrayType<
+    RestEndpointMethodTypes["pulls"]["list"]["response"]["data"]
+>;
+export type FullGithubPullRequest = RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
 
 interface IEvents {}
 
@@ -145,6 +168,134 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
         return new InternalStatus({
             code: StatusCode.OK,
             payload
+        });
+    }
+
+    private transformPR(pr: FullGithubPullRequest | GithubPullRequest): PullRequest {
+        return {
+            number: pr.number,
+            title: pr.title,
+            author: pr.user?.login ?? "ghost",
+            state: pr.merged_at ? "merged" : (pr.state as "open" | "closed"),
+            link: pr.html_url,
+            head: pr.head.sha,
+            tail: pr.base.sha,
+            testmergelabel: !!pr.labels.find(
+                label =>
+                    label.name?.toLowerCase().includes("testmerge") ||
+                    label.name?.toLowerCase().includes("test merge")
+            )
+        };
+    }
+
+    public async getPRs({
+        owner,
+        repo,
+        wantedPRs
+    }: {
+        owner: string;
+        repo: string;
+        wantedPRs?: number[];
+    }): Promise<InternalStatus<PullRequest[], ErrorCode.GITHUB_FAIL>> {
+        let payload: PullRequest[] = [];
+        try {
+            payload = (
+                await this.apiClient.paginate(this.apiClient.pulls.list, {
+                    owner,
+                    repo,
+                    state: "open"
+                })
+            ).map(this.transformPR);
+
+            for (const wantedPR of wantedPRs ?? []) {
+                if (!payload.find(pr => pr.number == wantedPR)) {
+                    const pr = (
+                        await this.apiClient.pulls.get({
+                            owner,
+                            repo,
+                            pull_number: wantedPR
+                        })
+                    ).data;
+                    payload.push(this.transformPR(pr));
+                }
+            }
+        } catch (e) {
+            console.error(e);
+            return new InternalStatus<PullRequest[], ErrorCode.GITHUB_FAIL>({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                    jsError: e as RequestError
+                })
+            });
+        }
+        return new InternalStatus({
+            code: StatusCode.OK,
+            payload
+        });
+    }
+
+    public async getPRCommits({
+        owner,
+        repo,
+        pr,
+        wantedCommit
+    }: {
+        owner: string;
+        repo: string;
+        pr: PullRequest;
+        wantedCommit?: string;
+    }): Promise<InternalStatus<[commits: Commit[], extraCommit?: Commit], ErrorCode.GITHUB_FAIL>> {
+        let payload: Commit[] = [];
+        let extraCommit: Commit | undefined = undefined;
+        try {
+            payload = await this.apiClient.paginate(
+                this.apiClient.pulls.listCommits,
+                {
+                    owner,
+                    repo,
+                    pull_number: pr.number,
+                    per_page: 100
+                },
+                ({ data }) =>
+                    data.map(commit => ({
+                        name: commit.commit.message.split("\n")[0],
+                        sha: commit.sha,
+                        url: commit.html_url
+                    }))
+            );
+
+            //Newest at the top
+            payload.reverse();
+
+            if (wantedCommit && !payload.find(commit => commit.sha === wantedCommit)) {
+                const _extraCommit = (
+                    await this.apiClient.repos.getCommit({
+                        owner,
+                        repo,
+                        ref: wantedCommit
+                    })
+                ).data;
+                extraCommit = {
+                    name: _extraCommit.commit.message.split("\n")[0],
+                    sha: _extraCommit.sha,
+                    url: _extraCommit.html_url
+                };
+            }
+        } catch (e) {
+            console.error(e);
+            return new InternalStatus<
+                [commits: Commit[], extraCommit?: Commit],
+                ErrorCode.GITHUB_FAIL
+            >({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                    jsError: e as RequestError
+                })
+            });
+        }
+        return new InternalStatus({
+            code: StatusCode.OK,
+            payload: [payload, extraCommit]
         });
     }
 })();

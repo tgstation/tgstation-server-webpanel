@@ -189,7 +189,9 @@ export default function InputField(props: InputFieldProps): JSX.Element {
     const controlRef = useRef<HTMLInputElement>(null);
     useEffect(() => {
         setCurrentValue(props.defaultValue ?? defaultValues[props.type]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.defaultValue]);
+
     useEffect(() => {
         if (controlRef.current) {
             if (controlRef.current.checkValidity()) {
@@ -198,24 +200,25 @@ export default function InputField(props: InputFieldProps): JSX.Element {
                 controlRef.current.classList.add("is-invalid");
             }
         }
-        onChange(currentValue);
-    }, [currentValue]);
 
-    const onChange = (newValue: InputFieldTypes) => {
         switch (props.type) {
             case FieldType.Boolean:
-                props.onChange(newValue as boolean, controlRef.current?.checkValidity() ?? true);
+                props.onChange(
+                    currentValue as boolean,
+                    controlRef.current?.checkValidity() ?? true
+                );
                 return;
             case FieldType.Enum:
             case FieldType.Number:
-                props.onChange(newValue as number, controlRef.current?.checkValidity() ?? true);
+                props.onChange(currentValue as number, controlRef.current?.checkValidity() ?? true);
                 return;
             case FieldType.String:
             case FieldType.Password:
-                props.onChange(newValue as string, controlRef.current?.checkValidity() ?? true);
+                props.onChange(currentValue as string, controlRef.current?.checkValidity() ?? true);
                 return;
         }
-    };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentValue]);
 
     const tooltip = (innerid?: string) => {
         if (!innerid) return <React.Fragment />;
