@@ -27,6 +27,7 @@ import InputForm from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 import TestMergeRow from "../../../utils/TestMergeRow";
+import configOptions from "../../../../ApiClient/util/config";
 
 function displayRepoInformation(repositoryInfo: RepositoryResponse) {
     return (
@@ -81,6 +82,10 @@ export default function Repository(): JSX.Element {
         new Map<number, [current: boolean, sha: string] | false>()
     );
     const [updateRepo, setUpdateRepo] = useState(false);
+    const [gitlabReset, setGitlabReset] = useState(false);
+    const [manualPRs, setManualPRs] = useState<Set<number>>(new Set());
+    const [manualPR, setManualPR] = useState(0);
+    const [lastManualPR, setLastManualPR] = useState(0);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => void fetchRepositoryInfo(undefined, true), [instanceEditContext.instance.id]);
@@ -117,6 +122,8 @@ export default function Repository(): JSX.Element {
     function reloadDesiredState(repoinfo: RepositoryResponse, reset?: boolean) {
         if (reset) {
             setUpdateRepo(false);
+            setGitlabReset(false);
+            setManualPRs(new Set());
         }
 
         setDesiredState(desiredState => {
@@ -178,6 +185,7 @@ export default function Repository(): JSX.Element {
             }
         } else {
             reloadPRs(response.payload);
+            response.payload.remoteGitProvider = RemoteGitProvider.GitLab;
             setRepositoryInfo(response.payload);
             reloadDesiredState(response.payload, resetDesiredState);
             setIsLoading(false);
@@ -385,35 +393,45 @@ export default function Repository(): JSX.Element {
     const noPendingChanges =
         filteredPendingActions.filter(([state]) => state !== PRState.reapply).length === 0 &&
         !forceReset &&
-        !updateRepo;
+        !updateRepo &&
+        !manualPRs.size;
 
     async function applyTestmerges() {
         const editOptions: RepositoryUpdateRequest = {};
         if (noBranch) {
             editOptions.checkoutSha = repositoryInfo?.revisionInformation?.originCommitSha;
-        } else if (forceReset) {
+        } else if (forceReset || gitlabReset) {
             editOptions.updateFromOrigin = true;
             editOptions.reference = repositoryInfo?.reference;
         } else if (updateRepo) {
             editOptions.updateFromOrigin = true;
         }
-        const testMergeArray: TestMergeParameters[] = [];
-        [...desiredState.entries()].forEach(([number, prDesiredState]) => {
-            if (!prDesiredState) return;
-            const [current, commit] = prDesiredState;
-            //If we aren't resetting, ignore PRs we didn't touch
-            console.log(current, forceReset, noBranch, current && !(forceReset || noBranch));
-            if (current && !(forceReset || noBranch)) return;
-            const pr = PRs!.find(pr => pr.number === number)!;
-            const tmInfo = testmergedPRs.get(pr.number);
+        if (repositoryInfo?.remoteGitProvider === RemoteGitProvider.GitHub) {
+            const testMergeArray: TestMergeParameters[] = [];
+            [...desiredState.entries()].forEach(([number, prDesiredState]) => {
+                if (!prDesiredState) return;
+                const [current, commit] = prDesiredState;
+                //If we aren't resetting, ignore PRs we didn't touch
+                console.log(current, forceReset, noBranch, current && !(forceReset || noBranch));
+                if (current && !(forceReset || noBranch)) return;
+                const pr = PRs!.find(pr => pr.number === number)!;
+                const tmInfo = testmergedPRs.get(pr.number);
 
-            testMergeArray.push({
-                number: number,
-                targetCommitSha: commit,
-                comment: tmInfo?.comment
+                testMergeArray.push({
+                    number: number,
+                    targetCommitSha: commit,
+                    comment: tmInfo?.comment
+                });
             });
-        });
-        editOptions.newTestMerges = testMergeArray;
+            if (testMergeArray.length) editOptions.newTestMerges = testMergeArray;
+        }
+        const testMergeArray = editOptions.newTestMerges ?? [];
+        manualPRs.forEach(pr =>
+            testMergeArray.push({
+                number: pr
+            })
+        );
+        if (testMergeArray.length) editOptions.newTestMerges = testMergeArray;
 
         setIsLoading(true);
         const response = await RepositoryClient.editRepository(
@@ -523,7 +541,7 @@ export default function Repository(): JSX.Element {
                     <h3>
                         <FormattedMessage id="view.instance.repo.testmerges" />
                     </h3>
-                    {repositoryInfo.remoteGitProvider !== RemoteGitProvider.GitHub ? (
+                    {repositoryInfo.remoteGitProvider == RemoteGitProvider.Unknown ? (
                         <GenericAlert title="view.instance.repo.testmerges.badprovider" />
                     ) : !repositoryInfo.remoteRepositoryName ||
                       !repositoryInfo.remoteRepositoryOwner ? (
@@ -556,7 +574,7 @@ export default function Repository(): JSX.Element {
                                                             }}
                                                         />
                                                     </li>
-                                                ) : forceReset ? (
+                                                ) : forceReset || gitlabReset ? (
                                                     <li>
                                                         <FormattedMessage id="view.instance.repo.pending.reset" />
                                                     </li>
@@ -565,37 +583,50 @@ export default function Repository(): JSX.Element {
                                                         <FormattedMessage id="view.instance.repo.pending.update" />
                                                     </li>
                                                 ) : null}
-                                                {sortedPendingActions.map(([state, pr]) => {
-                                                    const prDesiredState = desiredState.get(
-                                                        pr.number
-                                                    );
+                                                {repositoryInfo.remoteGitProvider ===
+                                                RemoteGitProvider.GitHub
+                                                    ? sortedPendingActions.map(([state, pr]) => {
+                                                          const prDesiredState = desiredState.get(
+                                                              pr.number
+                                                          );
 
-                                                    if (
-                                                        state === PRState.reapply &&
-                                                        !(forceReset || noBranch)
-                                                    )
-                                                        return null;
+                                                          if (
+                                                              state === PRState.reapply &&
+                                                              !(forceReset || noBranch)
+                                                          )
+                                                              return null;
 
-                                                    const targetCommit = prDesiredState
-                                                        ? prDesiredState[1]
-                                                        : null;
+                                                          const targetCommit = prDesiredState
+                                                              ? prDesiredState[1]
+                                                              : null;
 
-                                                    return (
-                                                        <li key={pr.number}>
-                                                            <FormattedMessage
-                                                                id={`view.instance.repo.pending.${state}`}
-                                                                values={{
-                                                                    number: pr.number,
-                                                                    commit: targetCommit?.substring(
-                                                                        0,
-                                                                        7
-                                                                    ),
-                                                                    title: pr.title
-                                                                }}
-                                                            />
-                                                        </li>
-                                                    );
-                                                })}
+                                                          return (
+                                                              <li key={pr.number}>
+                                                                  <FormattedMessage
+                                                                      id={`view.instance.repo.pending.${state}`}
+                                                                      values={{
+                                                                          number: pr.number,
+                                                                          commit: targetCommit?.substring(
+                                                                              0,
+                                                                              7
+                                                                          ),
+                                                                          title: pr.title
+                                                                      }}
+                                                                  />
+                                                              </li>
+                                                          );
+                                                      })
+                                                    : null}
+                                                {[...manualPRs.values()].map(pr => (
+                                                    <li key={pr}>
+                                                        <FormattedMessage
+                                                            id={`view.instance.repo.pending.added.manual`}
+                                                            values={{
+                                                                number: pr
+                                                            }}
+                                                        />
+                                                    </li>
+                                                ))}
                                             </>
                                         )}
                                     </ul>
@@ -604,11 +635,57 @@ export default function Repository(): JSX.Element {
                                         tooltip="view.instance.repo.update.desc"
                                         type={FieldType.Boolean}
                                         defaultValue={
-                                            noBranch ? false : forceReset ? true : updateRepo
+                                            gitlabReset
+                                                ? true
+                                                : noBranch
+                                                ? false
+                                                : forceReset
+                                                ? true
+                                                : updateRepo
                                         }
-                                        disabled={forceReset || noBranch}
+                                        disabled={forceReset || noBranch || gitlabReset}
                                         onChange={newVal => setUpdateRepo(newVal)}
                                     />
+                                    {repositoryInfo.remoteGitProvider ===
+                                    RemoteGitProvider.GitLab ? (
+                                        <InputField
+                                            name="view.instance.repo.reset"
+                                            tooltip="view.instance.repo.reset.desc"
+                                            type={FieldType.Boolean}
+                                            defaultValue={noBranch ? false : gitlabReset}
+                                            disabled={noBranch}
+                                            onChange={newVal => setGitlabReset(newVal)}
+                                        />
+                                    ) : null}
+                                    {(configOptions.manualpr.value as boolean) ||
+                                    repositoryInfo.remoteGitProvider ===
+                                        RemoteGitProvider.GitLab ? (
+                                        <div className="d-flex mt-5">
+                                            <InputField
+                                                name="view.instance.repo.manual"
+                                                tooltip="view.instance.repo.manual.desc"
+                                                type={FieldType.Number}
+                                                min={0}
+                                                defaultValue={lastManualPR}
+                                                onChange={newPR => setManualPR(newPR)}
+                                            />
+                                            <Button
+                                                className="nowrap ml-3"
+                                                disabled={manualPR === lastManualPR}
+                                                onClick={() => {
+                                                    setManualPRs(
+                                                        prevState =>
+                                                            new Set([
+                                                                ...prevState.values(),
+                                                                manualPR
+                                                            ])
+                                                    );
+                                                    setLastManualPR(manualPR);
+                                                }}>
+                                                <FormattedMessage id="view.instance.repo.addmanual" />
+                                            </Button>
+                                        </div>
+                                    ) : null}
                                 </Card.Body>
                                 <Card.Footer>
                                     <Button
@@ -626,41 +703,42 @@ export default function Repository(): JSX.Element {
                                     </Button>
                                 </Card.Footer>
                             </Card>
-
-                            <Table variant="dark" striped hover className="text-left">
-                                <tbody>
-                                    {sortedPRs.map(pr => (
-                                        <TestMergeRow
-                                            key={pr.number}
-                                            testmergeinfo={testmergedPRs.get(pr.number)}
-                                            pr={pr}
-                                            repoInfo={repositoryInfo}
-                                            finalState={
-                                                desiredState.get(pr.number)
-                                                    ? (desiredState.get(pr.number) as [
-                                                          boolean,
-                                                          string
-                                                      ])[1]
-                                                    : false
-                                            }
-                                            onRemove={() =>
-                                                setDesiredState(desiredState =>
-                                                    new Map(desiredState).set(pr.number, false)
-                                                )
-                                            }
-                                            onSelectCommit={commit =>
-                                                setDesiredState(desiredState =>
-                                                    new Map(desiredState).set(pr.number, [
-                                                        false,
-                                                        commit
-                                                    ])
-                                                )
-                                            }
-                                            onError={error => addError(errorState, error)}
-                                        />
-                                    ))}
-                                </tbody>
-                            </Table>
+                            {repositoryInfo.remoteGitProvider === RemoteGitProvider.GitHub ? (
+                                <Table variant="dark" striped hover className="text-left">
+                                    <tbody>
+                                        {sortedPRs.map(pr => (
+                                            <TestMergeRow
+                                                key={pr.number}
+                                                testmergeinfo={testmergedPRs.get(pr.number)}
+                                                pr={pr}
+                                                repoInfo={repositoryInfo}
+                                                finalState={
+                                                    desiredState.get(pr.number)
+                                                        ? (desiredState.get(pr.number) as [
+                                                              boolean,
+                                                              string
+                                                          ])[1]
+                                                        : false
+                                                }
+                                                onRemove={() =>
+                                                    setDesiredState(desiredState =>
+                                                        new Map(desiredState).set(pr.number, false)
+                                                    )
+                                                }
+                                                onSelectCommit={commit =>
+                                                    setDesiredState(desiredState =>
+                                                        new Map(desiredState).set(pr.number, [
+                                                            false,
+                                                            commit
+                                                        ])
+                                                    )
+                                                }
+                                                onError={error => addError(errorState, error)}
+                                            />
+                                        ))}
+                                    </tbody>
+                                </Table>
+                            ) : null}
                         </div>
                     )}
                 </>
