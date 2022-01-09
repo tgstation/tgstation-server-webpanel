@@ -180,7 +180,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
             link: pr.html_url,
             head: pr.head.sha,
             tail: pr.base.sha,
-            testmergelabel: !!pr.labels.find(
+            testmergelabel: pr.labels.some(
                 label =>
                     label.name?.toLowerCase().includes("testmerge") ||
                     label.name?.toLowerCase().includes("test merge")
