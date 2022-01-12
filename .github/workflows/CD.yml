@@ -32,7 +32,7 @@ jobs:
               run: yarn install --immutable
 
             - name: Compile
-              run: yarn run build --env GITHUB_CD
+              run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA
 
             #Safety against pushing broken code
             - name: Run ESLint
