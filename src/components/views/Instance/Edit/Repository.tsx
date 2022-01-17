@@ -560,6 +560,12 @@ export default function Repository(): JSX.Element {
                     </h3>
                     <InputForm
                         fields={cloneFields}
+                        hideDisabled={
+                            !hasRepoRight(
+                                instanceEditContext.instancePermissionSet,
+                                RepositoryRights.Read
+                            )
+                        }
                         onSave={async result => {
                             const response = await RepositoryClient.cloneRepository(
                                 instanceEditContext.instance.id,

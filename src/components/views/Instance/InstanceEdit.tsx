@@ -10,7 +10,8 @@ import { RouteComponentProps, withRouter } from "react-router";
 import {
     ByondRights,
     DreamDaemonRights,
-    InstancePermissionSetResponse
+    InstancePermissionSetResponse,
+    RepositoryRights
 } from "../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
@@ -62,6 +63,20 @@ const minimumServerPerms =
     DreamDaemonRights.SetAdditionalParameters |
     DreamDaemonRights.SetVisibility;
 
+const minimumRepoPerms =
+    RepositoryRights.SetOrigin |
+    RepositoryRights.SetSha |
+    RepositoryRights.MergePullRequest |
+    RepositoryRights.UpdateBranch |
+    RepositoryRights.ChangeCommitter |
+    RepositoryRights.ChangeTestMergeCommits |
+    RepositoryRights.ChangeCredentials |
+    RepositoryRights.SetReference |
+    RepositoryRights.Read |
+    RepositoryRights.ChangeAutoUpdateSettings |
+    RepositoryRights.Delete |
+    RepositoryRights.ChangeSubmoduleUpdate;
+
 class InstanceEdit extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
     public static tabs: [
@@ -74,7 +89,12 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ComponentType?
     ][] = [
         ["info", "info", () => true],
-        ["repository", "code-branch", () => true, Repository],
+        [
+            "repository",
+            "code-branch",
+            instancePermissionSet => !!(instancePermissionSet.repositoryRights & minimumRepoPerms),
+            Repository
+        ],
         ["deployment", "hammer", () => true],
         [
             "dd",
