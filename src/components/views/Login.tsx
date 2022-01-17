@@ -17,6 +17,7 @@ import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus"
 import ServerClient from "../../ApiClient/ServerClient";
 import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 import { GeneralContext, UnsafeGeneralContext } from "../../contexts/GeneralContext";
+import { MODE } from "../../definitions/constants";
 import KeycloakLogo from "../../images/keycloak_icon_64px.png";
 import TGLogo from "../../images/tglogo-white.svg";
 import { RouteData } from "../../utils/routes";
@@ -64,17 +65,17 @@ class Login extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        //if (MODE === "PROD") {
-        // noinspection ES6MissingAwait
-        void this.tryLoginDefault();
-        //}
+        if (MODE === "PROD") {
+            // noinspection ES6MissingAwait
+            void this.tryLoginDefault();
+        }
     }
 
     private async tryLoginDefault(): Promise<void> {
         const response = await ServerClient.login({
             type: CredentialsType.Password,
             userName: "admin",
-            password: "admin"
+            password: "ISolemlySwearToDeleteTheDataDirectory"
         });
 
         if (response.code === StatusCode.OK) {
