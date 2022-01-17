@@ -111,6 +111,11 @@ const configOptions = asElementTypesConfig({
         id: "config.showjson",
         type: "bool",
         value: MODE === "DEV"
+    },
+    manualpr: {
+        id: "config.manualpr",
+        type: "bool",
+        value: false
     }
 });
 

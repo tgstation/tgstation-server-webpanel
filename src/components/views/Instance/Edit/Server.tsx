@@ -37,7 +37,8 @@ export default function Server(): JSX.Element {
     const [watchdogSettings, setWatchdogSettings] = useState<DreamDaemonResponse>();
     const [loading, setLoading] = useState(false);
     const errorState = useState<Array<InternalError<ErrorCode> | undefined>>([]);
-    useEffect(() => void loadWatchdogSettings(), []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => void loadWatchdogSettings(), [instanceEditContext.instance.id]);
 
     async function loadWatchdogSettings(): Promise<void> {
         if (

@@ -26,24 +26,27 @@ export default function JobHistory(): JSX.Element {
     //const [];
 
     useEffect(() => {
+        async function loadJobs() {
+            const response = await JobsClient.listJobs(instanceEditContext.instance.id, {
+                page: page
+            });
+            if (response.code === StatusCode.OK) {
+                if (page > response.payload.totalPages && response.payload.totalPages !== 0)
+                    setPage(1);
+                setJobs(response.payload.content);
+                setMaxPage(response.payload.totalPages);
+            } else {
+                addError(response.error);
+            }
+            setLoading(false);
+        }
+
         RouteData.jobhistorypage.set(instanceEditContext.instance.id, page);
         setLoading(true);
         void loadJobs();
-    }, [page]);
+    }, [page, instanceEditContext.instance.id]);
 
     useEffect(() => {}, [errors]);
-
-    async function loadJobs() {
-        const response = await JobsClient.listJobs(instanceEditContext.instance.id, { page: page });
-        if (response.code === StatusCode.OK) {
-            if (page > response.payload.totalPages && response.payload.totalPages !== 0) setPage(1);
-            setJobs(response.payload.content);
-            setMaxPage(response.payload.totalPages);
-        } else {
-            addError(response.error);
-        }
-        setLoading(false);
-    }
 
     function addError(error: InternalError<ErrorCode>): void {
         setErrors(prevState => {
