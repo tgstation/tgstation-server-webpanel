@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Collapse, OverlayTrigger } from "react-bootstrap";
+import { Collapse } from "react-bootstrap";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -14,12 +14,11 @@ import {
 } from "../../ApiClient/generatedcode/generated";
 import InternalError from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
+import { InstanceEditContext } from "../../contexts/InstanceEditContext";
 import GithubClient, { Commit, PullRequest } from "../../utils/GithubClient";
+import { hasRepoRight } from "../../utils/misc";
 import InputField, { FieldType } from "./InputField";
 import Loading from "./Loading";
-import { InstanceEditContext } from "../../contexts/InstanceEditContext";
-import { hasRepoRight } from "../../utils/misc";
-import Tooltip from "react-bootstrap/Tooltip";
 import SimpleToolTip from "./SimpleTooltip";
 
 interface IProps {
@@ -91,6 +90,7 @@ export default function TestMergeRow({
     );
     useEffect(() => (showDetails ? void loadCommits() : void 0), [showDetails, loadCommits]);
     useEffect(() => (showModal ? void loadCommits() : void 0), [showModal, loadCommits]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => setShowDetails(false), [finalState]);
     useEffect(() => setComment(finalState ? finalState[1] : ""), [finalState]);
 

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
@@ -29,9 +30,8 @@ import InputField, { FieldType } from "../../../utils/InputField";
 import InputForm from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
-import TestMergeRow from "../../../utils/TestMergeRow";
 import SimpleToolTip from "../../../utils/SimpleTooltip";
-import { Modal, ModalTitle } from "react-bootstrap";
+import TestMergeRow from "../../../utils/TestMergeRow";
 
 function displayRepoInformation(repositoryInfo: RepositoryResponse | false | null) {
     if (!repositoryInfo) return <GenericAlert title="view.instance.repo.norepoinfo" />;

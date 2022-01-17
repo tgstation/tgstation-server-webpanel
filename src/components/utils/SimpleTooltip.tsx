@@ -1,7 +1,7 @@
 import React from "react";
 import { OverlayTrigger } from "react-bootstrap";
-import { FormattedMessage } from "react-intl";
 import Tooltip from "react-bootstrap/Tooltip";
+import { FormattedMessage } from "react-intl";
 
 type IProps = {
     tooltipid: string;
