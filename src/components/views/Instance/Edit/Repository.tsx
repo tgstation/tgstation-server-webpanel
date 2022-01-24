@@ -89,7 +89,7 @@ export default function Repository(): JSX.Element {
         new Map<number, [current: boolean, sha: string, comment: string] | false>()
     );
     const [updateRepo, setUpdateRepo] = useState(false);
-    const [gitlabReset, setGitlabReset] = useState(false);
+    const [manualReset, setManualReset] = useState(false);
     const [manualPRs, setManualPRs] = useState<Set<number>>(new Set());
     const [manualPR, setManualPR] = useState(0);
     const [lastManualPR, setLastManualPR] = useState(0);
@@ -130,7 +130,7 @@ export default function Repository(): JSX.Element {
     function reloadDesiredState(repoinfo: RepositoryResponse | false | null, reset?: boolean) {
         if (reset) {
             setUpdateRepo(false);
-            setGitlabReset(false);
+            setManualReset(false);
             setManualPRs(new Set());
         }
 
@@ -475,7 +475,7 @@ export default function Repository(): JSX.Element {
         const editOptions: RepositoryUpdateRequest = {};
         if (repositoryInfo && noBranch) {
             editOptions.checkoutSha = repositoryInfo.revisionInformation?.originCommitSha;
-        } else if (repositoryInfo && (forceReset || gitlabReset)) {
+        } else if (repositoryInfo && (forceReset || manualReset)) {
             editOptions.updateFromOrigin = true;
             editOptions.reference = repositoryInfo?.reference;
         } else if (updateRepo) {
@@ -665,7 +665,7 @@ export default function Repository(): JSX.Element {
                                                         />
                                                     </li>
                                                 ) : repositoryInfo &&
-                                                  (forceReset || gitlabReset) ? (
+                                                  (forceReset || manualReset) ? (
                                                     <li>
                                                         <FormattedMessage id="view.instance.repo.pending.reset" />
                                                     </li>
@@ -727,7 +727,7 @@ export default function Repository(): JSX.Element {
                                         tooltip="view.instance.repo.update.desc"
                                         type={FieldType.Boolean}
                                         defaultValue={
-                                            gitlabReset
+                                            manualReset
                                                 ? true
                                                 : noBranch
                                                 ? false
@@ -736,20 +736,23 @@ export default function Repository(): JSX.Element {
                                                 : updateRepo
                                         }
                                         disabled={
-                                            forceReset || noBranch || gitlabReset || !canUpdate
+                                            forceReset || noBranch || manualReset || !canUpdate
                                         }
                                         onChange={newVal => setUpdateRepo(newVal)}
                                     />
-                                    {repositoryInfo &&
-                                    repositoryInfo.remoteGitProvider ===
-                                        RemoteGitProvider.GitLab ? (
+                                    {(configOptions.manualreset.value as boolean) ||
+                                    (repositoryInfo &&
+                                        repositoryInfo.remoteGitProvider ===
+                                            RemoteGitProvider.GitLab) ? (
                                         <InputField
                                             name="view.instance.repo.reset"
                                             tooltip="view.instance.repo.reset.desc"
                                             type={FieldType.Boolean}
-                                            defaultValue={noBranch ? false : gitlabReset}
-                                            disabled={noBranch || !canReset}
-                                            onChange={newVal => setGitlabReset(newVal)}
+                                            defaultValue={
+                                                noBranch ? false : forceReset ? true : manualReset
+                                            }
+                                            disabled={noBranch || !canReset || forceReset}
+                                            onChange={newVal => setManualReset(newVal)}
                                         />
                                     ) : null}
                                     {(configOptions.manualpr.value as boolean) ||
@@ -794,7 +797,7 @@ export default function Repository(): JSX.Element {
                                         className="mx-2"
                                         disabled={noPendingChanges}
                                         onClick={() => reloadDesiredState(repositoryInfo, true)}>
-                                        <FormattedMessage id="generic.reset" />
+                                        <FormattedMessage id="generic.cancel" />
                                     </Button>
                                     <Button
                                         className="mx-2"
