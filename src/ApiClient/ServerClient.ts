@@ -256,7 +256,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             this._serverInfo = undefined;
             const token = AuthController.getTokenUnsafe();
             if (token) {
-                LoginHooks.runHooks(token);
+                LoginHooks.runHooks();
             }
         });
 
@@ -286,13 +286,21 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             withCredentials: false,
             headers: {
                 Accept: "application/json",
-                Api: `Tgstation.Server.Api/` + API_VERSION,
+                Api: `Tgstation.Server.Api/${API_VERSION}`,
                 "Webpanel-Version": VERSION
             },
+            /**
+             * Handles secure request (see api schema with `secure: true`)
+             * if the `secure` value is `true`, we run this async function to fetch the token
+             * if it exist => we add on the header, else we add nothing (causing a 4xx err mostly).
+             * The getToken WILL try to login if possible!
+             * Now, we assume that you DO NOT request until the user logs in properly so that we can avoid
+             * unnesesary 4xx errs. To check if the user has logged it, just do `AuthController.isTokenValid()`
+             */
             securityWorker: async () => {
                 const tok = await AuthController.getToken();
                 if (!tok) {
-                    return; // undefined is valid. Also it means that we logged out
+                    return;
                 }
                 return {
                     headers: {
@@ -342,8 +350,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             : await AuthController.authenticateCached();
 
         if (response.code === StatusCode.OK) {
-            const token = AuthController.getTokenUnsafe()!;
-            LoginHooks.runHooks(token);
+            LoginHooks.runHooks();
         }
         return response;
     }

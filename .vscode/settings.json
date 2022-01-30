@@ -1,4 +1,11 @@
 {
+	"search.exclude": {
+		"**/.yarn": true,
+		"**/.pnp.*": true
+	},
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
     "editor.formatOnSave": true,
     "files.insertFinalNewline": true,
     "eslint.validate": ["typescript", "typescriptreact"],

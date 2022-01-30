@@ -1,16 +1,14 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 
-import type { TokenResponse } from "../generatedcode/generated";
-
 interface IEvents {
     //tasks once the user is fully logged in
-    loginSuccess: (token: TokenResponse) => void;
+    loginSuccess: () => void;
 }
 
 class LoginHooks extends TypedEmitter<IEvents> {
-    private promiseHooks: Set<(token: TokenResponse) => Promise<unknown>> = new Set();
+    private promiseHooks: Set<() => Promise<unknown>> = new Set();
 
-    public runHooks(token: TokenResponse) {
+    public runHooks() {
         console.log("Running login hooks");
         let i = 0;
         const work: Array<Promise<void>> = [];
@@ -19,7 +17,7 @@ class LoginHooks extends TypedEmitter<IEvents> {
             console.log(`Running hook ${hook.name}(${id})`);
             work.push(
                 new Promise<void>((resolve, reject) => {
-                    hook(token)
+                    hook()
                         .then(() => {
                             console.log(`Done hook ${hook.name}(${id})`);
                             resolve();
@@ -35,16 +33,16 @@ class LoginHooks extends TypedEmitter<IEvents> {
         Promise.all(work)
             .then(() => {
                 console.log("Running post login event");
-                this.emit("loginSuccess", token);
+                this.emit("loginSuccess");
             })
             .catch(() => console.error("An error occured while running login hooks"));
     }
 
-    public addHook(hook: (token: TokenResponse) => Promise<unknown>): void {
+    public addHook(hook: () => Promise<unknown>): void {
         this.promiseHooks.add(hook);
     }
 
-    public removeHook(hook: (token: TokenResponse) => Promise<unknown>): void {
+    public removeHook(hook: () => Promise<unknown>): void {
         this.promiseHooks.delete(hook);
     }
 }

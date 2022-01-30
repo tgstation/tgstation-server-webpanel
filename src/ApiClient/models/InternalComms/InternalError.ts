@@ -148,9 +148,14 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
 
         debuginfo = replaceAll(
             debuginfo,
-            AuthController.getTokenUnsafe()!.bearer,
+            // this causes the circular dependency BUT it is FINE if these functions are undefined
+            // if the auth system didnt initialize yet, so this shouldn't make any issues
+            AuthController.getTokenUnsafe()?.bearer ||
+                AuthController.getLastToken()?.bearer ||
+                "panic",
             "**************"
         );
+
         if (configOptions.githubtoken.value) {
             debuginfo = replaceAll(
                 debuginfo,
