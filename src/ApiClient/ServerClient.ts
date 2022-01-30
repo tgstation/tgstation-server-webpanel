@@ -131,7 +131,11 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                             case StatusCode.ERROR: {
                                 this.emit("accessDenied");
                                 //time to kick out the user
-                                this.logout();
+                                // infinite loop here (logout cache clear)
+                                // => it calls check available instances
+                                // => it fails, autologin is true by default
+                                // => this triggers, causing event to be fired again
+                                this.logout(false);
                                 const errorobj = new InternalError(
                                     ErrorCode.HTTP_ACCESS_DENIED,
                                     { void: true },
@@ -355,11 +359,14 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         return response;
     }
 
-    public logout() {
+    public logout(invokesEvent = true) {
         AuthController.logout();
         console.log("Logging out");
         //events to clear the app state as much as possible for the next user
-        this.emit("purgeCache");
+        if (!invokesEvent) {
+            return;
+        }
+        this.emit("purgeCache"); // infinite loop here (search for that phrase on this file)
         this.emit("logout");
     }
 
