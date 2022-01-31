@@ -11,6 +11,7 @@ import {
     StatusCode
 } from "../models/InternalComms";
 import configOptions from "./config";
+import CredentialsProvider from "./CredentialsProvider";
 
 export type LoginErrors =
     | GenericErrors
@@ -32,8 +33,6 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
     private apiClient!: Api<unknown>; // treat it as existing, no login options SHOULD happen while config is being loaded
 
     private _credentials?: ICredentials;
-    private token?: TokenResponse;
-    private lastToken?: TokenResponse;
 
     public loggingIn = false;
 
@@ -60,10 +59,11 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
     }
 
     public isTokenValid() {
+        const token = CredentialsProvider.token;
         return !!(
-            this.token &&
-            this.token.bearer &&
-            (!this.token.expiresAt || new Date(this.token.expiresAt).getTime() > Date.now())
+            token &&
+            token.bearer &&
+            (!token.expiresAt || new Date(token.expiresAt).getTime() > Date.now())
         );
     }
 
@@ -74,28 +74,29 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
      * "Why not a getter?" because you cant have async getters.
      */
     public async getToken() {
-        if (!this.token || !this.isTokenValid()) {
+        const token = CredentialsProvider.token;
+        if (!token || !this.isTokenValid()) {
             if ((await this.authenticateCached()).code !== StatusCode.OK) {
-                return this.token;
+                return token;
             }
             this.logout(); // overkill, AuthenticatedCache already runs logout
             return;
         }
-        return this.token;
+        return token;
     }
 
     /**
      * Get token without handling validation.
      */
     public getTokenUnsafe() {
-        return this.token;
+        return CredentialsProvider.token;
     }
 
     /**
      * Gets the last used token for logging clearing. Always assume this is invalid
      */
     public getLastToken() {
-        return this.lastToken;
+        return CredentialsProvider.lastToken;
     }
 
     /**
@@ -178,8 +179,8 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
 
         switch (response.status) {
             case 200: {
-                this.lastToken = this.token;
-                this.token = response.data as TokenResponse;
+                CredentialsProvider.lastToken = CredentialsProvider.token;
+                CredentialsProvider.token = response.data as TokenResponse;
                 const stat = new InternalStatus<null, LoginErrors>({
                     code: StatusCode.OK,
                     payload: null // we do not want to pass the payload out
@@ -257,8 +258,8 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
     }
 
     public logout() {
-        this.lastToken = this.token;
+        CredentialsProvider.lastToken = CredentialsProvider.token;
         this._credentials = undefined;
-        this.token = undefined;
+        CredentialsProvider.token = undefined;
     }
 })();

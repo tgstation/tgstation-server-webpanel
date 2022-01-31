@@ -2,8 +2,8 @@ import { AxiosResponse } from "axios";
 
 import { replaceAll } from "../../../utils/misc";
 import { ErrorCode as TGSErrorCode, ErrorMessageResponse } from "../../generatedcode/generated";
-import AuthController from "../../util/AuthController";
 import configOptions from "../../util/config";
+import CredentialsProvider from "../../util/CredentialsProvider";
 
 export type GenericErrors =
     | ErrorCode.HTTP_BAD_REQUEST
@@ -148,11 +148,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
 
         debuginfo = replaceAll(
             debuginfo,
-            // this causes the circular dependency BUT it is FINE if these functions are undefined
-            // if the auth system didnt initialize yet, so this shouldn't make any issues
-            AuthController.getTokenUnsafe()?.bearer ||
-                AuthController.getLastToken()?.bearer ||
-                "panic",
+            CredentialsProvider.token?.bearer ?? CredentialsProvider.lastToken?.bearer ?? "",
             "**************"
         );
 
