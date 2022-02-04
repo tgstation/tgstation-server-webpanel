@@ -10,6 +10,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 import {
     ByondRights,
     DreamDaemonRights,
+    DreamMakerRights,
     InstancePermissionSetResponse,
     RepositoryRights
 } from "../../../ApiClient/generatedcode/generated";
@@ -29,6 +30,7 @@ import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
 import InstanceSettings from "./Edit/Config";
+import { Deployment } from "./Edit/Deployment";
 import JobHistory from "./Edit/JobHistory";
 import Repository from "./Edit/Repository";
 import Server from "./Edit/Server";
@@ -77,6 +79,15 @@ const minimumRepoPerms =
     RepositoryRights.Delete |
     RepositoryRights.ChangeSubmoduleUpdate;
 
+const minimumDeployPerms =
+    DreamMakerRights.Read |
+    DreamMakerRights.Compile |
+    DreamMakerRights.SetApiValidationPort |
+    DreamMakerRights.SetDme |
+    DreamMakerRights.SetApiValidationRequirement |
+    DreamMakerRights.SetTimeout |
+    DreamMakerRights.SetSecurityLevel;
+
 class InstanceEdit extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
     public static tabs: [
@@ -95,7 +106,13 @@ class InstanceEdit extends React.Component<IProps, IState> {
             instancePermissionSet => !!(instancePermissionSet.repositoryRights & minimumRepoPerms),
             Repository
         ],
-        ["deployment", "hammer", () => true],
+        [
+            "deployment",
+            "hammer",
+            instancePermissionSet =>
+                !!(instancePermissionSet.dreamMakerRights & minimumDeployPerms),
+            Deployment
+        ],
         [
             "dd",
             "server",

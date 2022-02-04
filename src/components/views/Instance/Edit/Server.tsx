@@ -284,7 +284,7 @@ export default function Server(): JSX.Element {
             </h3>
             {!canMetadata ? (
                 anyEditableField ? (
-                    <GenericAlert title="view.instance.server.no_metadata" />
+                    <GenericAlert title="view.instance.no_metadata" />
                 ) : (
                     <GenericAlert title="view.instance.server.no_metadata_and_no_settings" />
                 )
