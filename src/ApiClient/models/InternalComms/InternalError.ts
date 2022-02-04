@@ -70,7 +70,10 @@ export enum ErrorCode {
     GROUP_NOT_EMPTY = "error.group.not_empty", //errmessage
 
     //Watchdog errors
-    NO_DB_ENTITY = "error.no_db_entity" //errmessage
+    NO_DB_ENTITY = "error.no_db_entity", //errmessage
+
+    //DreamMaker errors
+    COMPILE_JOB_NOT_FOUND = "error.compile_job_not_found" //errmessage
 }
 
 type errorMessage = {

@@ -250,7 +250,7 @@ export default function InputField(props: InputFieldProps): JSX.Element {
                 overlay={tooltip(props.tooltip)}
                 show={props.tooltip ? undefined : false}>
                 {({ ref, ...triggerHandler }) => (
-                    <InputGroup.Prepend className="w-40">
+                    <InputGroup.Prepend className="w-50 w-xl-40">
                         <InputGroup.Text className="flex-grow-1" {...triggerHandler}>
                             <span className={changed ? "font-weight-bold" : ""}>
                                 <FormattedMessage id={props.name} />
