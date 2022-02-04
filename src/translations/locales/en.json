@@ -282,6 +282,8 @@
     "view.instance.repo.delete": "Delete Repo",
     "view.instance.repo.clone": "Clone Remote Repository",
     "view.instance.repo.noautomerge": "Automatic test merge management is unavailable due to missing permissions",
+    "view.instance.repo.deployAfter": "Compile & Deploy after test merge",
+    "view.instance.repo.deployAfter.desc": "Compile and deploy the repository to the server after completing the test merge",
     "view.instance.deploy.title": "Deployment Settings",
     "view.instance.deploy.deploy": "Compile & Deploy repository",
     "view.info.client": "Client Info",

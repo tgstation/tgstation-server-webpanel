@@ -5,7 +5,9 @@ import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import { FormattedMessage } from "react-intl";
 
+import DreamMakerClient from "../../../../ApiClient/DreamMakerClient";
 import {
+    DreamMakerRights,
     ErrorCode as TGSErrorCode,
     JobResponse,
     RemoteGitProvider,
@@ -23,7 +25,7 @@ import configOptions from "../../../../ApiClient/util/config";
 import JobsController from "../../../../ApiClient/util/JobsController";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import GithubClient, { PullRequest } from "../../../../utils/GithubClient";
-import { hasRepoRight } from "../../../../utils/misc";
+import { hasDreamMakerRight, hasRepoRight } from "../../../../utils/misc";
 import { addError, displayErrors } from "../../../utils/ErrorAlert";
 import GenericAlert from "../../../utils/GenericAlert";
 import InputField, { FieldType } from "../../../utils/InputField";
@@ -94,6 +96,9 @@ export default function Repository(): JSX.Element {
     const [manualPR, setManualPR] = useState(0);
     const [lastManualPR, setLastManualPR] = useState(0);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deployAfterTM, setDeployAfterTM] = useState(
+        hasDreamMakerRight(instanceEditContext.instancePermissionSet, DreamMakerRights.Compile)
+    );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => void fetchRepositoryInfo(undefined, true), [instanceEditContext.instance.id]);
@@ -250,6 +255,11 @@ export default function Repository(): JSX.Element {
             defaultValue: true
         }
     };
+
+    const canDeploy = hasDreamMakerRight(
+        instanceEditContext.instancePermissionSet,
+        DreamMakerRights.Compile
+    );
 
     const editFields = {
         originCheckoutSha: {
@@ -528,6 +538,22 @@ export default function Repository(): JSX.Element {
                     instanceEditContext.instance.id
                 );
                 JobsController.restartLoop();
+                if (deployAfterTM) {
+                    const jobId = response.payload.activeJob.id;
+                    const deployinterval = setInterval(() => {
+                        const targetJob = JobsController.jobs.get(jobId);
+                        if (typeof targetJob?.progress === "number") {
+                            void DreamMakerClient.startCompile(
+                                instanceEditContext.instance.id
+                            ).then(response => {
+                                if (response.code === StatusCode.ERROR) {
+                                    addError(errorState, response.error);
+                                }
+                            });
+                            clearInterval(deployinterval);
+                        }
+                    }, 500);
+                }
             } else {
                 await fetchRepositoryInfo();
             }
@@ -790,6 +816,14 @@ export default function Repository(): JSX.Element {
                                             </SimpleToolTip>
                                         </div>
                                     ) : null}
+                                    <InputField
+                                        name="view.instance.repo.deployAfter"
+                                        tooltip="view.instance.repo.deployAfter.desc"
+                                        type={FieldType.Boolean}
+                                        defaultValue={!canDeploy ? false : deployAfterTM}
+                                        disabled={!canDeploy}
+                                        onChange={newVal => setDeployAfterTM(newVal)}
+                                    />
                                 </Card.Body>
                                 <Card.Footer>
                                     <Button
