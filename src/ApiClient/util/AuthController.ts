@@ -140,6 +140,7 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
         }
 
         let response;
+        let stat;
         try {
             if (credential.type == CredentialsType.Password) {
                 response = await this.apiClient.homeControllerCreateToken({
@@ -157,16 +158,17 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
                 });
             }
         } catch (err) {
-            const stat = new InternalStatus<null, LoginErrors>({
+            stat = new InternalStatus<null, LoginErrors>({
                 code: StatusCode.ERROR,
                 error: err as InternalError<LoginErrors>
             });
             this.emit("loggingInDoneEvent", stat);
+            this.loggingIn = false;
             return stat;
         }
 
         if (!response || !response.data) {
-            const stat = new InternalStatus<null, LoginErrors>({
+            stat = new InternalStatus<null, LoginErrors>({
                 code: StatusCode.ERROR,
                 error: new InternalError(ErrorCode.APP_FAIL, {
                     jsError: new Error("unknown credential type")
@@ -181,19 +183,16 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
             case 200: {
                 CredentialsProvider.lastToken = CredentialsProvider.token;
                 CredentialsProvider.token = response.data as TokenResponse;
-                const stat = new InternalStatus<null, LoginErrors>({
+                stat = new InternalStatus<null, LoginErrors>({
                     code: StatusCode.OK,
                     payload: null // we do not want to pass the payload out
                 });
-                this.emit("loggingInDoneEvent", stat);
-                this.loggingIn = false;
-                return stat;
+                break;
             }
-
             case 401: {
                 this.logout();
                 console.info("Failed to login");
-                const stat = new InternalStatus<null, ErrorCode.LOGIN_FAIL>({
+                stat = new InternalStatus<null, ErrorCode.LOGIN_FAIL>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_FAIL,
@@ -203,14 +202,12 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
                         response
                     )
                 });
-                this.emit("loggingInDoneEvent", stat);
-                this.loggingIn = false;
-                return stat;
+                break;
             }
             case 403: {
                 this.logout();
                 console.info("Account disabled");
-                const stat = new InternalStatus<null, ErrorCode.LOGIN_DISABLED>({
+                stat = new InternalStatus<null, ErrorCode.LOGIN_DISABLED>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_DISABLED,
@@ -220,14 +217,12 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
                         response
                     )
                 });
-                this.emit("loggingInDoneEvent", stat);
-                this.loggingIn = false;
-                return stat;
+                break;
             }
             case 429: {
                 this.logout();
                 console.log("rate limited");
-                const stat = new InternalStatus<null, ErrorCode.LOGIN_RATELIMIT>({
+                stat = new InternalStatus<null, ErrorCode.LOGIN_RATELIMIT>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.LOGIN_RATELIMIT,
@@ -237,12 +232,10 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
                         response
                     )
                 });
-                this.emit("loggingInDoneEvent", stat);
-                this.loggingIn = false;
-                return stat;
+                break;
             }
             default: {
-                const stat = new InternalStatus<null, ErrorCode.UNHANDLED_RESPONSE>({
+                stat = new InternalStatus<null, ErrorCode.UNHANDLED_RESPONSE>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,
@@ -250,11 +243,12 @@ export default new (class AuthController extends TypedEmitter<IEvents> {
                         response
                     )
                 });
-                this.emit("loggingInDoneEvent", stat);
-                this.loggingIn = false;
-                return stat;
+                break;
             }
         }
+        this.emit("loggingInDoneEvent", stat);
+        this.loggingIn = false;
+        return stat;
     }
 
     public logout() {

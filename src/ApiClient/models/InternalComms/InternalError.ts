@@ -146,11 +146,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
         debuginfo = debuginfo.replace(/"username":.".+?"/g, '"username": "*******"');
         debuginfo = debuginfo.replace(/"password":.".+?"/g, '"password": "*******"');
 
-        debuginfo = replaceAll(
-            debuginfo,
-            CredentialsProvider.token?.bearer ?? CredentialsProvider.lastToken?.bearer ?? "",
-            "**************"
-        );
+        debuginfo = replaceAll(debuginfo, CredentialsProvider.getLatestToken(), "**************");
 
         if (configOptions.githubtoken.value) {
             debuginfo = replaceAll(
