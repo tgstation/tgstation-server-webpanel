@@ -22,11 +22,7 @@ export type LoginErrors =
     | ErrorCode.LOGIN_RATELIMIT
     | ErrorCode.LOGIN_LOGGING_IN;
 
-interface IEvents {
-    loggingInDoneEvent: (status: InternalStatus<null, LoginErrors>) => void;
-}
-
-export default new (class AuthController extends TypedEmitter<IEvents> {
+export default new (class AuthController extends TypedEmitter {
     /**
      * Our own personal API access, to keep the circularness out.
      */
