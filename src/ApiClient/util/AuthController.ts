@@ -32,6 +32,11 @@ export default new (class AuthController extends TypedEmitter {
 
     public loggingIn = false;
 
+    /**
+     * a way to check if the user DELIBERITELY logged out
+     */
+    public loggedIn = false;
+
     public constructor() {
         super();
         if (MODE === "DEV") {
@@ -183,6 +188,7 @@ export default new (class AuthController extends TypedEmitter {
                     code: StatusCode.OK,
                     payload: null // we do not want to pass the payload out
                 });
+                this.loggedIn = false;
                 break;
             }
             case 401: {
@@ -251,5 +257,6 @@ export default new (class AuthController extends TypedEmitter {
         CredentialsProvider.lastToken = CredentialsProvider.token;
         this._credentials = undefined;
         CredentialsProvider.token = undefined;
+        this.loggedIn = false;
     }
 })();

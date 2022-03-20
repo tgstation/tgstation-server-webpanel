@@ -149,8 +149,8 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
         debuginfo = debuginfo.replace(/"username":.".+?"/g, '"username": "*******"');
         debuginfo = debuginfo.replace(/"password":.".+?"/g, '"password": "*******"');
 
-        if (!CredentialsProvider.getLatestToken()) {
-            // no token
+        if (CredentialsProvider.getLatestToken()) {
+            // if token
             debuginfo = replaceAll(
                 debuginfo,
                 CredentialsProvider.getLatestToken(),
