@@ -10,7 +10,9 @@ import { RouteComponentProps, withRouter } from "react-router";
 import {
     ByondRights,
     DreamDaemonRights,
-    InstancePermissionSetResponse
+    DreamMakerRights,
+    InstancePermissionSetResponse,
+    RepositoryRights
 } from "../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InstancePermissionSetClient from "../../../ApiClient/InstancePermissionSetClient";
@@ -28,7 +30,9 @@ import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
 import InstanceSettings from "./Edit/Config";
+import { Deployment } from "./Edit/Deployment";
 import JobHistory from "./Edit/JobHistory";
+import Repository from "./Edit/Repository";
 import Server from "./Edit/Server";
 
 type IProps = RouteComponentProps<{ id: string; tab?: string }>;
@@ -61,6 +65,29 @@ const minimumServerPerms =
     DreamDaemonRights.SetAdditionalParameters |
     DreamDaemonRights.SetVisibility;
 
+const minimumRepoPerms =
+    RepositoryRights.SetOrigin |
+    RepositoryRights.SetSha |
+    RepositoryRights.MergePullRequest |
+    RepositoryRights.UpdateBranch |
+    RepositoryRights.ChangeCommitter |
+    RepositoryRights.ChangeTestMergeCommits |
+    RepositoryRights.ChangeCredentials |
+    RepositoryRights.SetReference |
+    RepositoryRights.Read |
+    RepositoryRights.ChangeAutoUpdateSettings |
+    RepositoryRights.Delete |
+    RepositoryRights.ChangeSubmoduleUpdate;
+
+const minimumDeployPerms =
+    DreamMakerRights.Read |
+    DreamMakerRights.Compile |
+    DreamMakerRights.SetApiValidationPort |
+    DreamMakerRights.SetDme |
+    DreamMakerRights.SetApiValidationRequirement |
+    DreamMakerRights.SetTimeout |
+    DreamMakerRights.SetSecurityLevel;
+
 class InstanceEdit extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
     public static tabs: [
@@ -73,8 +100,19 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ComponentType?
     ][] = [
         ["info", "info", () => true],
-        ["repository", "code-branch", () => true],
-        ["deployment", "hammer", () => true],
+        [
+            "repository",
+            "code-branch",
+            instancePermissionSet => !!(instancePermissionSet.repositoryRights & minimumRepoPerms),
+            Repository
+        ],
+        [
+            "deployment",
+            "hammer",
+            instancePermissionSet =>
+                !!(instancePermissionSet.dreamMakerRights & minimumDeployPerms),
+            Deployment
+        ],
         [
             "dd",
             "server",

@@ -61,15 +61,19 @@ export default function InputForm<Fields extends Record<string, InputFormField>>
                 [id]: {}
             }));
         });
+        // It wants props.fields, but you really shouldnt ever change it
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    Object.entries(props.fields).forEach(([id, field]) => {
+    for (const [id, field] of Object.entries(props.fields)) {
         fieldStateIds.set(id, field);
         fieldValueStates.set(
             field,
+            // props.fields never changes, it will be
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             useState<InputFieldTypes>(field.defaultValue ?? defaultValues[field.type])
         );
-    });
+    }
 
     let anyDiff = false;
     let anyInvalid = false;

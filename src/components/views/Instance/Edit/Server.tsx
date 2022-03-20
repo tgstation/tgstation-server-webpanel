@@ -37,7 +37,8 @@ export default function Server(): JSX.Element {
     const [watchdogSettings, setWatchdogSettings] = useState<DreamDaemonResponse>();
     const [loading, setLoading] = useState(false);
     const errorState = useState<Array<InternalError<ErrorCode> | undefined>>([]);
-    useEffect(() => void loadWatchdogSettings(), []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => void loadWatchdogSettings(), [instanceEditContext.instance.id]);
 
     async function loadWatchdogSettings(): Promise<void> {
         if (
@@ -283,7 +284,7 @@ export default function Server(): JSX.Element {
             </h3>
             {!canMetadata ? (
                 anyEditableField ? (
-                    <GenericAlert title="view.instance.server.no_metadata" />
+                    <GenericAlert title="view.instance.no_metadata" />
                 ) : (
                     <GenericAlert title="view.instance.server.no_metadata_and_no_settings" />
                 )
