@@ -121,32 +121,34 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     // do not autologin if the user deliberitely logged out
                     if (this.autoLogin) {
                         if (!AuthController.loggedIn) {
-                            console.log("User delberitely logged out. Ignoring autologin");
-                        } else {
-                            const status = await this.login();
-                            switch (status.code) {
-                                case StatusCode.OK: {
-                                    return axiosServer.request({
-                                        secure: true,
-                                        path: request.url!,
-                                        ...request
-                                    });
-                                }
-                                case StatusCode.ERROR: {
-                                    this.emit("accessDenied");
-                                    //time to kick out the user
-                                    // infinite loop here (logout cache clear)
-                                    // => it calls check available instances
-                                    // => it fails, autologin is true by default
-                                    // => this triggers, causing event to be fired again
-                                    this.logout(false);
-                                    const errorobj = new InternalError(
-                                        ErrorCode.HTTP_ACCESS_DENIED,
-                                        { void: true },
-                                        res
-                                    );
-                                    return Promise.reject(errorobj);
-                                }
+                            console.log(
+                                "User delberitely logged out. Ignoring autologin and instead pausing until we logged in"
+                            );
+                            await AuthController.waitUntilLoggedIn();
+                        }
+                        const status = await this.login();
+                        switch (status.code) {
+                            case StatusCode.OK: {
+                                return axiosServer.request({
+                                    secure: true,
+                                    path: request.url!,
+                                    ...request
+                                });
+                            }
+                            case StatusCode.ERROR: {
+                                this.emit("accessDenied");
+                                //time to kick out the user
+                                // infinite loop here (logout cache clear)
+                                // => it calls check available instances
+                                // => it fails, autologin is true by default
+                                // => this triggers, causing event to be fired again
+                                this.logout(false);
+                                const errorobj = new InternalError(
+                                    ErrorCode.HTTP_ACCESS_DENIED,
+                                    { void: true },
+                                    res
+                                );
+                                return Promise.reject(errorobj);
                             }
                         }
                     }

@@ -113,6 +113,14 @@ export default new (class AuthController extends TypedEmitter {
         return await this.authenticate(this._credentials);
     }
 
+    public async waitUntilLoggedIn() {
+        return await new Promise<InternalStatus<null, LoginErrors>>(resolve =>
+            this.on("loggingInDoneEvent", stat => {
+                void resolve(stat);
+            })
+        );
+    }
+
     /**
      * Attempt to authenticate using the credentials.
      * This **will not** return token from status.
@@ -121,11 +129,7 @@ export default new (class AuthController extends TypedEmitter {
      */
     public async authenticate(credential: ICredentials, cacheCredential = true) {
         if (this.loggingIn) {
-            return await new Promise<InternalStatus<null, LoginErrors>>(resolve =>
-                this.on("loggingInDoneEvent", stat => {
-                    void resolve(stat);
-                })
-            );
+            return await this.waitUntilLoggedIn();
         }
         this.loggingIn = true;
 
