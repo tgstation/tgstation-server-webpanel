@@ -43,7 +43,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     public apiHttpClient?: HttpClient<unknown>;
     public apiClient?: Api<unknown>;
 
-    public apiRequestInterceptor = {
+    private readonly apiRequestInterceptor = {
         onFulfilled: async (value: AxiosRequestConfig) => {
             //Meta value that means theres no value, used in the github deployed version
             if (configOptions.apipath.value === "https://example.org:5000") {
@@ -60,7 +60,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         }
     };
 
-    public apiResponseInterceptor = {
+    private readonly apiResponseInterceptor = {
         onFulfilled: (val: AxiosResponse) => val,
         // it is real, we do not know what type though
         onRejected: async (error: AxiosError, axiosServer: HttpClient): Promise<AxiosResponse> => {

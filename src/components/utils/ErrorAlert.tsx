@@ -29,7 +29,7 @@ class ErrorAlert extends Component<IProps, IState> {
     }
     public render(): ReactNode {
         if (!this.props.error) {
-            return "";
+            return null;
         }
 
         const handleClose = () => this.setState({ popup: false });
