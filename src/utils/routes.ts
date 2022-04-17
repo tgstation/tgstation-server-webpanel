@@ -72,6 +72,7 @@ function instanceManagerRight(right: InstanceManagerRights) {
         return false;
     };
 }
+
 //https://stackoverflow.com/questions/54598322/how-to-make-typescript-infer-the-keys-of-an-object-but-define-type-of-its-value
 //Infer the keys but restrict the values to a type
 const asElementTypesAppRoute = <T>(et: { [K in keyof T]: AppRoute }) => et;
@@ -373,6 +374,8 @@ export const RouteData = {
     byondlistpage: undefined as undefined | number,
     userlistpage: undefined as undefined | number,
     jobhistorypage: new Map<number, number>(),
+
+    rootDirectoryPage: undefined as undefined | number,
 
     oautherrors: [] as InternalError<ErrorCode>[]
 };
