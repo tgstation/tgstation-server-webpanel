@@ -73,7 +73,11 @@ export enum ErrorCode {
     NO_DB_ENTITY = "error.no_db_entity", //errmessage
 
     //DreamMaker errors
-    COMPILE_JOB_NOT_FOUND = "error.compile_job_not_found" //errmessage
+    COMPILE_JOB_NOT_FOUND = "error.compile_job_not_found", //errmessage
+
+    //Config File errors
+    CONFIG_FILE_NOT_FOUND = "error.config_file_not_found",
+    CONFIG_FILE_IO_ERROR = "error.config_file_io"
 }
 
 type errorMessage = {
@@ -93,6 +97,7 @@ export enum DescType {
     LOCALE,
     TEXT
 }
+
 interface Desc {
     type: DescType;
     desc: string;
