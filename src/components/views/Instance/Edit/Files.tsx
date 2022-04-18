@@ -99,28 +99,58 @@ class Files extends React.Component<IProps, IState> {
 
         return (
             <div className="d-flex flex-row">
-                <div>
+                <div style={{ paddingRight: "16px", maxHeight: "800px", overflowY: "scroll" }}>
                     <ul>
                         {this.state.rootDirectory.map(dir => (
                             <Fragment key={dir.fileResponse.path}>{this.directory(dir)}</Fragment>
                         ))}
                     </ul>
                 </div>
-                <div className="flex-fill flex-column">
+                <div className="flex-fill flex-column" style={{ padding: "16px" }}>
                     {!canReadFiles ? (
                         <span>No file read permissions</span>
+                    ) : !this.state.selectedFile ? (
+                        <span>Select a file on the left</span>
                     ) : (
-                        <textarea
-                            cols={80}
-                            rows={30}
-                            className="ml-16"
-                            value={this.state.selectedFile?.fileContents}
-                            disabled={!canWriteFiles}
-                        />
+                        <>
+                            <textarea
+                                cols={80}
+                                style={{ height: "100%" }}
+                                value={this.state.selectedFile.fileContents}
+                                disabled={!canWriteFiles}
+                            />
+                            {canWriteFiles && this.state.selectedFile?.fileContents ? (
+                                <button
+                                    onClick={() =>
+                                        this.saveFile(
+                                            this.state.selectedFile?.fileContents as string
+                                        )
+                                    }>
+                                    Save
+                                </button>
+                            ) : (
+                                ""
+                            )}
+                        </>
                     )}
                 </div>
             </div>
         );
+    }
+
+    private async saveFile(contents: string) {
+        if (!this.state.selectedFile) return;
+        if (hasFilesRight(this.context.instancePermissionSet, ConfigurationRights.Write)) {
+            const response = await ConfigurationFileClient.writeConfigFile(
+                this.context.instance.id,
+                { path: this.state.selectedFile.fileResponse.path },
+                new TextEncoder().encode(contents)
+            );
+
+            if (response.code === StatusCode.OK) {
+                await this.loadFileContents(this.state.selectedFile);
+            }
+        }
     }
 
     private selectFile(dir: DirectoryTree) {
@@ -158,13 +188,24 @@ class Files extends React.Component<IProps, IState> {
             ConfigurationRights.Read
         );
 
+        console.log(dir.fileResponse.path);
+
         const index = Math.max(
             dir.fileResponse.path.lastIndexOf("\\"),
             dir.fileResponse.path.lastIndexOf("/")
         );
         if (!dir.fileResponse.isDirectory) {
+            const selected = dir.fileResponse.path === this.state.selectedFile?.fileResponse.path;
             return (
-                <li>
+                <li
+                    style={{
+                        fontWeight: selected ? "bold" : "normal",
+                        borderColor: "white",
+                        paddingLeft: selected ? "4px" : "0",
+                        borderLeftStyle: selected ? "solid" : "none",
+                        borderTopStyle: selected ? "solid" : "none",
+                        borderBottomStyle: selected ? "solid" : "none"
+                    }}>
                     <a onClick={() => (canReadFiles ? this.selectFile(dir) : {})}>
                         {dir.fileResponse.path.slice(index + 1)}
                     </a>
@@ -213,6 +254,9 @@ class Files extends React.Component<IProps, IState> {
                     return;
                 }
 
+                console.log("getting root directory");
+                response.payload.content.map(r => console.log(r.path));
+
                 const rootDirectory = response.payload.content.map(r => new DirectoryTree(r));
 
                 for (const rd of rootDirectory) {
@@ -248,6 +292,9 @@ class Files extends React.Component<IProps, IState> {
                 }
             );
             if (response.code === StatusCode.OK) {
+                console.log("getting specific directory " + path);
+                response.payload.content.forEach(c => console.log(c.path));
+
                 directory.totalPages = response.payload.totalPages;
                 if (response.payload.totalPages <= directory.page) directory.fullyLoaded = true;
                 const newChildren = response.payload.content.map(c => new DirectoryTree(c));
