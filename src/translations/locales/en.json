@@ -177,6 +177,7 @@
     "view.user.edit.oauth.provider.github": "GitHub",
     "view.user.edit.oauth.provider.tgforums": "/tg/ Forums",
     "view.user.edit.oauth.provider.keycloak": "Keycloak",
+    "view.user.edit.oauth.provider.invisioncommunity": "Invision Community",
     "view.user.passwd.title": "Editing password for ",
     "view.user.create.tgs": "Create user with TGS identifier",
     "view.user.create.sys": "Create user with system identifier",
