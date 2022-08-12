@@ -1,3 +1,4 @@
+import { faInvision } from "@fortawesome/free-brands-svg-icons";
 import { faDiscord } from "@fortawesome/free-brands-svg-icons/faDiscord";
 import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -121,6 +122,9 @@ class Login extends React.Component<IProps, IState> {
             [OAuthProvider.TGForums]: <img src={TGLogo} alt="tglogo" style={{ width: "1.2em" }} />,
             [OAuthProvider.Keycloak]: (
                 <img src={KeycloakLogo} alt="keycloaklogo" style={{ width: "1.2em" }} />
+            ),
+            [OAuthProvider.InvisionCommunity]: (
+                <FontAwesomeIcon icon={faInvision} style={{ width: "1.2em" }} />
             )
         };
 
@@ -128,7 +132,8 @@ class Login extends React.Component<IProps, IState> {
             GitHub: "#161b22",
             Discord: "#7289da",
             TGForums: undefined,
-            Keycloak: undefined
+            Keycloak: undefined,
+            InvisionCommunity: undefined
         };
 
         return (
@@ -192,7 +197,8 @@ class Login extends React.Component<IProps, IState> {
                     {(this.context.serverInfo?.oAuthProviderInfos?.Discord ||
                         this.context.serverInfo?.oAuthProviderInfos?.GitHub ||
                         this.context.serverInfo?.oAuthProviderInfos?.Keycloak ||
-                        this.context.serverInfo?.oAuthProviderInfos?.TGForums) && (
+                        this.context.serverInfo?.oAuthProviderInfos?.TGForums ||
+                        this.context.serverInfo?.oAuthProviderInfos?.InvisionCommunity) && (
                         <>
                             <hr />
                             <Card body>
@@ -276,6 +282,15 @@ class Login extends React.Component<IProps, IState> {
             case OAuthProvider.TGForums: {
                 url = `https://tgstation13.org/phpBB/oauth.php?session_public_token=${e(
                     this.context.serverInfo.oAuthProviderInfos.TGForums.clientId
+                )}`;
+                break;
+            }
+            case OAuthProvider.InvisionCommunity: {
+                url = `${this.context.serverInfo.oAuthProviderInfos.InvisionCommunity
+                    .serverUrl!}/oauth/authorize/?response_type=code&client_id=${e(
+                    this.context.serverInfo.oAuthProviderInfos.InvisionCommunity.clientId
+                )}&scope=profile&state=${e(state)}&redirect_uri=${e(
+                    this.context.serverInfo.oAuthProviderInfos.InvisionCommunity.redirectUri
                 )}`;
                 break;
             }

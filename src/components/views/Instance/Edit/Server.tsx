@@ -197,6 +197,15 @@ export default function Server(): JSX.Element {
                 DreamDaemonRights.SetHeartbeatInterval
             )
         },
+        dumpOnHeartbeatFail: {
+            type: FieldType.Boolean as FieldType.Boolean,
+            name: "fields.instance.watchdog.dumponheartbeatfail",
+            defaultValue: watchdogSettings.dumpOnHeartbeatRestart,
+            disabled: !hasDreamDaemonRight(
+                instanceEditContext.instancePermissionSet,
+                DreamDaemonRights.CreateDump
+            )
+        },
         allowWebClient: {
             type: FieldType.Boolean as FieldType.Boolean,
             name: "fields.instance.watchdog.allowwebclient",
