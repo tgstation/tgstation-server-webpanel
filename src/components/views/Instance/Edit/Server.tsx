@@ -136,6 +136,15 @@ export default function Server(): JSX.Element {
                 DreamDaemonRights.SetAutoStart
             )
         },
+        startProfiler: {
+            type: FieldType.Boolean as FieldType.Boolean,
+            name: "fields.instance.watchdog.autostartprofiler",
+            defaultValue: watchdogSettings.startProfiler,
+            disabled: !hasDreamDaemonRight(
+                instanceEditContext.instancePermissionSet,
+                DreamDaemonRights.SetProfiler
+            )
+        },
         port: {
             type: FieldType.Number as FieldType.Number,
             name: "fields.instance.watchdog.port",
