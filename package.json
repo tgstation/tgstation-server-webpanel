@@ -123,7 +123,7 @@
     },
     "tgs_api": {
         "type": "version",
-        "value": "9.5.0"
+        "value": "9.6.0"
     },
     "tgs_api_example_version": {
         "desc": "Fetches a tgs api version from github using the tag name",
