@@ -28,8 +28,6 @@ interface IState {
     //so we dont actually use the routes but it allows us to make react update the component
     routes: AppRoute[];
     categories: typeof AppCategories;
-    focusedCategory: string;
-    focusTimer?: number;
 }
 
 class AppNavbar extends React.Component<IProps, IState> {
@@ -45,8 +43,7 @@ class AppNavbar extends React.Component<IProps, IState> {
         this.state = {
             loggedIn: !!CredentialsProvider.isTokenValid(),
             routes: [],
-            categories: AppCategories,
-            focusedCategory: this.props.category?.name ?? ""
+            categories: AppCategories
         };
     }
 
@@ -83,17 +80,6 @@ class AppNavbar extends React.Component<IProps, IState> {
         LoginHooks.removeListener("loginSuccess", this.loginSuccess);
         ServerClient.removeListener("logout", this.logout);
         RouteController.removeListener("refresh", this.refresh);
-    }
-
-    public componentDidUpdate(prevProps: Readonly<IProps>): void {
-        if (
-            this.props.category !== undefined &&
-            this.props.category.key !== prevProps.category?.key
-        ) {
-            this.setState({
-                focusedCategory: this.props.category.name
-            });
-        }
     }
 
     public render(): React.ReactNode {
