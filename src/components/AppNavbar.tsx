@@ -157,33 +157,57 @@ class AppNavbar extends React.Component<IProps, IState> {
                                                 title={<FormattedMessage id={cat.leader.name} />}>
                                                 {Object.values(cat.routes).filter(
                                                     value => value.cachedAuth
-                                                ).length >= 2
-                                                    ? cat.routes.map(val => {
-                                                          if (val.catleader) return; //we already display this but differently
-                                                          if (!val.cachedAuth) return;
-                                                          if (!val.visibleNavbar) return;
+                                                ).length >= 2 ? (
+                                                    <React.Fragment>
+                                                        <NavDropdown.Item
+                                                            onClick={() => {
+                                                                this.props.history.push(
+                                                                    cat.leader.link ??
+                                                                        cat.leader.route,
+                                                                    { reload: true }
+                                                                );
+                                                            }}
+                                                            active={matchesPath(
+                                                                this.props.location.pathname,
+                                                                cat.leader.route,
+                                                                true
+                                                            )}>
+                                                            <FormattedMessage
+                                                                id={cat.leader.name}
+                                                            />
+                                                        </NavDropdown.Item>
+                                                        {cat.routes.map(val => {
+                                                            if (val.catleader) return; //we already display this but differently
+                                                            if (!val.cachedAuth) return;
+                                                            if (!val.visibleNavbar) return;
 
-                                                          return (
-                                                              <NavDropdown.Item
-                                                                  key={val.name}
-                                                                  onClick={() => {
-                                                                      this.props.history.push(
-                                                                          val.link ?? val.route,
-                                                                          {
-                                                                              reload: true
-                                                                          }
-                                                                      );
-                                                                  }}
-                                                                  active={matchesPath(
-                                                                      this.props.location.pathname,
-                                                                      val.route,
-                                                                      !val.navbarLoose
-                                                                  )}>
-                                                                  <FormattedMessage id={val.name} />
-                                                              </NavDropdown.Item>
-                                                          );
-                                                      })
-                                                    : ""}
+                                                            return (
+                                                                <NavDropdown.Item
+                                                                    key={val.name}
+                                                                    onClick={() => {
+                                                                        this.props.history.push(
+                                                                            val.link ?? val.route,
+                                                                            {
+                                                                                reload: true
+                                                                            }
+                                                                        );
+                                                                    }}
+                                                                    active={matchesPath(
+                                                                        this.props.location
+                                                                            .pathname,
+                                                                        val.route,
+                                                                        !val.navbarLoose
+                                                                    )}>
+                                                                    <FormattedMessage
+                                                                        id={val.name}
+                                                                    />
+                                                                </NavDropdown.Item>
+                                                            );
+                                                        })}
+                                                    </React.Fragment>
+                                                ) : (
+                                                    ""
+                                                )}
                                             </NavDropdown>
                                         </Nav.Item>
                                     );
