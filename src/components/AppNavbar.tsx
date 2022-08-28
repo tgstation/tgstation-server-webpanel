@@ -1,12 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
+import { NavDropdown } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
-import CSSTransition from "react-transition-group/CSSTransition";
 
 import ServerClient from "../ApiClient/ServerClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
@@ -28,8 +28,6 @@ interface IState {
     //so we dont actually use the routes but it allows us to make react update the component
     routes: AppRoute[];
     categories: typeof AppCategories;
-    focusedCategory: string;
-    focusTimer?: number;
 }
 
 class AppNavbar extends React.Component<IProps, IState> {
@@ -45,8 +43,7 @@ class AppNavbar extends React.Component<IProps, IState> {
         this.state = {
             loggedIn: !!CredentialsProvider.isTokenValid(),
             routes: [],
-            categories: AppCategories,
-            focusedCategory: this.props.category?.name ?? ""
+            categories: AppCategories
         };
     }
 
@@ -85,17 +82,6 @@ class AppNavbar extends React.Component<IProps, IState> {
         RouteController.removeListener("refresh", this.refresh);
     }
 
-    public componentDidUpdate(prevProps: Readonly<IProps>): void {
-        if (
-            this.props.category !== undefined &&
-            this.props.category.key !== prevProps.category?.key
-        ) {
-            this.setState({
-                focusedCategory: this.props.category.name
-            });
-        }
-    }
-
     public render(): React.ReactNode {
         return (
             <React.Fragment>
@@ -116,7 +102,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                     </Navbar.Brand>
                     <Navbar.Toggle className="mr-2" aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse className="text-right mr-2" style={{ minWidth: "0px" }}>
-                        <Nav className="mr-auto overflow-auto fancyscroll">
+                        <Nav>
                             {!this.state.loggedIn ? (
                                 <Nav.Item>
                                     <Nav.Link
@@ -133,118 +119,83 @@ class AppNavbar extends React.Component<IProps, IState> {
                             ) : (
                                 Object.values(this.state.categories).map(cat => {
                                     if (!cat.leader.cachedAuth) return;
-                                    return (
-                                        <div
-                                            key={cat.name}
-                                            className="d-flex"
-                                            onMouseEnter={() => {
-                                                const timer = window.setTimeout(() => {
-                                                    this.setState({
-                                                        focusedCategory: cat.name,
-                                                        focusTimer: undefined
-                                                    });
-                                                }, 130);
-                                                this.setState({
-                                                    focusTimer: timer
-                                                });
-                                            }}
-                                            onMouseLeave={() => {
-                                                window.clearTimeout(this.state.focusTimer);
-                                                this.setState({
-                                                    focusTimer: undefined
-                                                });
-                                            }}
-                                            onClick={() => {
-                                                window.clearTimeout(this.state.focusTimer);
-                                                this.setState({
-                                                    focusedCategory: cat.name,
-                                                    focusTimer: undefined
-                                                });
-                                            }}>
-                                            <Nav.Item>
-                                                <Nav.Link
-                                                    onClick={() => {
-                                                        this.props.history.push(
-                                                            cat.leader.link ?? cat.leader.route,
-                                                            { reload: true }
-                                                        );
-                                                    }}
-                                                    active={matchesPath(
-                                                        this.props.location.pathname,
-                                                        cat.leader.route,
-                                                        !cat.leader.navbarLoose
-                                                    )}>
-                                                    <FormattedMessage id={cat.leader.name} />
-                                                </Nav.Link>
-                                            </Nav.Item>
-                                            {Object.values(cat.routes).filter(
-                                                value => value.cachedAuth
-                                            ).length >= 2 ? (
-                                                <CSSTransition
-                                                    in={this.state.focusedCategory === cat.name}
-                                                    classNames="anim-collapse"
-                                                    className="nowrap anim-collapse-all"
-                                                    addEndListener={(node, done) => {
-                                                        node.addEventListener(
-                                                            "transitionend",
-                                                            done,
-                                                            false
-                                                        );
-                                                    }}
-                                                    onMouseEnter={() => {
-                                                        this.setState({
-                                                            focusedCategory: cat.name
-                                                        });
-                                                    }}>
-                                                    <div>
-                                                        <Nav>
-                                                            <div className="py-2 d-none d-lg-inline">
-                                                                <FontAwesomeIcon icon="angle-right" />
-                                                            </div>
-                                                            <Nav className="bg-darkblue mx-1 rounded">
-                                                                {cat.routes.map(val => {
-                                                                    if (val.catleader) return; //we already display this but differently
-                                                                    if (!val.cachedAuth) return;
-                                                                    if (!val.visibleNavbar) return;
+                                    return cat.routes.length == 1 ? (
+                                        <Nav.Item key={cat.name}>
+                                            <Nav.Link
+                                                onClick={() => {
+                                                    this.props.history.push(
+                                                        cat.leader.link ?? cat.leader.route,
+                                                        { reload: true }
+                                                    );
+                                                }}
+                                                active={matchesPath(
+                                                    this.props.location.pathname,
+                                                    cat.leader.route,
+                                                    !cat.leader.navbarLoose
+                                                )}>
+                                                <FormattedMessage id={cat.leader.name} />
+                                            </Nav.Link>
+                                        </Nav.Item>
+                                    ) : (
+                                        <Nav.Item key={cat.name}>
+                                            <NavDropdown
+                                                id={cat.name + "-dropdown"}
+                                                title={<FormattedMessage id={cat.leader.name} />}>
+                                                {Object.values(cat.routes).filter(
+                                                    value => value.cachedAuth
+                                                ).length >= 2 ? (
+                                                    <React.Fragment>
+                                                        <NavDropdown.Item
+                                                            onClick={() => {
+                                                                this.props.history.push(
+                                                                    cat.leader.link ??
+                                                                        cat.leader.route,
+                                                                    { reload: true }
+                                                                );
+                                                            }}
+                                                            active={matchesPath(
+                                                                this.props.location.pathname,
+                                                                cat.leader.route,
+                                                                true
+                                                            )}>
+                                                            <FormattedMessage
+                                                                id={cat.leader.name}
+                                                            />
+                                                        </NavDropdown.Item>
+                                                        {cat.routes.map(val => {
+                                                            if (val.catleader) return; //we already display this but differently
+                                                            if (!val.cachedAuth) return;
+                                                            if (!val.visibleNavbar) return;
 
-                                                                    return (
-                                                                        <Nav.Item key={val.name}>
-                                                                            <Nav.Link
-                                                                                onClick={() => {
-                                                                                    this.props.history.push(
-                                                                                        val.link ??
-                                                                                            val.route,
-                                                                                        {
-                                                                                            reload: true
-                                                                                        }
-                                                                                    );
-                                                                                }}
-                                                                                active={matchesPath(
-                                                                                    this.props
-                                                                                        .location
-                                                                                        .pathname,
-                                                                                    val.route,
-                                                                                    !val.navbarLoose
-                                                                                )}>
-                                                                                <FormattedMessage
-                                                                                    id={val.name}
-                                                                                />
-                                                                            </Nav.Link>
-                                                                        </Nav.Item>
-                                                                    );
-                                                                })}
-
-                                                                <div className="py-2 d-none d-lg-inline mr-1">
-                                                                    <FontAwesomeIcon icon="grip-lines-vertical" />
-                                                                </div>
-                                                            </Nav>
-                                                        </Nav>
-                                                    </div>
-                                                </CSSTransition>
-                                            ) : (
-                                                ""
-                                            )}
-                                        </div>
+                                                            return (
+                                                                <NavDropdown.Item
+                                                                    key={val.name}
+                                                                    onClick={() => {
+                                                                        this.props.history.push(
+                                                                            val.link ?? val.route,
+                                                                            {
+                                                                                reload: true
+                                                                            }
+                                                                        );
+                                                                    }}
+                                                                    active={matchesPath(
+                                                                        this.props.location
+                                                                            .pathname,
+                                                                        val.route,
+                                                                        !val.navbarLoose
+                                                                    )}>
+                                                                    <FormattedMessage
+                                                                        id={val.name}
+                                                                    />
+                                                                </NavDropdown.Item>
+                                                            );
+                                                        })}
+                                                    </React.Fragment>
+                                                ) : (
+                                                    ""
+                                                )}
+                                            </NavDropdown>
+                                        </Nav.Item>
                                     );
                                 })
                             )}
