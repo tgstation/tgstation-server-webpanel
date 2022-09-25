@@ -53,6 +53,7 @@ interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;
     loadingPerms: boolean;
+    instanceNeedsReload: boolean;
     tab: string;
     users?: UserResponse[] | null;
     groups?: UserGroup[] | null;
@@ -83,6 +84,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             errors: [],
             loading: true,
             loadingPerms: true,
+            instanceNeedsReload: false,
             tab: "instancepermissionsetperms",
             userPermissions: {
                 permissionSetId: 0,
@@ -508,6 +510,12 @@ class InstancePermissions extends React.Component<IProps, IState> {
         });
     }
 
+    public async componentWillUnmount(): Promise<void> {
+        if (this.state.instanceNeedsReload) {
+            await this.context.reloadInstance();
+        }
+    }
+
     public render(): React.ReactNode {
         if (this.state.loading) {
             return <Loading text="loading.instance" />;
@@ -862,9 +870,9 @@ class InstancePermissions extends React.Component<IProps, IState> {
 
             if (response.code == StatusCode.OK) {
                 if (newset.permissionSetId === this.state.userPermissions?.permissionSetId) {
-                    await this.context.reloadInstance();
                     this.setState({
-                        userPermissions: response.payload
+                        userPermissions: response.payload,
+                        instanceNeedsReload: true
                     });
                 }
 

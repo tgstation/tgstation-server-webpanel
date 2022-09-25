@@ -188,6 +188,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
                 instance: response.payload
             });
 
+            InstancePermissionSetClient.cachedInstancePermissionSet.delete(this.state.instanceid);
             const response2 = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                 this.state.instanceid
             );

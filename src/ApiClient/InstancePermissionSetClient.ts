@@ -24,7 +24,7 @@ export type deleteInstancePermissionSetErrors = GenericErrors | ErrorCode.NO_DB_
 export type listInstancePermissionSetErrors = GenericErrors;
 
 export default new (class InstancePermissionSetClient extends ApiClient<IEvents> {
-    private _cachedInstancePermissionSet: Map<
+    public cachedInstancePermissionSet: Map<
         number,
         InternalStatus<InstancePermissionSetResponse, ErrorCode.OK>
     > = new Map<number, InternalStatus<InstancePermissionSetResponse, ErrorCode.OK>>();
@@ -35,7 +35,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
         super();
 
         ServerClient.on("purgeCache", () => {
-            this._cachedInstancePermissionSet.clear();
+            this.cachedInstancePermissionSet.clear();
         });
     }
 
@@ -102,8 +102,8 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
     > {
         await ServerClient.wait4Init();
 
-        if (this._cachedInstancePermissionSet.has(instanceid)) {
-            return this._cachedInstancePermissionSet.get(instanceid)!;
+        if (this.cachedInstancePermissionSet.has(instanceid)) {
+            return this.cachedInstancePermissionSet.get(instanceid)!;
         }
 
         if (this.loadingInstancePermissionSetInfo.get(instanceid)) {
@@ -146,7 +146,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
                     payload: response.data as InstancePermissionSetResponse
                 });
 
-                this._cachedInstancePermissionSet.set(instanceid, res);
+                this.cachedInstancePermissionSet.set(instanceid, res);
                 this.emit("loadInstancePermissionSet", res);
                 this.loadingInstancePermissionSetInfo.set(instanceid, false);
                 return res;
