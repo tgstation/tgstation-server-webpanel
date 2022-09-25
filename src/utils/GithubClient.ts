@@ -132,7 +132,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                     return response.data.reduce((result, release) => {
                         const match = /tgstation-server-v([\d.]+)/.exec(release.name ?? "");
                         if (!match) return result;
-                        if (match[1][0] !== "4") return result;
+                        if (match[1][0] !== "4" && match[1][0] !== "5") return result;
 
                         const version = match[1];
                         let old = false;
