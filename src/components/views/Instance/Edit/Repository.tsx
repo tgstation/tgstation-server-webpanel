@@ -118,6 +118,7 @@ export default function Repository(): JSX.Element {
                 .then(prs => {
                     if (prs.code === StatusCode.ERROR) {
                         addError(errorState, prs.error);
+                        setPRs(PRs ?? []);
                     } else {
                         setPRs(prs.payload);
                         if (resetDesiredState) reloadDesiredState(repositoryInfo, true);
@@ -128,6 +129,7 @@ export default function Repository(): JSX.Element {
                         errorState,
                         new InternalError(ErrorCode.APP_FAIL, { jsError: e as Error })
                     );
+                    setPRs(PRs ?? []);
                 });
         }
     }
@@ -710,7 +712,11 @@ export default function Repository(): JSX.Element {
 
                                                           if (
                                                               state === PRState.reapply &&
-                                                              !(forceReset || noBranch)
+                                                              !(
+                                                                  forceReset ||
+                                                                  manualReset ||
+                                                                  noBranch
+                                                              )
                                                           )
                                                               return null;
 
@@ -766,21 +772,16 @@ export default function Repository(): JSX.Element {
                                         }
                                         onChange={newVal => setUpdateRepo(newVal)}
                                     />
-                                    {(configOptions.manualreset.value as boolean) ||
-                                    (repositoryInfo &&
-                                        repositoryInfo.remoteGitProvider ===
-                                            RemoteGitProvider.GitLab) ? (
-                                        <InputField
-                                            name="view.instance.repo.reset"
-                                            tooltip="view.instance.repo.reset.desc"
-                                            type={FieldType.Boolean}
-                                            defaultValue={
-                                                noBranch ? false : forceReset ? true : manualReset
-                                            }
-                                            disabled={noBranch || !canReset || forceReset}
-                                            onChange={newVal => setManualReset(newVal)}
-                                        />
-                                    ) : null}
+                                    <InputField
+                                        name="view.instance.repo.reset"
+                                        tooltip="view.instance.repo.reset.desc"
+                                        type={FieldType.Boolean}
+                                        defaultValue={
+                                            noBranch ? false : forceReset ? true : manualReset
+                                        }
+                                        disabled={noBranch || !canReset || forceReset}
+                                        onChange={newVal => setManualReset(newVal)}
+                                    />
                                     {(configOptions.manualpr.value as boolean) ||
                                     !repositoryInfo ||
                                     repositoryInfo.remoteGitProvider ===
