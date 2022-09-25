@@ -70,6 +70,6 @@ export default function (): void {
         faLock,
         faMinus,
         faUnlock,
-        faLock,
+        faLock
     );
 }

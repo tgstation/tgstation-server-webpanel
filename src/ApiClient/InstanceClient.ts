@@ -68,7 +68,9 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instance.instanceControllerGrantPermissions(instance.id);
+            response = await ServerClient.apiClient!.instance.instanceControllerGrantPermissions(
+                instance.id
+            );
             this.emit("instanceChange", instance.id);
         } catch (stat) {
             return new InternalStatus({

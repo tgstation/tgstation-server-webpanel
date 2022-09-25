@@ -149,7 +149,7 @@ class InstanceList extends React.Component<IProps, IState> {
 
     private async grantPermissions(instance: Instance) {
         const instanceedit = await InstanceClient.grantPermissions(({
-            id: instance.id,
+            id: instance.id
         } as unknown) as InstanceResponse);
 
         if (instanceedit.code === StatusCode.OK) {
@@ -164,7 +164,10 @@ class InstanceList extends React.Component<IProps, IState> {
         // to determine what state we should put it in, thats intentional, if the user clicks Set Online, it needs
         // to be online, no matter what it previously was
         const desiredState = !instance.online;
-        if(!desiredState && !confirm(`Are you sure you want to take the instance "${instance.name}" offline?`)){
+        if (
+            !desiredState &&
+            !confirm(`Are you sure you want to take the instance "${instance.name}" offline?`)
+        ) {
             return;
         }
 
@@ -189,7 +192,10 @@ class InstanceList extends React.Component<IProps, IState> {
             InstanceManagerRights.SetOnline
         );
 
-        const canGrant = hasInstanceManagerRight(resolvePermissionSet(this.context.user), InstanceManagerRights.GrantPermissions);
+        const canGrant = hasInstanceManagerRight(
+            resolvePermissionSet(this.context.user),
+            InstanceManagerRights.GrantPermissions
+        );
 
         const tablecellstyling: CSSProperties = {
             verticalAlign: "middle"
@@ -271,20 +277,32 @@ class InstanceList extends React.Component<IProps, IState> {
                                     </td>
                                     <td className="align-middle p-1" style={tablecellstyling}>
                                         {!value.canAccess && value.online ? (
-                                        <OverlayTrigger placement="top" overlay={props => (
-                                            <Tooltip id={`grant-tooltop-${value.id}`} {...props}>
-                                                <FormattedMessage id={`view.instance.list.grant${(!canGrant ? ".deny" : "")}`} />
-                                            </Tooltip>
-                                          )}>
-                                            <Button
-                                                className="mx-1"
-                                                variant="warning"
-                                                onClick={() => this.grantPermissions(value)}
-                                                disabled={!canGrant}>
-                                                <FontAwesomeIcon icon={canGrant ? faUnlock : faLock} />
-                                            </Button>
-                                        </OverlayTrigger>) : (<></>)
-                                        }
+                                            <OverlayTrigger
+                                                placement="top"
+                                                overlay={props => (
+                                                    <Tooltip
+                                                        id={`grant-tooltop-${value.id}`}
+                                                        {...props}>
+                                                        <FormattedMessage
+                                                            id={`view.instance.list.grant${
+                                                                !canGrant ? ".deny" : ""
+                                                            }`}
+                                                        />
+                                                    </Tooltip>
+                                                )}>
+                                                <Button
+                                                    className="mx-1"
+                                                    variant="warning"
+                                                    onClick={() => this.grantPermissions(value)}
+                                                    disabled={!canGrant}>
+                                                    <FontAwesomeIcon
+                                                        icon={canGrant ? faUnlock : faLock}
+                                                    />
+                                                </Button>
+                                            </OverlayTrigger>
+                                        ) : (
+                                            <></>
+                                        )}
                                         <Button
                                             className="mx-1"
                                             onClick={() => {

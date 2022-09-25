@@ -73,7 +73,7 @@ export enum ErrorCode {
     NO_DB_ENTITY = "error.no_db_entity", //errmessage
 
     //DreamMaker errors
-    COMPILE_JOB_NOT_FOUND = "error.compile_job_not_found", //errmessage
+    COMPILE_JOB_NOT_FOUND = "error.compile_job_not_found" //errmessage
 }
 
 type errorMessage = {
