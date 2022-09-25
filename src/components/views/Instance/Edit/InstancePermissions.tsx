@@ -129,7 +129,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             //we dont care about nothing
             if (key == "none") return;
 
-            const currentVal = !!(this.state.currentPermissions!.instancePermissionSetRights & val);
+            const currentVal = !!(newPermissionSet.instancePermissionSetRights & val);
             this.setState(prevState => {
                 return {
                     permsinstancepermissionset: {
@@ -152,7 +152,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             //we dont care about nothing
             if (key == "none") return;
 
-            const currentVal = !!(this.state.currentPermissions!.repositoryRights & val);
+            const currentVal = !!(newPermissionSet.repositoryRights & val);
             this.setState(prevState => {
                 return {
                     permsrepository: {
@@ -175,7 +175,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             //we dont care about nothing
             if (key == "none") return;
 
-            const currentVal = !!(this.state.currentPermissions!.byondRights & val);
+            const currentVal = !!(newPermissionSet.byondRights & val);
             this.setState(prevState => {
                 return {
                     permsbyond: {
@@ -198,7 +198,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             //we dont care about nothing
             if (key == "none") return;
 
-            const currentVal = !!(this.state.currentPermissions!.dreamMakerRights & val);
+            const currentVal = !!(newPermissionSet.dreamMakerRights & val);
             this.setState(prevState => {
                 return {
                     permsdreammaker: {
@@ -221,7 +221,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             //we dont care about nothing
             if (key == "none") return;
 
-            const currentVal = !!(this.state.currentPermissions!.dreamDaemonRights & val);
+            const currentVal = !!(newPermissionSet.dreamDaemonRights & val);
             this.setState(prevState => {
                 return {
                     permsdreamdaemon: {
@@ -244,7 +244,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             //we dont care about nothing
             if (key == "none") return;
 
-            const currentVal = !!(this.state.currentPermissions!.chatBotRights & val);
+            const currentVal = !!(newPermissionSet.chatBotRights & val);
             this.setState(prevState => {
                 return {
                     permschatbots: {
@@ -267,7 +267,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             //we dont care about nothing
             if (key == "none") return;
 
-            const currentVal = !!(this.state.currentPermissions!.configurationRights & val);
+            const currentVal = !!(newPermissionSet.configurationRights & val);
             this.setState(prevState => {
                 return {
                     permsconfiguration: {
@@ -297,7 +297,20 @@ class InstancePermissions extends React.Component<IProps, IState> {
             loadingPerms: true
         });
 
-        if (
+        if (selectedPermissionSetId === resolvePermissionSet(this.context.user).id) {
+            const response = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                this.context.instance.id
+            );
+            if (response.code === StatusCode.OK) {
+                this.setState({
+                    userPermissions: response.payload
+                });
+
+                this.loadEnums(response.payload);
+            } else {
+                this.addError(response.error);
+            }
+        } else if (
             hasInstancePermRight(
                 this.context.instancePermissionSet,
                 InstancePermissionSetRights.Read
@@ -308,12 +321,6 @@ class InstancePermissions extends React.Component<IProps, IState> {
                 selectedPermissionSetId
             );
             if (response.code === StatusCode.OK) {
-                if (selectedPermissionSetId === this.context.user.permissionSet?.id) {
-                    this.setState({
-                        userPermissions: response.payload
-                    });
-                }
-
                 this.loadEnums(response.payload);
             } else if (response.error.code != ErrorCode.NO_DB_ENTITY) {
                 this.addError(response.error);
@@ -855,6 +862,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
 
             if (response.code == StatusCode.OK) {
                 if (newset.permissionSetId === this.state.userPermissions?.permissionSetId) {
+                    await this.context.reloadInstance();
                     this.setState({
                         userPermissions: response.payload
                     });
