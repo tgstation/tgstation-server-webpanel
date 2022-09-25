@@ -51,7 +51,7 @@ class InstanceSettings extends React.Component<IProps, IState> {
             id: this.context.instance.id
         });
         if (response.code === StatusCode.OK) {
-            this.context.reloadInstance();
+            void this.context.reloadInstance();
         } else {
             this.addError(response.error);
         }
