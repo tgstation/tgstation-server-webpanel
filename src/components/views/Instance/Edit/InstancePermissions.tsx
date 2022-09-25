@@ -1,13 +1,11 @@
-import { faBreadSlice } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { Alert, Col, Form, InputGroup, Row, Tab, Tabs } from "react-bootstrap";
+import { Alert, Col, Form, InputGroup, Tab, Tabs } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { inflate } from "zlib";
 
 import {
     AdministrationRights,
@@ -17,13 +15,11 @@ import {
     DreamDaemonRights,
     DreamMakerRights,
     InstanceManagerRights,
-    InstancePermissionSetRequest,
     InstancePermissionSetResponse,
     InstancePermissionSetRights,
     InstanceResponse,
     RepositoryRights,
     UserGroup,
-    UserGroupResponse,
     UserResponse
 } from "../../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../../ApiClient/InstanceClient";
@@ -33,7 +29,6 @@ import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalS
 import UserClient from "../../../../ApiClient/UserClient";
 import UserGroupClient from "../../../../ApiClient/UserGroupClient";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
-import e from "../../../../utils/GithubClient";
 import {
     hasAdminRight,
     hasInstanceManagerRight,
@@ -42,13 +37,10 @@ import {
 } from "../../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../../utils/routes";
 import ErrorAlert from "../../../utils/ErrorAlert";
-import GenericAlert from "../../../utils/GenericAlert";
 import { AnyEnum, FieldType } from "../../../utils/InputField";
 import InputForm from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
-import PageHelper from "../../../utils/PageHelper";
-import WIPNotice from "../../../utils/WIPNotice";
 
 interface IProps extends RouteComponentProps {}
 
