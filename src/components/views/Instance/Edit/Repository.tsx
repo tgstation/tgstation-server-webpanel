@@ -91,7 +91,6 @@ export default function Repository(): JSX.Element {
         new Map<number, [current: boolean, sha: string, comment: string] | false>()
     );
     const [updateRepo, setUpdateRepo] = useState(false);
-    const [manualReset, setManualReset] = useState(false);
     const [manualPRs, setManualPRs] = useState<Set<number>>(new Set());
     const [manualPR, setManualPR] = useState(0);
     const [lastManualPR, setLastManualPR] = useState(0);
@@ -137,7 +136,6 @@ export default function Repository(): JSX.Element {
     function reloadDesiredState(repoinfo: RepositoryResponse | false | null, reset?: boolean) {
         if (reset) {
             setUpdateRepo(false);
-            setManualReset(false);
             setManualPRs(new Set());
         }
 
@@ -473,13 +471,9 @@ export default function Repository(): JSX.Element {
         return 0;
     });
     const noBranch = !repositoryInfo ? false : repositoryInfo.reference === "(no branch)";
-    const forceReset = filteredPendingActions.some(
-        action => action[0] != PRState.added && action[0] != PRState.reapply
-    );
     //PRs we haven't touched, only used to display prs to reapply after reset
     const noPendingChanges =
         filteredPendingActions.filter(([state]) => state !== PRState.reapply).length === 0 &&
-        !forceReset &&
         !updateRepo &&
         !manualPRs.size;
 
@@ -487,11 +481,9 @@ export default function Repository(): JSX.Element {
         const editOptions: RepositoryUpdateRequest = {};
         if (repositoryInfo && noBranch) {
             editOptions.checkoutSha = repositoryInfo.revisionInformation?.originCommitSha;
-        } else if (repositoryInfo && (forceReset || manualReset)) {
-            editOptions.updateFromOrigin = true;
-            editOptions.reference = repositoryInfo?.reference;
         } else if (updateRepo) {
             editOptions.updateFromOrigin = true;
+            if (repositoryInfo) editOptions.reference = repositoryInfo?.reference;
         }
 
         if (repositoryInfo && repositoryInfo?.remoteGitProvider === RemoteGitProvider.GitHub) {
@@ -500,8 +492,7 @@ export default function Repository(): JSX.Element {
                 if (!prDesiredState) return;
                 const [current, commit, comment] = prDesiredState;
                 //If we aren't resetting, ignore PRs we didn't touch
-                console.log(current, forceReset, noBranch, current && !(forceReset || noBranch));
-                if (current && !(forceReset || noBranch)) return;
+                if (current && !(updateRepo || noBranch)) return;
 
                 testMergeArray.push({
                     number: number,
@@ -568,11 +559,7 @@ export default function Repository(): JSX.Element {
         instanceEditContext.instancePermissionSet,
         RepositoryRights.MergePullRequest
     );
-    const canUpdate = hasRepoRight(
-        instanceEditContext.instancePermissionSet,
-        RepositoryRights.UpdateBranch
-    );
-    const canReset =
+    const canUpdate =
         hasRepoRight(instanceEditContext.instancePermissionSet, RepositoryRights.Read) &&
         hasRepoRight(instanceEditContext.instancePermissionSet, RepositoryRights.UpdateBranch);
 
@@ -692,8 +679,7 @@ export default function Repository(): JSX.Element {
                                                             }}
                                                         />
                                                     </li>
-                                                ) : repositoryInfo &&
-                                                  (forceReset || manualReset) ? (
+                                                ) : updateRepo && repositoryInfo ? (
                                                     <li>
                                                         <FormattedMessage id="view.instance.repo.pending.reset" />
                                                     </li>
@@ -712,11 +698,7 @@ export default function Repository(): JSX.Element {
 
                                                           if (
                                                               state === PRState.reapply &&
-                                                              !(
-                                                                  forceReset ||
-                                                                  manualReset ||
-                                                                  noBranch
-                                                              )
+                                                              !(updateRepo || noBranch)
                                                           )
                                                               return null;
 
@@ -758,29 +740,9 @@ export default function Repository(): JSX.Element {
                                         name="view.instance.repo.update"
                                         tooltip="view.instance.repo.update.desc"
                                         type={FieldType.Boolean}
-                                        defaultValue={
-                                            manualReset
-                                                ? true
-                                                : noBranch
-                                                ? false
-                                                : forceReset
-                                                ? true
-                                                : updateRepo
-                                        }
-                                        disabled={
-                                            forceReset || noBranch || manualReset || !canUpdate
-                                        }
+                                        defaultValue={noBranch ? false : updateRepo}
+                                        disabled={updateRepo || noBranch || !canUpdate}
                                         onChange={newVal => setUpdateRepo(newVal)}
-                                    />
-                                    <InputField
-                                        name="view.instance.repo.reset"
-                                        tooltip="view.instance.repo.reset.desc"
-                                        type={FieldType.Boolean}
-                                        defaultValue={
-                                            noBranch ? false : forceReset ? true : manualReset
-                                        }
-                                        disabled={noBranch || !canReset || forceReset}
-                                        onChange={newVal => setManualReset(newVal)}
                                     />
                                     {(configOptions.manualpr.value as boolean) ||
                                     !repositoryInfo ||
