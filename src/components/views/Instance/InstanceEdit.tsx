@@ -31,6 +31,7 @@ import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
 import InstanceSettings from "./Edit/Config";
 import { Deployment } from "./Edit/Deployment";
+import InstancePermissions from "./Edit/InstancePermissions";
 import JobHistory from "./Edit/JobHistory";
 import Repository from "./Edit/Repository";
 import Server from "./Edit/Server";
@@ -97,7 +98,8 @@ class InstanceEdit extends React.Component<IProps, IState> {
             instancePermissionSet: InstancePermissionSetResponse,
             generalContext: GeneralContext
         ) => boolean,
-        ComponentType?
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ComponentType<any>?
     ][] = [
         ["info", "info", () => true],
         [
@@ -128,7 +130,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ],
         ["chatbots", "comments", () => true],
         ["files", "folder-open", () => true],
-        ["users", "users", () => true],
+        ["users", "users", () => true, InstancePermissions],
         ["jobs", "stream", () => true, JobHistory],
         ["config", "cogs", () => true, InstanceSettings]
     ];
