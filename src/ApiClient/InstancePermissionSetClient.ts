@@ -24,7 +24,7 @@ export type deleteInstancePermissionSetErrors = GenericErrors | ErrorCode.NO_DB_
 export type listInstancePermissionSetErrors = GenericErrors;
 
 export default new (class InstancePermissionSetClient extends ApiClient<IEvents> {
-    public cachedInstancePermissionSet: Map<
+    private _cachedInstancePermissionSet: Map<
         number,
         InternalStatus<InstancePermissionSetResponse, ErrorCode.OK>
     > = new Map<number, InternalStatus<InstancePermissionSetResponse, ErrorCode.OK>>();
@@ -35,7 +35,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
         super();
 
         ServerClient.on("purgeCache", () => {
-            this.cachedInstancePermissionSet.clear();
+            this._cachedInstancePermissionSet.clear();
         });
     }
 
@@ -96,14 +96,15 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
     }
 
     public async getCurrentInstancePermissionSet(
-        instanceid: number
+        instanceid: number,
+        noCache?: boolean
     ): Promise<
         InternalStatus<InstancePermissionSetResponse, getCurrentInstancePermissionSetErrors>
     > {
         await ServerClient.wait4Init();
 
-        if (this.cachedInstancePermissionSet.has(instanceid)) {
-            return this.cachedInstancePermissionSet.get(instanceid)!;
+        if (!noCache && this._cachedInstancePermissionSet.has(instanceid)) {
+            return this._cachedInstancePermissionSet.get(instanceid)!;
         }
 
         if (this.loadingInstancePermissionSetInfo.get(instanceid)) {
@@ -146,7 +147,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
                     payload: response.data as InstancePermissionSetResponse
                 });
 
-                this.cachedInstancePermissionSet.set(instanceid, res);
+                this._cachedInstancePermissionSet.set(instanceid, res);
                 this.emit("loadInstancePermissionSet", res);
                 this.loadingInstancePermissionSetInfo.set(instanceid, false);
                 return res;

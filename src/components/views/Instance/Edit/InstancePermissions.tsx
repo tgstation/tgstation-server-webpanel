@@ -37,8 +37,7 @@ import {
 } from "../../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../../utils/routes";
 import ErrorAlert from "../../../utils/ErrorAlert";
-import { AnyEnum, FieldType } from "../../../utils/InputField";
-import InputForm from "../../../utils/InputForm";
+import InputField, { AnyEnum, FieldType } from "../../../utils/InputField";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 
@@ -300,9 +299,14 @@ class InstancePermissions extends React.Component<IProps, IState> {
         });
 
         if (selectedPermissionSetId === resolvePermissionSet(this.context.user).id) {
+            // This can hit the cache and seem "too" fast.
+            // slow it down a little
+            const sanicSpeedLimit = new Promise(r => setTimeout(r, 200));
             const response = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                this.context.instance.id
+                this.context.instance.id,
+                true
             );
+            await sanicSpeedLimit;
             if (response.code === StatusCode.OK) {
                 this.setState({
                     userPermissions: response.payload
@@ -562,19 +566,6 @@ class InstancePermissions extends React.Component<IProps, IState> {
             });
         }
 
-        const fields = {
-            permissionSetId: {
-                name: "fields.instance.perms.owner",
-                type: FieldType.Enum as FieldType.Enum,
-                enum: ownersList,
-                noLocalize: true,
-                defaultValue: this.state.selectedPermissionSetId,
-                disabled:
-                    this.context.instancePermissionSet.instancePermissionSetRights ===
-                    InstancePermissionSetRights.None
-            }
-        };
-
         return (
             <div className="text-center">
                 <h1>
@@ -599,21 +590,24 @@ class InstancePermissions extends React.Component<IProps, IState> {
                         />
                     );
                 })}
-
-                <InputForm
-                    fields={fields}
-                    onSave={result => {
-                        const newPermissionSetId = result.permissionSetId as number;
+                <InputField
+                    name="fields.instance.perms.owner"
+                    type={FieldType.Enum}
+                    enum={ownersList}
+                    noLocalize
+                    defaultValue={this.state.selectedPermissionSetId}
+                    disabled={
+                        this.context.instancePermissionSet.instancePermissionSetRights ===
+                        InstancePermissionSetRights.None
+                    }
+                    onChange={newPermissionSetId => {
                         this.setState({
                             selectedPermissionSetId: newPermissionSetId
                         });
                         void this.loadCurrentPermissions(newPermissionSetId);
                     }}
-                    saveMessageId="fields.instance.perms.owner.switch"
                 />
-
                 <hr />
-
                 {this.renderPermissionEditor()}
             </div>
         );
@@ -640,7 +634,9 @@ class InstancePermissions extends React.Component<IProps, IState> {
             post = (
                 <React.Fragment>
                     <hr />
-                    <h5>You have access to grant yourself full permissions on this instance.</h5>
+                    <h5>
+                        <FormattedMessage id="view.instance.perms.grant.desc" />
+                    </h5>
                     <Button variant="success" onClick={() => void this.grantPermissions()}>
                         <FormattedMessage id="view.instance.perms.grant" />
                     </Button>
@@ -650,13 +646,15 @@ class InstancePermissions extends React.Component<IProps, IState> {
 
         if (!this.state.currentPermissions) {
             const canCreate = hasInstancePermRight(
-                this.context.instancePermissionSet,
+                this.state.userPermissions,
                 InstancePermissionSetRights.Create
             );
 
             return (
                 <div className="text-center mt-2">
-                    <h3>This permission set is not registered with the instance</h3>
+                    <h3>
+                        <FormattedMessage id="view.instance.perms.missing" />
+                    </h3>
                     {canGrant ? (
                         <React.Fragment /> // Realistically, this should never trigger
                     ) : (

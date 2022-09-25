@@ -228,6 +228,8 @@
     "view.instance.perms.create": "Create Instance Permission Set",
     "view.instance.perms.delete": "Delete Instance Permission Set",
     "view.instance.perms.grant": "Grant Full Permissions",
+    "view.instance.perms.grant.desc": "You have access to grant yourself full permissions on this instance.",
+    "view.instance.perms.missing": "This permission set is not registered with the instance",
     "view.instance.server.status": "Status: ",
     "view.instance.server.status.Offline": "Offline",
     "view.instance.server.status.Restoring": "Restoring",
