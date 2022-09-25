@@ -29,7 +29,7 @@ import AccessDenied from "../../utils/AccessDenied";
 import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
-import InstanceSettings from "./Edit/Config";
+import Config from "./Edit/Config";
 import { Deployment } from "./Edit/Deployment";
 import InstancePermissions from "./Edit/InstancePermissions";
 import JobHistory from "./Edit/JobHistory";
@@ -101,7 +101,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ComponentType<any>?
     ][] = [
-        ["info", "info", () => true],
+        ["info", "info", () => true, Config],
         [
             "repository",
             "code-branch",
@@ -132,7 +132,6 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ["files", "folder-open", () => true],
         ["users", "users", () => true, InstancePermissions],
         ["jobs", "stream", () => true, JobHistory],
-        ["config", "cogs", () => true, InstanceSettings]
     ];
 
     public constructor(props: IProps) {
