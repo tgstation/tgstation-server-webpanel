@@ -30,7 +30,6 @@ import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
 import Config from "./Edit/Config";
-import InstanceSettings from "./Edit/Config";
 import { Deployment } from "./Edit/Deployment";
 import JobHistory from "./Edit/JobHistory";
 import Repository from "./Edit/Repository";
