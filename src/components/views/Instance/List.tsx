@@ -27,7 +27,6 @@ import ErrorAlert from "../../utils/ErrorAlert";
 import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 import PageHelper from "../../utils/PageHelper";
-import WIPNotice from "../../utils/WIPNotice";
 
 type Instance = InstanceResponse & {
     canAccess: boolean;
