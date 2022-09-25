@@ -220,6 +220,7 @@
     "view.instance.byond.list_denied": "This user does not have the permission to list all installed BYOND versions",
     "view.instance.byond.current_denied": "This user does not have the permission to see the active BYOND version",
     "view.instance.byond.current_version": "Active Version: {version}",
+    "view.instance.info": "Instance Metadata",
     "view.instance.server.status": "Status: ",
     "view.instance.server.status.Offline": "Offline",
     "view.instance.server.status.Restoring": "Restoring",
