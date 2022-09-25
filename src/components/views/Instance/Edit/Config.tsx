@@ -1,4 +1,5 @@
 import React from "react";
+import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import {
@@ -99,6 +100,9 @@ class InstanceSettings extends React.Component<IProps, IState> {
 
         return (
             <div className="text-center">
+                <h1>
+                    <FormattedMessage id="view.instance.info" />
+                </h1>
                 <DebugJsonViewer obj={this.context} />
                 {this.state.errors.map((err, index) => {
                     if (!err) return;

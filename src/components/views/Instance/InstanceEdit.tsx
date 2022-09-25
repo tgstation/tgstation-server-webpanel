@@ -29,6 +29,7 @@ import AccessDenied from "../../utils/AccessDenied";
 import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
+import Config from "./Edit/Config";
 import InstanceSettings from "./Edit/Config";
 import { Deployment } from "./Edit/Deployment";
 import JobHistory from "./Edit/JobHistory";
@@ -99,7 +100,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ) => boolean,
         ComponentType?
     ][] = [
-        ["info", "info", () => true],
+        ["info", "info", () => true, Config],
         [
             "repository",
             "code-branch",
@@ -129,8 +130,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ["chatbots", "comments", () => true],
         ["files", "folder-open", () => true],
         ["users", "users", () => true],
-        ["jobs", "stream", () => true, JobHistory],
-        ["config", "cogs", () => true, InstanceSettings]
+        ["jobs", "stream", () => true, JobHistory]
     ];
 
     public constructor(props: IProps) {
