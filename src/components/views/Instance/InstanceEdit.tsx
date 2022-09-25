@@ -131,7 +131,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
         ["chatbots", "comments", () => true],
         ["files", "folder-open", () => true],
         ["users", "users", () => true, InstancePermissions],
-        ["jobs", "stream", () => true, JobHistory],
+        ["jobs", "stream", () => true, JobHistory]
     ];
 
     public constructor(props: IProps) {
