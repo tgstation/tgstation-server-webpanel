@@ -111,176 +111,60 @@ class InstancePermissions extends React.Component<IProps, IState> {
             currentPermissions: newPermissionSet
         });
 
-        // noinspection DuplicatedCode
-        Object.entries(InstancePermissionSetRights).forEach(([k, v]) => {
-            /* enums are objects that are reverse mapped, for example, an enum with a = 1 and b = 2 would look like this:
-             * {
-             *   "a": 1,
-             *   "b": 2,
-             *   1: "a",
-             *   2: "b"
-             * }
-             * so we need to drop everything that doesnt resolve to a string because otherwise we end up with twice the values
-             */
-            if (!isNaN(parseInt(k))) return;
+        const loadEnum = <
+            T extends Record<string, string | number>,
+            U extends keyof typeof newPermissionSet,
+            V extends keyof typeof this.state
+        >(
+            permEnum: T,
+            permSourceField: U,
+            permTargetField: V
+        ) => {
+            Object.entries(permEnum).forEach(([k, v]) => {
+                /* enums are objects that are reverse mapped, for example, an enum with a = 1 and b = 2 would look like this:
+                 * {
+                 *   "a": 1,
+                 *   "b": 2,
+                 *   1: "a",
+                 *   2: "b"
+                 * }
+                 * so we need to drop everything that doesnt resolve to a string because otherwise we end up with twice the values
+                 */
+                if (!isNaN(parseInt(k))) return;
 
-            const key = k.toLowerCase();
-            const val = v as number;
+                const key = k.toLowerCase();
+                const val = v as number;
 
-            //we dont care about nothing
-            if (key == "none") return;
+                //we dont care about nothing
+                if (key == "none") return;
 
-            const currentVal = !!(newPermissionSet.instancePermissionSetRights & val);
-            this.setState(prevState => {
-                return {
-                    permsinstancepermissionset: {
-                        ...prevState.permsinstancepermissionset,
-                        [key]: {
-                            currentVal: currentVal,
-                            bitflag: val
-                        }
-                    }
-                };
+                const currentVal = !!(newPermissionSet[permSourceField] & val);
+                this.setState(
+                    prevState =>
+                        (({
+                            [permTargetField]: {
+                                ...(prevState[permTargetField] as Record<string, Permission>),
+                                [key]: {
+                                    currentVal: currentVal,
+                                    bitflag: val
+                                }
+                            }
+                        } as unknown) as IState)
+                );
             });
-        });
-        // noinspection DuplicatedCode
-        Object.entries(RepositoryRights).forEach(([k, v]) => {
-            if (!isNaN(parseInt(k))) return;
+        };
 
-            const key = k.toLowerCase();
-            const val = v as number;
-
-            //we dont care about nothing
-            if (key == "none") return;
-
-            const currentVal = !!(newPermissionSet.repositoryRights & val);
-            this.setState(prevState => {
-                return {
-                    permsrepository: {
-                        ...prevState.permsrepository,
-                        [key]: {
-                            currentVal: currentVal,
-                            bitflag: val
-                        }
-                    }
-                };
-            });
-        });
-        // noinspection DuplicatedCode
-        Object.entries(ByondRights).forEach(([k, v]) => {
-            if (!isNaN(parseInt(k))) return;
-
-            const key = k.toLowerCase();
-            const val = v as number;
-
-            //we dont care about nothing
-            if (key == "none") return;
-
-            const currentVal = !!(newPermissionSet.byondRights & val);
-            this.setState(prevState => {
-                return {
-                    permsbyond: {
-                        ...prevState.permsbyond,
-                        [key]: {
-                            currentVal: currentVal,
-                            bitflag: val
-                        }
-                    }
-                };
-            });
-        });
-        // noinspection DuplicatedCode
-        Object.entries(DreamMakerRights).forEach(([k, v]) => {
-            if (!isNaN(parseInt(k))) return;
-
-            const key = k.toLowerCase();
-            const val = v as number;
-
-            //we dont care about nothing
-            if (key == "none") return;
-
-            const currentVal = !!(newPermissionSet.dreamMakerRights & val);
-            this.setState(prevState => {
-                return {
-                    permsdreammaker: {
-                        ...prevState.permsdreammaker,
-                        [key]: {
-                            currentVal: currentVal,
-                            bitflag: val
-                        }
-                    }
-                };
-            });
-        });
-        // noinspection DuplicatedCode
-        Object.entries(DreamDaemonRights).forEach(([k, v]) => {
-            if (!isNaN(parseInt(k))) return;
-
-            const key = k.toLowerCase();
-            const val = v as number;
-
-            //we dont care about nothing
-            if (key == "none") return;
-
-            const currentVal = !!(newPermissionSet.dreamDaemonRights & val);
-            this.setState(prevState => {
-                return {
-                    permsdreamdaemon: {
-                        ...prevState.permsdreamdaemon,
-                        [key]: {
-                            currentVal: currentVal,
-                            bitflag: val
-                        }
-                    }
-                };
-            });
-        });
-        // noinspection DuplicatedCode
-        Object.entries(ChatBotRights).forEach(([k, v]) => {
-            if (!isNaN(parseInt(k))) return;
-
-            const key = k.toLowerCase();
-            const val = v as number;
-
-            //we dont care about nothing
-            if (key == "none") return;
-
-            const currentVal = !!(newPermissionSet.chatBotRights & val);
-            this.setState(prevState => {
-                return {
-                    permschatbots: {
-                        ...prevState.permschatbots,
-                        [key]: {
-                            currentVal: currentVal,
-                            bitflag: val
-                        }
-                    }
-                };
-            });
-        });
-        // noinspection DuplicatedCode
-        Object.entries(ConfigurationRights).forEach(([k, v]) => {
-            if (!isNaN(parseInt(k))) return;
-
-            const key = k.toLowerCase();
-            const val = v as number;
-
-            //we dont care about nothing
-            if (key == "none") return;
-
-            const currentVal = !!(newPermissionSet.configurationRights & val);
-            this.setState(prevState => {
-                return {
-                    permsconfiguration: {
-                        ...prevState.permsconfiguration,
-                        [key]: {
-                            currentVal: currentVal,
-                            bitflag: val
-                        }
-                    }
-                };
-            });
-        });
+        loadEnum(
+            InstancePermissionSetRights,
+            "instancePermissionSetRights",
+            "permsinstancepermissionset"
+        );
+        loadEnum(RepositoryRights, "repositoryRights", "permsrepository");
+        loadEnum(ByondRights, "byondRights", "permsbyond");
+        loadEnum(DreamMakerRights, "dreamMakerRights", "permsdreammaker");
+        loadEnum(DreamDaemonRights, "dreamDaemonRights", "permsdreamdaemon");
+        loadEnum(ChatBotRights, "chatBotRights", "permschatbots");
+        loadEnum(ConfigurationRights, "configurationRights", "permsconfiguration");
     }
 
     private addError(error: InternalError<ErrorCode>): void {
