@@ -8,6 +8,7 @@ declare global {
         clients: Record<string, ApiClient>;
         credentialProvider?: CredentialsProvider;
         rtcontroller?: RouteController;
+        publicPath: string;
     }
 }
 
