@@ -59,14 +59,14 @@ interface IState {
     instancePermissionSets?: InstancePermissionSetResponse[];
     selectedPermissionSetId: number;
     userPermissions: InstancePermissionSetResponse;
-    currentPermissions?: InstancePermissionSetResponse | null;
-    permsinstancepermissionset: { [key: string]: Permission };
-    permsrepository: { [key: string]: Permission };
-    permsbyond: { [key: string]: Permission };
-    permsdreammaker: { [key: string]: Permission };
-    permsdreamdaemon: { [key: string]: Permission };
-    permschatbots: { [key: string]: Permission };
-    permsconfiguration: { [key: string]: Permission };
+    currentPermissions: InstancePermissionSetResponse | null;
+    permsinstancepermissionset: Record<string, Permission>;
+    permsrepository: Record<string, Permission>;
+    permsbyond: Record<string, Permission>;
+    permsdreammaker: Record<string, Permission>;
+    permsdreamdaemon: Record<string, Permission>;
+    permschatbots: Record<string, Permission>;
+    permsconfiguration: Record<string, Permission>;
 }
 
 class InstancePermissions extends React.Component<IProps, IState> {
@@ -95,6 +95,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
                 chatBotRights: 0,
                 configurationRights: 0
             }, // updated correctly in DidMount using context
+            currentPermissions: null,
             selectedPermissionSetId: 0,
             permsinstancepermissionset: {},
             permsrepository: {},
@@ -212,13 +213,13 @@ class InstancePermissions extends React.Component<IProps, IState> {
             );
             if (response.code === StatusCode.OK) {
                 this.loadEnums(response.payload);
-            } else if (response.error.code != ErrorCode.NO_DB_ENTITY) {
-                this.addError(response.error);
-            } else {
+            } else if (response.error.code == ErrorCode.NO_DB_ENTITY) {
                 // null it out, meaning it can be created
                 this.setState({
                     currentPermissions: null
                 });
+            } else {
+                this.addError(response.error);
             }
         }
 
