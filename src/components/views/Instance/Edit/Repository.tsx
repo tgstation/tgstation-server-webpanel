@@ -469,6 +469,11 @@ export default function Repository(): JSX.Element {
         return 0;
     });
     const noBranch = !repositoryInfo ? false : repositoryInfo.reference === "(no branch)";
+    const forceReset = filteredPendingActions.some(
+        action => action[0] != PRState.added && action[0] != PRState.reapply
+    );
+    const willReset = updateRepo || forceReset;
+
     //PRs we haven't touched, only used to display prs to reapply after reset
     const noPendingChanges =
         filteredPendingActions.filter(([state]) => state !== PRState.reapply).length === 0 &&
@@ -479,7 +484,7 @@ export default function Repository(): JSX.Element {
         const editOptions: RepositoryUpdateRequest = {};
         if (repositoryInfo && noBranch) {
             editOptions.checkoutSha = repositoryInfo.revisionInformation?.originCommitSha;
-        } else if (updateRepo) {
+        } else if (willReset) {
             editOptions.updateFromOrigin = true;
             if (repositoryInfo) editOptions.reference = repositoryInfo?.reference;
         }
@@ -490,7 +495,7 @@ export default function Repository(): JSX.Element {
                 if (!prDesiredState) return;
                 const [current, commit, comment] = prDesiredState;
                 //If we aren't resetting, ignore PRs we didn't touch
-                if (current && !(updateRepo || noBranch)) return;
+                if (current && !(willReset || noBranch)) return;
 
                 testMergeArray.push({
                     number: number,
@@ -677,11 +682,11 @@ export default function Repository(): JSX.Element {
                                                             }}
                                                         />
                                                     </li>
-                                                ) : updateRepo && repositoryInfo ? (
+                                                ) : willReset && repositoryInfo ? (
                                                     <li>
                                                         <FormattedMessage id="view.instance.repo.pending.reset" />
                                                     </li>
-                                                ) : updateRepo ? (
+                                                ) : willReset ? (
                                                     <li>
                                                         <FormattedMessage id="view.instance.repo.pending.update" />
                                                     </li>
@@ -696,7 +701,7 @@ export default function Repository(): JSX.Element {
 
                                                           if (
                                                               state === PRState.reapply &&
-                                                              !(updateRepo || noBranch)
+                                                              !(willReset || noBranch)
                                                           )
                                                               return null;
 
@@ -738,8 +743,10 @@ export default function Repository(): JSX.Element {
                                         name="view.instance.repo.update"
                                         tooltip="view.instance.repo.update.desc"
                                         type={FieldType.Boolean}
-                                        defaultValue={noBranch ? false : updateRepo}
-                                        disabled={updateRepo || noBranch || !canUpdate}
+                                        defaultValue={
+                                            noBranch ? false : forceReset ? true : updateRepo
+                                        }
+                                        disabled={forceReset || noBranch || !canUpdate}
                                         onChange={newVal => setUpdateRepo(newVal)}
                                     />
                                     {(configOptions.manualpr.value as boolean) ||
