@@ -1,3 +1,6 @@
+// eslint-disable-next-line
+import "./publicPath";
+
 // definition files
 // css
 import "./styles/dark.scss";
