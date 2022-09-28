@@ -141,7 +141,29 @@ module.exports = (env, options) => {
             hot: true,
             host: "0.0.0.0", // technically insecure? don't put nudes in your app, helps to test with mobile
             port: 8080,
-            historyApiFallback: true
+            historyApiFallback: true,
+            setupMiddlewares: (middlewares, devServer) => {
+                if (!devServer) {
+                    throw new Error('webpack-dev-server is not defined');
+                }
+
+                middlewares.push({
+                    name: 'channel-json',
+                    middleware: (req, res, next) => {
+                        if(!req.header("X-Webpanel-Fetch-Channel")) return next();
+                        if(req.path === "/channel.json") return next();
+
+                        let vary = req.header("Vary") ?? ""
+                        if(vary) vary += ", "
+                        vary += "X-Webpanel-Fetch-Channel"
+
+                        res.header("Vary", vary)
+                        res.redirect(301, "/channel.json")
+                    },
+                });
+
+                return middlewares;
+            },
         },
 
         stats: createStats(true),
