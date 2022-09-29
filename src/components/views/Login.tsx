@@ -38,13 +38,7 @@ interface IState {
     redirectSetup?: boolean;
 }
 
-export type NormalOauth = { provider: Exclude<OAuthProvider, OAuthProvider.TGForums>; url: string };
-export type TGSnowflakeOauth = {
-    provider: OAuthProvider.TGForums;
-    state: string;
-    url: string;
-};
-export type StoredOAuthData = NormalOauth | TGSnowflakeOauth;
+export type StoredOAuthData = { provider: OAuthProvider; url: string };
 export type OAuthStateStorage = Record<string, StoredOAuthData>;
 
 class Login extends React.Component<IProps, IState> {
@@ -280,8 +274,10 @@ class Login extends React.Component<IProps, IState> {
                 break;
             }
             case OAuthProvider.TGForums: {
-                url = `https://tgstation13.org/phpBB/oauth.php?session_public_token=${e(
+                url = `https://tgstation13.org/phpBB/app.php/tgapi/oauth/auth?scope=user&client_id=${e(
                     this.context.serverInfo.oAuthProviderInfos.TGForums.clientId
+                )}&state=${e(state)}&redirect_uri=${e(
+                    this.context.serverInfo.oAuthProviderInfos.TGForums.redirectUri
                 )}`;
                 break;
             }
@@ -299,18 +295,10 @@ class Login extends React.Component<IProps, IState> {
         const oauthdata = JSON.parse(
             window.sessionStorage.getItem("oauth") ?? "{}"
         ) as OAuthStateStorage;
-        if (provider === OAuthProvider.TGForums) {
-            oauthdata["tgforums"] = {
-                provider: provider,
-                url: this.props.location.pathname,
-                state: this.context.serverInfo.oAuthProviderInfos.TGForums.clientId
-            };
-        } else {
-            oauthdata[state] = {
-                provider: provider,
-                url: this.props.location.pathname
-            };
-        }
+        oauthdata[state] = {
+            provider: provider,
+            url: this.props.location.pathname
+        };
 
         window.sessionStorage.setItem("oauth", JSON.stringify(oauthdata));
 

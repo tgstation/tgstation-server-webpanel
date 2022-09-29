@@ -111,11 +111,7 @@ class Router extends Component<IProps, IState> {
             );
         }
 
-        let code = URLSearch.get("code");
-        if (oauthstate.provider === OAuthProvider.TGForums) {
-            code = oauthstate.state;
-        }
-
+        const code = URLSearch.get("code");
         if (!code) {
             return this.setErrorAndEnd(
                 new InternalError(ErrorCode.LOGIN_BAD_OAUTH, {
