@@ -19,6 +19,7 @@ import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
 import { GeneralContext, UnsafeGeneralContext } from "./contexts/GeneralContext";
+import { DEFAULT_BASEPATH } from "./definitions/constants";
 import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
@@ -73,7 +74,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
 
     public render(): React.ReactNode {
         return (
-            <BrowserRouter basename={window.publicPath}>
+            <BrowserRouter basename={window.publicPath || DEFAULT_BASEPATH}>
                 <ErrorBoundary>
                     <AppNavbar category={this.state.passdownCat} />
                     {this.props.loading ? (
