@@ -91,7 +91,6 @@ export default function Repository(): JSX.Element {
         new Map<number, [current: boolean, sha: string, comment: string] | false>()
     );
     const [updateRepo, setUpdateRepo] = useState(false);
-    const [manualReset, setManualReset] = useState(false);
     const [manualPRs, setManualPRs] = useState<Set<number>>(new Set());
     const [manualPR, setManualPR] = useState(0);
     const [lastManualPR, setLastManualPR] = useState(0);
@@ -135,7 +134,6 @@ export default function Repository(): JSX.Element {
     function reloadDesiredState(repoinfo: RepositoryResponse | false | null, reset?: boolean) {
         if (reset) {
             setUpdateRepo(false);
-            setManualReset(false);
             setManualPRs(new Set());
         }
 
@@ -474,10 +472,11 @@ export default function Repository(): JSX.Element {
     const forceReset = filteredPendingActions.some(
         action => action[0] != PRState.added && action[0] != PRState.reapply
     );
+    const willReset = updateRepo || forceReset;
+
     //PRs we haven't touched, only used to display prs to reapply after reset
     const noPendingChanges =
         filteredPendingActions.filter(([state]) => state !== PRState.reapply).length === 0 &&
-        !forceReset &&
         !updateRepo &&
         !manualPRs.size;
 
@@ -485,11 +484,9 @@ export default function Repository(): JSX.Element {
         const editOptions: RepositoryUpdateRequest = {};
         if (repositoryInfo && noBranch) {
             editOptions.checkoutSha = repositoryInfo.revisionInformation?.originCommitSha;
-        } else if (repositoryInfo && (forceReset || manualReset)) {
+        } else if (willReset) {
             editOptions.updateFromOrigin = true;
-            editOptions.reference = repositoryInfo?.reference;
-        } else if (updateRepo) {
-            editOptions.updateFromOrigin = true;
+            if (repositoryInfo) editOptions.reference = repositoryInfo?.reference;
         }
 
         if (repositoryInfo && repositoryInfo?.remoteGitProvider === RemoteGitProvider.GitHub) {
@@ -498,8 +495,7 @@ export default function Repository(): JSX.Element {
                 if (!prDesiredState) return;
                 const [current, commit, comment] = prDesiredState;
                 //If we aren't resetting, ignore PRs we didn't touch
-                console.log(current, forceReset, noBranch, current && !(forceReset || noBranch));
-                if (current && !(forceReset || noBranch)) return;
+                if (current && !(willReset || noBranch)) return;
 
                 testMergeArray.push({
                     number: number,
@@ -566,11 +562,7 @@ export default function Repository(): JSX.Element {
         instanceEditContext.instancePermissionSet,
         RepositoryRights.MergePullRequest
     );
-    const canUpdate = hasRepoRight(
-        instanceEditContext.instancePermissionSet,
-        RepositoryRights.UpdateBranch
-    );
-    const canReset =
+    const canUpdate =
         hasRepoRight(instanceEditContext.instancePermissionSet, RepositoryRights.Read) &&
         hasRepoRight(instanceEditContext.instancePermissionSet, RepositoryRights.UpdateBranch);
 
@@ -690,12 +682,11 @@ export default function Repository(): JSX.Element {
                                                             }}
                                                         />
                                                     </li>
-                                                ) : repositoryInfo &&
-                                                  (forceReset || manualReset) ? (
+                                                ) : willReset && repositoryInfo ? (
                                                     <li>
                                                         <FormattedMessage id="view.instance.repo.pending.reset" />
                                                     </li>
-                                                ) : updateRepo ? (
+                                                ) : willReset ? (
                                                     <li>
                                                         <FormattedMessage id="view.instance.repo.pending.update" />
                                                     </li>
@@ -710,7 +701,7 @@ export default function Repository(): JSX.Element {
 
                                                           if (
                                                               state === PRState.reapply &&
-                                                              !(forceReset || noBranch)
+                                                              !(willReset || noBranch)
                                                           )
                                                               return null;
 
@@ -753,34 +744,11 @@ export default function Repository(): JSX.Element {
                                         tooltip="view.instance.repo.update.desc"
                                         type={FieldType.Boolean}
                                         defaultValue={
-                                            manualReset
-                                                ? true
-                                                : noBranch
-                                                ? false
-                                                : forceReset
-                                                ? true
-                                                : updateRepo
+                                            noBranch ? false : forceReset ? true : updateRepo
                                         }
-                                        disabled={
-                                            forceReset || noBranch || manualReset || !canUpdate
-                                        }
+                                        disabled={forceReset || noBranch || !canUpdate}
                                         onChange={newVal => setUpdateRepo(newVal)}
                                     />
-                                    {(configOptions.manualreset.value as boolean) ||
-                                    (repositoryInfo &&
-                                        repositoryInfo.remoteGitProvider ===
-                                            RemoteGitProvider.GitLab) ? (
-                                        <InputField
-                                            name="view.instance.repo.reset"
-                                            tooltip="view.instance.repo.reset.desc"
-                                            type={FieldType.Boolean}
-                                            defaultValue={
-                                                noBranch ? false : forceReset ? true : manualReset
-                                            }
-                                            disabled={noBranch || !canReset || forceReset}
-                                            onChange={newVal => setManualReset(newVal)}
-                                        />
-                                    ) : null}
                                     {(configOptions.manualpr.value as boolean) ||
                                     !repositoryInfo ||
                                     repositoryInfo.remoteGitProvider ===

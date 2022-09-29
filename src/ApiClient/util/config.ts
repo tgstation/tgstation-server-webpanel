@@ -116,11 +116,6 @@ const configOptions = asElementTypesConfig({
         id: "config.manualpr",
         type: "bool",
         value: false
-    },
-    manualreset: {
-        id: "config.manualreset",
-        type: "bool",
-        value: false
     }
 });
 
