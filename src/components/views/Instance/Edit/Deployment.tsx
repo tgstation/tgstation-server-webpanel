@@ -4,6 +4,7 @@ import { FormattedMessage } from "react-intl";
 
 import DreamMakerClient from "../../../../ApiClient/DreamMakerClient";
 import {
+    CompileJobResponse,
     DreamDaemonSecurity,
     DreamMakerRequest,
     DreamMakerResponse,
@@ -14,6 +15,7 @@ import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalS
 import JobsController from "../../../../ApiClient/util/JobsController";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasDreamMakerRight } from "../../../../utils/misc";
+import DeploymentViewer, { DeploymentsData, ViewDataType } from "../../../utils/DeploymentViewer";
 import { addError, displayErrors } from "../../../utils/ErrorAlert";
 import GenericAlert from "../../../utils/GenericAlert";
 import { FieldType } from "../../../utils/InputField";
@@ -27,6 +29,12 @@ export function Deployment(): JSX.Element {
     const errorState = useState<Array<InternalError<ErrorCode> | undefined>>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [deployInfo, setDeployInfo] = useState<DreamMakerResponse | null>(null);
+    const [compileJobs, setCompileJobs] = useState<CompileJobResponse[] | null>(null);
+    const [compileJobsPage, setCompileJobsPage] = useState<number>(1);
+    const [compileJobsTotalPages, setCompileJobsTotalPages] = useState<number>(0);
+
+    // adjusts the size of the viewer pages, undefined uses default server page size
+    const [compileJobsPageSize, setCompileJobsPageSize] = useState<number | undefined>(5);
 
     const canRead = hasDreamMakerRight(
         instanceEditContext.instancePermissionSet,
@@ -35,6 +43,10 @@ export function Deployment(): JSX.Element {
     const canCompile = hasDreamMakerRight(
         instanceEditContext.instancePermissionSet,
         DreamMakerRights.Compile
+    );
+    const canReadDeployments = hasDreamMakerRight(
+        instanceEditContext.instancePermissionSet,
+        DreamMakerRights.CompileJobs
     );
 
     async function loadDeployInfo() {
@@ -51,8 +63,32 @@ export function Deployment(): JSX.Element {
         }
     }
 
+    async function loadCompileJobs(page: number): Promise<void> {
+        if (!canReadDeployments) {
+            return;
+        }
+
+        // loading is handled in viewer component
+        setCompileJobs(null);
+        const response = await DreamMakerClient.listCompileJobs(instanceEditContext.instance.id, {
+            page,
+            pageSize: compileJobsPageSize
+        });
+
+        if (response.code === StatusCode.OK) {
+            if (!compileJobsPageSize) setCompileJobsPageSize(response.payload.pageSize);
+
+            setCompileJobsTotalPages(response.payload.totalPages);
+            setCompileJobsPage(page);
+            setCompileJobs(response.payload.content);
+        } else {
+            addError(errorState, response.error);
+        }
+    }
+
     useEffect(() => {
         void loadDeployInfo();
+        void loadCompileJobs(1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [instanceEditContext.instance.id]);
 
@@ -124,16 +160,43 @@ export function Deployment(): JSX.Element {
         }
     };
 
+    let deploymentViewData: DeploymentsData | null = null;
+    const paging = {
+        currentPage: compileJobsPage,
+        totalPages: compileJobsTotalPages,
+        loadPage: loadCompileJobs,
+        pageSize: compileJobsPageSize ?? 0 // will always be set before being accessed
+    };
+
+    if (!canReadDeployments) {
+        deploymentViewData = {
+            viewDataType: ViewDataType.CompileJobs,
+            paging
+        };
+    } else if (compileJobs) {
+        deploymentViewData = {
+            viewDataType: ViewDataType.CompileJobs,
+            compileJobs,
+            paging
+        };
+    }
+
     return (
         <div className="text-center">
             <DebugJsonViewer obj={{ deployInfo }} />
+            {displayErrors(errorState)}
+            {canReadDeployments ? (
+                <DeploymentViewer viewData={deploymentViewData} />
+            ) : (
+                <GenericAlert title="view.instance.no_compile_jobs" />
+            )}
+            <hr />
             <h3>
                 <FormattedMessage id="view.instance.deploy.title" />
             </h3>
             {!canRead ? <GenericAlert title="view.instance.no_metadata" /> : null}
-            {displayErrors(errorState)}
             {isLoading ? (
-                <Loading />
+                <Loading text="loading.deployments" />
             ) : (
                 <>
                     <InputForm
