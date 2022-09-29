@@ -153,7 +153,8 @@ module.exports = (env, options) => {
                         if(!req.header("X-Webpanel-Fetch-Channel")) return next();
                         if(req.path === "/channel.json") return next();
 
-                        let vary = req.header("Vary") ?? ""
+                        let vary = req.header("Vary")
+                        if(vary === undefined) vary = ""
                         if(vary) vary += ", "
                         vary += "X-Webpanel-Fetch-Channel"
 
