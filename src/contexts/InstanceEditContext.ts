@@ -11,7 +11,7 @@ import InternalError from "../ApiClient/models/InternalComms/InternalError";
 export type InstanceEditContext = {
     deleteError: (error: InternalError) => void;
     errors: Set<InternalError>;
-    reloadInstance: () => void;
+    reloadInstance: () => Promise<void>;
     instance: InstanceResponse;
     user: UserResponse;
     serverInfo: ServerInformationResponse;
@@ -22,7 +22,7 @@ export type InstanceEditContext = {
 export type UnsafeInstanceEditContext = {
     deleteError: (error: InternalError) => void;
     errors: Set<InternalError>;
-    reloadInstance: () => void;
+    reloadInstance: () => Promise<void>;
     instance: InstanceResponse | null;
     user: UserResponse;
     serverInfo: ServerInformationResponse;

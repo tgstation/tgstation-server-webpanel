@@ -15,6 +15,7 @@ export type ListInstancesErrors = GenericErrors;
 export type CreateInstanceErrors = GenericErrors;
 export type EditInstanceErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export type GetInstanceErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
+export type GrantPermissionsErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 
 interface IEvents {
     instanceChange: (instanceId: number) => void;
@@ -47,6 +48,50 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                     payload: response.data as PaginatedInstanceResponse
                 });
             }
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async grantPermissions(
+        instance: InstanceUpdateRequest
+    ): Promise<InternalStatus<InstanceResponse, GrantPermissionsErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.instance.instanceControllerGrantPermissions(
+                instance.id
+            );
+            this.emit("instanceChange", instance.id);
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+        switch (response.status) {
+            case 204: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: { id: instance.id } as InstanceResponse
+                });
+            }
+            case 410:
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.NO_DB_ENTITY, {
+                        errorMessage: response.data as ErrorMessageResponse
+                    })
+                });
             default: {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
