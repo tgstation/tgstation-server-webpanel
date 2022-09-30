@@ -54,6 +54,7 @@ export type InputFieldProps = {
           defaultValue?: number | null;
           onChange: (newValue: number, isValid: boolean) => unknown;
           type: FieldType.Enum;
+          noLocalize?: boolean;
           enum: AnyEnum;
       }
 );
@@ -143,6 +144,7 @@ const NumberControl = React.forwardRef<HTMLInputElement, NumberControlProps>(fun
 
 type EnumControlProps = ControlProps & {
     enum: AnyEnum;
+    noLocalize?: boolean;
 };
 const EnumControl = React.forwardRef<HTMLSelectElement, EnumControlProps>(function EnumControl(
     props,
@@ -160,7 +162,11 @@ const EnumControl = React.forwardRef<HTMLSelectElement, EnumControlProps>(functi
                 //filters out reverse mapping
                 .filter(([key]) => isNaN(parseInt(key)))
                 .map(([key, value]) => {
-                    return (
+                    return props.noLocalize ? (
+                        <option key={value} value={value}>
+                            {key}
+                        </option>
+                    ) : (
                         <FormattedMessage id={`${props.name}.${key}`} key={key}>
                             {message => (
                                 <option key={value} value={value}>
@@ -284,6 +290,7 @@ export default function InputField(props: InputFieldProps): JSX.Element {
                     onChange={newValue => setCurrentValue(newValue)}
                     name={props.name}
                     enum={props.enum}
+                    noLocalize={props.noLocalize}
                     disabled={props.disabled}
                 />
             ) : (

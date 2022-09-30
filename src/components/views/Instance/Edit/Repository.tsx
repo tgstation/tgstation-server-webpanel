@@ -88,7 +88,7 @@ export default function Repository(): JSX.Element {
     const [isLoading, setIsLoading] = useState(true);
     const [PRs, setPRs] = useState<PullRequest[] | null>(null);
     const [desiredState, setDesiredState] = useState(
-        new Map<number, [current: boolean, sha: string, comment: string] | false>()
+        new Map<number, [current: boolean, sha: string, comment: string | null] | false>()
     );
     const [updateRepo, setUpdateRepo] = useState(false);
     const [manualPRs, setManualPRs] = useState<Set<number>>(new Set());

@@ -38,6 +38,7 @@ interface IProps<Fields extends Record<string, InputFormField>> {
     readOnly?: boolean;
     hideDisabled?: boolean;
     includeAll?: boolean;
+    saveMessageId?: string;
 }
 
 interface FieldState {
@@ -150,7 +151,7 @@ export default function InputForm<Fields extends Record<string, InputFormField>>
                         variant={props.readOnly || anyInvalid ? "danger" : "success"}
                         disabled={props.readOnly || !anyDiff || anyInvalid}
                         onClick={save}>
-                        <FormattedMessage id="generic.save" />
+                        <FormattedMessage id={props.saveMessageId ?? "generic.save"} />
                     </Button>
                 </OverlayTrigger>
             </div>

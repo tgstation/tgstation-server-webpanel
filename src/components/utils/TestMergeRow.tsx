@@ -27,7 +27,7 @@ interface IProps {
     repoInfo: RepositoryResponse;
     finalState: [commit: string, comment: string] | false;
     onRemove: () => unknown;
-    onSelectCommit: (commit: string, comment: string) => unknown;
+    onSelectCommit: (commit: string, comment: string | null) => unknown;
     onError: (error: InternalError) => unknown;
 }
 
@@ -194,7 +194,7 @@ export default function TestMergeRow({
                                                 e.shiftKey
                                                     ? onSelectCommit(
                                                           pr.head,
-                                                          "No comment set - Fast Update"
+                                                          testmergeinfo?.comment ?? null
                                                       )
                                                     : setShowModal(true)
                                             }
@@ -223,10 +223,7 @@ export default function TestMergeRow({
                                         disabled={!canAdd}
                                         onClick={e =>
                                             e.shiftKey
-                                                ? onSelectCommit(
-                                                      pr.head,
-                                                      "No comment set - Fast Add"
-                                                  )
+                                                ? onSelectCommit(pr.head, null)
                                                 : setShowModal(true)
                                         }>
                                         <FontAwesomeIcon icon="plus" fixedWidth />

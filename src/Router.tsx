@@ -6,7 +6,6 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 import { Route, Switch } from "react-router-dom";
 
-import { OAuthProvider } from "./ApiClient/generatedcode/generated";
 import { CredentialsType } from "./ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
@@ -111,11 +110,7 @@ class Router extends Component<IProps, IState> {
             );
         }
 
-        let code = URLSearch.get("code");
-        if (oauthstate.provider === OAuthProvider.TGForums) {
-            code = oauthstate.state;
-        }
-
+        const code = URLSearch.get("code");
         if (!code) {
             return this.setErrorAndEnd(
                 new InternalError(ErrorCode.LOGIN_BAD_OAUTH, {

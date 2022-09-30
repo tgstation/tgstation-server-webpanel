@@ -32,10 +32,11 @@ import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
 import Config from "./Edit/Config";
 import { Deployment } from "./Edit/Deployment";
+import Files from "./Edit/Files";
+import InstancePermissions from "./Edit/InstancePermissions";
 import JobHistory from "./Edit/JobHistory";
 import Repository from "./Edit/Repository";
 import Server from "./Edit/Server";
-import Files from "./Edit/Files";
 
 type IProps = RouteComponentProps<{ id: string; tab?: string }>;
 type IState = Omit<UnsafeInstanceEditContext, "user" | "serverInfo"> & {
@@ -100,7 +101,8 @@ class InstanceEdit extends React.Component<IProps, IState> {
             instancePermissionSet: InstancePermissionSetResponse,
             generalContext: GeneralContext
         ) => boolean,
-        ComponentType?
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ComponentType<any>?
     ][] = [
         ["info", "info", () => true, Config],
         [
@@ -137,7 +139,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
                 !!(instancePermissionSet.configurationRights & minimumFilePerms),
             Files
         ],
-        ["users", "users", () => true],
+        ["users", "users", () => true, InstancePermissions],
         ["jobs", "stream", () => true, JobHistory]
     ];
     public declare context: GeneralContext;
@@ -198,7 +200,8 @@ class InstanceEdit extends React.Component<IProps, IState> {
             });
 
             const response2 = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                this.state.instanceid
+                this.state.instanceid,
+                true
             );
             if (response2.code === StatusCode.OK) {
                 this.setState({

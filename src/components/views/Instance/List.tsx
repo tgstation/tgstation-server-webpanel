@@ -1,3 +1,4 @@
+import { faLock, faUnlock } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { CSSProperties, ReactNode } from "react";
@@ -20,7 +21,7 @@ import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComm
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../../ApiClient/ServerClient";
 import { GeneralContext } from "../../../contexts/GeneralContext";
-import { resolvePermissionSet } from "../../../utils/misc";
+import { hasInstanceManagerRight, resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import { DebugJsonViewer } from "../../utils/JsonViewer";
@@ -47,6 +48,7 @@ class InstanceList extends React.Component<IProps, IState> {
         super(props);
 
         this.setOnline = this.setOnline.bind(this);
+        this.grantPermissions = this.grantPermissions.bind(this);
 
         this.state = {
             loading: true,
@@ -144,11 +146,30 @@ class InstanceList extends React.Component<IProps, IState> {
         await this.loadInstances();
     }
 
+    private async grantPermissions(instance: Instance) {
+        const instanceedit = await InstanceClient.grantPermissions(({
+            id: instance.id
+        } as unknown) as InstanceResponse);
+
+        if (instanceedit.code === StatusCode.OK) {
+            await this.loadInstances();
+        } else {
+            this.addError(instanceedit.error);
+        }
+    }
+
     private async setOnline(instance: Instance) {
         //Yes this is desynchronized and will use the last known state of the instance
         // to determine what state we should put it in, thats intentional, if the user clicks Set Online, it needs
         // to be online, no matter what it previously was
         const desiredState = !instance.online;
+        if (
+            !desiredState &&
+            !confirm(`Are you sure you want to take the instance "${instance.name}" offline?`)
+        ) {
+            return;
+        }
+
         const instanceedit = await InstanceClient.editInstance(({
             id: instance.id,
             online: desiredState
@@ -168,6 +189,11 @@ class InstanceList extends React.Component<IProps, IState> {
         const canOnline = !!(
             resolvePermissionSet(this.context.user).instanceManagerRights &
             InstanceManagerRights.SetOnline
+        );
+
+        const canGrant = hasInstanceManagerRight(
+            resolvePermissionSet(this.context.user),
+            InstanceManagerRights.GrantPermissions
         );
 
         const tablecellstyling: CSSProperties = {
@@ -249,6 +275,33 @@ class InstanceList extends React.Component<IProps, IState> {
                                         />
                                     </td>
                                     <td className="align-middle p-1" style={tablecellstyling}>
+                                        {!value.canAccess && value.online ? (
+                                            <OverlayTrigger
+                                                placement="top"
+                                                overlay={props => (
+                                                    <Tooltip
+                                                        id={`grant-tooltop-${value.id}`}
+                                                        {...props}>
+                                                        <FormattedMessage
+                                                            id={`view.instance.list.grant${
+                                                                !canGrant ? ".deny" : ""
+                                                            }`}
+                                                        />
+                                                    </Tooltip>
+                                                )}>
+                                                <Button
+                                                    className="mx-1"
+                                                    variant="warning"
+                                                    onClick={() => this.grantPermissions(value)}
+                                                    disabled={!canGrant}>
+                                                    <FontAwesomeIcon
+                                                        icon={canGrant ? faUnlock : faLock}
+                                                    />
+                                                </Button>
+                                            </OverlayTrigger>
+                                        ) : (
+                                            <></>
+                                        )}
                                         <Button
                                             className="mx-1"
                                             onClick={() => {
@@ -259,7 +312,7 @@ class InstanceList extends React.Component<IProps, IState> {
                                                 );
                                             }}
                                             disabled={!value.canAccess}>
-                                            <FormattedMessage id="generic.edit" />
+                                            <FormattedMessage id="generic.access" />
                                         </Button>
                                         <Button
                                             className="mx-1"
