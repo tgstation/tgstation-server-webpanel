@@ -71,7 +71,12 @@ const configOptions = asElementTypesConfig({
     apipath: {
         id: "config.apipath",
         type: "str",
-        value: DEFAULT_APIPATH
+        value:
+            MODE === "DEV"
+                ? DEFAULT_APIPATH
+                : window.publicPath
+                ? new URL("..", new URL(window.publicPath, window.location.href)).href
+                : DEFAULT_APIPATH
     },
     jobpollinactive: {
         id: "config.jobpollinactive",

@@ -74,7 +74,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
 
     public render(): React.ReactNode {
         return (
-            <BrowserRouter basename={window.publicPath || DEFAULT_BASEPATH}>
+            <BrowserRouter basename={window.publicPath ? new URL(window.publicPath, window.location.href).pathname : DEFAULT_BASEPATH}>
                 <ErrorBoundary>
                     <AppNavbar category={this.state.passdownCat} />
                     {this.props.loading ? (
