@@ -18,13 +18,13 @@ import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalS
 import JobsController from "../../../../ApiClient/util/JobsController";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasDreamDaemonRight } from "../../../../utils/misc";
+import DeploymentViewer, { ViewDataType, WatchdogData } from "../../../utils/DeploymentViewer";
 import { addError, displayErrors } from "../../../utils/ErrorAlert";
 import GenericAlert from "../../../utils/GenericAlert";
 import InputField, { FieldType } from "../../../utils/InputField";
 import InputForm from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
-import WIPNotice from "../../../utils/WIPNotice";
 
 enum GracefulAction {
     None,
@@ -274,8 +274,22 @@ export default function Server(): JSX.Element {
         );
     const canActionAny = canStart || canStop || canRestart || canDump;
 
+    const canViewDeployment = hasDreamDaemonRight(
+        instanceEditContext.instancePermissionSet,
+        DreamDaemonRights.ReadRevision
+    );
+
+    let deploymentViewData: WatchdogData | null = null;
+    if (watchdogSettings) {
+        deploymentViewData = {
+            viewDataType: ViewDataType.Watchdog,
+            activeCompileJob: watchdogSettings.activeCompileJob,
+            stagedCompileJob: watchdogSettings.stagedCompileJob
+        };
+    }
+
     return (
-        <div>
+        <div className="text-center">
             <DebugJsonViewer obj={watchdogSettings} />
             {displayErrors(errorState)}
             <h2 className="text-center">
@@ -296,6 +310,12 @@ export default function Server(): JSX.Element {
                     />
                 </Badge>
             </h2>
+            <hr />
+            {canViewDeployment ? (
+                <DeploymentViewer viewData={deploymentViewData} />
+            ) : (
+                <GenericAlert title="view.instance.no_compile_jobs" />
+            )}
             <hr />
             <h3 className="text-center">
                 <FormattedMessage id="view.instance.server.settings" />
@@ -440,11 +460,6 @@ export default function Server(): JSX.Element {
             ) : canActionAny ? (
                 <GenericAlert title="view.instance.server.no_graceful" />
             ) : null}
-            <hr />
-            <h3 className="text-center">
-                <FormattedMessage id="view.instance.server.deployment_info" />
-            </h3>
-            <WIPNotice />
         </div>
     );
 }
