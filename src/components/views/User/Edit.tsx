@@ -1094,7 +1094,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                                         inline
                                                         type="switch"
                                                         custom
-                                                        id={perm}
+                                                        id={`${enumname}.${perm}`}
                                                         className="d-flex justify-content-center align-content-center mx-2"
                                                         label=""
                                                         ref={inputRef}

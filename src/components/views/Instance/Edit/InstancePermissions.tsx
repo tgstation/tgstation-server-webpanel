@@ -796,7 +796,11 @@ class InstancePermissions extends React.Component<IProps, IState> {
                         const fieldRef = React.createRef<HTMLDivElement>();
                         inputs[perm] = { input: inputRef, field: fieldRef };
                         return (
-                            <InputGroup key={perm} as="label" htmlFor={perm} className="mb-0">
+                            <InputGroup
+                                key={`${enumname}.${perm}`}
+                                as="label"
+                                htmlFor={perm}
+                                className="mb-0">
                                 <InputGroup.Prepend className="flex-grow-1 overflow-auto">
                                     <OverlayTrigger
                                         overlay={
@@ -818,7 +822,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
                                                         inline
                                                         type="switch"
                                                         custom
-                                                        id={perm}
+                                                        id={`${enumname}.${perm}`}
                                                         className="d-flex justify-content-center align-content-center mx-2"
                                                         label=""
                                                         ref={inputRef}
