@@ -1,5 +1,5 @@
 ﻿import type { ConfigurationFileResponse } from "../generatedcode/generated";
 
 export type DownloadedConfigFile = ConfigurationFileResponse & {
-    content: string;
+    content?: Blob;
 };

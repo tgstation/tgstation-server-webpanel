@@ -11,7 +11,7 @@ export type UploadErrors =
     | ErrorCode.UPLOAD_FAILED;
 
 export default new (class TransferClient extends ApiClient {
-    public async Download(ticket: string): Promise<InternalStatus<string, DownloadErrors>> {
+    public async Download(ticket: string): Promise<InternalStatus<Blob, DownloadErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -23,7 +23,8 @@ export default new (class TransferClient extends ApiClient {
                 {
                     headers: {
                         Accept: "application/json, application/octet-stream"
-                    }
+                    },
+                    format: "blob"
                 }
             );
         } catch (stat) {
@@ -37,7 +38,7 @@ export default new (class TransferClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: (response.data as unknown) as string
+                    payload: response.data as Blob
                 });
             }
             case 410: {

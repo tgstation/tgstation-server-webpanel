@@ -375,7 +375,5 @@ export const RouteData = {
     userlistpage: undefined as undefined | number,
     jobhistorypage: new Map<number, number>(),
 
-    rootDirectoryPage: undefined as undefined | number,
-
     oautherrors: [] as InternalError<ErrorCode>[]
 };

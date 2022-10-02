@@ -339,14 +339,15 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         }
         switch (response.status) {
             case 200: {
-                const contents = await TransferClient.Download(
-                    (response.data as LogFileResponse).fileTicket
-                );
+                const logFileResponse = response.data as LogFileResponse;
+                const contents = await TransferClient.Download(logFileResponse.fileTicket);
                 if (contents.code === StatusCode.OK) {
                     //Object.assign() is a funky function but all it does is copy everything from the second object to the first object
                     const temp: DownloadedLog = Object.assign(
-                        { content: contents.payload },
-                        response.data as LogFileResponse
+                        {
+                            content: await contents.payload.text()
+                        },
+                        logFileResponse
                     );
                     return new InternalStatus({
                         code: StatusCode.OK,

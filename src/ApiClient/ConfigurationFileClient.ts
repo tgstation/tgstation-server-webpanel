@@ -1,6 +1,5 @@
 ﻿import { ApiClient } from "./_base";
 import {
-    ConfigurationControllerUpdatePayload,
     ConfigurationFileRequest,
     ConfigurationFileResponse,
     ErrorMessageResponse,
@@ -67,15 +66,15 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
     public async writeConfigFile(
         instance: number,
-        filePath: ConfigurationControllerUpdatePayload,
+        fileRequest: ConfigurationFileRequest,
         file: ArrayBuffer
-    ): Promise<InternalStatus<ConfigurationFileResponse | null, GenericErrors | UploadErrors>> {
+    ): Promise<InternalStatus<ConfigurationFileResponse, GenericErrors | UploadErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
             response = await ServerClient.apiClient!.config.configurationControllerUpdate(
-                filePath,
+                fileRequest,
                 {
                     headers: { Instance: instance.toString() }
                 }
@@ -87,21 +86,14 @@ export default new (class ConfigurationFileClient extends ApiClient {
             });
         }
         switch (response.status) {
-            case 200: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: null
-                });
-            }
+            case 200:
             case 202: {
-                const upload = await TransferClient.Upload(
-                    (response.data as ConfigurationFileResponse).fileTicket,
-                    file
-                );
+                const payload = response.data as ConfigurationFileResponse;
+                const upload = await TransferClient.Upload(payload.fileTicket, file);
                 if (upload.code === StatusCode.OK) {
                     return new InternalStatus({
                         code: StatusCode.OK,
-                        payload: null
+                        payload
                     });
                 }
                 return new InternalStatus({ code: StatusCode.ERROR, error: upload.error });
@@ -121,7 +113,8 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
     public async getConfigFile(
         instance: number,
-        filePath: string
+        filePath: string,
+        getContent: boolean
     ): Promise<InternalStatus<DownloadedConfigFile, ConfigErrors | DownloadErrors>> {
         await ServerClient.wait4Init();
 
@@ -139,21 +132,27 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
-                const contents = await TransferClient.Download(
-                    (response.data as ConfigurationFileResponse).fileTicket
-                );
+                if (getContent) {
+                    const payload = response.data as ConfigurationFileResponse;
+                    const contents = await TransferClient.Download(payload.fileTicket);
 
-                if (contents.code === StatusCode.OK) {
-                    const temp: DownloadedConfigFile = Object.assign(
-                        { content: contents.payload },
-                        response.data as ConfigurationFileResponse
-                    );
-                    return new InternalStatus({
-                        code: StatusCode.OK,
-                        payload: temp
-                    });
+                    if (contents.code === StatusCode.OK) {
+                        const temp: DownloadedConfigFile = Object.assign(
+                            { content: contents.payload },
+                            payload
+                        );
+                        return new InternalStatus({
+                            code: StatusCode.OK,
+                            payload: temp
+                        });
+                    }
+                    return new InternalStatus({ code: StatusCode.ERROR, error: contents.error });
                 }
-                return new InternalStatus({ code: StatusCode.ERROR, error: contents.error });
+
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: response.data as ConfigurationFileResponse
+                });
             }
             case 410: {
                 const errorMessage = response.data as ErrorMessageResponse;

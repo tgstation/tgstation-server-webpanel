@@ -91,7 +91,8 @@ const minimumDeployPerms =
     DreamMakerRights.SetTimeout |
     DreamMakerRights.SetSecurityLevel;
 
-const minimumFilePerms = ConfigurationRights.Read | ConfigurationRights.List;
+const minimumFilePerms =
+    ConfigurationRights.Read | ConfigurationRights.List | ConfigurationRights.Write;
 
 class InstanceEdit extends React.Component<IProps, IState> {
     public static tabs: [
