@@ -1,6 +1,7 @@
 .navbar {
     font-weight: 600;
 }
+
 $enable-shadows: true;
 $enable-gradients: true;
 
@@ -17,12 +18,8 @@ $theme-colors: (
     "background": #212529,
     "darker": darken(#212529, 5%)
 );
-$theme-colors: map-merge(
-    $theme-colors,
-    (
-        "darkblue": rgba(scale-color(map-get($theme-colors, "primary"), $lightness: -20%), 1)
-    )
-);
+$theme-colors: map-merge($theme-colors,
+        ("darkblue": rgba(scale-color(map-get($theme-colors, "primary"), $lightness: -20%), 1)));
 
 $sizes: (
     0: 0,
@@ -43,21 +40,19 @@ $gray-800: #343a40 !default;
 $gray-900: #212529 !default;
 $black: #000 !default;
 
-$grays: () !default;
+$grays: (
+    ) !default;
 // stylelint-disable-next-line scss/dollar-variable-default
-$grays: map-merge(
-    (
-        "100": $gray-100,
-        "200": $gray-200,
-        "300": $gray-300,
-        "400": $gray-400,
-        "500": $gray-500,
-        "600": $gray-600,
-        "700": $gray-700,
-        "800": $gray-800,
-        "900": $gray-900
-    ),
-    $grays
+$grays: map-merge(("100": $gray-100,
+            "200": $gray-200,
+            "300": $gray-300,
+            "400": $gray-400,
+            "500": $gray-500,
+            "600": $gray-600,
+            "700": $gray-700,
+            "800": $gray-800,
+            "900": $gray-900 ),
+        $grays
 );
 
 $blue: #007bff !default;
@@ -71,50 +66,46 @@ $green: #28a745 !default;
 $teal: #20c997 !default;
 $cyan: #17a2b8 !default;
 
-$colors: () !default;
+$colors: (
+    ) !default;
 // stylelint-disable-next-line scss/dollar-variable-default
-$colors: map-merge(
-    (
-        "blue": $blue,
-        "indigo": $indigo,
-        "purple": $purple,
-        "pink": $pink,
-        "red": $red,
-        "orange": $orange,
-        "yellow": $yellow,
-        "green": $green,
-        "teal": $teal,
-        "cyan": $cyan,
-        "white": $white,
-        "gray": $gray-600,
-        "gray-dark": $gray-800
-    ),
-    $colors
+$colors: map-merge(("blue": $blue,
+            "indigo": $indigo,
+            "purple": $purple,
+            "pink": $pink,
+            "red": $red,
+            "orange": $orange,
+            "yellow": $yellow,
+            "green": $green,
+            "teal": $teal,
+            "cyan": $cyan,
+            "white": $white,
+            "gray": $gray-600,
+            "gray-dark": $gray-800 ),
+        $colors
 );
 
-$primary: $blue !default;
-$secondary: $gray-600 !default;
-$success: $green !default;
-$info: $cyan !default;
-$warning: $yellow !default;
-$danger: $red !default;
-$light: $gray-100 !default;
-$dark: $gray-800 !default;
+$primary: $blue  !default;
+$secondary: $gray-600  !default;
+$success: $green  !default;
+$info: $cyan  !default;
+$warning: $yellow  !default;
+$danger: $red  !default;
+$light: $gray-100  !default;
+$dark: $gray-800  !default;
 
-$theme-colors: () !default;
+$theme-colors: (
+    ) !default;
 // stylelint-disable-next-line scss/dollar-variable-default
-$theme-colors: map-merge(
-    (
-        "primary": $primary,
-        "secondary": $secondary,
-        "success": $success,
-        "info": $info,
-        "warning": $warning,
-        "danger": $danger,
-        "light": $light,
-        "dark": $dark
-    ),
-    $theme-colors
+$theme-colors: map-merge(("primary": $primary,
+            "secondary": $secondary,
+            "success": $success,
+            "info": $info,
+            "warning": $warning,
+            "danger": $danger,
+            "light": $light,
+            "dark": $dark ),
+        $theme-colors
 );
 
 $border-color: $gray-800;
@@ -150,7 +141,8 @@ $link-decoration: underline;
 $modal-content-bg: $dark;
 
 $navbar-dark-color: rgba($white, 0.75);
-.navbar-dark > .navbar-nav > .nav-link.active {
+
+.navbar-dark>.navbar-nav>.nav-link.active {
     font-weight: bold;
 }
 
@@ -242,7 +234,7 @@ $toast-header-background-color: $gray-600;
 }
 
 .alert-dismissible {
-    padding-right: $alert-padding-x !important;
+    padding-right: $alert-padding-x  !important;
 }
 
 .pre-wrap {
@@ -257,10 +249,13 @@ $toast-header-background-color: $gray-600;
     @include media-breakpoint-up($breakpoint) {
         $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
 
-        @each $prop, $abbrev in (width: w, height: h) {
-            @each $size, $length in $sizes {
+        @each $prop,
+        $abbrev in (width: w, height: h) {
+
+            @each $size,
+            $length in $sizes {
                 .#{$abbrev}#{$infix}-#{$size} {
-                    #{$prop}: $length !important;
+                    #{$prop}: $length  !important;
                 }
             }
         }
@@ -280,6 +275,7 @@ $toast-header-background-color: $gray-600;
 .toast-header {
     .close {
         margin-left: auto !important;
+
         span {
             margin-left: 0.5rem !important;
         }
@@ -289,6 +285,7 @@ $toast-header-background-color: $gray-600;
 .anim-fade-appear {
     opacity: 0;
 }
+
 .anim-fade-appear-active {
     opacity: 1;
 }
@@ -296,6 +293,7 @@ $toast-header-background-color: $gray-600;
 .anim-fade-exit {
     opacity: 1;
 }
+
 .anim-fade-exit-active {
     opacity: 0;
 }
@@ -316,10 +314,12 @@ $toast-header-background-color: $gray-600;
     overflow: hidden;
     display: unset !important;
 }
+
 .anim-collapse-enter-active {
     flex-grow: 1;
     display: unset !important;
 }
+
 .anim-collapse-enter-done {
     flex-grow: 1;
     display: unset !important;
@@ -329,11 +329,13 @@ $toast-header-background-color: $gray-600;
     flex-grow: 1;
     display: unset !important;
 }
+
 .anim-collapse-exit-active {
     flex-grow: 0;
     flex-basis: 0;
     overflow: hidden;
 }
+
 .anim-collapse-exit-done {
     flex-grow: 0;
     flex-basis: 0;
@@ -361,9 +363,11 @@ $toast-header-background-color: $gray-600;
     height: 8px;
     width: 8px;
 }
+
 .fancyscroll::-webkit-scrollbar-track {
     background: rgba($gray-600, 0.5);
 }
+
 .fancyscroll::-webkit-scrollbar-thumb {
     background-color: $gray-800;
 }
@@ -385,11 +389,12 @@ $toast-header-background-color: $gray-600;
 }
 
 .nav-item {
-    &:not(:first-of-type) > .instanceedittab {
+    &:not(:first-of-type)>.instanceedittab {
         border-top-right-radius: 0 !important;
         border-top-left-radius: 0 !important;
     }
-    &:not(:last-of-type) > .instanceedittab {
+
+    &:not(:last-of-type)>.instanceedittab {
         border-bottom-right-radius: 0 !important;
         border-bottom-left-radius: 0 !important;
         border-bottom: $gray-600 solid 1px;
@@ -411,10 +416,12 @@ $toast-header-background-color: $gray-600;
 
     &.active {
         background-color: darken(theme-color("primary"), 12) !important;
+
         &.no-access {
             background-color: darken(theme-color("danger"), 12) !important;
             color: white !important;
         }
+
         color: lightskyblue !important;
         box-shadow: inset 0 2px 8px -2px black;
         /*border: 1px solid $gray-600 !important;*/
@@ -423,9 +430,11 @@ $toast-header-background-color: $gray-600;
 
 .hover-bar:not(.pin-open) .tab-text {
     transition: max-width 1s, padding 1s;
+
     @include media-breakpoint-up("lg") {
         max-width: 0;
     }
+
     //IntelliJ does not recognize clip as a valid value but I assure you it is.
     //noinspection CssInvalidPropertyValue
     overflow: clip;
@@ -437,6 +446,7 @@ $toast-header-background-color: $gray-600;
             max-width: 300px;
         }
     }
+
     .hover-bar:not(:hover) {
         & .tab-text {
             padding-left: 0 !important;
@@ -448,12 +458,25 @@ $toast-header-background-color: $gray-600;
     & tr {
         background-color: initial !important;
     }
-    & th, & td {
+
+    & th,
+    & td {
         border-color: initial !important;
         padding: initial !important;
         vertical-align: initial !important;
         border-top: initial !important;
     }
+}
+
+.browser-ul {
+    list-style: none;
+    margin-left: 0;
+    margin-top: 4px;
+    padding-left: 1em;
+}
+
+.browser-li {
+    margin-top: 4px;
 }
 
 

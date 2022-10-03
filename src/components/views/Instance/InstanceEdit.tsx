@@ -9,6 +9,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 
 import {
     ByondRights,
+    ConfigurationRights,
     DreamDaemonRights,
     DreamMakerRights,
     InstancePermissionSetResponse,
@@ -31,6 +32,7 @@ import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
 import Config from "./Edit/Config";
 import { Deployment } from "./Edit/Deployment";
+import Files from "./Edit/Files";
 import InstancePermissions from "./Edit/InstancePermissions";
 import JobHistory from "./Edit/JobHistory";
 import Repository from "./Edit/Repository";
@@ -89,8 +91,10 @@ const minimumDeployPerms =
     DreamMakerRights.SetTimeout |
     DreamMakerRights.SetSecurityLevel;
 
+const minimumFilePerms =
+    ConfigurationRights.Read | ConfigurationRights.List | ConfigurationRights.Write;
+
 class InstanceEdit extends React.Component<IProps, IState> {
-    public declare context: GeneralContext;
     public static tabs: [
         string,
         IconProp,
@@ -129,10 +133,17 @@ class InstanceEdit extends React.Component<IProps, IState> {
             Byond
         ],
         ["chatbots", "comments", () => true],
-        ["files", "folder-open", () => true],
+        [
+            "files",
+            "folder-open",
+            instancePermissionSet =>
+                !!(instancePermissionSet.configurationRights & minimumFilePerms),
+            Files
+        ],
         ["users", "users", () => true, InstancePermissions],
         ["jobs", "stream", () => true, JobHistory]
     ];
+    public declare context: GeneralContext;
 
     public constructor(props: IProps) {
         super(props);
@@ -152,6 +163,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
             instanceid: parseInt(this.props.match.params.id)
         };
     }
+
     public deleteContextError(error: InternalError): void {
         this.setState(prev => {
             const newSet = new Set(prev.errors);
@@ -358,5 +370,6 @@ class InstanceEdit extends React.Component<IProps, IState> {
         );
     }
 }
+
 InstanceEdit.contextType = GeneralContext;
 export default withRouter(InstanceEdit);
