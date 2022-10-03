@@ -132,7 +132,7 @@ class Byond extends React.Component<IProps, IState> {
 
     public render(): React.ReactNode {
         if (this.state.loading) {
-            return <Loading text="loading.instance" />;
+            return <Loading text="loading.byond" />;
         }
 
         const canSeeVersions = hasByondRight(
