@@ -449,6 +449,7 @@ class Files extends React.Component<IProps, IState> {
                             style={{
                                 paddingRight: "16px",
                                 maxHeight: "800px",
+                                minWidth: "200px",
                                 overflowY: "scroll"
                             }}>
                             <ul className="browser-ul">
