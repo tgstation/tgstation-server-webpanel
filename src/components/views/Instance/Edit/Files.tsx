@@ -446,6 +446,7 @@ class Files extends React.Component<IProps, IState> {
                 <div className="d-flex flex-row">
                     {canListDirectories ? (
                         <div
+                            className="text-left"
                             style={{
                                 paddingRight: "16px",
                                 maxHeight: "800px",
