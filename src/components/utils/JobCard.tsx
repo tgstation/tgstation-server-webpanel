@@ -95,7 +95,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                     {job.stoppedAt ? (
                         <React.Fragment>
                             <FormattedMessage
-                                id={job.cancelled ? "app.job.cancelled" : "app.job.stopped"}
+                                id={job.cancelled ? "app.job.cancelled" : "app.job.completed"}
                             />
                             <OverlayTrigger
                                 overlay={
