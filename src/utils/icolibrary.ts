@@ -1,7 +1,14 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faGitAlt } from "@fortawesome/free-brands-svg-icons/faGitAlt";
-import { faCaretDown, faCaretRight, faMinus, faUnlock } from "@fortawesome/free-solid-svg-icons";
+import {
+    faCaretDown,
+    faCaretRight,
+    faComment,
+    faHashtag,
+    faMinus,
+    faUnlock
+} from "@fortawesome/free-solid-svg-icons";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons/faCodeBranch";
@@ -72,6 +79,8 @@ export default function (): void {
         faUnlock,
         faLock,
         faCaretRight,
-        faCaretDown
+        faCaretDown,
+        faComment,
+        faHashtag
     );
 }
