@@ -5,6 +5,10 @@ import {
     faCaretDown,
     faCaretRight,
     faComment,
+    faFile,
+    faFileAlt,
+    faFolderMinus,
+    faFolderPlus,
     faHashtag,
     faMinus,
     faUnlock
@@ -81,6 +85,10 @@ export default function (): void {
         faCaretRight,
         faCaretDown,
         faComment,
-        faHashtag
+        faHashtag,
+        faFolderPlus,
+        faFolderMinus,
+        faFile,
+        faFileAlt
     );
 }

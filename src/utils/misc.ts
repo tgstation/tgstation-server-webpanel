@@ -110,6 +110,13 @@ function hasRepoRight(
     return bitflagIsTrue(permissionSet.repositoryRights, right);
 }
 
+function hasFilesRight(
+    permissionSet: InstancePermissionSetResponse,
+    right: ConfigurationRights
+): boolean {
+    return bitflagIsTrue(permissionSet.configurationRights, right);
+}
+
 export {
     download,
     replaceAll,
@@ -124,5 +131,6 @@ export {
     hasInstancePermRight,
     hasInstanceManagerRight,
     hasDreamMakerRight,
-    hasDreamDaemonRight
+    hasDreamDaemonRight,
+    hasFilesRight
 };
