@@ -9,6 +9,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 
 import {
     ByondRights,
+    ChatBotRights,
     ConfigurationRights,
     DreamDaemonRights,
     DreamMakerRights,
@@ -30,6 +31,7 @@ import AccessDenied from "../../utils/AccessDenied";
 import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
 import Byond from "./Edit/Byond";
+import ChatBots from "./Edit/ChatBots";
 import Config from "./Edit/Config";
 import { Deployment } from "./Edit/Deployment";
 import Files from "./Edit/Files";
@@ -91,6 +93,8 @@ const minimumDeployPerms =
     DreamMakerRights.SetTimeout |
     DreamMakerRights.SetSecurityLevel;
 
+const minimumChatPerms = ChatBotRights.Read | ChatBotRights.Create;
+
 const minimumFilePerms =
     ConfigurationRights.Read | ConfigurationRights.List | ConfigurationRights.Write;
 
@@ -132,7 +136,12 @@ class InstanceEdit extends React.Component<IProps, IState> {
             instancePermissionSet => !!(instancePermissionSet.byondRights & minimumByondPerms),
             Byond
         ],
-        ["chatbots", "comments", () => true],
+        [
+            "chatbots",
+            "comments",
+            instancePermissionSet => !!(instancePermissionSet.chatBotRights & minimumChatPerms),
+            ChatBots
+        ],
         [
             "files",
             "folder-open",

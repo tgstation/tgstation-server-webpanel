@@ -4,10 +4,12 @@ import { faGitAlt } from "@fortawesome/free-brands-svg-icons/faGitAlt";
 import {
     faCaretDown,
     faCaretRight,
+    faComment,
     faFile,
     faFileAlt,
     faFolderMinus,
     faFolderPlus,
+    faHashtag,
     faMinus,
     faUnlock
 } from "@fortawesome/free-solid-svg-icons";
@@ -82,6 +84,8 @@ export default function (): void {
         faLock,
         faCaretRight,
         faCaretDown,
+        faComment,
+        faHashtag,
         faFolderPlus,
         faFolderMinus,
         faFile,
