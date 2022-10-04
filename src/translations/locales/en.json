@@ -682,7 +682,7 @@
     "fields.instance.watchdog.securitylevel.Ultrasafe": "Ultra-Safe",
     "fields.instance.watchdog.port": "Network port",
     "fields.instance.watchdog.timeout.startup": "Startup timeout (seconds)",
-    "fields.instance.watchdog.timeout.topic": "Topic timeout (seconds)",
+    "fields.instance.watchdog.timeout.topic": "Topic timeout (milliseconds)",
     "fields.instance.watchdog.heartbeat": "Heartbeat timeout (seconds)",
     "fields.instance.watchdog.dumponheartbeatfail": "Create process dump on heartbeat fail restart",
     "fields.instance.watchdog.additionalparams": "Additional command line parameters",
