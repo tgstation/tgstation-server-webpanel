@@ -94,7 +94,9 @@ export default class JobCard extends React.Component<IProps, IState> {
                     {/*STOPPED AT*/}
                     {job.stoppedAt ? (
                         <React.Fragment>
-                            <FormattedMessage id="app.job.stopped" />
+                            <FormattedMessage
+                                id={job.cancelled ? "app.job.cancelled" : "app.job.stopped"}
+                            />
                             <OverlayTrigger
                                 overlay={
                                     <Tooltip id={`${job.id}-tooltip-stopped`}>
@@ -118,7 +120,6 @@ export default class JobCard extends React.Component<IProps, IState> {
                     ) : (
                         ""
                     )}
-                    {/*STOPPED BY*/}
                     {job.cancelledBy ? (
                         <React.Fragment>
                             <FormattedMessage id="app.job.stoppedby" />
