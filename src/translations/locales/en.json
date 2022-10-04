@@ -371,6 +371,7 @@
     "view.info.userlimit": "User Limit: ",
     "view.info.grouplimit": "Group Limit: ",
     "view.info.oauth": "OAuth Support: ",
+    "view.report": "Report Issue",
     "perms.admin": "Administration Permissions",
     "perms.admin.writeusers": "Edit Users",
     "perms.admin.writeusers.desc": "Ability to edit users, if View Users is granted, all users can be edited, otherwise, only the current user can be edited",

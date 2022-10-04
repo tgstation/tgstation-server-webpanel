@@ -5,6 +5,7 @@ import {
     faCaretDown,
     faCaretRight,
     faComment,
+    faExclamationTriangle,
     faFile,
     faFileAlt,
     faFolderMinus,
@@ -89,6 +90,7 @@ export default function (): void {
         faFolderPlus,
         faFolderMinus,
         faFile,
-        faFileAlt
+        faFileAlt,
+        faExclamationTriangle
     );
 }

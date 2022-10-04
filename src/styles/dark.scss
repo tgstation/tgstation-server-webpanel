@@ -479,6 +479,13 @@ $toast-header-background-color: $gray-600;
     margin-top: 4px;
 }
 
+.report-issue {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
 
 //Fix vertical align for fa icons
 * {

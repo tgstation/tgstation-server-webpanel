@@ -14,6 +14,7 @@ import UserClient from "./ApiClient/UserClient";
 import CredentialsProvider from "./ApiClient/util/CredentialsProvider";
 import LoginHooks from "./ApiClient/util/LoginHooks";
 import AppNavbar from "./components/AppNavbar";
+import ReportIssue from "./components/ReportIssue";
 import ErrorAlert from "./components/utils/ErrorAlert";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
 import JobsList from "./components/utils/JobsList";
@@ -121,6 +122,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                     )}
                     {this.props.loggedIn ? <JobsList /> : null}
                 </ErrorBoundary>
+                <ReportIssue />
             </BrowserRouter>
         );
     }
