@@ -1,7 +1,6 @@
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 import { faComment, faHashtag, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { channel } from "diagnostics_channel";
 import React from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FormattedMessage, injectIntl, WrappedComponentProps } from "react-intl";
@@ -22,7 +21,6 @@ import InputField, { FieldType } from "../../../utils/InputField";
 import InputForm, { InputFormField } from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
-import WIPNotice from "../../../utils/WIPNotice";
 
 enum DiscordDMOutputDisplayType {
     Always = 0,
