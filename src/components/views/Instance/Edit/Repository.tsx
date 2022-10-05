@@ -119,7 +119,8 @@ export default function Repository(): JSX.Element {
                         addError(errorState, prs.error);
                     } else {
                         setPRs(prs.payload);
-                        if (resetDesiredState) reloadDesiredState(repositoryInfo, true);
+                        if (resetDesiredState)
+                            reloadDesiredState(repositoryInfo, true, false, prs.payload);
                     }
                 })
                 .catch(e => {
@@ -131,7 +132,13 @@ export default function Repository(): JSX.Element {
         }
     }
 
-    function reloadDesiredState(repoinfo: RepositoryResponse | false | null, reset?: boolean) {
+    function reloadDesiredState(
+        repoinfo: RepositoryResponse | false | null,
+        reset: boolean,
+        harderReset: boolean,
+        gitHubPRs?: PullRequest[] | null
+    ) {
+        gitHubPRs = gitHubPRs ?? PRs;
         if (reset) {
             setUpdateRepo(false);
             setManualPRs(new Set());
@@ -149,7 +156,17 @@ export default function Repository(): JSX.Element {
                     //We want the PR updated to a specific commit, don't mess with it
                     if (currentDesiredState && !currentDesiredState[0]) return;
                 }
-                newDesiredState.set(pr.number, [true, pr.targetCommitSha, pr.comment ?? ""]);
+
+                const gitHubPR = gitHubPRs?.find(
+                    potentialGitHubPR => pr.number === potentialGitHubPR.number
+                );
+
+                const defaultDesiredState = gitHubPR?.state === "merged" ? false : true;
+                if (reset && !harderReset && !defaultDesiredState) {
+                    newDesiredState.set(pr.number, false);
+                } else {
+                    newDesiredState.set(pr.number, [true, pr.targetCommitSha, pr.comment ?? ""]);
+                }
             });
             return newDesiredState;
         });
@@ -159,7 +176,7 @@ export default function Repository(): JSX.Element {
         if (!hasRepoRight(instanceEditContext.instancePermissionSet, RepositoryRights.Read)) {
             setIsLoading(false);
             setIsCloning(false);
-            reloadDesiredState(false, resetDesiredState);
+            reloadDesiredState(false, resetDesiredState ?? false, false);
             return setRepositoryInfo(false);
         }
 
@@ -204,10 +221,9 @@ export default function Repository(): JSX.Element {
                 addError(errorState, response.error);
             }
         } else {
-            reloadPRs(response.payload);
+            reloadPRs(response.payload, resetDesiredState);
             //response.payload.remoteGitProvider = RemoteGitProvider.GitLab;
             setRepositoryInfo(response.payload);
-            reloadDesiredState(response.payload, resetDesiredState);
         }
         setIsLoading(false);
     }
@@ -798,7 +814,9 @@ export default function Repository(): JSX.Element {
                                         variant="danger"
                                         className="mx-2"
                                         disabled={noPendingChanges}
-                                        onClick={() => reloadDesiredState(repositoryInfo, true)}>
+                                        onClick={() =>
+                                            reloadDesiredState(repositoryInfo, true, true)
+                                        }>
                                         <FormattedMessage id="generic.cancel" />
                                     </Button>
                                     <Button
