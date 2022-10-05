@@ -1,10 +1,8 @@
 name: Deploy code
-
 on:
     push:
-        branches:
-            - next
-            - api8
+        tags:
+            - '*'
     workflow_dispatch:
 
 jobs:
@@ -32,7 +30,7 @@ jobs:
               run: yarn install --immutable
 
             - name: Compile
-              run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA
+              run: yarn run build --env GITHUB_CD
 
             #Safety against pushing broken code
             - name: Run ESLint
