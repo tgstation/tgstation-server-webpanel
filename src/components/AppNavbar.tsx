@@ -1,18 +1,24 @@
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as React from "react";
-import { NavDropdown } from "react-bootstrap";
+import React from "react";
+import { NavDropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
+import { SemVer } from "semver";
 
+import AdminClient from "../ApiClient/AdminClient";
+import { AdministrationRights } from "../ApiClient/generatedcode/generated";
+import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../ApiClient/ServerClient";
+import UserClient from "../ApiClient/UserClient";
 import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import { GeneralContext, UnsafeGeneralContext } from "../contexts/GeneralContext";
-import { matchesPath } from "../utils/misc";
+import { hasAdminRight, matchesPath, resolvePermissionSet } from "../utils/misc";
 import RouteController from "../utils/RouteController";
 import { AppCategories, AppRoute, AppRoutes } from "../utils/routes";
 
@@ -28,6 +34,7 @@ interface IState {
     //so we dont actually use the routes but it allows us to make react update the component
     routes: AppRoute[];
     categories: typeof AppCategories;
+    updateAvailable: boolean;
 }
 
 class AppNavbar extends React.Component<IProps, IState> {
@@ -43,19 +50,46 @@ class AppNavbar extends React.Component<IProps, IState> {
         this.state = {
             loggedIn: !!CredentialsProvider.isTokenValid(),
             routes: [],
-            categories: AppCategories
+            categories: AppCategories,
+            updateAvailable: false
         };
     }
 
-    private loginSuccess() {
+    private loginSuccess(): void {
         this.setState({
             loggedIn: true
         });
+
+        void this.checkShowServerUpdateIcon();
+    }
+
+    private async checkShowServerUpdateIcon(): Promise<void> {
+        await ServerClient.wait4Init();
+        const userResponse = await UserClient.getCurrentUser();
+        if (userResponse.code === StatusCode.ERROR) return;
+
+        const user = userResponse.payload;
+
+        const permissionSet = resolvePermissionSet(user);
+        if (hasAdminRight(permissionSet, AdministrationRights.ChangeVersion)) {
+            const response = await AdminClient.getAdminInfo();
+            if (response.code == StatusCode.OK) {
+                const latestVersion = new SemVer(response.payload.latestVersion);
+                const currentVersion = new SemVer(this.context.serverInfo!.version);
+
+                const updateAvailable = latestVersion.compare(currentVersion) === 1;
+
+                this.setState({
+                    updateAvailable
+                });
+            }
+        }
     }
 
     private logout() {
         this.setState({
-            loggedIn: false
+            loggedIn: false,
+            updateAvailable: false
         });
     }
 
@@ -200,6 +234,30 @@ class AppNavbar extends React.Component<IProps, IState> {
                                 })
                             )}
                         </Nav>
+                        {this.state.updateAvailable ? (
+                            <OverlayTrigger
+                                placement="right"
+                                overlay={props => (
+                                    <Tooltip id="tgs-updated-tooltip" {...props}>
+                                        <FormattedMessage id="navbar.update" />
+                                    </Tooltip>
+                                )}>
+                                <h3>
+                                    <FontAwesomeIcon
+                                        onClick={() =>
+                                            this.props.history.push(
+                                                AppRoutes.admin_update.link ??
+                                                    AppRoutes.admin_update.route,
+                                                { reload: true }
+                                            )
+                                        }
+                                        icon={faExclamationCircle}
+                                    />
+                                </h3>
+                            </OverlayTrigger>
+                        ) : (
+                            <React.Fragment />
+                        )}
                         {this.renderUser()}
                     </Navbar.Collapse>
                 </Navbar>

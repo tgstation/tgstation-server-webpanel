@@ -31,6 +31,7 @@
     "navbar.purgecache": "Purge Client Cache",
     "navbar.refresh": "Refresh",
     "navbar.logout": "Logout",
+    "navbar.update": "Server Update Available",
     "app.job.started": "Started: ",
     "app.job.startedby": "Started By: ",
     "app.job.completed": "Finished: ",
