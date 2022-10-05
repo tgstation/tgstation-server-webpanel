@@ -150,12 +150,12 @@ module.exports = (env, options) => {
                 middlewares.push({
                     name: 'channel-json',
                     middleware: (req, res, next) => {
-                        if (!req.header("X-Webpanel-Fetch-Channel")) return next();
-                        if (req.path === "/channel.json") return next();
+                        if(!req.header("X-Webpanel-Fetch-Channel")) return next();
+                        if(req.path === "/channel.json") return next();
 
                         let vary = req.header("Vary")
-                        if (vary === undefined) vary = ""
-                        if (vary) vary += ", "
+                        if(vary === undefined) vary = ""
+                        if(vary) vary += ", "
                         vary += "X-Webpanel-Fetch-Channel"
 
                         res.header("Vary", vary)
@@ -187,7 +187,7 @@ module.exports = (env, options) => {
                     require("./src/ApiClient/generatedcode/swagger.json").info.version
                 ),
                 VERSION: JSON.stringify(
-                    require("./package.json").version
+                    github ? env.GITHUB_SHA : require("./package.json").version
                 ),
                 MODE: JSON.stringify(prodLike ? (github ? "GITHUB" : "PROD") : "DEV"),
                 // The basepath remains /app because its for the router which is located at /app/
@@ -195,19 +195,19 @@ module.exports = (env, options) => {
                 DEFAULT_APIPATH: JSON.stringify(prodLike ? "/" : "http://localhost:5000/")
             }),
             !github &&
-            new HtmlWebPackPlugin({
-                title: "TGS Webpanel v" + require("./package.json").version,
-                filename: "index.html",
-                template: "./src/index.html",
-                inject: false,
-                publicPath: publicPath
-            }),
+                new HtmlWebPackPlugin({
+                    title: "TGS Webpanel v" + require("./package.json").version,
+                    filename: "index.html",
+                    template: "./src/index.html",
+                    inject: false,
+                    publicPath: publicPath
+                }),
             options.mode !== "production" &&
-            new ReactRefreshWebpackPlugin({
-                overlay: {
-                    sockIntegration: "wds"
-                }
-            }),
+                new ReactRefreshWebpackPlugin({
+                    overlay: {
+                        sockIntegration: "wds"
+                    }
+                }),
             new JSONManifestPlugin({ version: require("./package.json").version })
         ].filter(Boolean)
     };
