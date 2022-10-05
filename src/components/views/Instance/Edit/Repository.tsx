@@ -548,7 +548,7 @@ export default function Repository(): JSX.Element {
                             });
                             clearInterval(deployinterval);
                         }
-                    }, 500);
+                    }, 5000);
                 }
             } else {
                 await fetchRepositoryInfo();
