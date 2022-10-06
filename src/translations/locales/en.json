@@ -232,6 +232,7 @@
     "view.instance.jobs.title": "Job list",
     "view.instance.jobs.jobtotal": "{amount} jobs",
     "view.instance.jobs.error": "An error occured",
+    "view.instance.jobs.clearfinished": "Clear finished jobs",
     "view.instance.moving": "[MOVING INSTANCE...]",
     "view.instance.config.instancesettings": "Instance Settings",
     "view.instance.config.instanceusers": "Instance Users",

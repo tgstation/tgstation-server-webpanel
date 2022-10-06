@@ -1,4 +1,7 @@
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ReactNode } from "react";
+import { Button } from "react-bootstrap";
 import { OverlayInjectedProps } from "react-bootstrap/Overlay";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -195,21 +198,59 @@ export default class JobsList extends React.Component<IProps, IState> {
                             );
                         };
 
+                        let xFinishedEnabled = false;
+                        jobMap.forEach(job => {
+                            if (job.stoppedAt) xFinishedEnabled = true;
+                        });
+
+                        const instanceHeaderStyle = xFinishedEnabled
+                            ? { marginTop: "5px", marginLeft: "20px" }
+                            : undefined;
+
                         return (
                             <React.Fragment key={instanceid}>
-                                <div className="bg-dark p-2 text-center">
-                                    <OverlayTrigger overlay={renderTooltip(instanceid)}>
-                                        <React.Fragment>
-                                            {this.state.instances.get(instanceid)?.name ??
-                                                "Unknown"}{" "}
-                                            (
-                                            <FormattedMessage
-                                                id="view.instance.jobs.jobtotal"
-                                                values={{ amount: jobMap.size }}
-                                            />
-                                            )
-                                        </React.Fragment>
-                                    </OverlayTrigger>
+                                <div className="bg-dark p-2 row">
+                                    <div className={`col-${xFinishedEnabled ? 9 : 12} text-center`}>
+                                        <div style={instanceHeaderStyle}>
+                                            <OverlayTrigger overlay={renderTooltip(instanceid)}>
+                                                <React.Fragment>
+                                                    {this.state.instances.get(instanceid)?.name ??
+                                                        "Unknown"}{" "}
+                                                    (
+                                                    <FormattedMessage
+                                                        id="view.instance.jobs.jobtotal"
+                                                        values={{ amount: jobMap.size }}
+                                                    />
+                                                    )
+                                                </React.Fragment>
+                                            </OverlayTrigger>
+                                        </div>
+                                    </div>
+                                    {xFinishedEnabled ? (
+                                        <div className="col-3 text-right">
+                                            <OverlayTrigger
+                                                placement="top"
+                                                overlay={props => (
+                                                    <Tooltip id="clear-instance-jobs" {...props}>
+                                                        <FormattedMessage id="view.instance.jobs.clearfinished" />
+                                                    </Tooltip>
+                                                )}>
+                                                <Button
+                                                    variant="outline-secondary"
+                                                    onClick={() =>
+                                                        jobMap.forEach(job => {
+                                                            if (job.stoppedAt)
+                                                                JobsController.clearJob(job.id);
+                                                        })
+                                                    }
+                                                    className="nowrap">
+                                                    <FontAwesomeIcon icon={faTimes} />
+                                                </Button>
+                                            </OverlayTrigger>
+                                        </div>
+                                    ) : (
+                                        <React.Fragment />
+                                    )}
                                 </div>
                                 {Array.from(jobMap, ([, job]) => job)
                                     .sort((a, b) => b.id - a.id)

@@ -122,7 +122,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                     )}
                     {job.cancelledBy ? (
                         <React.Fragment>
-                            <FormattedMessage id="app.job.stoppedby" />
+                            <FormattedMessage id="app.job.cancelledby" />
                             <OverlayTrigger
                                 overlay={
                                     <Tooltip id={`${job.id}-tooltip-createdby`}>
