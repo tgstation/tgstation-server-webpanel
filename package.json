@@ -1,6 +1,7 @@
 {
     "name": "tgstation-server-control-panel",
     "version": "4.3.0",
+    "tgs_api_version": "9.6.0",
     "private": true,
     "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
     "repository": "github:tgstation/tgstation-server-control-panel",
@@ -121,21 +122,19 @@
         "generate-api": "yarn run patch && node scripts/api_build.js",
         "patch": "yarn patch-package"
     },
-    "tgs_api": {
-        "type": "version",
-        "value": "9.6.0"
+    "schema_gen": {
+        "type": "version"
     },
-    "tgs_api_example_version": {
-        "desc": "Fetches a tgs api version from github using the tag name",
-        "type": "version",
-        "value": "7.3.2"
+    "schema_gen_example_version": {
+        "desc": "Fetches a tgs api version from github using the tag name. References the \"tgs_api_version\" field in package.json.",
+        "type": "version"
     },
-    "tgs_api_example_url": {
-        "desc": "Fetches a swagger json from a remote url",
+    "schema_gen_example_url": {
+        "desc": "Fetches a swagger json from a remote url.",
         "type": "url",
         "value": "https://example.org/swagger.json"
     },
-    "tgs_api_example_file": {
+    "schema_gen_example_file": {
         "desc": "Fetches a swagger json from a local file. Can be absolute or relative to the package.json file.",
         "type": "file",
         "value": "src/custom_swagger.json"
