@@ -49,6 +49,7 @@ interface ChatBotUpdate extends ChatBotConnectionBuilder {
 interface DiscordConnectionBuilder extends ChatBotConnectionBuilder {
     botToken: string;
     basedMeme: boolean;
+    deploymentBranding: boolean;
     dmOutputDisplay: DiscordDMOutputDisplayType;
 }
 
@@ -177,7 +178,7 @@ class ChatBots extends React.Component<IProps, IState> {
 
                 connectionString = `${discordBuilder.botToken};${discordBuilder.dmOutputDisplay};${
                     discordBuilder.basedMeme ? "1" : "0"
-                }`;
+                };${discordBuilder.deploymentBranding ? "1" : "0"}`;
                 break;
             case ChatProvider.Irc:
                 ircBuilder = connectionBuilder as IrcConnectionBuilder;
@@ -605,7 +606,11 @@ class ChatBots extends React.Component<IProps, IState> {
                     onClick={() =>
                         this.setState({
                             selectedChatBot:
-                                selected && !this.state.selectedAddNode ? null : chatBot,
+                                selected &&
+                                !this.state.selectedChannel &&
+                                !this.state.selectedAddNode
+                                    ? null
+                                    : chatBot,
                             selectedChannel: null,
                             selectedAddNode: false
                         })
@@ -749,6 +754,12 @@ class ChatBots extends React.Component<IProps, IState> {
                     type: FieldType.Boolean as FieldType.Boolean,
                     name: "fields.instance.chat.create.discord.based",
                     tooltip: "fields.instance.chat.create.discord.based.tip",
+                    defaultValue: true
+                },
+                deploymentBranding: {
+                    type: FieldType.Boolean as FieldType.Boolean,
+                    name: "fields.instance.chat.create.discord.branding",
+                    tooltip: "fields.instance.chat.create.discord.branding.tip",
                     defaultValue: true
                 }
             };
