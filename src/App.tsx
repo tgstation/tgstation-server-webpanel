@@ -6,6 +6,7 @@ import Container from "react-bootstrap/Container";
 import { FormattedMessage, IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
+import Pkg from "./../package.json";
 import { CredentialsType } from "./ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
@@ -59,6 +60,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
     }
 
     public componentDidMount() {
+        document.title = "TGS Webpanel v" + Pkg.version;
         // I can't be assed to remember the default admin password
         document.addEventListener("keydown", event => {
             if (event.key === "L" && event.ctrlKey && event.shiftKey) {
