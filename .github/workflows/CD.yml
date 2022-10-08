@@ -49,8 +49,13 @@ jobs:
             - name: Copy files
               run: |
                   export WEBPANEL_VERSION=$(node -pe "require('./package.json').version")
+                  export API_VERSION=$(node -pe "require('./package.json').tgs_api_version")
+                  rm -rf $HOME/webpanellive/api/$API_VERSION
+                  rm -rf $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
                   mkdir -p $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
                   cp ./dist/* $HOME/webpanellive/webpanel/$WEBPANEL_VERSION -R
+                  cd $HOME/webpanellive/api
+                  ln -s ../webpanel/$WEBPANEL_VERSION $API_VERSION
 
             - name: Deploy to Github
               run: |
