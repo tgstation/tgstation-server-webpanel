@@ -639,6 +639,8 @@
     "fields.instance.chat.create.discord.output.tip": "When messages from deployment jobs will be shown in Watchdog-type channels",
     "fields.instance.chat.create.discord.based": "Based on what?",
     "fields.instance.chat.create.discord.based.tip": "Know your meme",
+    "fields.instance.chat.create.discord.branding": "Deployment Embed Branding",
+    "fields.instance.chat.create.discord.branding.tip": "If the tgstation-server logo, name, and link to repo are shown at the top of deployment embeds",
     "fields.instance.chat.create.irc.address": "Server Address",
     "fields.instance.chat.create.irc.address.tip": "IP/Domain only",
     "fields.instance.chat.create.irc.port": "Server Port",
