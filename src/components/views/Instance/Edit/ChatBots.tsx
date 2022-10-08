@@ -606,7 +606,11 @@ class ChatBots extends React.Component<IProps, IState> {
                     onClick={() =>
                         this.setState({
                             selectedChatBot:
-                                selected && !this.state.selectedAddNode ? null : chatBot,
+                                selected &&
+                                !this.state.selectedChannel &&
+                                !this.state.selectedAddNode
+                                    ? null
+                                    : chatBot,
                             selectedChannel: null,
                             selectedAddNode: false
                         })
