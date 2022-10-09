@@ -551,6 +551,9 @@ class UserEdit extends React.Component<IProps, IState> {
         };
 
         const canEditOauth = this.canEdit || this.canEditOwnOAuth;
+        const filteredConnections = this.state.newOAuthConnections.filter(
+            oAuthConnection => !!oAuthProviderInfos[oAuthConnection.provider]
+        );
 
         return (
             <Tab
@@ -560,7 +563,7 @@ class UserEdit extends React.Component<IProps, IState> {
                     <FormattedMessage id="view.user.edit.oauth.current" />
                 </h3>
                 <div>
-                    {this.state.newOAuthConnections.map((oAuthConnection, idx) => (
+                    {filteredConnections.map((oAuthConnection, idx) => (
                         <div className="justify-content-center d-flex" key={idx}>
                             <InputGroup className="w-75 mb-1">
                                 <InputGroup.Prepend>
