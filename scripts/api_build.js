@@ -28,16 +28,23 @@ async function buildAPI() {
     ]);
     console.log("✅   All fs open.");
 
-    await apiDownload(pkg.tgs_api.type, pkg.tgs_api.value);
+    const schemaGenType = pkg.schema_gen.type;
+    let schemaGenValue;
+    if (schemaGenType === "version")
+        schemaGenValue = pkg.tgs_api_version;
+    else
+        schemaGenValue = pkg.schema_gen.value
+
+    await apiDownload(schemaGenType, schemaGenValue);
     codeZeroOrBreak();
 
     await new Promise(resolve => {
         console.log("⏲   Pausing until FS finishes writing.");
         SWAGGER_FILE.once("finish", () => {
-          resolve();
+            resolve();
         })
         if (SWAGGER_FILE.writableFinished) {
-          resolve();
+            resolve();
         }
     });
 
