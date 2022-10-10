@@ -1,3 +1,4 @@
+import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
@@ -267,7 +268,7 @@ export default function InputField(props: InputFieldProps): JSX.Element {
                                     ref={ref}
                                     className="d-inline-block ml-2"
                                     style={{ visibility: props.tooltip ? "unset" : "hidden" }}>
-                                    <FontAwesomeIcon icon="info" />
+                                    <FontAwesomeIcon icon={faInfo} />
                                 </div>
                             </div>
                         </InputGroup.Text>
