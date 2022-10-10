@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, Modal, Table } from "react-bootstrap";
+import { Button, ButtonGroup, Card, Modal, Table } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 
 import DreamMakerClient from "../../../../ApiClient/DreamMakerClient";
@@ -32,12 +32,18 @@ import Loading from "../../../utils/Loading";
 import SimpleToolTip from "../../../utils/SimpleTooltip";
 import TestMergeRow from "../../../utils/TestMergeRow";
 
-const enum PRState {
+enum PRState {
     reapply = "reapply",
     added = "added",
     removed = "removed",
     updated = "updated",
     rename = "renamed"
+}
+
+enum ResetType {
+    None,
+    Local,
+    Remote
 }
 
 interface IProps {}
@@ -51,7 +57,7 @@ interface IState {
     unableToHookClone: boolean;
     gitHubPRs: PullRequest[] | null;
     manualPRs: Set<number>;
-    updateRepo: boolean;
+    resetType: ResetType;
     desiredState: Map<number, [current: boolean, sha: string, comment: string | null] | null>;
     showDeleteModal: boolean;
     manualPR: number;
@@ -73,7 +79,7 @@ class Repository extends React.Component<IProps, IState> {
             unableToHookClone: false,
             gitHubPRs: null,
             manualPRs: new Set<number>(),
-            updateRepo: false,
+            resetType: ResetType.None,
             desiredState: new Map<
                 number,
                 [current: boolean, sha: string, comment: string | null] | null
@@ -213,15 +219,16 @@ class Repository extends React.Component<IProps, IState> {
         }
     }
 
-    private async applyTestmerges(noBranch: boolean, willReset: boolean): Promise<void> {
+    private async applyTestmerges(noBranch: boolean): Promise<void> {
         const editOptions: RepositoryUpdateRequest = {};
         const repositoryInfo = this.state.repositoryInfo;
+        const willReset = this.state.resetType !== ResetType.None;
 
-        if (repositoryInfo && noBranch) {
-            editOptions.checkoutSha = repositoryInfo.revisionInformation?.originCommitSha;
-        } else if (willReset) {
+        if (this.state.resetType === ResetType.Local) {
+            editOptions.checkoutSha = repositoryInfo?.revisionInformation?.originCommitSha;
+        } else if (this.state.resetType === ResetType.Remote) {
             editOptions.updateFromOrigin = true;
-            if (repositoryInfo) editOptions.reference = repositoryInfo?.reference;
+            editOptions.reference = repositoryInfo?.reference;
         }
 
         if (repositoryInfo && repositoryInfo?.remoteGitProvider === RemoteGitProvider.GitHub) {
@@ -305,7 +312,7 @@ class Repository extends React.Component<IProps, IState> {
         gitHubPRs = gitHubPRs ?? this.state.gitHubPRs;
         if (reset) {
             this.setState({
-                updateRepo: false,
+                resetType: ResetType.None,
                 manualPRs: new Set<number>()
             });
         }
@@ -315,6 +322,7 @@ class Repository extends React.Component<IProps, IState> {
         this.setState(prevState => {
             const desiredState = prevState.desiredState;
             const newDesiredState = new Map(!reset ? desiredState : []);
+            let removingMergedTMs = false;
             repoinfo.revisionInformation?.activeTestMerges.forEach(pr => {
                 const currentDesiredState = newDesiredState.get(pr.number);
                 if (!reset) {
@@ -331,11 +339,15 @@ class Repository extends React.Component<IProps, IState> {
                 const defaultDesiredState = gitHubPR?.state === "merged" ? false : true;
                 if (reset && !harderReset && !defaultDesiredState) {
                     newDesiredState.set(pr.number, null);
+                    removingMergedTMs = true;
                 } else {
                     newDesiredState.set(pr.number, [true, pr.targetCommitSha, pr.comment ?? ""]);
                 }
             });
-            return { desiredState: newDesiredState };
+            return {
+                resetType: removingMergedTMs ? ResetType.Local : prevState.resetType,
+                desiredState: newDesiredState
+            };
         });
     }
 
@@ -742,7 +754,7 @@ class Repository extends React.Component<IProps, IState> {
             })
             .filter(value => value !== null) as [PRState, PullRequest][];
         const sortedPendingActions = filteredPendingActions.sort((a, b) => {
-            const order = [PRState.reapply, PRState.removed, PRState.added, PRState.updated];
+            const order = [PRState.removed, PRState.reapply, PRState.added, PRState.updated];
             for (const state of order) {
                 if (
                     // @ts-expect-error again, ts doesn't want people to use xor on booleans, and I disagree
@@ -758,12 +770,11 @@ class Repository extends React.Component<IProps, IState> {
         const forceReset = filteredPendingActions.some(
             action => action[0] != PRState.added && action[0] != PRState.reapply
         );
-        const willReset = this.state.updateRepo || forceReset;
 
         //PRs we haven't touched, only used to display prs to reapply after reset
         const noPendingChanges =
             filteredPendingActions.filter(([state]) => state !== PRState.reapply).length === 0 &&
-            !this.state.updateRepo &&
+            this.state.resetType === ResetType.None &&
             !this.state.manualPRs.size;
 
         if (repositoryInfo && repositoryInfo.remoteGitProvider == RemoteGitProvider.Unknown)
@@ -789,7 +800,7 @@ class Repository extends React.Component<IProps, IState> {
                                     <FormattedMessage id="view.instance.repo.pending.none" />
                                 </li>
                             ) : (
-                                <>
+                                <React.Fragment>
                                     {repositoryInfo && noBranch ? (
                                         <li>
                                             <FormattedMessage
@@ -802,13 +813,13 @@ class Repository extends React.Component<IProps, IState> {
                                                 }}
                                             />
                                         </li>
-                                    ) : willReset && repositoryInfo ? (
-                                        <li>
-                                            <FormattedMessage id="view.instance.repo.pending.reset" />
-                                        </li>
-                                    ) : willReset ? (
+                                    ) : this.state.resetType === ResetType.Remote ? (
                                         <li>
                                             <FormattedMessage id="view.instance.repo.pending.update" />
+                                        </li>
+                                    ) : this.state.resetType === ResetType.Local ? (
+                                        <li>
+                                            <FormattedMessage id="view.instance.repo.pending.reset" />
                                         </li>
                                     ) : null}
                                     {repositoryInfo &&
@@ -820,7 +831,10 @@ class Repository extends React.Component<IProps, IState> {
 
                                               if (
                                                   state === PRState.reapply &&
-                                                  !(willReset || noBranch)
+                                                  !(
+                                                      this.state.resetType !== ResetType.None ||
+                                                      noBranch
+                                                  )
                                               )
                                                   return null;
 
@@ -852,19 +866,41 @@ class Repository extends React.Component<IProps, IState> {
                                             />
                                         </li>
                                     ))}
-                                </>
+                                </React.Fragment>
                             )}
                         </ul>
-                        <InputField
-                            name="view.instance.repo.update"
-                            tooltip="view.instance.repo.update.desc"
-                            type={FieldType.Boolean}
-                            defaultValue={
-                                noBranch ? false : forceReset ? true : this.state.updateRepo
-                            }
-                            disabled={forceReset || noBranch || !canUpdate}
-                            onChange={newVal => this.setState({ updateRepo: newVal })}
-                        />
+                        <ButtonGroup size="lg" className="mb-2 text-center">
+                            <Button
+                                disabled={noBranch || !canUpdate}
+                                onClick={() => this.setState({ resetType: ResetType.Remote })}
+                                variant={
+                                    this.state.resetType === ResetType.Remote
+                                        ? "secondary"
+                                        : "primary"
+                                }>
+                                <FormattedMessage id="view.instance.repo.update.remote" />
+                            </Button>
+                            <Button
+                                disabled={noBranch || !canUpdate}
+                                onClick={() => this.setState({ resetType: ResetType.Local })}
+                                variant={
+                                    this.state.resetType === ResetType.Local
+                                        ? "secondary"
+                                        : "primary"
+                                }>
+                                <FormattedMessage id="view.instance.repo.update.local" />
+                            </Button>
+                            <Button
+                                disabled={forceReset}
+                                onClick={() => this.setState({ resetType: ResetType.None })}
+                                variant={
+                                    this.state.resetType === ResetType.None
+                                        ? "secondary"
+                                        : "primary"
+                                }>
+                                <FormattedMessage id="view.instance.repo.update.none" />
+                            </Button>
+                        </ButtonGroup>
                         {(configOptions.manualpr.value as boolean) ||
                         !repositoryInfo ||
                         repositoryInfo.remoteGitProvider === RemoteGitProvider.GitLab ? (
@@ -923,7 +959,7 @@ class Repository extends React.Component<IProps, IState> {
                         <Button
                             className="mx-2"
                             disabled={noPendingChanges}
-                            onClick={() => void this.applyTestmerges(noBranch, willReset)}>
+                            onClick={() => void this.applyTestmerges(noBranch)}>
                             <FormattedMessage id="generic.commit" />
                         </Button>
                     </Card.Footer>
@@ -952,6 +988,10 @@ class Repository extends React.Component<IProps, IState> {
                                     onRemove={() =>
                                         this.setState(prevState => {
                                             return {
+                                                resetType:
+                                                    prevState.resetType === ResetType.None
+                                                        ? ResetType.Local
+                                                        : prevState.resetType,
                                                 desiredState: new Map(prevState.desiredState).set(
                                                     pr.number,
                                                     null
