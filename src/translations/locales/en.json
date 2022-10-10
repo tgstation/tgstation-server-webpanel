@@ -84,7 +84,7 @@
     "error.no_apipath": "No API path set, set an API path on the configuration page.",
     "error.compile_job_not_found": "Compile job not found.",
     "generic.save": "Save",
-    "generic.savepage": "Save Page",
+    "generic.savepage": "Save Tab",
     "generic.saveall": "Save All",
     "generic.details": "Details",
     "generic.errordetails": "Error Details ({info})",
