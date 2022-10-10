@@ -55,6 +55,7 @@ interface IState {
     cloning: boolean;
     repoBusy: boolean;
     unableToHookClone: boolean;
+    loadingPRs: boolean;
     gitHubPRs: PullRequest[] | null;
     manualPRs: Set<number>;
     resetType: ResetType;
@@ -88,7 +89,8 @@ class Repository extends React.Component<IProps, IState> {
             manualPR: 0,
             lastManualPR: 0,
             deployAfter: false,
-            repoBusy: false
+            repoBusy: false,
+            loadingPRs: false
         };
 
         this.fetchRepositoryInfo = this.fetchRepositoryInfo.bind(this);
@@ -197,12 +199,18 @@ class Repository extends React.Component<IProps, IState> {
             repositoryInfo.remoteRepositoryName &&
             repositoryInfo.remoteRepositoryOwner
         ) {
+            this.setState({
+                loadingPRs: true
+            });
             GithubClient.getPRs({
                 repo: repositoryInfo.remoteRepositoryName,
                 owner: repositoryInfo.remoteRepositoryOwner,
                 wantedPRs: repositoryInfo.revisionInformation?.activeTestMerges.map(tm => tm.number)
             })
                 .then(prs => {
+                    this.setState({
+                        loadingPRs: false
+                    });
                     if (prs.code === StatusCode.ERROR) {
                         this.addError(prs.error);
                     } else {
@@ -214,6 +222,9 @@ class Repository extends React.Component<IProps, IState> {
                     }
                 })
                 .catch(e => {
+                    this.setState({
+                        loadingPRs: false
+                    });
                     this.addError(new InternalError(ErrorCode.APP_FAIL, { jsError: e as Error }));
                 });
         }
@@ -780,12 +791,7 @@ class Repository extends React.Component<IProps, IState> {
         if (repositoryInfo && repositoryInfo.remoteGitProvider == RemoteGitProvider.Unknown)
             return <GenericAlert title="view.instance.repo.testmerges.badprovider" />;
 
-        if (
-            repositoryInfo &&
-            repositoryInfo.remoteGitProvider == RemoteGitProvider.GitHub &&
-            !this.state.gitHubPRs
-        )
-            return <Loading text="loading.repo.prs" />;
+        if (this.state.loadingPRs) return <Loading text="loading.repo.prs" />;
 
         return (
             <div className="mx-5">
@@ -903,6 +909,7 @@ class Repository extends React.Component<IProps, IState> {
                         </ButtonGroup>
                         {(configOptions.manualpr.value as boolean) ||
                         !repositoryInfo ||
+                        !this.state.gitHubPRs ||
                         repositoryInfo.remoteGitProvider === RemoteGitProvider.GitLab ? (
                             <div className="d-flex mt-5">
                                 <InputField
