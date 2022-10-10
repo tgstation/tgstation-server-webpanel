@@ -1,6 +1,5 @@
 import React from "react";
 import Alert from "react-bootstrap/Alert";
-import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
@@ -18,6 +17,7 @@ import ErrorAlert from "../../utils/ErrorAlert";
 import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 import PageHelper from "../../utils/PageHelper";
+import UserBadges from "../../utils/UserBadges";
 
 interface IProps extends RouteComponentProps {}
 
@@ -195,29 +195,7 @@ export default withRouter(
                                         <td>{value.id}</td>
                                         <td>{value.name}</td>
                                         <td>
-                                            {value.systemIdentifier ? (
-                                                <Badge variant="primary" className="mx-1">
-                                                    <FormattedMessage id="generic.system.short" />
-                                                </Badge>
-                                            ) : (
-                                                <Badge variant="primary" className="mx-1">
-                                                    <FormattedMessage id="generic.tgs" />
-                                                </Badge>
-                                            )}
-                                            {value.enabled ? (
-                                                <Badge variant="success" className="mx-1">
-                                                    <FormattedMessage id="generic.enabled" />
-                                                </Badge>
-                                            ) : (
-                                                <Badge variant="danger" className="mx-1">
-                                                    <FormattedMessage id="generic.disabled" />
-                                                </Badge>
-                                            )}
-                                            {value.group ? (
-                                                <Badge variant="warning" className="mx-1">
-                                                    <FormattedMessage id="generic.grouped" />
-                                                </Badge>
-                                            ) : null}
+                                            <UserBadges user={value} />
                                         </td>
                                         {value.group ? (
                                             <OverlayTrigger

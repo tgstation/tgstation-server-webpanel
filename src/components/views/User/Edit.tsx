@@ -3,7 +3,6 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { FormEvent } from "react";
 import Alert from "react-bootstrap/Alert";
-import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -39,6 +38,7 @@ import { AppRoutes, RouteData } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
+import UserBadges from "../../utils/UserBadges";
 
 interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
 
@@ -305,29 +305,7 @@ class UserEdit extends React.Component<IProps, IState> {
                         ) : (
                             ""
                         )}
-                        {this.state.user.systemIdentifier ? (
-                            <Badge variant="primary" className="mx-1">
-                                <FormattedMessage id="generic.system.short" />
-                            </Badge>
-                        ) : (
-                            <Badge variant="primary" className="mx-1">
-                                <FormattedMessage id="generic.tgs" />
-                            </Badge>
-                        )}
-                        {this.state.user.enabled ? (
-                            <Badge variant="success" className="mx-1">
-                                <FormattedMessage id="generic.enabled" />
-                            </Badge>
-                        ) : (
-                            <Badge variant="danger" className="mx-1">
-                                <FormattedMessage id="generic.disabled" />
-                            </Badge>
-                        )}
-                        {this.state.user.group ? (
-                            <Badge variant="warning" className="mx-1">
-                                <FormattedMessage id="generic.grouped" />
-                            </Badge>
-                        ) : null}
+                        <UserBadges user={this.state.user} />
                         <h3 className="text-capitalize">{this.state.user.name}</h3>
                         <Button as={Link} to={AppRoutes.userlist.link ?? AppRoutes.userlist.route}>
                             <FormattedMessage id="generic.goback" />
