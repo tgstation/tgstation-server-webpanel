@@ -610,6 +610,7 @@
     "loading.repo.cloning": "Cloning repository...",
     "loading.repo.prs": "Loading PRs...",
     "loading.repo.commits": "Loading Commits...",
+    "loading.repo.busy": "The repository is currently busy...",
     "loading.deployments": "Loading DreamMaker Settings...",
     "loading.compile_jobs": "Loading Compile Jobs...",
     "loading.chat": "Loading Chat Bots...",

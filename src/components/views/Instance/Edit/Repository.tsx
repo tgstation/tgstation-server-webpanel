@@ -47,6 +47,7 @@ interface IState {
     repositoryInfo: RepositoryResponse | null;
     loading: boolean;
     cloning: boolean;
+    repoBusy: boolean;
     unableToHookClone: boolean;
     gitHubPRs: PullRequest[] | null;
     manualPRs: Set<number>;
@@ -78,10 +79,10 @@ class Repository extends React.Component<IProps, IState> {
                 [current: boolean, sha: string, comment: string | null] | null
             >(),
             showDeleteModal: false,
-
             manualPR: 0,
             lastManualPR: 0,
-            deployAfter: false
+            deployAfter: false,
+            repoBusy: false
         };
 
         this.fetchRepositoryInfo = this.fetchRepositoryInfo.bind(this);
@@ -125,7 +126,8 @@ class Repository extends React.Component<IProps, IState> {
         const response = await RepositoryClient.getRepository(this.context.instance.id);
 
         this.setState({
-            cloning: false
+            cloning: false,
+            repoBusy: false
         });
         if (response.code === StatusCode.ERROR) {
             if (
@@ -165,6 +167,13 @@ class Repository extends React.Component<IProps, IState> {
                         });
                     }
                 }
+            } else if (
+                response.error.code === ErrorCode.HTTP_DATA_INEGRITY &&
+                response.error.originalErrorMessage?.errorCode === TGSErrorCode.RepoBusy
+            ) {
+                this.setState({
+                    repoBusy: true
+                });
             } else {
                 this.addError(response.error);
             }
@@ -343,16 +352,22 @@ class Repository extends React.Component<IProps, IState> {
                         <h3>
                             <FormattedMessage id="view.instance.repo.repoinfo" />
                         </h3>
-                        {this.renderRepoInformation()}
-                        <hr />
-                        {this.renderSettings()}
-                        <hr />
-                        <h3>
-                            <FormattedMessage id="view.instance.repo.testmerges" />
-                        </h3>
-                        {this.renderTestMerges()}
-                        <hr />
-                        {this.renderDelete()}
+                        {this.state.repoBusy ? (
+                            <Loading text="loading.repo.busy" />
+                        ) : (
+                            <React.Fragment>
+                                {this.renderRepoInformation()}
+                                <hr />
+                                {this.renderSettings()}
+                                <hr />
+                                <h3>
+                                    <FormattedMessage id="view.instance.repo.testmerges" />
+                                </h3>
+                                {this.renderTestMerges()}
+                                <hr />
+                                {this.renderDelete()}
+                            </React.Fragment>
+                        )}
                     </React.Fragment>
                 )}
             </div>
