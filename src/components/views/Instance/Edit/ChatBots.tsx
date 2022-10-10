@@ -16,6 +16,7 @@ import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalC
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasChatBotRight } from "../../../../utils/misc";
+import ErrorAlert from "../../../utils/ErrorAlert";
 import GenericAlert from "../../../utils/GenericAlert";
 import InputField, { FieldType } from "../../../utils/InputField";
 import InputForm, { InputFormField } from "../../../utils/InputForm";
@@ -71,7 +72,7 @@ interface IProps extends WrappedComponentProps {}
 
 interface IState {
     loading: boolean;
-    errors: InternalError<ErrorCode>[];
+    errors: Array<InternalError<ErrorCode> | undefined>;
     chatBots: ChatBot[];
     selectedAddNode: boolean;
     selectedChatBot: ChatBot | null;
@@ -507,6 +508,24 @@ class ChatBots extends React.Component<IProps, IState> {
                 <h1>
                     <FormattedMessage id="view.instance.chat" />
                 </h1>
+                {this.state.errors.map((err, index) => {
+                    if (!err) return;
+                    return (
+                        <ErrorAlert
+                            key={index}
+                            error={err}
+                            onClose={() =>
+                                this.setState(prev => {
+                                    const newarr = Array.from(prev.errors);
+                                    newarr[index] = undefined;
+                                    return {
+                                        errors: newarr
+                                    };
+                                })
+                            }
+                        />
+                    );
+                })}
                 <div className="d-flex flex-row">
                     <div
                         className="text-left"
