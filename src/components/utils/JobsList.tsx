@@ -122,7 +122,8 @@ export default class JobsList extends React.Component<IProps, IState> {
                     bottom: 0,
                     right: 0,
                     left: 0,
-                    pointerEvents: "none"
+                    pointerEvents: "none",
+                    zIndex: 5
                 }}>
                 <Rnd
                     className={`jobswidget ${display ? "" : "invisible"}`}

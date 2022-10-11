@@ -1,5 +1,6 @@
 .navbar {
     font-weight: 600;
+    z-index: 4;
 }
 
 $enable-shadows: true;
@@ -488,7 +489,7 @@ $toast-header-background-color: $gray-600;
 }
 
 .behind-nav {
-    z-index: -1;
+    z-index: 3;
 }
 
 //Fix vertical align for fa icons

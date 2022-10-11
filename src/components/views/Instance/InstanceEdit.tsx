@@ -343,7 +343,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
                         unmountOnExit
                         id="instanceedit"
                         activeKey={this.state.tab}>
-                        <div className="d-flex flex-row">
+                        <div className="d-flex flex-row z-front">
                             <Card.Body className="flex-grow-0">{nav()}</Card.Body>
                             <Card.Body className="bg-body">
                                 <Tab.Content>
