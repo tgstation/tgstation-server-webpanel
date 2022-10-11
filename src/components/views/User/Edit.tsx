@@ -675,7 +675,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                     this.state.newOAuthConnections.length ===
                                         this.state.user?.oAuthConnections?.length)
                             }>
-                            <FormattedMessage id="generic.savepage" />
+                            <FormattedMessage id="generic.savetab" />
                         </Button>
                     </div>
                 ) : (
@@ -1106,7 +1106,7 @@ class UserEdit extends React.Component<IProps, IState> {
                 </Col>
                 {this.canEdit ? (
                     <Button onClick={save}>
-                        <FormattedMessage id="generic.savepage" />
+                        <FormattedMessage id="generic.savetab" />
                     </Button>
                 ) : (
                     ""

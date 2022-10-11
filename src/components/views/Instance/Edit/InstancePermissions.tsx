@@ -853,7 +853,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
                 </Col>
                 {canEdit ? (
                     <Button onClick={save}>
-                        <FormattedMessage id="generic.savepage" />
+                        <FormattedMessage id="generic.savetab" />
                     </Button>
                 ) : (
                     ""
