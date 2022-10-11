@@ -5,7 +5,7 @@
     "routes.admin": "Administration",
     "routes.admin.update": "TGS Update",
     "routes.admin.logs": "TGS Logs",
-    "routes.config": "Configuration",
+    "routes.config": "Webpanel Config",
     "routes.passwd": "Change Password",
     "routes.usermanager": "Users",
     "routes.useredit": "User Editor",
