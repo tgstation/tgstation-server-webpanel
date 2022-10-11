@@ -8,6 +8,7 @@ import {
     ErrorCode as TGSErrorCode,
     JobResponse,
     RemoteGitProvider,
+    RepositoryCreateRequest,
     RepositoryResponse,
     RepositoryRights,
     RepositoryUpdateRequest,
@@ -467,7 +468,7 @@ class Repository extends React.Component<IProps, IState> {
             reference: {
                 type: FieldType.String as FieldType.String,
                 name: "fields.instance.repository.ref",
-                defaultValue: "main"
+                defaultValue: ""
             },
             accessUser: {
                 type: FieldType.String as FieldType.String,
@@ -497,9 +498,17 @@ class Repository extends React.Component<IProps, IState> {
                         !hasRepoRight(this.context.instancePermissionSet, RepositoryRights.Read)
                     }
                     onSave={async result => {
+                        const repoCloneRequest: RepositoryCreateRequest = {
+                            ...result
+                        };
+
+                        if (result.reference == "") repoCloneRequest.reference = null;
+                        if (result.accessUser == "") repoCloneRequest.accessUser = null;
+                        if (result.accessToken == "") repoCloneRequest.accessToken = null;
+
                         const response = await RepositoryClient.cloneRepository(
                             this.context.instance.id,
-                            result
+                            repoCloneRequest
                         );
                         if (response.code === StatusCode.OK) {
                             await this.fetchRepositoryInfo(response.payload.activeJob ?? undefined);
