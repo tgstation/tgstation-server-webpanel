@@ -323,7 +323,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
                         this.state
                     ) as InstanceEditContext
                 }>
-                <Card>
+                <Card className="behind-nav">
                     <Card.Header className="text-center mb-2 sticky-top">
                         <h3>
                             <FormattedMessage

@@ -85,14 +85,14 @@ $colors: map-merge(("blue": $blue,
         $colors
 );
 
-$primary: $blue  !default;
-$secondary: $gray-600  !default;
-$success: $green  !default;
-$info: $cyan  !default;
-$warning: $yellow  !default;
-$danger: $red  !default;
-$light: $gray-100  !default;
-$dark: $gray-800  !default;
+$primary: $blue !default;
+$secondary: $gray-600 !default;
+$success: $green !default;
+$info: $cyan !default;
+$warning: $yellow !default;
+$danger: $red !default;
+$light: $gray-100 !default;
+$dark: $gray-800 !default;
 
 $theme-colors: (
     ) !default;
@@ -234,7 +234,7 @@ $toast-header-background-color: $gray-600;
 }
 
 .alert-dismissible {
-    padding-right: $alert-padding-x  !important;
+    padding-right: $alert-padding-x !important;
 }
 
 .pre-wrap {
@@ -255,7 +255,7 @@ $toast-header-background-color: $gray-600;
             @each $size,
             $length in $sizes {
                 .#{$abbrev}#{$infix}-#{$size} {
-                    #{$prop}: $length  !important;
+                    #{$prop}: $length !important;
                 }
             }
         }
@@ -485,6 +485,10 @@ $toast-header-background-color: $gray-600;
     left: 0px;
     margin-left: 5px;
     margin-bottom: 5px;
+}
+
+.behind-nav {
+    z-index: -1;
 }
 
 //Fix vertical align for fa icons
