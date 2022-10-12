@@ -81,7 +81,7 @@ class Repository extends React.Component<IProps, IState> {
             unableToHookClone: false,
             gitHubPRs: null,
             manualPRs: new Set<number>(),
-            resetType: ResetType.None,
+            resetType: ResetType.Remote,
             desiredState: new Map<
                 number,
                 [current: boolean, sha: string, comment: string | null] | null
@@ -114,7 +114,7 @@ class Repository extends React.Component<IProps, IState> {
                 DreamMakerRights.Compile
             )
         });
-        await this.fetchRepositoryInfo(undefined, true);
+        await this.fetchRepositoryInfo();
     }
 
     private async fetchRepositoryInfo(
