@@ -346,6 +346,7 @@
     "view.instance.repo.pending.renamed": "Change the comment on #{number}",
     "view.instance.repo.update.remote": "Update to Remote",
     "view.instance.repo.update.local": "Reset to Local Origin",
+    "view.instance.repo.update.local.tip": "Using this option may take you off the current repository reference. In order to update to latest, you will have to manually checkout said reference again.",
     "view.instance.repo.update.none": "No Initial Change",
     "view.instance.repo.reset": "Reset repository to origin",
     "view.instance.repo.reset.desc": "This option will reset the repository to the tracked origin, updating the repository and clearing any test merged PRs",

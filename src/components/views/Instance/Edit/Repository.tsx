@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ButtonGroup, Card, Modal, Table } from "react-bootstrap";
+import { Button, ButtonGroup, Card, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 
 import DreamMakerClient from "../../../../ApiClient/DreamMakerClient";
@@ -901,15 +901,23 @@ class Repository extends React.Component<IProps, IState> {
                                 }>
                                 <FormattedMessage id="view.instance.repo.update.remote" />
                             </Button>
-                            <Button
-                                onClick={() => this.setState({ resetType: ResetType.Local })}
-                                variant={
-                                    this.state.resetType === ResetType.Local
-                                        ? "secondary"
-                                        : "primary"
-                                }>
-                                <FormattedMessage id="view.instance.repo.update.local" />
-                            </Button>
+                            <OverlayTrigger
+                                placement="top"
+                                overlay={props => (
+                                    <Tooltip id="repo-local-reset-tip" {...props}>
+                                        <FormattedMessage id="view.instance.repo.update.local.tip" />
+                                    </Tooltip>
+                                )}>
+                                <Button
+                                    onClick={() => this.setState({ resetType: ResetType.Local })}
+                                    variant={
+                                        this.state.resetType === ResetType.Local
+                                            ? "secondary"
+                                            : "primary"
+                                    }>
+                                    <FormattedMessage id="view.instance.repo.update.local" />
+                                </Button>
+                            </OverlayTrigger>
                             <Button
                                 disabled={forceReset}
                                 onClick={() => this.setState({ resetType: ResetType.None })}
