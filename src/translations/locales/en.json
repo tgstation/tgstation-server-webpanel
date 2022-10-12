@@ -696,7 +696,7 @@
     "fields.instance.repository.origincheckoutsha.desc": "SHA of the origin commit",
     "fields.instance.repository.checkoutsha": "Checkout SHA",
     "fields.instance.repository.checkoutsha.desc": "SHA of the commit to checkout",
-    "fields.instance.repository.reference": "Origin ref",
+    "fields.instance.repository.reference": "Reference",
     "fields.instance.repository.reference.desc": "Set this to the branch, commit or tag you wish to track",
     "fields.instance.repository.committerName": "Committer Name",
     "fields.instance.repository.committerEmail": "Committer Email",
