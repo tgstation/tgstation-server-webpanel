@@ -699,9 +699,8 @@ class Repository extends React.Component<IProps, IState> {
                             if (response.payload.activeJob) {
                                 this.setState({ loading: true });
                                 JobsController.fastmode = 5;
-                                JobsController.registerCallback(
-                                    response.payload.activeJob.id,
-                                    this.fetchRepositoryInfo
+                                JobsController.registerCallback(response.payload.activeJob.id, () =>
+                                    this.fetchRepositoryInfo(undefined, true)
                                 );
                                 JobsController.registerJob(
                                     response.payload.activeJob,
