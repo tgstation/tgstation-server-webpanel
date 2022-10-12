@@ -114,7 +114,7 @@ class Repository extends React.Component<IProps, IState> {
                 DreamMakerRights.Compile
             )
         });
-        await this.fetchRepositoryInfo();
+        await this.fetchRepositoryInfo(undefined, true);
     }
 
     private async fetchRepositoryInfo(
@@ -356,8 +356,14 @@ class Repository extends React.Component<IProps, IState> {
                     newDesiredState.set(pr.number, [true, pr.targetCommitSha, pr.comment ?? ""]);
                 }
             });
+
+            const resetType = removingMergedTMs
+                ? repoinfo.reference === "(no branch)"
+                    ? ResetType.Local
+                    : ResetType.Remote
+                : prevState.resetType;
             return {
-                resetType: removingMergedTMs ? ResetType.Local : prevState.resetType,
+                resetType,
                 desiredState: newDesiredState
             };
         });
@@ -896,7 +902,6 @@ class Repository extends React.Component<IProps, IState> {
                                 <FormattedMessage id="view.instance.repo.update.remote" />
                             </Button>
                             <Button
-                                disabled={noBranch || !canUpdate}
                                 onClick={() => this.setState({ resetType: ResetType.Local })}
                                 variant={
                                     this.state.resetType === ResetType.Local
