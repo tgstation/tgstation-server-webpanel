@@ -324,7 +324,7 @@ class ChatBots extends React.Component<IProps, IState> {
                 );
                 return;
             }
-            chatChannel.discordChannelId = (chatChannel.ircChannel as unknown) as number;
+            ((chatChannel.discordChannelId as unknown) as string) = chatChannel.ircChannel;
             chatChannel.ircChannel = null;
         }
 
