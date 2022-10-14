@@ -295,8 +295,7 @@ class Repository extends React.Component<IProps, IState> {
                     const jobId = response.payload.activeJob.id;
                     const deployinterval = setInterval(() => {
                         const targetJob = JobsController.jobs.get(jobId);
-                        if (typeof targetJob?.progress === "number") {
-                            clearInterval(deployinterval);
+                        if (typeof targetJob?.progress === "number" || targetJob?.stoppedAt) {
                             void DreamMakerClient.startCompile(this.context.instance.id).then(
                                 response => {
                                     if (response.code === StatusCode.ERROR) {
@@ -304,6 +303,7 @@ class Repository extends React.Component<IProps, IState> {
                                     }
                                 }
                             );
+                            clearInterval(deployinterval);
                         }
                     }, 5000);
                 }
