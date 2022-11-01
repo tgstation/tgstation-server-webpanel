@@ -1018,7 +1018,7 @@ class Repository extends React.Component<IProps, IState> {
                                             return {
                                                 resetType:
                                                     prevState.resetType === ResetType.None
-                                                        ? ResetType.Local
+                                                        ? ResetType.Remote
                                                         : prevState.resetType,
                                                 desiredState: new Map(prevState.desiredState).set(
                                                     pr.number,
