@@ -334,7 +334,8 @@ class Repository extends React.Component<IProps, IState> {
         this.setState(prevState => {
             const desiredState = prevState.desiredState;
             const newDesiredState = new Map(!reset ? desiredState : []);
-            let removingMergedTMs = false;
+            let updatingTMs = false;
+            const regularReset = reset && !harderReset;
             repoinfo.revisionInformation?.activeTestMerges.forEach(pr => {
                 const currentDesiredState = newDesiredState.get(pr.number);
                 if (!reset) {
@@ -349,15 +350,19 @@ class Repository extends React.Component<IProps, IState> {
                 );
 
                 const defaultDesiredState = gitHubPR?.state === "merged" ? false : true;
-                if (reset && !harderReset && !defaultDesiredState) {
+                if (regularReset && !defaultDesiredState) {
                     newDesiredState.set(pr.number, null);
-                    removingMergedTMs = true;
+                    updatingTMs = true;
                 } else {
-                    newDesiredState.set(pr.number, [true, pr.targetCommitSha, pr.comment ?? ""]);
+                    const newHead = (regularReset ? gitHubPR?.head : null) ?? pr.targetCommitSha;
+                    if (regularReset && newHead !== pr.targetCommitSha) {
+                        updatingTMs = true;
+                    }
+                    newDesiredState.set(pr.number, [true, newHead, pr.comment ?? ""]);
                 }
             });
 
-            const resetType = removingMergedTMs
+            const resetType = updatingTMs
                 ? repoinfo.reference === "(no branch)"
                     ? ResetType.Local
                     : ResetType.Remote
@@ -858,9 +863,21 @@ class Repository extends React.Component<IProps, IState> {
                                               )
                                                   return null;
 
-                                              const targetCommit = prDesiredState
-                                                  ? prDesiredState[1]
+                                              let targetCommit = prDesiredState
+                                                  ? prDesiredState[1].substring(0, 7)
                                                   : null;
+
+                                              const gitHubPR = this.state.gitHubPRs?.find(
+                                                  gitHubPR => pr.number === gitHubPR.number
+                                              );
+
+                                              if (
+                                                  !targetCommit ||
+                                                  gitHubPR?.head.startsWith(targetCommit)
+                                              )
+                                                  targetCommit = `HEAD (${(
+                                                      targetCommit ?? gitHubPR!.head
+                                                  ).substring(0, 7)})`;
 
                                               return (
                                                   <li key={pr.number}>
@@ -868,7 +885,7 @@ class Repository extends React.Component<IProps, IState> {
                                                           id={`view.instance.repo.pending.${state}`}
                                                           values={{
                                                               number: pr.number,
-                                                              commit: targetCommit?.substring(0, 7),
+                                                              commit: targetCommit,
                                                               title: pr.title
                                                           }}
                                                       />
