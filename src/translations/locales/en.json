@@ -143,6 +143,7 @@
     "generic.commit": "Commit",
     "generic.areyousure": "Are you sure?",
     "generic.cancel": "Cancel",
+    "generic.not_applicable": "N/A",
     "view.setup.navigationblock": "Navigation has been disabled for the duration of the setup.",
     "view.setup.title": "Step By Step Setup Wizard",
     "view.setup.quit": "Quit Setup",

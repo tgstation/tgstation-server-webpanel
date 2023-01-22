@@ -285,11 +285,15 @@ class DeploymentViewer extends React.Component<IProps, IState> {
                     <td>{compileJob.revisionInformation.commitSha.substring(0, 7)}</td>
                     <td>{compileJob.revisionInformation.originCommitSha.substring(0, 7)}</td>
                     <td>
-                        {compileJob.minimumSecurityLevel != null
-                            ? Object.keys(DreamDaemonSecurity).filter(v => isNaN(Number(v)))[
-                                  compileJob.minimumSecurityLevel
-                              ]
-                            : "N/A"}
+                        {compileJob.minimumSecurityLevel != null ? (
+                            Object.keys(DreamDaemonSecurity).filter(v => isNaN(Number(v)))[
+                                compileJob.minimumSecurityLevel
+                            ]
+                        ) : (
+                            <i>
+                                <FormattedMessage id="generic.not_applicable" />
+                            </i>
+                        )}
                     </td>
                     <td>{compileJob.dmApiVersion}</td>
                 </tr>
@@ -338,7 +342,15 @@ class DeploymentViewer extends React.Component<IProps, IState> {
                                                         dateFormatter
                                                     )}
                                                 </td>
-                                                <td>{testMerge.comment || "N/A"}</td>
+                                                <td>
+                                                    {testMerge.comment ? (
+                                                        testMerge.comment
+                                                    ) : (
+                                                        <i>
+                                                            <FormattedMessage id="generic.not_applicable" />
+                                                        </i>
+                                                    )}
+                                                </td>
                                             </tr>
                                         )
                                     )}
