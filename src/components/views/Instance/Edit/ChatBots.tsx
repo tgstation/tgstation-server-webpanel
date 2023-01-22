@@ -17,7 +17,6 @@ import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalS
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasChatBotRight } from "../../../../utils/misc";
 import ErrorAlert from "../../../utils/ErrorAlert";
-import GenericAlert from "../../../utils/GenericAlert";
 import InputField, { FieldType } from "../../../utils/InputField";
 import InputForm, { InputFormField } from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
@@ -306,17 +305,16 @@ class ChatBots extends React.Component<IProps, IState> {
     }
 
     private async addChatChannel(chatBot: ChatBot, chatChannel: ChatChannel): Promise<void> {
-        if (!chatChannel.ircChannel) {
+        if (!chatChannel.channelData) {
             alert(
                 this.props.intl.formatMessage({ id: "view.instance.chat.create.missing.channel" })
             );
             return;
         }
 
-        // Uint64 hack
         if (chatBot.provider === ChatProvider.Discord) {
             const reg = new RegExp("^[0-9]+$");
-            if (!reg.test(chatChannel.ircChannel)) {
+            if (!reg.test(chatChannel.channelData)) {
                 alert(
                     this.props.intl.formatMessage({
                         id: "view.instance.chat.create.invalid.discord"
@@ -324,8 +322,6 @@ class ChatBots extends React.Component<IProps, IState> {
                 );
                 return;
             }
-            ((chatChannel.discordChannelId as unknown) as string) = chatChannel.ircChannel;
-            chatChannel.ircChannel = null;
         }
 
         this.setState({
@@ -410,10 +406,7 @@ class ChatBots extends React.Component<IProps, IState> {
                 this.props.intl.formatMessage(
                     { id: "view.instance.chat.delete.channel.confirm" },
                     {
-                        channelName:
-                            chatChannel.tag ??
-                            chatChannel.ircChannel ??
-                            chatChannel.discordChannelId
+                        channelName: chatChannel.tag ?? chatChannel.channelData
                     }
                 )
             )
@@ -645,9 +638,7 @@ class ChatBots extends React.Component<IProps, IState> {
                         {chatBot.channels.map(channel => {
                             const channelSelected = this.state.selectedChannel === channel;
                             return (
-                                <li
-                                    key={channel.discordChannelId ?? channel.ircChannel}
-                                    className="browser-li">
+                                <li key={channel.channelData} className="browser-li">
                                     <Button
                                         variant={channelSelected ? "secondary" : "primary"}
                                         onClick={() =>
@@ -658,9 +649,7 @@ class ChatBots extends React.Component<IProps, IState> {
                                         className="nowrap">
                                         <FontAwesomeIcon icon={faHashtag} />
                                         &nbsp;
-                                        {channel.tag
-                                            ? `(${channel.tag})`
-                                            : channel.discordChannelId ?? channel.ircChannel}
+                                        {channel.tag ? `(${channel.tag})` : channel.channelData}
                                     </Button>
                                 </li>
                             );
@@ -993,7 +982,7 @@ class ChatBots extends React.Component<IProps, IState> {
         if (add) {
             const fieldsDiscord = {
                 // we remap this to discord later because of uint64 memes
-                ircChannel: {
+                channelData: {
                     type: FieldType.String as FieldType.String,
                     name: "fields.instance.chat.channel.discord",
                     tooltip: "fields.instance.chat.channel.discord.tip"
@@ -1001,7 +990,7 @@ class ChatBots extends React.Component<IProps, IState> {
                 ...fieldsCommon
             };
             const fieldsIrc = {
-                ircChannel: {
+                channelData: {
                     type: FieldType.String as FieldType.String,
                     name: "fields.instance.chat.channel.irc",
                     tooltip: "fields.instance.chat.channel.irc.tip",
@@ -1040,21 +1029,20 @@ class ChatBots extends React.Component<IProps, IState> {
 
         return (
             <React.Fragment key={chatBot.channels.indexOf(channel)}>
-                {channel.discordChannelId ? (
-                    <GenericAlert title="view.instance.chat.channel.wrong_id" />
-                ) : (
-                    <React.Fragment />
-                )}
                 <h5>
-                    {channel.ircChannel ?? channel.discordChannelId}
+                    {channel.channelData}
                     {channel.tag ? ` (${channel.tag})` : ""}
                 </h5>
                 <hr />
                 <InputForm
                     fields={fieldsCommon}
-                    onSave={(chatChannel: ChatChannel) =>
-                        void this.editChatChannel(chatBot, chatChannel)
-                    }
+                    onSave={chatChannelStub => {
+                        const chatChannel = {
+                            channelData: this.state.selectedChannel!.channelData,
+                            ...chatChannelStub
+                        };
+                        void this.editChatChannel(chatBot, chatChannel);
+                    }}
                 />
                 <hr />
                 <OverlayTrigger

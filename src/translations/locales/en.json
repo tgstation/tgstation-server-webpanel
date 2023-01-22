@@ -246,7 +246,6 @@
     "view.instance.byond.current_denied": "This user does not have the permission to see the active BYOND version",
     "view.instance.byond.current_version": "Active Version: {version}",
     "view.instance.chat": "Chat Bots",
-    "view.instance.chat.channel.wrong_id": "Due to how JS handles UInt64s, the value of the channel ID shown here may be inaccurate",
     "view.instance.chat.create": "Add Bot",
     "view.instance.chat.create.invalid.discord": "Invalid Discord channel ID!",
     "view.instance.chat.create.invalid.irc": "Invalid IRC channel!",
