@@ -124,7 +124,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
             Deployment
         ],
         [
-            "dd",
+            "dreamdaemon",
             "server",
             instancePermissionSet =>
                 !!(instancePermissionSet.dreamDaemonRights & minimumServerPerms),
