@@ -209,7 +209,7 @@
     "view.instanceedit.tabs.info": "Information",
     "view.instanceedit.tabs.repository": "Repository",
     "view.instanceedit.tabs.deployment": "Deployment",
-    "view.instanceedit.tabs.dd": "Server",
+    "view.instanceedit.tabs.dreamdaemon": "Server",
     "view.instanceedit.tabs.byond": "BYOND version",
     "view.instanceedit.tabs.chatbots": "Chat Bots",
     "view.instanceedit.tabs.files": "Files & Scripts",
