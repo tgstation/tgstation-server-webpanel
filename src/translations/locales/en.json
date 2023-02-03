@@ -691,7 +691,7 @@
     "fields.instance.watchdog.timeout.startup": "Startup timeout (seconds)",
     "fields.instance.watchdog.timeout.topic": "Topic timeout (milliseconds)",
     "fields.instance.watchdog.heartbeat": "Heartbeat timeout (seconds)",
-    "fields.instance.watchdog.dumponheartbeatfail": "Create process dump on heartbeat fail restart",
+    "fields.instance.watchdog.dumpOnHeartbeatRestart": "Create process dump on heartbeat fail restart",
     "fields.instance.watchdog.additionalparams": "Additional command line parameters",
     "fields.instance.repository.origincheckoutsha": "Origin SHA",
     "fields.instance.repository.origincheckoutsha.desc": "SHA of the origin commit",

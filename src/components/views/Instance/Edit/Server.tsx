@@ -206,9 +206,9 @@ export default function Server(): JSX.Element {
                 DreamDaemonRights.SetHeartbeatInterval
             )
         },
-        dumpOnHeartbeatFail: {
+        dumpOnHeartbeatRestart: {
             type: FieldType.Boolean as FieldType.Boolean,
-            name: "fields.instance.watchdog.dumponheartbeatfail",
+            name: "fields.instance.watchdog.dumpOnHeartbeatRestart",
             defaultValue: watchdogSettings.dumpOnHeartbeatRestart,
             disabled: !hasDreamDaemonRight(
                 instanceEditContext.instancePermissionSet,
