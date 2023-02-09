@@ -1,5 +1,6 @@
 import { ApiClient } from "./_base";
 import type {
+    DreamDaemonRequest,
     DreamDaemonResponse,
     ErrorMessageResponse,
     JobResponse
@@ -64,7 +65,7 @@ export default new (class DreamDaemonClient extends ApiClient {
 
     public async updateWatchdogStatus(
         instance: number,
-        newSettings: DreamDaemonResponse
+        newSettings: DreamDaemonRequest
     ): Promise<InternalStatus<DreamDaemonResponse, updateWatchdogStatusErrors>> {
         await ServerClient.wait4Init();
 

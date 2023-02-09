@@ -7,6 +7,7 @@ import { FormattedMessage } from "react-intl";
 
 import DreamDaemonClient from "../../../../ApiClient/DreamDaemonClient";
 import {
+    DreamDaemonRequest,
     DreamDaemonResponse,
     DreamDaemonRights,
     DreamDaemonSecurity,
@@ -57,7 +58,7 @@ export default function Server(): JSX.Element {
             setWatchdogSettings(response.payload);
         }
     }
-    async function saveWatchdogSettings(newSettings: DreamDaemonResponse): Promise<void> {
+    async function saveWatchdogSettings(newSettings: DreamDaemonRequest): Promise<void> {
         setLoading(true);
         const response = await DreamDaemonClient.updateWatchdogStatus(
             instanceEditContext.instance.id,
