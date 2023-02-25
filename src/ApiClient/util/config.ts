@@ -120,7 +120,7 @@ const configOptions = asElementTypesConfig({
     manualpr: {
         id: "config.manualpr",
         type: "bool",
-        value: false
+        value: true
     }
 });
 
