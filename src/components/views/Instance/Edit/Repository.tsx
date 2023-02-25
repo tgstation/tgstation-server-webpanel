@@ -395,9 +395,6 @@ class Repository extends React.Component<IProps, IState> {
                                 <hr />
                                 {this.renderSettings()}
                                 <hr />
-                                <h3>
-                                    <FormattedMessage id="view.instance.repo.testmerges" />
-                                </h3>
                                 {this.renderTestMerges()}
                                 <hr />
                                 {this.renderDelete()}
@@ -1013,51 +1010,56 @@ class Repository extends React.Component<IProps, IState> {
                     <GenericAlert title="view.instance.repo.noautomerge" />
                 ) : repositoryInfo &&
                   repositoryInfo.remoteGitProvider === RemoteGitProvider.GitHub ? (
-                    <Table variant="dark" striped hover className="text-left">
-                        <tbody>
-                            {sortedPRs.map(pr => (
-                                <TestMergeRow
-                                    key={pr.number}
-                                    testmergeinfo={testmergedPRs.get(pr.number)}
-                                    pr={pr}
-                                    repoInfo={repositoryInfo}
-                                    finalState={
-                                        this.state.desiredState.get(pr.number)
-                                            ? ((this.state.desiredState.get(pr.number) as [
-                                                  boolean,
-                                                  string,
-                                                  string
-                                              ]).slice(1) as [string, string])
-                                            : false
-                                    }
-                                    onRemove={() =>
-                                        this.setState(prevState => {
-                                            return {
-                                                resetType:
-                                                    prevState.resetType === ResetType.None
-                                                        ? ResetType.Remote
-                                                        : prevState.resetType,
-                                                desiredState: new Map(prevState.desiredState).set(
-                                                    pr.number,
-                                                    null
-                                                )
-                                            };
-                                        })
-                                    }
-                                    onSelectCommit={(commit, comment) =>
-                                        this.setState(prevState => {
-                                            return {
-                                                desiredState: new Map(
-                                                    prevState.desiredState
-                                                ).set(pr.number, [false, commit, comment])
-                                            };
-                                        })
-                                    }
-                                    onError={error => this.addError(error)}
-                                />
-                            ))}
-                        </tbody>
-                    </Table>
+                    <React.Fragment>
+                        <h3>
+                            <FormattedMessage id="view.instance.repo.testmerges" />
+                        </h3>
+                        <br />
+                        <Table variant="dark" striped hover className="text-left">
+                            <tbody>
+                                {sortedPRs.map(pr => (
+                                    <TestMergeRow
+                                        key={pr.number}
+                                        testmergeinfo={testmergedPRs.get(pr.number)}
+                                        pr={pr}
+                                        repoInfo={repositoryInfo}
+                                        finalState={
+                                            this.state.desiredState.get(pr.number)
+                                                ? ((this.state.desiredState.get(pr.number) as [
+                                                      boolean,
+                                                      string,
+                                                      string
+                                                  ]).slice(1) as [string, string])
+                                                : false
+                                        }
+                                        onRemove={() =>
+                                            this.setState(prevState => {
+                                                return {
+                                                    resetType:
+                                                        prevState.resetType === ResetType.None
+                                                            ? ResetType.Remote
+                                                            : prevState.resetType,
+                                                    desiredState: new Map(
+                                                        prevState.desiredState
+                                                    ).set(pr.number, null)
+                                                };
+                                            })
+                                        }
+                                        onSelectCommit={(commit, comment) =>
+                                            this.setState(prevState => {
+                                                return {
+                                                    desiredState: new Map(
+                                                        prevState.desiredState
+                                                    ).set(pr.number, [false, commit, comment])
+                                                };
+                                            })
+                                        }
+                                        onError={error => this.addError(error)}
+                                    />
+                                ))}
+                            </tbody>
+                        </Table>
+                    </React.Fragment>
                 ) : null}
             </div>
         );
