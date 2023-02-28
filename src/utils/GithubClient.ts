@@ -39,6 +39,11 @@ export type GithubPullRequest = ExtractArrayType<
 >;
 export type FullGithubPullRequest = RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
 
+export interface DirectoryItem {
+    path: string;
+    isDirectory: boolean;
+}
+
 interface IEvents {}
 
 /* eslint-disable */
@@ -297,6 +302,103 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
             code: StatusCode.OK,
             payload: [payload, extraCommit]
         });
+    }
+
+    public async getFile(
+        owner: string,
+        repo: string,
+        path: string
+    ): Promise<InternalStatus<string, ErrorCode.GITHUB_FAIL>> {
+        try {
+            const { data } = await this.apiClient.repos.getContent({
+                mediaType: {
+                    format: "base64"
+                },
+                owner,
+                repo,
+                path
+            });
+
+            // ignore directory responses
+            if (Array.isArray(data)) {
+                return new InternalStatus<string, ErrorCode.GITHUB_FAIL>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                        jsError: new Error(`${path} was a directory!`)
+                    })
+                });
+            }
+
+            if (data.type !== "file") {
+                return new InternalStatus<string, ErrorCode.GITHUB_FAIL>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                        jsError: new Error(`${path} has type ${data.type}!`)
+                    })
+                });
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+            const raw = (data as any).content as string;
+
+            return new InternalStatus({
+                code: StatusCode.OK,
+                payload: raw
+            });
+        } catch (e) {
+            console.error(e);
+            return new InternalStatus<string, ErrorCode.GITHUB_FAIL>({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                    jsError: e as RequestError
+                })
+            });
+        }
+    }
+
+    public async getDirectoryContents(
+        owner: string,
+        repo: string,
+        path: string
+    ): Promise<InternalStatus<DirectoryItem[], ErrorCode.GITHUB_FAIL>> {
+        try {
+            const { data } = await this.apiClient.repos.getContent({
+                owner,
+                repo,
+                path
+            });
+
+            // ignore non-directory responses
+            if (!Array.isArray(data)) {
+                return new InternalStatus<DirectoryItem[], ErrorCode.GITHUB_FAIL>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                        jsError: new Error(`${path} was not a directory!`)
+                    })
+                });
+            }
+
+            const result: DirectoryItem[] = [];
+            data.forEach(element =>
+                result.push({
+                    path: element.path,
+                    isDirectory: element.type == "dir"
+                })
+            );
+
+            return new InternalStatus({
+                code: StatusCode.OK,
+                payload: result
+            });
+        } catch (e) {
+            console.error(e);
+            return new InternalStatus<DirectoryItem[], ErrorCode.GITHUB_FAIL>({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                    jsError: e as RequestError
+                })
+            });
+        }
     }
 })();
 export default e;

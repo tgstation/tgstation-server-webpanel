@@ -78,7 +78,10 @@ export enum ErrorCode {
     //Config File errors
     CONFIG_FILE_NOT_FOUND = "error.config_file_not_found",
     CONFIG_FILE_IO_ERROR = "error.config_file_io",
-    CONFIG_FILE_DIRECTORY_NOT_FOUND = "error.config_file_directory_not_found"
+    CONFIG_FILE_DIRECTORY_NOT_FOUND = "error.config_file_directory_not_found",
+
+    BAD_TGS_YML = "error.bad_tgs_yml",
+    BAD_TGS_YML_VERSION = "error.bad_tgs_yml_version"
 }
 
 type errorMessage = {

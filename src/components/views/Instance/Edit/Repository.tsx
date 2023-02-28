@@ -526,6 +526,7 @@ class Repository extends React.Component<IProps, IState> {
                         }
                     }}
                     includeAll
+                    saveMessageId="generic.clone"
                 />
             </React.Fragment>
         );
