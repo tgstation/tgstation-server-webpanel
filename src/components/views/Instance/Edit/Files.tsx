@@ -1,4 +1,5 @@
 ﻿import {
+    faDownload,
     faFile,
     faFileAlt,
     faFolderMinus,
@@ -6,6 +7,7 @@
     faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { downloadZip } from "client-zip";
 import React from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FormattedMessage, injectIntl, WrappedComponentProps } from "react-intl";
@@ -271,6 +273,124 @@ class Files extends React.Component<IProps, IState> {
                 selectedFile: null
             });
         } else this.addError(response.error);
+    }
+
+    private async downloadDirectory(directory: DirectoryTree): Promise<void> {
+        this.setState({
+            loading: true
+        });
+
+        const enumerateDirectory = async (
+            dir: ConfigurationFileResponse
+        ): Promise<ConfigurationFileResponse[] | null> => {
+            let children: ConfigurationFileResponse[] = [];
+            let maxPages = 1;
+
+            const path = dir.path[0] === "\\" || dir.path[0] === "/" ? dir.path.slice(1) : dir.path;
+            for (let page = 1; page <= maxPages; ++page) {
+                const directoryResponse = await ConfigurationFileClient.getDirectory(
+                    this.context.instance.id,
+                    path,
+                    {
+                        page
+                    }
+                );
+                if (directoryResponse.code === StatusCode.OK) {
+                    maxPages = directoryResponse.payload.totalPages;
+                    children = children.concat(directoryResponse.payload.content);
+                } else {
+                    this.addError(directoryResponse.error);
+                    return null;
+                }
+            }
+
+            return children;
+        };
+
+        let errorEncountered = false;
+        const downloadSingleFile = async (
+            file: ConfigurationFileResponse
+        ): Promise<File | null> => {
+            const fileResponse = await ConfigurationFileClient.getConfigFile(
+                this.context.instance.id,
+                file.path,
+                true
+            );
+
+            const pathInZip = file.path.substring(directory.fileResponse.path.length);
+            if (fileResponse.code === StatusCode.OK) {
+                const download = fileResponse.payload;
+                const file = new File([download.content!], pathInZip);
+                return file;
+            }
+
+            this.addError(fileResponse.error);
+            errorEncountered = true;
+            return null;
+        };
+
+        let directoriesToEnumerate: ConfigurationFileResponse[] = [directory.fileResponse];
+
+        const fileDownloads: Promise<File | null>[] = [];
+
+        while (directoriesToEnumerate.length > 0) {
+            const tasks: Promise<ConfigurationFileResponse[] | null>[] = [];
+            directoriesToEnumerate.forEach(directory => tasks.push(enumerateDirectory(directory)));
+            directoriesToEnumerate = [];
+            await Promise.all(tasks);
+
+            if (errorEncountered) {
+                this.setState({
+                    loading: false
+                });
+                return;
+            }
+
+            for (const task of tasks) {
+                const dirInfo = await task;
+                if (dirInfo == null) {
+                    this.setState({
+                        loading: false
+                    });
+                    return;
+                }
+
+                dirInfo.forEach(directoryEntry => {
+                    if (directoryEntry.isDirectory) {
+                        directoriesToEnumerate.push(directoryEntry);
+                    } else {
+                        fileDownloads.push(downloadSingleFile(directoryEntry));
+                    }
+                });
+            }
+        }
+
+        await Promise.all(fileDownloads);
+        if (errorEncountered) {
+            this.setState({
+                loading: false
+            });
+            return;
+        }
+
+        const downloadFiles: File[] = [];
+        for (const fileDownload of fileDownloads) {
+            downloadFiles.push((await fileDownload)!);
+        }
+
+        const zipBlob = await downloadZip(downloadFiles).blob();
+
+        const index = Math.max(
+            directory.fileResponse.path.lastIndexOf("\\"),
+            directory.fileResponse.path.lastIndexOf("/")
+        );
+
+        const fileName = directory.fileResponse.path.slice(index + 1);
+        downloadFileUsingBlob(fileName, zipBlob);
+
+        this.setState({
+            loading: false
+        });
     }
 
     private async downloadFile(): Promise<void> {
@@ -548,6 +668,18 @@ class Files extends React.Component<IProps, IState> {
                     )}
                 </li>
                 <ul className="browser-ul">
+                    {dir.children.length > 0 ? (
+                        <li className="browser-li">
+                            <Button
+                                variant="primary"
+                                onClick={() => void this.downloadDirectory(dir)}
+                                className="nowrap">
+                                <FontAwesomeIcon icon={faDownload} />
+                                &nbsp;
+                                <FormattedMessage id="view.instance.files.download.directory" />
+                            </Button>
+                        </li>
+                    ) : null}
                     {dir.children.map(subDir => (
                         <React.Fragment key={subDir.fileResponse.path}>
                             {this.renderDirectory(subDir)}
@@ -619,13 +751,9 @@ class Files extends React.Component<IProps, IState> {
                                         </Button>
                                     </OverlayTrigger>
                                 </li>
-                            ) : (
-                                <React.Fragment />
-                            )}
+                            ) : null}
                         </React.Fragment>
-                    ) : (
-                        <React.Fragment />
-                    )}
+                    ) : null}
                 </ul>
             </React.Fragment>
         );

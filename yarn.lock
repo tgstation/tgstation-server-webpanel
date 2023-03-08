@@ -3429,6 +3429,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"client-zip@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "client-zip@npm:2.3.0"
+  checksum: 3286ab695a5582d66819f716477ddc66ec1e88532acc4ad33276e090e9a141f097bd874852f430cce01b7975dc4bd6d11ed034f6d9daff38934518f123128fc1
+  languageName: node
+  linkType: hard
+
 "cliui@npm:^7.0.2":
   version: 7.0.4
   resolution: "cliui@npm:7.0.4"
@@ -9077,6 +9084,7 @@ __metadata:
     babel-loader: ^8.2.3
     bootstrap: ^4.6.1
     buffer: ^6.0.3
+    client-zip: ^2.3.0
     copy-webpack-plugin: ^8.1.1
     css-loader: ^5.2.7
     eslint: ^7.32.0

@@ -301,6 +301,7 @@
     "view.instance.files.disallowed.read": "You do not have permission to download files.",
     "view.instance.files.disallowed.write": "You do not have permission to create, modify, or delete files.",
     "view.instance.files.download": "Download File",
+    "view.instance.files.download.directory": "Download Zip",
     "view.instance.files.download.location": "Downloaded files will be saved in the OS's default download location",
     "view.instance.files.file_browser": "File Browser",
     "view.instance.files.load_more": "(Click to Load Directory)",
