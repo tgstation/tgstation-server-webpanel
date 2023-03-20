@@ -148,12 +148,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                                     this.emit("accessDenied");
                                     //time to kick out the user
                                     this.logout();
-                                    const errorobj = new InternalError(
-                                        ErrorCode.HTTP_ACCESS_DENIED,
-                                        { void: true },
-                                        res
-                                    );
-                                    return Promise.reject(errorobj);
+                                    return Promise.reject(status);
                                 }
                             }
                         });
@@ -320,6 +315,20 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         this.apiClient = new Api(this.apiHttpClient);
 
         console.timeEnd("APIInit");
+
+        // check if there's a token stored
+        const bearer = localStorage.getItem("SessionToken");
+        const expiresAt = localStorage.getItem("SessionTokenExpiry");
+        if (bearer && expiresAt) {
+            console.log("Found session token");
+            if (Date.parse(expiresAt) >= Date.now()) {
+                const storedToken: TokenResponse = { bearer, expiresAt };
+                this.setToken(storedToken);
+            } else {
+                console.log("But it was expired");
+            }
+        }
+
         this.initialized = true;
         this.emit("initialized");
     }
@@ -423,21 +432,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 console.log("Login success");
                 const token = response.data as TokenResponse;
 
-                // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
-                CredentialsProvider.token = token;
-                this.emit("tokenAvailable", token);
-
-                //LoginHooks are a way of running several async tasks at the same time whenever the user is authenticated,
-                // we cannot use events here as events wait on each listener before proceeding which has a noticable performance
-                // cost when it comes to several different requests to TGS,
-                // we cant directly call what we need to run here as it would violate isolation of
-                // ApiClient(the apiclient is independent from the rest of the app to avoid circular dependency
-                // (example: Component requires ServerClient to login and but the ServerClient requires Component to
-                // update it once the server info is loaded))
-                //
-                // TL;DR; Runs shit when you login
-
-                LoginHooks.runHooks(token);
+                this.setToken(token);
                 const res = new InternalStatus<TokenResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: token
@@ -518,6 +513,8 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         console.log("Logging out");
         CredentialsProvider.credentials = undefined;
         CredentialsProvider.token = undefined;
+        localStorage.removeItem("SessionToken");
+        localStorage.removeItem("SessionTokenExpiry");
         //events to clear the app state as much as possible for the next user
         this.emit("purgeCache");
         this.emit("logout");
@@ -593,6 +590,28 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 return res;
             }
         }
+    }
+
+    private setToken(token: TokenResponse): void {
+        // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
+
+        localStorage.setItem("SessionToken", token.bearer);
+        localStorage.setItem("SessionTokenExpiry", token.expiresAt);
+
+        CredentialsProvider.token = token;
+        this.emit("tokenAvailable", token);
+
+        //LoginHooks are a way of running several async tasks at the same time whenever the user is authenticated,
+        // we cannot use events here as events wait on each listener before proceeding which has a noticable performance
+        // cost when it comes to several different requests to TGS,
+        // we cant directly call what we need to run here as it would violate isolation of
+        // ApiClient(the apiclient is independent from the rest of the app to avoid circular dependency
+        // (example: Component requires ServerClient to login and but the ServerClient requires Component to
+        // update it once the server info is loaded))
+        //
+        // TL;DR; Runs shit when you login
+
+        LoginHooks.runHooks(token);
     }
 })();
 

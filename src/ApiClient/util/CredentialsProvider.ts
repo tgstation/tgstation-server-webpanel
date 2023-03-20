@@ -14,7 +14,6 @@ export default new (class CredentialsProvider {
 
     public isTokenValid() {
         return (
-            this.credentials &&
             this.token &&
             this.token
                 .bearer /* &&
