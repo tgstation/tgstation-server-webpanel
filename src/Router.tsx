@@ -94,7 +94,7 @@ class Router extends Component<IProps, IState> {
             return;
         }
 
-        if (MODE === "PROD") {
+        if (MODE === "PROD" || MODE === "GITHUB") {
             window.history.replaceState(null, document.title, window.location.pathname);
         }
 
@@ -126,6 +126,9 @@ class Router extends Component<IProps, IState> {
             provider: oauthstate.provider,
             token: code
         });
+
+        window.sessionStorage.removeItem("oauth");
+
         if (response.code === StatusCode.OK) {
             this.setState({
                 loading: false

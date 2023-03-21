@@ -59,7 +59,10 @@ class Login extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        if (MODE === "PROD" || MODE === "GITHUB") {
+        const oauthState =
+            window.sessionStorage.getItem("oauth") ??
+            CredentialsProvider.credentials?.type === CredentialsType.OAuth;
+        if (!oauthState && (MODE === "PROD" || MODE === "GITHUB")) {
             // noinspection ES6MissingAwait
             void this.tryLoginDefault();
         }
