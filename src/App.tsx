@@ -32,6 +32,7 @@ interface IState {
     translation?: ITranslation;
     translationError?: string;
     loggedIn: boolean;
+    loggedOut: boolean;
     loading: boolean;
     GeneralContextInfo: UnsafeGeneralContext;
 }
@@ -44,6 +45,7 @@ interface IProps {
 interface InnerProps {
     loading: boolean;
     loggedIn: boolean;
+    loggedOut: boolean;
 }
 
 interface InnerState {
@@ -111,6 +113,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                             </Container>
                             <Router
                                 loggedIn={this.props.loggedIn}
+                                loggedOut={this.props.loggedOut}
                                 selectCategory={cat => {
                                     this.setState({
                                         passdownCat: {
@@ -147,6 +150,7 @@ class App extends React.Component<IProps, IState> {
 
         this.state = {
             loggedIn: !!CredentialsProvider.isTokenValid(),
+            loggedOut: false,
             loading: true,
             GeneralContextInfo: {
                 errors: new Set(),
@@ -258,7 +262,8 @@ class App extends React.Component<IProps, IState> {
 
     private finishLogout() {
         this.setState({
-            loggedIn: false
+            loggedIn: false,
+            loggedOut: true
         });
 
         void this.updateContextUser();
@@ -303,7 +308,11 @@ class App extends React.Component<IProps, IState> {
                 messages={this.state.translation.messages}
                 defaultLocale="en">
                 <GeneralContext.Provider value={this.state.GeneralContextInfo as GeneralContext}>
-                    <InnerApp loading={this.state.loading} loggedIn={this.state.loggedIn} />
+                    <InnerApp
+                        loading={this.state.loading}
+                        loggedIn={this.state.loggedIn}
+                        loggedOut={this.state.loggedOut}
+                    />
                 </GeneralContext.Provider>
             </IntlProvider>
         );

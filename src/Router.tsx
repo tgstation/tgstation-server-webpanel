@@ -29,6 +29,7 @@ interface IState {
 }
 interface IProps extends RouteComponentProps {
     loggedIn: boolean;
+    loggedOut: boolean;
     selectCategory: (category: string) => void;
 }
 
@@ -226,7 +227,11 @@ class Router extends Component<IProps, IState> {
                             })}
                             <Container className="mt-5 mb-5">
                                 <Route key="notfound">
-                                    {this.props.loggedIn ? <NotFound /> : <Login />}
+                                    {this.props.loggedIn ? (
+                                        <NotFound />
+                                    ) : (
+                                        <Login loggedOut={this.props.loggedOut} />
+                                    )}
                                 </Route>
                             </Container>
                         </Switch>

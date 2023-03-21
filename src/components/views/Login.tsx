@@ -26,8 +26,7 @@ import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
 interface IProps extends RouteComponentProps {
-    prefillLogin?: string;
-    postLoginAction?: () => void;
+    loggedOut: boolean;
 }
 interface IState {
     busy: boolean;
@@ -60,13 +59,17 @@ class Login extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        if (MODE === "PROD" || MODE === "PROD-GITHUB") {
+        if (MODE === "PROD" || MODE === "GITHUB") {
             // noinspection ES6MissingAwait
             void this.tryLoginDefault();
         }
     }
 
     private async tryLoginDefault(): Promise<void> {
+        if (this.props.loggedOut) {
+            return;
+        }
+
         const response = await ServerClient.login({
             type: CredentialsType.Password,
             userName: "admin",
@@ -103,10 +106,6 @@ class Login extends React.Component<IProps, IState> {
         if (!this.context.serverInfo) {
             return <Loading text="loading.serverinfo" />;
         }
-
-        /*if (this.state.redirectSetup) {
-                return <Redirect to={AppRoutes.setup.link || AppRoutes.setup.route} />;
-            }*/
 
         const providers: Record<OAuthProvider, React.ReactNode> = {
             [OAuthProvider.GitHub]: <FontAwesomeIcon icon={faGithub} style={{ width: "1.2em" }} />,
@@ -322,10 +321,6 @@ class Login extends React.Component<IProps, IState> {
                 busy: false
             });
             this.addError(response.error);
-        } else {
-            if (this.props.postLoginAction) {
-                this.props.postLoginAction();
-            }
         }
     }
 }
