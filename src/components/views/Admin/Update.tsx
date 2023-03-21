@@ -220,6 +220,10 @@ class Update extends React.Component<IProps, IState> {
             });
         };
 
+        const selectedVersionMarkdown = this.state.selectedVersion?.body
+            .replaceAll("\r", "")
+            .replaceAll("\n", "\n\n");
+
         const timing = typeof this.state.secondsLeft === "number";
         return (
             <React.Fragment>
@@ -269,7 +273,7 @@ class Update extends React.Component<IProps, IState> {
                             </h3>
                             <hr />
                         </div>
-                        <ReactMarkdown source={this.state.selectedVersion.body} />
+                        <ReactMarkdown>{selectedVersionMarkdown!}</ReactMarkdown>
                     </React.Fragment>
                 ) : (
                     <div className="text-center">
