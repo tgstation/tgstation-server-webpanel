@@ -60,7 +60,7 @@ class Login extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        if (MODE === "PROD") {
+        if (MODE === "PROD" || MODE === "PROD-GITHUB") {
             // noinspection ES6MissingAwait
             void this.tryLoginDefault();
         }
