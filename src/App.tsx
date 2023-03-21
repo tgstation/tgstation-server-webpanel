@@ -252,12 +252,12 @@ class App extends React.Component<IProps, IState> {
     private finishLogin() {
         console.log("Logging in");
 
-        void UserClient.getCurrentUser(); // preload the user, we dont particularly care about the content, just that its preloaded
-        void this.updateContextUser();
-        this.setState({
-            loggedIn: true,
-            loading: false
-        });
+        void this.updateContextUser().then(() =>
+            this.setState({
+                loggedIn: true,
+                loading: false
+            })
+        );
     }
 
     private finishLogout() {

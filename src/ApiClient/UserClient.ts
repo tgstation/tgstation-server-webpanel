@@ -104,9 +104,14 @@ export default new (class UserClient extends ApiClient<IEvents> {
         if (!CredentialsProvider.isTokenValid()) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
-                error: new InternalError(ErrorCode.HTTP_ACCESS_DENIED, {
-                    void: true
-                })
+                error: new InternalError(
+                    ErrorCode.HTTP_ACCESS_DENIED,
+                    {
+                        void: true
+                    },
+                    undefined,
+                    true
+                )
             });
         }
 

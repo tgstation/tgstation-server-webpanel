@@ -116,7 +116,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         const updatedSet = new Map<number, InstanceResponse>();
 
         const work = allInstances
-            .filter(instance => instance.online)
+            .filter(instance => instance.online && instance.accessible)
             .map(instance => {
                 return InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     instance.id

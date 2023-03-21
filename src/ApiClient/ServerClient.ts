@@ -157,7 +157,8 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_ACCESS_DENIED,
                             { void: true },
-                            res
+                            res,
+                            true
                         );
                         return Promise.reject(errorobj);
                     }
@@ -171,7 +172,8 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         const errorobj = new InternalError(
                             ErrorCode.HTTP_ACCESS_DENIED,
                             { void: true },
-                            res
+                            res,
+                            true
                         );
                         return Promise.reject(errorobj);
                     }

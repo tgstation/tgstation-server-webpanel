@@ -115,7 +115,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
     public readonly extendedInfo: string;
     public readonly originalErrorMessage?: ErrorMessageResponse;
 
-    public constructor(code: T, addon: allAddons, origin?: AxiosResponse) {
+    public constructor(code: T, addon: allAddons, origin?: AxiosResponse, noError?: boolean) {
         this.code = code;
         if ("errorMessage" in addon) {
             const err = addon.errorMessage;
@@ -169,12 +169,14 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
         }
         this.extendedInfo = debuginfo;
 
-        console.error(
-            `Error occured within the application: ${this.code} (${
-                this.desc?.desc ?? "No description"
-            })`,
-            this
-        );
+        if (!noError) {
+            console.error(
+                `Error occured within the application: ${this.code} (${
+                    this.desc?.desc ?? "No description"
+                })`,
+                this
+            );
+        }
 
         //@ts-expect-error yeah well, i aint extending the window interface
         if (window.breakonerror) {
