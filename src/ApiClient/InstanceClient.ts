@@ -16,6 +16,7 @@ export type CreateInstanceErrors = GenericErrors;
 export type EditInstanceErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export type GetInstanceErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export type GrantPermissionsErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
+export type DetachInstanceErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 
 interface IEvents {
     instanceChange: (instanceId: number) => void;
@@ -126,6 +127,46 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
                 return new InternalStatus({
                     code: StatusCode.OK,
                     payload: response.data as InstanceResponse
+                });
+            }
+            case 410:
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.NO_DB_ENTITY, {
+                        errorMessage: response.data as ErrorMessageResponse
+                    })
+                });
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async detachInstance(id: number): Promise<InternalStatus<null, DetachInstanceErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.instance.instanceControllerDelete(id);
+            this.emit("instanceChange", id);
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+        switch (response.status) {
+            case 204: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: null
                 });
             }
             case 410:

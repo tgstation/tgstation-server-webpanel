@@ -1,4 +1,4 @@
-import { faLock, faUnlock } from "@fortawesome/free-solid-svg-icons";
+import { faLock, faTrash, faUnlock } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { CSSProperties, ReactNode } from "react";
@@ -158,13 +158,32 @@ class InstanceList extends React.Component<IProps, IState> {
         }
     }
 
+    private async detach(instance: Instance) {
+        const desiredState = !instance.online;
+        if (
+            !desiredState ||
+            !confirm(
+                `Are you sure you want to detach the instance "${instance.name}"? Once detached, the instance will no longer be managed by TGS and you can delete the files manually or reattach it by creating a new instance at the existing path.`
+            )
+        ) {
+            return;
+        }
+
+        const response = await InstanceClient.detachInstance(instance.id);
+        if (response.code === StatusCode.OK) {
+            await this.loadInstances();
+        } else {
+            this.addError(response.error);
+        }
+    }
+
     private async setOnline(instance: Instance) {
         //Yes this is desynchronized and will use the last known state of the instance
         // to determine what state we should put it in, thats intentional, if the user clicks Set Online, it needs
         // to be online, no matter what it previously was
         const desiredState = !instance.online;
         if (
-            !desiredState &&
+            !desiredState ||
             !confirm(`Are you sure you want to take the instance "${instance.name}" offline?`)
         ) {
             return;
@@ -194,6 +213,11 @@ class InstanceList extends React.Component<IProps, IState> {
         const canGrant = hasInstanceManagerRight(
             resolvePermissionSet(this.context.user),
             InstanceManagerRights.GrantPermissions
+        );
+
+        const canDetach = hasInstanceManagerRight(
+            resolvePermissionSet(this.context.user),
+            InstanceManagerRights.Delete
         );
 
         const tablecellstyling: CSSProperties = {
@@ -325,6 +349,14 @@ class InstanceList extends React.Component<IProps, IState> {
                                                 }`}
                                             />
                                         </Button>
+                                        {!value.online ? (
+                                            <Button
+                                                variant="danger"
+                                                onClick={() => this.detach(value)}
+                                                disabled={!canDetach}>
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </Button>
+                                        ) : null}
                                     </td>
                                 </tr>
                             );
