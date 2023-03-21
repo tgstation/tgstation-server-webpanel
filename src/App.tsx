@@ -279,6 +279,9 @@ class App extends React.Component<IProps, IState> {
         await this.loadTranslation();
         ServerClient.initApi();
         await this.updateContextServer();
+        if (CredentialsProvider.isTokenValid()) {
+            await this.updateContextUser();
+        }
 
         this.setState({
             loading: false
