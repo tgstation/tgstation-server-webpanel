@@ -183,7 +183,7 @@ class InstanceList extends React.Component<IProps, IState> {
         // to be online, no matter what it previously was
         const desiredState = !instance.online;
         if (
-            !desiredState ||
+            !desiredState &&
             !confirm(`Are you sure you want to take the instance "${instance.name}" offline?`)
         ) {
             return;
