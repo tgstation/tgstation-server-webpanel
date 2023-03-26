@@ -1,3 +1,5 @@
+import "./AppNavbar.css";
+
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -244,6 +246,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                                 )}>
                                 <h3>
                                     <FontAwesomeIcon
+                                        className="tgs-update-notification"
                                         onClick={() =>
                                             this.props.history.push(
                                                 AppRoutes.admin_update.link ??
