@@ -323,9 +323,11 @@ class Repository extends React.Component<IProps, IState> {
     ) {
         gitHubPRs = gitHubPRs ?? this.state.gitHubPRs;
         if (reset) {
-            this.setState({
-                resetType: ResetType.None,
-                manualPRs: new Set<number>()
+            this.setState(prevState => {
+                return {
+                    resetType: harderReset ? ResetType.None : prevState.resetType,
+                    manualPRs: new Set<number>()
+                };
             });
         }
 
@@ -808,8 +810,6 @@ class Repository extends React.Component<IProps, IState> {
         if (repositoryInfo && repositoryInfo.remoteGitProvider == RemoteGitProvider.Unknown)
             return <GenericAlert title="view.instance.repo.testmerges.badprovider" />;
 
-        if (this.state.loadingPRs) return <Loading text="loading.repo.prs" />;
-
         return (
             <div className="mx-5">
                 <Card className="mb-5">
@@ -901,6 +901,13 @@ class Repository extends React.Component<IProps, IState> {
                                             />
                                         </li>
                                     ))}
+                                    {this.state.deployAfter ? (
+                                        <li key="deploy">
+                                            <FormattedMessage
+                                                id={`view.instance.repo.pending.deploy`}
+                                            />
+                                        </li>
+                                    ) : null}
                                 </React.Fragment>
                             )}
                         </ul>
@@ -1007,7 +1014,9 @@ class Repository extends React.Component<IProps, IState> {
                         </Button>
                     </Card.Footer>
                 </Card>
-                {!repositoryInfo ? (
+                {this.state.loadingPRs ? (
+                    <Loading text="loading.repo.prs" />
+                ) : !repositoryInfo ? (
                     <GenericAlert title="view.instance.repo.noautomerge" />
                 ) : repositoryInfo &&
                   repositoryInfo.remoteGitProvider === RemoteGitProvider.GitHub ? (

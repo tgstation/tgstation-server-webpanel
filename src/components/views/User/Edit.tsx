@@ -1,3 +1,4 @@
+import { faCheck, faPen, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -52,6 +53,8 @@ interface IState {
     permsinstance: { [key: string]: Permission };
     tab: string;
     groups: UserGroupResponse[];
+    renameGroup: UserGroupResponse | null;
+    renameGroupName: string | null;
     createGroupName: string;
 }
 
@@ -80,6 +83,8 @@ class UserEdit extends React.Component<IProps, IState> {
             permsinstance: {},
             tab: props.match.params.tab ?? "info",
             groups: context.user.group ? [Object.assign({ users: [] }, context.user.group)] : [],
+            renameGroup: null,
+            renameGroupName: null,
             createGroupName: "",
             newOAuthConnections: []
         };
@@ -714,7 +719,7 @@ class UserEdit extends React.Component<IProps, IState> {
                         <FormattedMessage id="perms.group.none" />
                     )}
                 </h3>
-                <div onChange={this.changeGroup}>
+                <div onChange={this.state.renameGroup ? undefined : this.changeGroup}>
                     <InputGroup
                         className="justify-content-center mb-3"
                         as="label"
@@ -747,51 +752,110 @@ class UserEdit extends React.Component<IProps, IState> {
                                     />
                                 </InputGroup.Prepend>
                                 <InputGroup.Append className="w-40 overflow-auto">
-                                    <InputGroup.Text
-                                        className="flex-fill"
-                                        as="label"
-                                        htmlFor={"group-" + group.id.toString()}>
-                                        <span>{group.name}</span>
-                                        <div className="text-right ml-auto">
-                                            <FormattedMessage
-                                                id="generic.numusers"
-                                                values={{
-                                                    count: this.canRead
-                                                        ? group.users?.length
-                                                        : "???"
+                                    {this.state.renameGroup !== group ? (
+                                        <React.Fragment>
+                                            <InputGroup.Text
+                                                className="flex-fill"
+                                                as="label"
+                                                htmlFor={"group-" + group.id.toString()}>
+                                                <span>{group.name}</span>
+                                                <div className="text-right ml-auto">
+                                                    <FormattedMessage
+                                                        id="generic.numusers"
+                                                        values={{
+                                                            count: this.canRead
+                                                                ? group.users?.length
+                                                                : "???"
+                                                        }}
+                                                    />
+                                                </div>
+                                            </InputGroup.Text>
+                                            <OverlayTrigger
+                                                overlay={
+                                                    <Tooltip id={`${group.id}-rename-tooltip`}>
+                                                        <FormattedMessage id="perms.group.rename.tooltip" />
+                                                    </Tooltip>
+                                                }>
+                                                {({ ref, ...triggerHandler }) => (
+                                                    <Button
+                                                        variant="secondary"
+                                                        className="text-darker"
+                                                        disabled={!this.canEdit}
+                                                        onClick={() =>
+                                                            this.setState({
+                                                                renameGroup: group,
+                                                                renameGroupName: group.name
+                                                            })
+                                                        }
+                                                        {...triggerHandler}>
+                                                        <div ref={ref as React.Ref<HTMLDivElement>}>
+                                                            <FontAwesomeIcon icon={faPen} />
+                                                        </div>
+                                                    </Button>
+                                                )}
+                                            </OverlayTrigger>
+                                            <OverlayTrigger
+                                                overlay={
+                                                    <Tooltip id={`${group.id}-delete-tooltip`}>
+                                                        <FormattedMessage id="perms.group.delete.tooltip" />
+                                                    </Tooltip>
+                                                }
+                                                show={
+                                                    (!group.users?.length || !this.canEdit) &&
+                                                    group.id !== this.state.user!.group?.id
+                                                        ? false
+                                                        : undefined
+                                                }>
+                                                {({ ref, ...triggerHandler }) => (
+                                                    <Button
+                                                        variant="danger"
+                                                        className="text-darker"
+                                                        disabled={
+                                                            !!group.users?.length ||
+                                                            !this.canEdit ||
+                                                            group.id === this.state.user!.group?.id
+                                                        }
+                                                        onClick={() =>
+                                                            void this.deleteGroup(group.id)
+                                                        }
+                                                        {...triggerHandler}>
+                                                        <div ref={ref as React.Ref<HTMLDivElement>}>
+                                                            <FontAwesomeIcon icon={faTrash} />
+                                                        </div>
+                                                    </Button>
+                                                )}
+                                            </OverlayTrigger>
+                                        </React.Fragment>
+                                    ) : (
+                                        <React.Fragment>
+                                            <input
+                                                className="flex-fill"
+                                                value={this.state.renameGroupName!}
+                                                onChange={event => {
+                                                    this.setState({
+                                                        renameGroupName: event.target.value
+                                                    });
                                                 }}
                                             />
-                                        </div>
-                                    </InputGroup.Text>
-                                    <OverlayTrigger
-                                        overlay={
-                                            <Tooltip id={`${group.id}-tooltip`}>
-                                                <FormattedMessage id="perms.group.delete.warning" />
-                                            </Tooltip>
-                                        }
-                                        show={
-                                            (!group.users?.length || !this.canEdit) &&
-                                            group.id !== this.state.user!.group?.id
-                                                ? false
-                                                : undefined
-                                        }>
-                                        {({ ref, ...triggerHandler }) => (
+                                            <Button
+                                                variant="success"
+                                                className="text-darker"
+                                                onClick={() => void this.renameGroup()}>
+                                                <FontAwesomeIcon icon={faCheck} />
+                                            </Button>
                                             <Button
                                                 variant="danger"
                                                 className="text-darker"
-                                                disabled={
-                                                    !!group.users?.length ||
-                                                    !this.canEdit ||
-                                                    group.id === this.state.user!.group?.id
-                                                }
-                                                onClick={() => void this.deleteGroup(group.id)}
-                                                {...triggerHandler}>
-                                                <div ref={ref as React.Ref<HTMLDivElement>}>
-                                                    <FontAwesomeIcon icon={faTrash} />
-                                                </div>
+                                                onClick={() =>
+                                                    this.setState({
+                                                        renameGroup: null,
+                                                        renameGroupName: null
+                                                    })
+                                                }>
+                                                <FontAwesomeIcon icon={faTimes} />
                                             </Button>
-                                        )}
-                                    </OverlayTrigger>
+                                        </React.Fragment>
+                                    )}
                                 </InputGroup.Append>
                             </InputGroup>
                         );
@@ -864,6 +928,40 @@ class UserEdit extends React.Component<IProps, IState> {
             } else {
                 this.addError(response.error);
             }
+        }
+        this.setState({
+            loading: false
+        });
+    }
+
+    private async renameGroup(): Promise<void> {
+        // safety
+        const renameGroup = this.state.renameGroup;
+        const newName = this.state.renameGroupName;
+        if (!renameGroup || !(newName && newName.trim().length > 0)) {
+            return;
+        }
+
+        this.setState({
+            loading: true
+        });
+        const response = await UserGroupClient.updateGroup({
+            id: renameGroup.id,
+            name: newName
+        });
+        if (response.code === StatusCode.OK) {
+            this.setState(prev => {
+                const newGroups = [...prev.groups];
+                newGroups[newGroups.findIndex(group => group.id === renameGroup.id)] =
+                    response.payload;
+                return {
+                    groups: newGroups,
+                    renameGroup: null,
+                    renameGroupName: null
+                };
+            });
+        } else {
+            this.addError(response.error);
         }
         this.setState({
             loading: false
