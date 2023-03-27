@@ -211,9 +211,13 @@ class App extends React.Component<IProps, IState> {
         const response = await ServerClient.getServerInfo();
         if (response.code === StatusCode.OK) {
             this.setState(prev => {
+                const newSet = new Set(prev.GeneralContextInfo.errors);
+                if (lastError) {
+                    newSet.delete(lastError);
+                }
                 return {
                     GeneralContextInfo: {
-                        errors: prev.GeneralContextInfo.errors,
+                        errors: newSet,
                         user: prev.GeneralContextInfo.user,
                         serverInfo: response.payload,
                         deleteError: prev.GeneralContextInfo.deleteError
