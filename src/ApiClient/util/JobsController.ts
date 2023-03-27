@@ -80,17 +80,15 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         // eslint-disable-next-line @typescript-eslint/require-await
         LoginHooks.addHook(async () => this.reset(false));
 
-        ServerClient.getServerInfo()
-            .then(response => {
-                if (response.code === StatusCode.OK) {
-                    //A bug in versions below 4.11.0 makes it so that /Job/List doesn't report back progress. If we are running on a higher version, theres no point in enabling the workaround
-                    this.enableJobProgressWorkaround = SemverSatisfies(
-                        response.payload.version,
-                        "<4.11.0"
-                    );
-                }
-            })
-            .catch(e => console.error(e));
+        ServerClient.on("loadServerInfo", response => {
+            if (response.code === StatusCode.OK) {
+                //A bug in versions below 4.11.0 makes it so that /Job/List doesn't report back progress. If we are running on a higher version, theres no point in enabling the workaround
+                this.enableJobProgressWorkaround = SemverSatisfies(
+                    response.payload.version,
+                    "<4.11.0"
+                );
+            }
+        });
     }
 
     private async reloadAccessibleInstances(loop = false): Promise<void> {

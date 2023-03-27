@@ -8,7 +8,10 @@ import { BrowserRouter } from "react-router-dom";
 
 import Pkg from "./../package.json";
 import { CredentialsType } from "./ApiClient/models/ICredentials";
-import InternalError, { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
+import InternalError, {
+    ErrorCode,
+    GenericErrors
+} from "./ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
@@ -204,7 +207,7 @@ class App extends React.Component<IProps, IState> {
         }
     }
 
-    private async updateContextServer() {
+    private async updateContextServer(lastError?: InternalError<GenericErrors>) {
         const response = await ServerClient.getServerInfo();
         if (response.code === StatusCode.OK) {
             this.setState(prev => {
@@ -218,10 +221,13 @@ class App extends React.Component<IProps, IState> {
                 };
             });
         } else {
-            setTimeout(() => void this.updateContextServer(), 5000);
+            setTimeout(() => void this.updateContextServer(response.error), 5000);
             this.setState(prev => {
                 const newSet = new Set(prev.GeneralContextInfo.errors);
                 newSet.add(response.error);
+                if (lastError) {
+                    newSet.delete(lastError);
+                }
                 return {
                     GeneralContextInfo: {
                         errors: newSet,

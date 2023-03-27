@@ -43,7 +43,6 @@ try {
 }
 
 function mountApp() {
-    console.log("Mounting app");
     ReactDOM.render(IndexApp, document.getElementById("root"));
 }
 
