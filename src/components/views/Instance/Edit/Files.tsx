@@ -9,7 +9,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { downloadZip } from "client-zip";
 import React from "react";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, ButtonGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FormattedMessage, injectIntl, WrappedComponentProps } from "react-intl";
 
 import ConfigurationFileClient from "../../../../ApiClient/ConfigurationFileClient";
@@ -234,18 +234,20 @@ class Files extends React.Component<IProps, IState> {
         let doctoredPath = file.fileResponse.path;
         while (doctoredPath.startsWith("/")) doctoredPath = doctoredPath.substring(1);
 
-        const response = await ConfigurationFileClient.getConfigFile(
-            this.context.instance.id,
-            doctoredPath,
-            false
-        );
+        if (!file.fileResponse.isDirectory) {
+            const response = await ConfigurationFileClient.getConfigFile(
+                this.context.instance.id,
+                doctoredPath,
+                false
+            );
 
-        const success = response.code === StatusCode.OK;
-        if (success) {
-            file.fileResponse = response.payload;
-        } else {
-            this.addError(response.error);
-            file.fileResponse.lastReadHash = null;
+            const success = response.code === StatusCode.OK;
+            if (success) {
+                file.fileResponse = response.payload;
+            } else {
+                this.addError(response.error);
+                file.fileResponse.lastReadHash = null;
+            }
         }
 
         this.setState({
@@ -276,6 +278,16 @@ class Files extends React.Component<IProps, IState> {
     }
 
     private async downloadDirectory(directory: DirectoryTree): Promise<void> {
+        if (
+            !confirm(
+                this.props.intl.formatMessage(
+                    { id: "view.instance.files.zip.confirm" },
+                    { path: directory.fileResponse.path }
+                )
+            )
+        ) {
+            return;
+        }
         this.setState({
             loading: true
         });
@@ -385,7 +397,7 @@ class Files extends React.Component<IProps, IState> {
             directory.fileResponse.path.lastIndexOf("/")
         );
 
-        const fileName = directory.fileResponse.path.slice(index + 1);
+        const fileName = directory.fileResponse.path.slice(index + 1) + ".zip";
         downloadFileUsingBlob(fileName, zipBlob);
 
         this.setState({
@@ -573,9 +585,7 @@ class Files extends React.Component<IProps, IState> {
                                 minWidth: "200px",
                                 overflowY: "scroll"
                             }}>
-                            <ul className="browser-ul">
-                                {this.renderDirectory(this.state.rootDirectory!)}
-                            </ul>
+                            {this.renderDirectory(this.state.rootDirectory!)}
                         </div>
                     ) : (
                         <div
@@ -615,8 +625,8 @@ class Files extends React.Component<IProps, IState> {
             dir.fileResponse.path.lastIndexOf("\\"),
             dir.fileResponse.path.lastIndexOf("/")
         );
+        const selected = dir === this.state.selectedFile;
         if (!dir.fileResponse.isDirectory) {
-            const selected = dir === this.state.selectedFile;
             const fileName = dir.fileResponse.path.slice(index + 1);
             return (
                 <li className="browser-li">
@@ -635,127 +645,35 @@ class Files extends React.Component<IProps, IState> {
             dir == this.state.rootDirectory
                 ? "Configuration"
                 : dir.fileResponse.path.slice(index + 1);
-        const selectedCreateNode = this.state.selectedCreateNode === dir;
-
-        const canDeleteDirectories = hasFilesRight(
-            this.context.instancePermissionSet,
-            ConfigurationRights.Delete
-        );
 
         return (
-            <React.Fragment>
-                <li className="browser-li">
-                    {!dir.fullyLoaded ? (
-                        <Button
-                            className="nowrap"
-                            onClick={() =>
-                                void this.shortAsyncAction(() => this.loadDirectory(dir))
-                            }>
-                            <FontAwesomeIcon icon={faFolderPlus} />
-                            &nbsp;{directoryName}
-                        </Button>
-                    ) : (
-                        <Button
-                            className="nowrap"
-                            variant="secondary"
-                            onClick={() => {
+            <div className="mb-2">
+                <ButtonGroup>
+                    <Button
+                        variant={!dir.fullyLoaded ? "secondary" : "primary"}
+                        onClick={() => {
+                            if (dir.fullyLoaded) {
                                 this.clearDirectory(dir);
                                 this.forceUpdate();
-                            }}>
-                            <FontAwesomeIcon icon={faFolderMinus} />
-                            &nbsp;{directoryName}
-                        </Button>
-                    )}
-                </li>
+                            } else {
+                                void this.shortAsyncAction(() => this.loadDirectory(dir));
+                            }
+                        }}>
+                        <FontAwesomeIcon icon={dir.fullyLoaded ? faFolderMinus : faFolderPlus} />
+                    </Button>
+                    <Button
+                        className="nowrap"
+                        variant={selected ? "secondary" : "primary"}
+                        onClick={() => void this.shortAsyncAction(() => this.selectFile(dir))}>
+                        {directoryName}
+                    </Button>
+                </ButtonGroup>
                 <ul className="browser-ul">
-                    {dir.children.length > 0 ? (
-                        <li className="browser-li">
-                            <Button
-                                variant="primary"
-                                onClick={() => void this.downloadDirectory(dir)}
-                                className="nowrap">
-                                <FontAwesomeIcon icon={faDownload} />
-                                &nbsp;
-                                <FormattedMessage id="view.instance.files.download.directory" />
-                            </Button>
-                        </li>
-                    ) : null}
                     {dir.children.map(subDir => (
-                        <React.Fragment key={subDir.fileResponse.path}>
-                            {this.renderDirectory(subDir)}
-                        </React.Fragment>
+                        <li key={subDir.fileResponse.path}>{this.renderDirectory(subDir)}</li>
                     ))}
-                    {dir.fullyLoaded ? (
-                        <React.Fragment>
-                            <li className="browser-li">
-                                <Button
-                                    variant={selectedCreateNode ? "secondary" : "primary"}
-                                    onClick={() => {
-                                        if (this.state.selectedCreateNode != dir) {
-                                            this.setState({
-                                                selectedCreateNode: dir
-                                            });
-                                        }
-                                    }}
-                                    className="nowrap">
-                                    <FontAwesomeIcon icon={faFile} />
-                                    &nbsp;(
-                                    <FormattedMessage id="view.instance.files.create" />)
-                                </Button>
-                            </li>
-                            {dir.parent ? (
-                                <li className="browser-li">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        show={
-                                            canDeleteDirectories && dir.children.length === 0
-                                                ? false
-                                                : undefined
-                                        }
-                                        overlay={props => (
-                                            <Tooltip id="cant-delete-dir-tooltip" {...props}>
-                                                <FormattedMessage
-                                                    id={
-                                                        canDeleteDirectories
-                                                            ? "view.instance.files.delete.directory.populated"
-                                                            : "view.instance.files.disallowed.directory.delete"
-                                                    }
-                                                />
-                                            </Tooltip>
-                                        )}>
-                                        <Button
-                                            variant="danger"
-                                            disabled={
-                                                !canDeleteDirectories || dir.children.length > 0
-                                            }
-                                            onClick={() => {
-                                                if (
-                                                    confirm(
-                                                        this.props.intl.formatMessage(
-                                                            {
-                                                                id:
-                                                                    "view.instance.files.delete.directory.confirm"
-                                                            },
-                                                            { directoryName }
-                                                        )
-                                                    )
-                                                )
-                                                    void this.shortAsyncAction(() =>
-                                                        this.deleteDirectory(dir)
-                                                    );
-                                            }}
-                                            className="nowrap">
-                                            <FontAwesomeIcon icon={faTimes} />
-                                            &nbsp;
-                                            <FormattedMessage id="view.instance.files.delete.directory" />
-                                        </Button>
-                                    </OverlayTrigger>
-                                </li>
-                            ) : null}
-                        </React.Fragment>
-                    ) : null}
                 </ul>
-            </React.Fragment>
+            </div>
         );
     }
 
@@ -811,78 +729,175 @@ class Files extends React.Component<IProps, IState> {
         );
         const fileName = fileDirectoryTree.fileResponse.path.slice(index + 1);
 
-        const fileIsNotRefreshed = !fileDirectoryTree.fileResponse.lastReadHash;
+        const fileIsNotRefreshed =
+            !fileDirectoryTree.fileResponse.isDirectory &&
+            !fileDirectoryTree.fileResponse.lastReadHash;
+
+        const directoryName =
+            fileDirectoryTree == this.state.rootDirectory
+                ? "Configuration"
+                : fileDirectoryTree.fileResponse.path.slice(index + 1);
+        const selectedCreateNode = this.state.selectedCreateNode === fileDirectoryTree;
+
+        const canDeleteDirectories = hasFilesRight(
+            this.context.instancePermissionSet,
+            ConfigurationRights.Delete
+        );
+
+        let headerText = fileDirectoryTree.fileResponse.path.replaceAll("\\", "/");
+        if (!headerText.startsWith("/")) headerText = "/" + headerText;
 
         return (
             <React.Fragment>
-                <h5>/{fileDirectoryTree.fileResponse.path}</h5>
+                <h5>{headerText}</h5>
                 <hr />
                 <div className="mb-3">
-                    <OverlayTrigger
-                        placement="top"
-                        overlay={props => (
-                            <Tooltip id="file-download-location-tooltip" {...props}>
-                                <FormattedMessage id="view.instance.files.download.location" />
-                            </Tooltip>
-                        )}>
-                        <Button
-                            className="mx-2"
-                            disabled={!canRead}
-                            onClick={() => void this.downloadFile()}>
-                            <FormattedMessage id="view.instance.files.download" />
-                        </Button>
-                    </OverlayTrigger>
-                    <OverlayTrigger
-                        placement="top"
-                        show={!canWrite || !fileIsNotRefreshed ? false : undefined}
-                        overlay={props => (
-                            <Tooltip id="file-not-refreshed-tooltip" {...props}>
-                                <FormattedMessage id="view.instance.files.replace.stale" />
-                            </Tooltip>
-                        )}>
-                        <Button
-                            variant="warning"
-                            className="mx-2"
-                            disabled={!canWrite || fileIsNotRefreshed}
-                            onClick={() =>
-                                void this.createEntity(
-                                    {
-                                        entityName: fileName,
-                                        isDirectory: false,
-                                        replace: true
-                                    },
-                                    fileDirectoryTree
-                                )
-                            }>
-                            <FormattedMessage id="view.instance.files.replace" />
-                        </Button>
-                    </OverlayTrigger>
-                    <OverlayTrigger
-                        placement="top"
-                        show={!canWrite || !fileIsNotRefreshed ? false : undefined}
-                        overlay={props => (
-                            <Tooltip id="file-not-refreshed-tooltip-delete" {...props}>
-                                <FormattedMessage id="view.instance.files.replace.stale" />
-                            </Tooltip>
-                        )}>
-                        <Button
-                            variant="danger"
-                            className="mx-2"
-                            disabled={!canWrite || fileIsNotRefreshed}
-                            onClick={() => {
-                                if (
-                                    confirm(
-                                        this.props.intl.formatMessage(
-                                            { id: "view.instance.files.delete.confirm" },
-                                            { path: fileDirectoryTree.fileResponse.path }
+                    {!fileDirectoryTree.fileResponse.isDirectory ? (
+                        <React.Fragment>
+                            <OverlayTrigger
+                                placement="top"
+                                overlay={props => (
+                                    <Tooltip id="file-download-location-tooltip" {...props}>
+                                        <FormattedMessage id="view.instance.files.download.location" />
+                                    </Tooltip>
+                                )}>
+                                <Button
+                                    className="mx-2"
+                                    disabled={!canRead}
+                                    onClick={() => void this.downloadFile()}>
+                                    <FormattedMessage id="view.instance.files.download" />
+                                </Button>
+                            </OverlayTrigger>
+                            <OverlayTrigger
+                                placement="top"
+                                show={!canWrite || !fileIsNotRefreshed ? false : undefined}
+                                overlay={props => (
+                                    <Tooltip id="file-not-refreshed-tooltip" {...props}>
+                                        <FormattedMessage id="view.instance.files.replace.stale" />
+                                    </Tooltip>
+                                )}>
+                                <Button
+                                    variant="warning"
+                                    className="mx-2"
+                                    disabled={!canWrite || fileIsNotRefreshed}
+                                    onClick={() =>
+                                        void this.createEntity(
+                                            {
+                                                entityName: fileName,
+                                                isDirectory: false,
+                                                replace: true
+                                            },
+                                            fileDirectoryTree
                                         )
-                                    )
-                                )
-                                    void this.shortAsyncAction(() => this.deleteFile());
-                            }}>
-                            <FormattedMessage id="view.instance.files.delete" />
-                        </Button>
-                    </OverlayTrigger>
+                                    }>
+                                    <FormattedMessage id="view.instance.files.replace" />
+                                </Button>
+                            </OverlayTrigger>
+                            <OverlayTrigger
+                                placement="top"
+                                show={!canWrite || !fileIsNotRefreshed ? false : undefined}
+                                overlay={props => (
+                                    <Tooltip id="file-not-refreshed-tooltip-delete" {...props}>
+                                        <FormattedMessage id="view.instance.files.replace.stale" />
+                                    </Tooltip>
+                                )}>
+                                <Button
+                                    variant="danger"
+                                    className="mx-2"
+                                    disabled={!canWrite || fileIsNotRefreshed}
+                                    onClick={() => {
+                                        if (
+                                            confirm(
+                                                this.props.intl.formatMessage(
+                                                    { id: "view.instance.files.delete.confirm" },
+                                                    { path: fileDirectoryTree.fileResponse.path }
+                                                )
+                                            )
+                                        )
+                                            void this.shortAsyncAction(() => this.deleteFile());
+                                    }}>
+                                    <FormattedMessage id="view.instance.files.delete" />
+                                </Button>
+                            </OverlayTrigger>
+                        </React.Fragment>
+                    ) : (
+                        <React.Fragment>
+                            <Button
+                                variant="primary"
+                                className="mx-2 nowrap"
+                                onClick={() => void this.downloadDirectory(fileDirectoryTree)}>
+                                <FontAwesomeIcon icon={faDownload} />
+                                &nbsp;
+                                <FormattedMessage id="view.instance.files.download.directory" />
+                            </Button>
+                            <Button
+                                variant={selectedCreateNode ? "secondary" : "primary"}
+                                className="mx-2 nowrap"
+                                onClick={() => {
+                                    if (this.state.selectedCreateNode != fileDirectoryTree) {
+                                        this.setState({
+                                            selectedCreateNode: fileDirectoryTree
+                                        });
+                                    }
+                                }}>
+                                <FontAwesomeIcon icon={faFile} />
+                                &nbsp;
+                                <FormattedMessage id="view.instance.files.create" />
+                            </Button>
+                            <OverlayTrigger
+                                placement="top"
+                                show={
+                                    canDeleteDirectories &&
+                                    fileDirectoryTree.fullyLoaded &&
+                                    fileDirectoryTree.children.length === 0
+                                        ? false
+                                        : undefined
+                                }
+                                overlay={props => (
+                                    <Tooltip id="cant-delete-dir-tooltip" {...props}>
+                                        <FormattedMessage
+                                            id={
+                                                !fileDirectoryTree.fullyLoaded
+                                                    ? "view.instance.files.delete.directory.populated.unloaded"
+                                                    : canDeleteDirectories
+                                                    ? "view.instance.files.delete.directory.populated"
+                                                    : "view.instance.files.disallowed.directory.delete"
+                                            }
+                                        />
+                                    </Tooltip>
+                                )}>
+                                <Button
+                                    variant="danger"
+                                    className="mx-2 nowrap"
+                                    disabled={
+                                        !fileDirectoryTree.fullyLoaded ||
+                                        !canDeleteDirectories ||
+                                        fileDirectoryTree.children.length > 0 ||
+                                        fileDirectoryTree == this.state.rootDirectory
+                                    }
+                                    onClick={() => {
+                                        if (
+                                            confirm(
+                                                this.props.intl.formatMessage(
+                                                    {
+                                                        id:
+                                                            "view.instance.files.delete.directory.confirm"
+                                                    },
+                                                    { directoryName }
+                                                )
+                                            )
+                                        )
+                                            void this.shortAsyncAction(() =>
+                                                this.deleteDirectory(fileDirectoryTree)
+                                            );
+                                    }}>
+                                    <FontAwesomeIcon icon={faTimes} />
+                                    &nbsp;
+                                    <FormattedMessage id="view.instance.files.delete.directory" />
+                                </Button>
+                            </OverlayTrigger>
+                        </React.Fragment>
+                    )}
                 </div>
             </React.Fragment>
         );
