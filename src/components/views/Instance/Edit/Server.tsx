@@ -85,6 +85,10 @@ export default function Server(): JSX.Element {
     }
 
     async function stopWatchdog(): Promise<void> {
+        if (!confirm()) {
+            return;
+        }
+
         setLoading(true);
         const response = await DreamDaemonClient.stopWatchdog(instanceEditContext.instance.id);
         if (response.code === StatusCode.ERROR) {
@@ -96,6 +100,10 @@ export default function Server(): JSX.Element {
     }
 
     async function restartWatchdog(): Promise<void> {
+        if (!confirm()) {
+            return;
+        }
+
         setLoading(true);
         const response = await DreamDaemonClient.restartWatchdog(instanceEditContext.instance.id);
         if (response.code === StatusCode.ERROR) {
