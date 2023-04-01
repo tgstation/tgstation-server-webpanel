@@ -154,6 +154,15 @@ export default function Server(): JSX.Element {
                 DreamDaemonRights.SetProfiler
             )
         },
+        logOutput: {
+            type: FieldType.Boolean as FieldType.Boolean,
+            name: "fields.instance.watchdog.logoutput",
+            defaultValue: watchdogSettings.logOutput,
+            disabled: !hasDreamDaemonRight(
+                instanceEditContext.instancePermissionSet,
+                DreamDaemonRights.SetLogOutput
+            )
+        },
         port: {
             type: FieldType.Number as FieldType.Number,
             name: "fields.instance.watchdog.port",
