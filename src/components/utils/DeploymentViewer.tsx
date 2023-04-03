@@ -1,10 +1,16 @@
-import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import {
+    faCaretDown,
+    faCaretRight,
+    faExclamationTriangle
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ReactNode } from "react";
 import { Badge, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
+import { lt as SemverLessThan } from "semver";
 
 import { CompileJobResponse, DreamDaemonSecurity } from "../../ApiClient/generatedcode/generated";
+import { InstanceEditContext } from "../../contexts/InstanceEditContext";
 import { DebugJsonViewer } from "./JsonViewer";
 import Loading from "./Loading";
 import PageHelper from "./PageHelper";
@@ -44,6 +50,7 @@ interface IState {
 }
 
 class DeploymentViewer extends React.Component<IProps, IState> {
+    public declare context: InstanceEditContext;
     public constructor(props: IProps) {
         super(props);
 
@@ -118,6 +125,7 @@ class DeploymentViewer extends React.Component<IProps, IState> {
         return (
             <Table className="table table-hover">
                 <thead>
+                    <th></th>
                     <th></th>
                     <th>
                         <FormattedMessage id="view.utils.deployment_viewer.table.id" />
@@ -229,6 +237,10 @@ class DeploymentViewer extends React.Component<IProps, IState> {
             compileJob.revisionInformation.activeTestMerges.length > 0;
         const testMergesOpen = this.state.openTestMergesId === compileJob.id;
 
+        const outOfDateDMApi =
+            !compileJob.dmApiVersion ||
+            SemverLessThan(compileJob.dmApiVersion, this.context?.serverInfo?.dmApiVersion);
+
         return (
             <React.Fragment>
                 <tr
@@ -246,7 +258,10 @@ class DeploymentViewer extends React.Component<IProps, IState> {
                     }}>
                     <td>
                         {hasTestMerges ? (
-                            <h5>
+                            <h5
+                                style={{
+                                    whiteSpace: "nowrap"
+                                }}>
                                 <OverlayTrigger
                                     overlay={
                                         <Tooltip id={`${compileJob.id}-tooltip-test-merges`}>
@@ -268,9 +283,45 @@ class DeploymentViewer extends React.Component<IProps, IState> {
                                     )}
                                 </OverlayTrigger>
                             </h5>
-                        ) : (
-                            <React.Fragment />
-                        )}
+                        ) : null}
+                    </td>
+                    <td>
+                        {outOfDateDMApi ? (
+                            <OverlayTrigger
+                                overlay={
+                                    <Tooltip id={`${compileJob.id}-tooltip-dmapi`}>
+                                        <FormattedMessage
+                                            id="view.utils.deployment_viewer.dmapi_outdated"
+                                            values={{
+                                                codebase: compileJob.dmApiVersion ?? "N/A",
+                                                tgs: this.context.serverInfo.dmApiVersion
+                                            }}
+                                        />
+                                    </Tooltip>
+                                }>
+                                {({ ref, ...triggerHandler }) => (
+                                    <Badge
+                                        pill
+                                        variant="danger"
+                                        style={{
+                                            cursor: "pointer"
+                                        }}
+                                        ref={ref as React.Ref<HTMLSpanElement>}
+                                        {...triggerHandler}
+                                        onClick={(e: React.MouseEvent<HTMLSpanElement>) => {
+                                            window
+                                                .open(
+                                                    "https://github.com/tgstation/tgstation-server/releases?q=%23tgs-dmapi-release&expanded=true",
+                                                    "_blank"
+                                                )
+                                                ?.focus();
+                                            e.stopPropagation();
+                                        }}>
+                                        <FontAwesomeIcon icon={faExclamationTriangle} />
+                                    </Badge>
+                                )}
+                            </OverlayTrigger>
+                        ) : null}
                     </td>
                     <td>{compileJob.id}</td>
                     <td>{correctedByondVersion}</td>
@@ -366,4 +417,5 @@ class DeploymentViewer extends React.Component<IProps, IState> {
     }
 }
 
+DeploymentViewer.contextType = InstanceEditContext;
 export default DeploymentViewer;

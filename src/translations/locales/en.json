@@ -188,6 +188,7 @@
     "view.user.passwd.title": "Editing password for ",
     "view.user.create.tgs": "Create user with TGS identifier",
     "view.user.create.sys": "Create user with system identifier",
+    "view.utils.deployment_viewer.dmapi_outdated": "Your codebase's DMAPI interop version ({codebase}) is not present or less than tgstation-server's version ({tgs}). Please update your codebase with the latest TGS DMAPI library for full functionality. Click here to go to the latest TGS DMAPI release.",
     "view.utils.deployment_viewer.no_jobs": "No deployments have been created!",
     "view.utils.deployment_viewer.test_merges_hint.show": "Show Test Merges",
     "view.utils.deployment_viewer.test_merges_hint.hide": "Hide Test Merges",
