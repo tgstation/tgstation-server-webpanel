@@ -635,6 +635,7 @@
     "loading.user.save": "Saving user information...",
     "loading.user.create": "Creating user...",
     "loading.instance.list": "Loading instance list...",
+    "loading.instance.move": "Relocating instance...",
     "loading.instance.files": "Performing file operation...",
     "loading.instance.jobs.list": "Loading job list...",
     "loading.instance": "Loading instance...",

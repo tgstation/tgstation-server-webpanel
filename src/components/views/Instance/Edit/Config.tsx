@@ -5,20 +5,26 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import {
     ConfigurationType,
     InstanceManagerRights,
+    InstanceResponse,
     InstanceUpdateRequest
 } from "../../../../ApiClient/generatedcode/generated";
-import InstanceClient from "../../../../ApiClient/InstanceClient";
+import InstanceClient, { GetInstanceErrors } from "../../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
-import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
+import InternalStatus, {
+    StatusCode
+} from "../../../../ApiClient/models/InternalComms/InternalStatus";
+import JobsController from "../../../../ApiClient/util/JobsController";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasInstanceManagerRight, resolvePermissionSet } from "../../../../utils/misc";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import { FieldType } from "../../../utils/InputField";
 import InputForm from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
+import Loading from "../../../utils/Loading";
 
 interface IProps extends RouteComponentProps {}
 interface IState {
+    moving: boolean;
     errors: Array<InternalError<ErrorCode> | undefined>;
 }
 
@@ -31,7 +37,8 @@ class InstanceSettings extends React.Component<IProps, IState> {
         this.editInstance = this.editInstance.bind(this);
 
         this.state = {
-            errors: []
+            errors: [],
+            moving: false
         };
     }
 
@@ -46,15 +53,66 @@ class InstanceSettings extends React.Component<IProps, IState> {
     }
 
     private async editInstance(instance: Omit<InstanceUpdateRequest, "id">) {
+        const instanceId = this.context.instance.id;
+        let newPath: string | undefined;
+        if (instance.path && instance.path != this.context.instance.path) {
+            newPath = instance.path;
+            instance.path = null;
+            instance.online = false; // need to offline the instance before moving it
+            this.setState({ moving: true });
+        }
+
         const response = await InstanceClient.editInstance({
             ...instance,
-            id: this.context.instance.id
+            id: instanceId
         });
-        if (response.code === StatusCode.OK) {
-            void this.context.reloadInstance();
-        } else {
+        if (response.code !== StatusCode.OK) {
             this.addError(response.error);
+            this.setState({ moving: false });
+            return;
         }
+
+        if (newPath) {
+            //move the instance
+            const response2 = await InstanceClient.editInstance({
+                id: this.context.instance.id,
+                path: newPath
+            });
+
+            if (response2.code !== StatusCode.OK) {
+                this.addError(response2.error);
+                this.setState({ moving: false });
+                await this.context.reloadInstance();
+                return;
+            }
+
+            // we can't use the jobs controller because instance move jobs are special so just wait until the move is done
+            let response3: InternalStatus<InstanceResponse, GetInstanceErrors>;
+            do {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                response3 = await InstanceClient.getInstance(instanceId);
+
+                if (response3.code !== StatusCode.OK) {
+                    this.addError(response3.error);
+                    this.setState({ moving: false });
+                    await this.context.reloadInstance();
+                    return;
+                }
+            } while (response3.payload.moveJob);
+
+            const response4 = await InstanceClient.editInstance({
+                online: true,
+                id: instanceId
+            });
+            if (response4.code !== StatusCode.OK) {
+                this.addError(response4.error);
+                this.setState({ moving: false });
+            } else {
+                JobsController.registerJob(response2.payload.moveJob!, instanceId);
+            }
+        }
+
+        await this.context.reloadInstance();
     }
 
     public render(): React.ReactNode {
@@ -123,7 +181,11 @@ class InstanceSettings extends React.Component<IProps, IState> {
                     );
                 })}
 
-                <InputForm fields={fields} onSave={this.editInstance} />
+                {this.state.moving ? (
+                    <Loading text="loading.instance.move" />
+                ) : (
+                    <InputForm fields={fields} onSave={this.editInstance} />
+                )}
             </div>
         );
     }
