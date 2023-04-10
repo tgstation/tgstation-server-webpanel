@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunktgstation_server_control_panel=self.webpackChunktgstation_server_control_panel||[]).push([[818],{1818:function(e,t,n){n.r(t),n.d(t,{default:function(){return c}});var a=n(7294),r=n(4012),s=n(271);class c extends a.Component{render(){return a.createElement("div",{className:"mx-auto",style:{maxWidth:"max-content"}},a.createElement("h3",{className:"text-center"},a.createElement(r.Z,{id:"view.instance.jobs.title"})),a.createElement(s.Z,{width:"unset",widget:!1}))}}}}]);
+//# sourceMappingURL=818.07f5e426cf8be6d83edd.bundle.js.map
