@@ -2,6 +2,8 @@ import { ApiClient } from "./_base";
 import {
     ByondInstallResponse,
     ByondResponse,
+    ErrorMessageResponse,
+    JobResponse,
     PaginatedByondResponse
 } from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
@@ -9,6 +11,8 @@ import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatu
 import ServerClient from "./ServerClient";
 import TransferClient, { UploadErrors } from "./TransferClient";
 import configOptions from "./util/config";
+
+export type DeleteErrors = GenericErrors | ErrorCode.BYOND_VERSION_NOT_FOUND;
 
 export default new (class ByondClient extends ApiClient {
     public async getActiveVersion(
@@ -81,6 +85,71 @@ export default new (class ByondClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.OK,
                     payload: response.data as PaginatedByondResponse
+                });
+            }
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async deleteVersion(
+        instance: number,
+        version: string
+    ): Promise<InternalStatus<JobResponse, DeleteErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.byond.byondControllerDelete(
+                {
+                    version
+                },
+                {
+                    headers: {
+                        Instance: instance.toString()
+                    }
+                }
+            );
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+
+        switch (response.status) {
+            case 202: {
+                const responseData = response.data as JobResponse;
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: responseData
+                });
+            }
+            case 409:
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(ErrorCode.HTTP_DATA_INEGRITY, {
+                        errorMessage: response.data as ErrorMessageResponse
+                    })
+                });
+            case 410: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.BYOND_VERSION_NOT_FOUND,
+                        {
+                            errorMessage: response.data as ErrorMessageResponse
+                        },
+                        response
+                    )
                 });
             }
             default: {

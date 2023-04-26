@@ -1,3 +1,4 @@
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent } from "react";
 import Button from "react-bootstrap/Button";
@@ -12,6 +13,7 @@ import ByondClient from "../../../../ApiClient/ByondClient";
 import { ByondResponse, ByondRights } from "../../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
+import JobsController from "../../../../ApiClient/util/JobsController";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasByondRight } from "../../../../utils/misc";
 import { RouteData } from "../../../../utils/routes";
@@ -98,6 +100,40 @@ class Byond extends React.Component<IProps, IState> {
         }
     }
 
+    private async switchVersion(version: string, useCustom: boolean): Promise<void> {
+        this.setState({
+            loading: true
+        });
+        const response = await ByondClient.switchActive(
+            this.context.instance.id,
+            version,
+            useCustom && this.state.customFile
+                ? await this.state.customFile.arrayBuffer()
+                : undefined
+        );
+        if (response.code === StatusCode.ERROR) {
+            this.addError(response.error);
+        } else {
+            if (useCustom) {
+                this.setState({
+                    customFile: null
+                });
+            }
+            if (response.payload.installJob) {
+                JobsController.registerJob(response.payload.installJob, this.context.instance.id);
+                JobsController.registerCallback(
+                    response.payload.installJob.id,
+                    () => void this.loadVersions()
+                );
+            } else {
+                await this.loadVersions();
+            }
+        }
+        this.setState({
+            loading: false
+        });
+    }
+
     public async componentDidUpdate(
         prevProps: Readonly<IProps>,
         prevState: Readonly<IState>
@@ -151,6 +187,10 @@ class Byond extends React.Component<IProps, IState> {
             this.context.instancePermissionSet,
             ByondRights.InstallOfficialOrChangeActiveVersion
         );
+        const canDelete = hasByondRight(
+            this.context.instancePermissionSet,
+            ByondRights.DeleteInstall
+        );
 
         const tooltip = (innerid?: string) => {
             if (!innerid) return <React.Fragment />;
@@ -191,24 +231,7 @@ class Byond extends React.Component<IProps, IState> {
                         {!canSeeCurrent ? (
                             <GenericAlert title="view.instance.byond.current_denied" />
                         ) : null}
-                        <div
-                            onChange={async (e: ChangeEvent<HTMLInputElement>) => {
-                                this.setState({
-                                    loading: true
-                                });
-                                const response = await ByondClient.switchActive(
-                                    this.context.instance.id,
-                                    e.target.value
-                                );
-                                if (response.code === StatusCode.OK) {
-                                    await this.loadVersions();
-                                } else {
-                                    this.addError(response.error);
-                                }
-                                this.setState({
-                                    loading: false
-                                });
-                            }}>
+                        <div>
                             {this.state.versions.map(version => {
                                 // noinspection JSBitwiseOperatorUsage
                                 return (
@@ -222,10 +245,16 @@ class Byond extends React.Component<IProps, IState> {
                                                     id={version.version!}
                                                     value={version.version!}
                                                     disabled={!canInstallAndSwitch}
-                                                    defaultChecked={
+                                                    checked={
                                                         version.version! ===
                                                         this.state.activeVersion
                                                     }
+                                                    onChange={async () => {
+                                                        await this.switchVersion(
+                                                            version.version!,
+                                                            false
+                                                        );
+                                                    }}
                                                 />
                                             </InputGroup.Prepend>
                                         ) : null}
@@ -265,6 +294,45 @@ class Byond extends React.Component<IProps, IState> {
                                                 )}
                                             </OverlayTrigger>
                                         </label>
+                                        {version.version! !== this.state.activeVersion ? (
+                                            <InputGroup.Append>
+                                                <OverlayTrigger
+                                                    overlay={tooltip("generic.no_perm")}
+                                                    show={!canDelete ? undefined : false}>
+                                                    <Button
+                                                        variant="danger"
+                                                        disabled={!canDelete}
+                                                        onClick={async () => {
+                                                            this.setState({
+                                                                loading: true
+                                                            });
+                                                            const response = await ByondClient.deleteVersion(
+                                                                this.context.instance.id,
+                                                                version.version!
+                                                            );
+                                                            if (
+                                                                response.code === StatusCode.ERROR
+                                                            ) {
+                                                                this.addError(response.error);
+                                                            } else {
+                                                                JobsController.registerJob(
+                                                                    response.payload,
+                                                                    this.context.instance.id
+                                                                );
+                                                                JobsController.registerCallback(
+                                                                    response.payload.id,
+                                                                    () => void this.loadVersions()
+                                                                );
+                                                            }
+                                                            this.setState({
+                                                                loading: false
+                                                            });
+                                                        }}>
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </Button>
+                                                </OverlayTrigger>
+                                            </InputGroup.Append>
+                                        ) : null}
                                     </InputGroup>
                                 );
                             })}
@@ -324,32 +392,12 @@ class Byond extends React.Component<IProps, IState> {
                             overlay={tooltip("generic.no_perm")}
                             show={!canInstallAndSwitch ? undefined : false}>
                             <Button
-                                variant={canInstallAndSwitch ? "success" : "danger"}
+                                variant="success"
                                 disabled={!canInstallAndSwitch}
                                 onClick={async () => {
-                                    this.setState({
-                                        loading: true
-                                    });
-                                    const response = await ByondClient.switchActive(
-                                        this.context.instance.id,
-                                        this.state.selectedVersion,
-                                        this.state.customFile
-                                            ? await this.state.customFile.arrayBuffer()
-                                            : undefined
-                                    );
-                                    if (response.code === StatusCode.ERROR) {
-                                        this.addError(response.error);
-                                    } else {
-                                        this.setState({
-                                            customFile: null
-                                        });
-                                        await this.loadVersions();
-                                    }
-                                    this.setState({
-                                        loading: false
-                                    });
+                                    await this.switchVersion(this.state.selectedVersion, true);
                                 }}>
-                                <FontAwesomeIcon icon="plus" />
+                                <FontAwesomeIcon icon={faPlus} />
                             </Button>
                         </OverlayTrigger>
                     </InputGroup.Append>

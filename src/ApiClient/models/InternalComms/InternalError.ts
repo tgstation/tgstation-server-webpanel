@@ -72,6 +72,9 @@ export enum ErrorCode {
     //Watchdog errors
     NO_DB_ENTITY = "error.no_db_entity", //errmessage
 
+    //BYOND errors
+    BYOND_VERSION_NOT_FOUND = "error.no_byond_version",
+
     //DreamMaker errors
     COMPILE_JOB_NOT_FOUND = "error.compile_job_not_found", //errmessage
 
