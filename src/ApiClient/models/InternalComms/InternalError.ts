@@ -84,7 +84,9 @@ export enum ErrorCode {
     CONFIG_FILE_DIRECTORY_NOT_FOUND = "error.config_file_directory_not_found",
 
     BAD_TGS_YML = "error.bad_tgs_yml",
-    BAD_TGS_YML_VERSION = "error.bad_tgs_yml_version"
+    BAD_TGS_YML_VERSION = "error.bad_tgs_yml_version",
+
+    BAD_CHANNELS_JSON = "error.bad_channels_json"
 }
 
 type errorMessage = {
@@ -110,7 +112,7 @@ interface Desc {
     desc: string;
 }
 
-type allAddons = errorMessage | axiosResponse | jsError | voidError;
+export type allAddons = errorMessage | axiosResponse | jsError | voidError;
 
 export default class InternalError<T extends ErrorCode = ErrorCode> {
     public readonly code: T;

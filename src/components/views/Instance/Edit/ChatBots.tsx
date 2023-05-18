@@ -1,5 +1,14 @@
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
-import { faComment, faHashtag, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowLeft,
+    faArrowRight,
+    faCheck,
+    faClipboard,
+    faComment,
+    faHashtag,
+    faPlus,
+    faTrash
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -12,7 +21,10 @@ import {
     ChatChannel,
     ChatProvider
 } from "../../../../ApiClient/generatedcode/generated";
-import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
+import InternalError, {
+    allAddons,
+    ErrorCode
+} from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasChatBotRight } from "../../../../utils/misc";
@@ -77,6 +89,7 @@ interface IState {
     selectedChatBot: ChatBot | null;
     selectedChannel: ChatChannel | null;
     addBotProvider: ChatProvider;
+    flashExport: boolean;
 }
 
 class ChatBots extends React.Component<IProps, IState> {
@@ -92,7 +105,8 @@ class ChatBots extends React.Component<IProps, IState> {
             selectedAddNode: false,
             selectedChatBot: null,
             selectedChannel: null,
-            addBotProvider: ChatProvider.Discord
+            addBotProvider: ChatProvider.Discord,
+            flashExport: false
         };
 
         this.renderChatBotBrowser = this.renderChatBotBrowser.bind(this);
@@ -696,6 +710,89 @@ class ChatBots extends React.Component<IProps, IState> {
         );
     }
 
+    private async exportChannelsToClipboard(): Promise<void> {
+        const channels = this.state.selectedChatBot!.channels;
+        const channelsJson = JSON.stringify(channels);
+        await navigator.clipboard.writeText(channelsJson);
+        this.setState({
+            flashExport: true
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        this.setState({
+            flashExport: false
+        });
+    }
+
+    private async importChannelsFromClipboard(): Promise<void> {
+        this.setState({
+            loading: true
+        });
+
+        let channelsJson;
+        if (navigator.clipboard.readText) {
+            channelsJson = await navigator.clipboard.readText();
+        } else {
+            channelsJson = prompt(
+                "Your browser doesn't allow clipboard reading. Please paste your entry here."
+            ); // CBA to localize rn
+            if (!channelsJson) {
+                this.setState({
+                    loading: false
+                });
+                return;
+            }
+        }
+
+        let channels;
+        try {
+            channels = JSON.parse(channelsJson) as ChatChannel[];
+        } catch (jsError) {
+            const addon: allAddons =
+                jsError instanceof Error
+                    ? {
+                          jsError
+                      }
+                    : { void: true };
+            this.addError(new InternalError(ErrorCode.BAD_CHANNELS_JSON, addon));
+
+            this.setState({
+                loading: false
+            });
+            return;
+        }
+
+        let chatBot = this.state.selectedChatBot!;
+
+        const response = await ChatBotClient.updateChatBot(this.context.instance.id, {
+            channels,
+            id: chatBot.id
+        });
+
+        if (response.code === StatusCode.OK) {
+            if (response.payload) {
+                const chatBots = [...this.state.chatBots];
+                const index = chatBots.indexOf(chatBot);
+
+                chatBot = response.payload;
+                chatBot.loadedWithConnectionString = true;
+
+                chatBots[index] = chatBot;
+
+                this.setState({
+                    chatBots,
+                    selectedChatBot: chatBot
+                });
+            }
+        } else {
+            this.addError(response.error);
+        }
+
+        this.setState({
+            loading: false
+        });
+    }
+
     private renderAddEditChatBot(add: boolean): React.ReactNode {
         const providerFieldCommon = {
             type: FieldType.Enum as FieldType.Enum,
@@ -891,6 +988,11 @@ class ChatBots extends React.Component<IProps, IState> {
 
         const canDelete = hasChatBotRight(this.context.instancePermissionSet, ChatBotRights.Delete);
 
+        const canEditChannels = hasChatBotRight(
+            this.context.instancePermissionSet,
+            ChatBotRights.WriteChannels
+        );
+
         return (
             <React.Fragment>
                 <h5>
@@ -928,22 +1030,64 @@ class ChatBots extends React.Component<IProps, IState> {
                     onSave={(chatBotUpdate: ChatBotUpdate) => void this.editChatBot(chatBotUpdate)}
                 />
                 <hr />
-                <OverlayTrigger
-                    placement="top"
-                    show={canDelete ? false : undefined}
-                    overlay={props => (
-                        <Tooltip id="chat-bot-delete-perm" {...props}>
-                            <FormattedMessage id="view.instance.chat.delete.deny" />
-                        </Tooltip>
-                    )}>
-                    <Button
-                        className="nowrap"
-                        disabled={!canDelete}
-                        variant="danger"
-                        onClick={() => void this.deleteChatBot(chatBot)}>
-                        <FormattedMessage id="view.instance.chat.delete" />
-                    </Button>
-                </OverlayTrigger>
+                <div className="text-center mb-3">
+                    <OverlayTrigger
+                        placement="top"
+                        show={canDelete ? false : undefined}
+                        overlay={props => (
+                            <Tooltip id="chat-bot-delete-perm" {...props}>
+                                <FormattedMessage id="view.instance.chat.delete.deny" />
+                            </Tooltip>
+                        )}>
+                        <Button
+                            className="nowrap mx-2"
+                            disabled={!canDelete}
+                            variant="danger"
+                            onClick={() => void this.deleteChatBot(chatBot)}>
+                            <FontAwesomeIcon icon={faTrash} />
+                            &nbsp;
+                            <FormattedMessage id="view.instance.chat.delete" />
+                        </Button>
+                    </OverlayTrigger>
+                    {navigator.clipboard ? (
+                        <React.Fragment>
+                            <Button
+                                className="nowrap mx-2"
+                                variant={this.state.flashExport ? "success" : "secondary"}
+                                onClick={() => void this.exportChannelsToClipboard()}>
+                                {this.state.flashExport ? (
+                                    <FontAwesomeIcon icon={faCheck} />
+                                ) : (
+                                    <React.Fragment>
+                                        <FontAwesomeIcon icon={faClipboard} />
+                                        <FontAwesomeIcon icon={faArrowLeft} />
+                                    </React.Fragment>
+                                )}
+                                &nbsp;
+                                <FormattedMessage id="view.instance.chat.channels.export" />
+                            </Button>
+                            <OverlayTrigger
+                                placement="top"
+                                show={canEditChannels ? false : undefined}
+                                overlay={props => (
+                                    <Tooltip id="chat-bot-edit-channels-perm" {...props}>
+                                        <FormattedMessage id="view.instance.chat.channels.deny" />
+                                    </Tooltip>
+                                )}>
+                                <Button
+                                    className="nowrap mx-2"
+                                    disabled={!canEditChannels}
+                                    variant="primary"
+                                    onClick={() => void this.importChannelsFromClipboard()}>
+                                    <FontAwesomeIcon icon={faClipboard} />
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                    &nbsp;
+                                    <FormattedMessage id="view.instance.chat.channels.import" />
+                                </Button>
+                            </OverlayTrigger>
+                        </React.Fragment>
+                    ) : null}
+                </div>
             </React.Fragment>
         );
     }

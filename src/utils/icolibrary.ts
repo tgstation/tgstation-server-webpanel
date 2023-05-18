@@ -2,8 +2,10 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faGitAlt } from "@fortawesome/free-brands-svg-icons/faGitAlt";
 import {
+    faArrowLeft,
     faCaretDown,
     faCaretRight,
+    faClipboard,
     faComment,
     faExclamationTriangle,
     faFile,
@@ -91,6 +93,9 @@ export default function (): void {
         faFolderMinus,
         faFile,
         faFileAlt,
-        faExclamationTriangle
+        faExclamationTriangle,
+        faClipboard,
+        faArrowLeft,
+        faAngleRight
     );
 }
