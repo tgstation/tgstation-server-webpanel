@@ -635,7 +635,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
                         {this.renderPerms("permsconfiguration", "configuration", canEdit)}
                     </Tab>
                 </Tabs>
-                {this.state.tab === "instancepermissionsetperms" ? (
+                {this.state.tab === "instancepermissionsetperms" && canEdit ? (
                     <React.Fragment>
                         <br />
                         <Button variant="danger" onClick={() => void this.deletePermissionSet()}>
