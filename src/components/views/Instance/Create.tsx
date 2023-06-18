@@ -445,24 +445,25 @@ class InstanceCreate extends React.Component<IProps, IState> {
         }
 
         const isWindows = this.context.serverInfo.windowsHost;
-        const scripts =
-            (isWindows ? yml.windows_scripts : yml.linux_scripts) ?? new Map<string, string>();
+        const scripts = (isWindows ? yml.windows_scripts : yml.linux_scripts) ?? {};
         const secLevel = getTGSYmlSecurity(yml) ?? DreamDaemonSecurity.Safe;
         try {
             const scriptData = new Map<string, string>();
-            if (scripts.size > 0) {
-                for (const scriptKvp of scripts) {
+            const scriptKeys = Object.keys(scripts);
+            if (scriptKeys.length > 0) {
+                for (const scriptName of scriptKeys) {
+                    const scriptPath = scripts[scriptName];
                     this.pushStage(
                         <FormattedMessage
                             id="view.instance.create.quick.stage.download_scripts"
-                            values={{ script: scriptKvp[1] }}
+                            values={{ script: scriptName }}
                         />
                     );
 
                     const scriptResponse = await GithubClient.getFile(
                         this.state.repoOwner,
                         this.state.repoName,
-                        scriptKvp[1]
+                        scriptPath
                     );
 
                     if (scriptResponse.code === StatusCode.ERROR) {
@@ -473,7 +474,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
                         return;
                     }
 
-                    scriptData.set(scriptKvp[0], scriptResponse.payload);
+                    scriptData.set(scriptName, scriptResponse.payload);
                 }
             }
 

@@ -22,7 +22,7 @@ export default interface ITGSYml {
     version: number;
     byond?: string;
     static_files?: IStaticFile[];
-    linux_scripts?: Map<string, string>;
-    windows_scripts?: Map<string, string>;
+    linux_scripts?: { [index: string]: string };
+    windows_scripts?: { [index: string]: string };
     security?: string;
 }
