@@ -64,7 +64,7 @@ const minimumServerPerms =
     DreamDaemonRights.Shutdown |
     DreamDaemonRights.Start |
     DreamDaemonRights.SetStartupTimeout |
-    DreamDaemonRights.SetHeartbeatInterval |
+    DreamDaemonRights.SetHealthCheckInterval |
     DreamDaemonRights.CreateDump |
     DreamDaemonRights.SetTopicTimeout |
     DreamDaemonRights.SetAdditionalParameters |

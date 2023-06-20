@@ -3,13 +3,14 @@ import type {
     AdministrationResponse,
     ErrorMessageResponse,
     LogFileResponse,
-    PaginatedLogFileResponse
+    PaginatedLogFileResponse,
+    ServerUpdateResponse
 } from "./generatedcode/generated";
 import { DownloadedLog } from "./models/DownloadedLog";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
-import TransferClient, { DownloadErrors } from "./TransferClient";
+import TransferClient, { DownloadErrors, UploadErrors } from "./TransferClient";
 import configOptions from "./util/config";
 
 interface IEvents {
@@ -28,7 +29,8 @@ export type UpdateErrors =
     | ErrorCode.ADMIN_WATCHDOG_UNAVAIL
     | ErrorCode.ADMIN_VERSION_NOT_FOUND
     | ErrorCode.ADMIN_GITHUB_RATE
-    | ErrorCode.ADMIN_GITHUB_ERROR;
+    | ErrorCode.ADMIN_GITHUB_ERROR
+    | UploadErrors;
 
 export type LogsErrors = GenericErrors | ErrorCode.ADMIN_LOGS_IO_ERROR;
 
@@ -190,7 +192,9 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         }
     }
 
-    public async updateServer(newVersion: string): Promise<InternalStatus<null, UpdateErrors>> {
+    public async updateServer(
+        newVersion: string
+    ): Promise<InternalStatus<ServerUpdateResponse, UpdateErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -209,7 +213,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: null
+                    payload: response.data as ServerUpdateResponse
                 });
             }
             case 410: {
@@ -236,7 +240,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             }
             case 424: {
                 const errorMessage = response.data as ErrorMessageResponse;
-                return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_RATE>({
+                return new InternalStatus<ServerUpdateResponse, ErrorCode.ADMIN_GITHUB_RATE>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.ADMIN_GITHUB_RATE,
@@ -247,7 +251,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
             }
             case 429: {
                 const errorMessage = response.data as ErrorMessageResponse;
-                return new InternalStatus<null, ErrorCode.ADMIN_GITHUB_ERROR>({
+                return new InternalStatus<ServerUpdateResponse, ErrorCode.ADMIN_GITHUB_ERROR>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.ADMIN_GITHUB_ERROR,
@@ -257,7 +261,99 @@ export default new (class AdminClient extends ApiClient<IEvents> {
                 });
             }
             default: {
-                return new InternalStatus<null, ErrorCode.UNHANDLED_RESPONSE>({
+                return new InternalStatus<ServerUpdateResponse, ErrorCode.UNHANDLED_RESPONSE>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async uploadVersion(
+        newVersion: string,
+        file: ArrayBuffer
+    ): Promise<InternalStatus<ServerUpdateResponse, UpdateErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.administration.administrationControllerUpdate({
+                newVersion,
+                uploadZip: true
+            });
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<UpdateErrors>
+            });
+        }
+
+        switch (response.status) {
+            case 202: {
+                const payload = response.data as ServerUpdateResponse;
+                const upload = await TransferClient.Upload(payload.fileTicket, file);
+                if (upload.code === StatusCode.OK) {
+                    return new InternalStatus({
+                        code: StatusCode.OK,
+                        payload
+                    });
+                }
+
+                return new InternalStatus<ServerUpdateResponse, UpdateErrors>({
+                    code: StatusCode.ERROR,
+                    error: upload.error
+                });
+            }
+            case 410: {
+                const errorMessage = response.data as ErrorMessageResponse;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_VERSION_NOT_FOUND,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
+            case 422: {
+                const errorMessage = response.data as ErrorMessageResponse;
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_WATCHDOG_UNAVAIL,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
+            case 424: {
+                const errorMessage = response.data as ErrorMessageResponse;
+                return new InternalStatus<ServerUpdateResponse, ErrorCode.ADMIN_GITHUB_RATE>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_GITHUB_RATE,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
+            case 429: {
+                const errorMessage = response.data as ErrorMessageResponse;
+                return new InternalStatus<ServerUpdateResponse, ErrorCode.ADMIN_GITHUB_ERROR>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.ADMIN_GITHUB_ERROR,
+                        { errorMessage },
+                        response
+                    )
+                });
+            }
+            default: {
+                return new InternalStatus<ServerUpdateResponse, ErrorCode.UNHANDLED_RESPONSE>({
                     code: StatusCode.ERROR,
                     error: new InternalError(
                         ErrorCode.UNHANDLED_RESPONSE,

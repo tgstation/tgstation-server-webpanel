@@ -1,3 +1,5 @@
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, ReactNode } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -8,14 +10,20 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import ReactMarkdown from "react-markdown";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import { SemVer } from "semver";
 
-import AdminClient from "../../../ApiClient/AdminClient";
+import AdminClient, { UpdateErrors } from "../../../ApiClient/AdminClient";
+import {
+    AdministrationRights,
+    ServerUpdateResponse
+} from "../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
-import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import InternalStatus, { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../../ApiClient/ServerClient";
 import UserClient from "../../../ApiClient/UserClient";
 import { GeneralContext } from "../../../contexts/GeneralContext";
 import GithubClient, { TGSVersion } from "../../../utils/GithubClient";
+import { hasAdminRight, resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes } from "../../../utils/routes";
 import ErrorAlert from "../../utils/ErrorAlert";
 import { DebugJsonViewer } from "../../utils/JsonViewer";
@@ -59,10 +67,8 @@ class Update extends React.Component<IProps, IState> {
     }
 
     public async componentDidMount(): Promise<void> {
-        const tasks = [];
-        tasks.push(this.loadVersions());
+        await this.loadVersions();
 
-        await Promise.all(tasks);
         this.setState({
             loading: false
         });
@@ -85,6 +91,15 @@ class Update extends React.Component<IProps, IState> {
     }
 
     private async loadVersions(): Promise<void> {
+        if (
+            !hasAdminRight(
+                resolvePermissionSet(this.context.user),
+                AdministrationRights.ChangeVersion
+            )
+        ) {
+            return;
+        }
+
         const adminInfo = await AdminClient.getAdminInfo();
 
         switch (adminInfo.code) {
@@ -171,6 +186,53 @@ class Update extends React.Component<IProps, IState> {
         }
     }
 
+    private async uploadVersion(): Promise<void> {
+        const inputPromise = new Promise<File | null>(resolve => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.onchange = e => {
+                const files = (e.target as HTMLInputElement)?.files;
+                if (files) resolve(files[0]);
+                else resolve(null);
+            };
+            input.click();
+        });
+
+        const localFile = await inputPromise;
+        if (!localFile) return;
+
+        if (!localFile.name.toLowerCase().endsWith(".zip")) {
+            alert("Invalid zipfile!");
+            return;
+        }
+
+        // https://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript
+        const fileData = await localFile.arrayBuffer();
+
+        const targetVersionStr = prompt("Enter the TGS version semver:");
+        if (!targetVersionStr) return;
+
+        const targetVersionSemver = new SemVer(targetVersionStr);
+
+        // reformat it for them in case they fucked up a little
+        const targetVersion = `${targetVersionSemver.major}.${targetVersionSemver.minor}.${targetVersionSemver.patch}`;
+
+        if (targetVersion != targetVersionStr) {
+            alert("Invalid semver!");
+            return;
+        }
+
+        if (
+            !confirm(
+                `JUST WHAT DO YOU THINK YOU'RE DOING!? This is your only and final warning: Uploading a TGS Version .zip that is improperly formatted or that does not match the version you just entered (${targetVersion}) can brick your installation! Think carefully before pressing OK to continue.`
+            )
+        ) {
+            return;
+        }
+
+        await this.serverUpdated(AdminClient.uploadVersion(targetVersion, fileData));
+    }
+
     private async updateServer(): Promise<void> {
         if (!this.state.selectedOption) {
             console.error("Attempted to update server to a no version");
@@ -179,32 +241,41 @@ class Update extends React.Component<IProps, IState> {
             });
             return;
         }
-        const response = await AdminClient.updateServer(this.state.selectedOption);
+
+        await this.serverUpdated(AdminClient.updateServer(this.state.selectedOption));
+    }
+
+    private async serverUpdated(
+        request: Promise<InternalStatus<ServerUpdateResponse, UpdateErrors>>
+    ): Promise<void> {
+        const response = await request;
 
         switch (response.code) {
             case StatusCode.ERROR: {
                 this.addError(response.error);
-                break;
+                return;
             }
             case StatusCode.OK: {
-                ServerClient.autoLogin = false;
-                // i need that timer to be async
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                window.setInterval(async () => {
-                    const response = await UserClient.getCurrentUser(true);
-                    switch (response.code) {
-                        //we wait until we get an error which means either it rebooted and our creds are bullshit, or we rebooted and the api is different
-                        //in both cases, we should reboot
-                        case StatusCode.ERROR: {
-                            window.location.reload();
-                        }
-                    }
-                }, 2000);
-                this.setState({
-                    updating: true
-                });
+                break;
             }
         }
+
+        ServerClient.autoLogin = false;
+        // i need that timer to be async
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        window.setInterval(async () => {
+            const response = await UserClient.getCurrentUser(true);
+            switch (response.code) {
+                //we wait until we get an error which means either it rebooted and our creds are bullshit, or we rebooted and the api is different
+                //in both cases, we should reboot
+                case StatusCode.ERROR: {
+                    window.location.reload();
+                }
+            }
+        }, 2000);
+        this.setState({
+            updating: true
+        });
     }
 
     public render(): ReactNode {
@@ -219,6 +290,10 @@ class Update extends React.Component<IProps, IState> {
                 selectedOption: changeEvent.target.value
             });
         };
+
+        const permissionSet = resolvePermissionSet(this.context.user);
+        const canChangeVersion = hasAdminRight(permissionSet, AdministrationRights.ChangeVersion);
+        const canUploadVersion = hasAdminRight(permissionSet, AdministrationRights.UploadVersion);
 
         const selectedVersionMarkdown = this.state.selectedVersion?.body
             .replaceAll("\r", "")
@@ -280,60 +355,92 @@ class Update extends React.Component<IProps, IState> {
                         <h3 className="mb-4">
                             <FormattedMessage id="view.admin.update.selectversion" />
                         </h3>
-                        <Col xs={8} md={6} className="mx-auto">
-                            {this.state.versions.map((version, index) => {
-                                return (
-                                    <InputGroup className="mb-3" key={version.version}>
-                                        <InputGroup.Prepend>
-                                            <InputGroup.Radio
-                                                id={version.version}
-                                                name="version"
-                                                disabled={version.current}
-                                                value={version.version}
-                                                checked={
-                                                    this.state.selectedOption === version.version
-                                                }
-                                                onChange={handleChange}
-                                            />
-                                        </InputGroup.Prepend>
-                                        <FormControl
-                                            as={"label"}
-                                            htmlFor={version.version}
-                                            disabled>
-                                            {version.version}
-                                            {version.current ? (
-                                                <FormattedMessage id="view.admin.update.current" />
-                                            ) : (
-                                                ""
-                                            )}
-                                            {index == 0 ? (
-                                                <FormattedMessage id="view.admin.update.latest" />
-                                            ) : (
-                                                ""
-                                            )}
-                                        </FormControl>
-                                    </InputGroup>
-                                );
-                            })}
-                            <Button
-                                variant="link"
-                                onClick={() => {
-                                    this.props.history.push(
-                                        (AppRoutes.admin_update.link ??
-                                            AppRoutes.admin_update.route) + "all/",
-                                        {
-                                            reload: true
-                                        }
+                        {canChangeVersion ? (
+                            <Col xs={8} md={6} className="mx-auto">
+                                {this.state.versions.map((version, index) => {
+                                    return (
+                                        <InputGroup className="mb-3" key={version.version}>
+                                            <InputGroup.Prepend>
+                                                <InputGroup.Radio
+                                                    id={version.version}
+                                                    name="version"
+                                                    disabled={version.current}
+                                                    value={version.version}
+                                                    checked={
+                                                        this.state.selectedOption ===
+                                                        version.version
+                                                    }
+                                                    onChange={handleChange}
+                                                />
+                                            </InputGroup.Prepend>
+                                            <FormControl
+                                                as={"label"}
+                                                htmlFor={version.version}
+                                                disabled>
+                                                {version.version}
+                                                {version.current ? (
+                                                    <FormattedMessage id="view.admin.update.current" />
+                                                ) : (
+                                                    ""
+                                                )}
+                                                {index == 0 ? (
+                                                    <FormattedMessage id="view.admin.update.latest" />
+                                                ) : (
+                                                    ""
+                                                )}
+                                            </FormControl>
+                                        </InputGroup>
                                     );
-                                }}
-                                disabled={!!this.props.match.params.all}>
-                                <FormattedMessage id="view.admin.update.showall" />
-                            </Button>
-                            <br />
-                            <Button onClick={this.loadNotes} disabled={!this.state.selectedOption}>
-                                <FormattedMessage id="generic.continue" />
-                            </Button>
-                        </Col>
+                                })}
+                                <Button
+                                    variant="link"
+                                    onClick={() => {
+                                        this.props.history.push(
+                                            (AppRoutes.admin_update.link ??
+                                                AppRoutes.admin_update.route) + "all/",
+                                            {
+                                                reload: true
+                                            }
+                                        );
+                                    }}
+                                    disabled={!!this.props.match.params.all}>
+                                    <FormattedMessage id="view.admin.update.showall" />
+                                </Button>
+                                <br />
+                                <Button
+                                    onClick={this.loadNotes}
+                                    disabled={!this.state.selectedOption}>
+                                    <FormattedMessage id="generic.continue" />
+                                </Button>
+                            </Col>
+                        ) : (
+                            <h4>
+                                <FormattedMessage id="view.admin.update.selectversion.deny" />
+                            </h4>
+                        )}
+                        <br />
+                        <OverlayTrigger
+                            overlay={
+                                <Tooltip id="create-instance-tooltip">
+                                    <FormattedMessage id="view.admin.update.upload.deny" />
+                                </Tooltip>
+                            }
+                            show={canUploadVersion ? false : undefined}>
+                            {({ ref, ...triggerHandler }) => (
+                                <Button
+                                    ref={ref}
+                                    className="mx-1"
+                                    variant="success"
+                                    onClick={() => void this.uploadVersion()}
+                                    disabled={!canUploadVersion}
+                                    {...triggerHandler}>
+                                    <div>
+                                        <FontAwesomeIcon className="mr-2" icon={faUpload} />
+                                        <FormattedMessage id="view.admin.update.upload" />
+                                    </div>
+                                </Button>
+                            )}
+                        </OverlayTrigger>
                     </div>
                 )}
             </React.Fragment>

@@ -238,7 +238,9 @@ const AppRoutes = asElementTypesAppRoute({
         loose: true,
         navbarLoose: true,
 
-        isAuthorized: adminRight(AdministrationRights.ChangeVersion),
+        isAuthorized: adminRight(
+            AdministrationRights.ChangeVersion | AdministrationRights.UploadVersion
+        ),
         visibleNavbar: true,
         homeIcon: undefined,
 

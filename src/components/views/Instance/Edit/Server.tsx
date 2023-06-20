@@ -214,20 +214,20 @@ export default function Server(): JSX.Element {
                 DreamDaemonRights.SetTopicTimeout
             )
         },
-        heartbeatSeconds: {
+        healthCheckSeconds: {
             type: FieldType.Number as FieldType.Number,
-            name: "fields.instance.watchdog.heartbeat",
-            defaultValue: watchdogSettings.heartbeatSeconds,
+            name: "fields.instance.watchdog.healthcheck",
+            defaultValue: watchdogSettings.healthCheckSeconds,
             min: 0,
             disabled: !hasDreamDaemonRight(
                 instanceEditContext.instancePermissionSet,
-                DreamDaemonRights.SetHeartbeatInterval
+                DreamDaemonRights.SetHealthCheckInterval
             )
         },
-        dumpOnHeartbeatRestart: {
+        dumpOnHealthCheckRestart: {
             type: FieldType.Boolean as FieldType.Boolean,
-            name: "fields.instance.watchdog.dumpOnHeartbeatRestart",
-            defaultValue: watchdogSettings.dumpOnHeartbeatRestart,
+            name: "fields.instance.watchdog.dumpOnHealthCheckRestart",
+            defaultValue: watchdogSettings.dumpOnHealthCheckRestart,
             disabled: !hasDreamDaemonRight(
                 instanceEditContext.instancePermissionSet,
                 DreamDaemonRights.CreateDump
@@ -249,6 +249,15 @@ export default function Server(): JSX.Element {
             disabled: !hasDreamDaemonRight(
                 instanceEditContext.instancePermissionSet,
                 DreamDaemonRights.SetAdditionalParameters
+            )
+        },
+        mapThreads: {
+            type: FieldType.Number as FieldType.Number,
+            name: "fields.instance.watchdog.mapthreads",
+            defaultValue: watchdogSettings.mapThreads,
+            disabled: !hasDreamDaemonRight(
+                instanceEditContext.instancePermissionSet,
+                DreamDaemonRights.SetMapThreads
             )
         }
     };
