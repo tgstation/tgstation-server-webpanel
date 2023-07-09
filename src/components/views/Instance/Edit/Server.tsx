@@ -380,7 +380,7 @@ export default function Server(): JSX.Element {
                                 onClick={stopWatchdog}
                                 disabled={
                                     (canMetadata &&
-                                        watchdogSettings.status != WatchdogStatus.Online) ||
+                                        watchdogSettings.status == WatchdogStatus.Offline) ||
                                     !canStop
                                 }>
                                 <FormattedMessage id="view.instance.server.stop" />
@@ -395,7 +395,7 @@ export default function Server(): JSX.Element {
                                 onClick={restartWatchdog}
                                 disabled={
                                     (canMetadata &&
-                                        watchdogSettings.status != WatchdogStatus.Online) ||
+                                        watchdogSettings.status == WatchdogStatus.Offline) ||
                                     !canRestart
                                 }>
                                 <FormattedMessage id="view.instance.server.restart" />
