@@ -1115,6 +1115,11 @@ class ChatBots extends React.Component<IProps, IState> {
                 type: FieldType.Boolean as FieldType.Boolean,
                 name: "fields.instance.chat.channel.updates",
                 tooltip: "fields.instance.chat.channel.updates.tip"
+            },
+            isSystemChannel: {
+                type: FieldType.Boolean as FieldType.Boolean,
+                name: "fields.instance.chat.channel.system",
+                tooltip: "fields.instance.chat.channel.system.tip"
             }
         };
 
@@ -1169,6 +1174,7 @@ class ChatBots extends React.Component<IProps, IState> {
         (fieldsCommon.isAdminChannel as InputFormField).defaultValue = channel.isAdminChannel;
         (fieldsCommon.isUpdatesChannel as InputFormField).defaultValue = channel.isUpdatesChannel;
         (fieldsCommon.isWatchdogChannel as InputFormField).defaultValue = channel.isWatchdogChannel;
+        (fieldsCommon.isSystemChannel as InputFormField).defaultValue = channel.isSystemChannel;
         (fieldsCommon.tag as InputFormField).defaultValue = channel.tag;
 
         return (

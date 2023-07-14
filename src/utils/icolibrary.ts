@@ -14,7 +14,8 @@ import {
     faFolderPlus,
     faHashtag,
     faMinus,
-    faUnlock
+    faUnlock,
+    faUpload
 } from "@fortawesome/free-solid-svg-icons";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
@@ -96,6 +97,7 @@ export default function (): void {
         faExclamationTriangle,
         faClipboard,
         faArrowLeft,
-        faAngleRight
+        faAngleRight,
+        faUpload
     );
 }
