@@ -321,11 +321,12 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         // check if there's a token stored
         const bearer = localStorage.getItem("SessionToken");
         const expiresAt = localStorage.getItem("SessionTokenExpiry");
+        const defaultToken = localStorage.getItem("SessionTokenDefault") == "true";
         if (bearer && expiresAt) {
             console.log("Found session token");
             if (Date.parse(expiresAt) >= Date.now()) {
                 const storedToken: TokenResponse = { bearer, expiresAt };
-                this.setToken(storedToken);
+                this.setToken(storedToken, defaultToken);
             } else {
                 console.log("But it was expired");
             }
@@ -403,15 +404,22 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         this.loggingIn = true;
 
         let response;
+        let defaulted;
         try {
-            if (CredentialsProvider.credentials.type == CredentialsType.Password)
+            if (CredentialsProvider.credentials.type == CredentialsType.Password) {
+                defaulted =
+                    CredentialsProvider.credentials.userName.toLowerCase() ==
+                        CredentialsProvider.default.userName.toLowerCase() &&
+                    CredentialsProvider.credentials.password ==
+                        CredentialsProvider.default.password;
                 response = await this.apiClient!.homeControllerCreateToken({
                     auth: {
                         username: CredentialsProvider.credentials.userName,
                         password: CredentialsProvider.credentials.password
                     }
                 });
-            else {
+            } else {
+                defaulted = false;
                 response = await this.apiClient!.homeControllerCreateToken({
                     headers: {
                         OAuthProvider: CredentialsProvider.credentials.provider,
@@ -434,7 +442,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 console.log("Login success");
                 const token = response.data as TokenResponse;
 
-                this.setToken(token);
+                this.setToken(token, defaulted);
                 const res = new InternalStatus<TokenResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: token
@@ -594,13 +602,15 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         }
     }
 
-    private setToken(token: TokenResponse): void {
+    private setToken(token: TokenResponse, defaulted: boolean): void {
         // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
 
         localStorage.setItem("SessionToken", token.bearer);
         localStorage.setItem("SessionTokenExpiry", token.expiresAt);
+        localStorage.setItem("SessionTokenDefault", defaulted ? "true" : "false");
 
         CredentialsProvider.token = token;
+        CredentialsProvider.defaulted = defaulted;
         this.emit("tokenAvailable", token);
 
         //LoginHooks are a way of running several async tasks at the same time whenever the user is authenticated,

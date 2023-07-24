@@ -7,7 +7,6 @@ import { FormattedMessage, IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
 import Pkg from "./../package.json";
-import { CredentialsType } from "./ApiClient/models/ICredentials";
 import InternalError, {
     ErrorCode,
     GenericErrors
@@ -69,13 +68,8 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
         // I can't be assed to remember the default admin password
         document.addEventListener("keydown", event => {
             if (event.key === "L" && event.ctrlKey && event.shiftKey) {
-                // alert("ISolemlySwearToDeleteTheDataDirectory");
                 ServerClient.logout();
-                void ServerClient.login({
-                    type: CredentialsType.Password,
-                    userName: "admin",
-                    password: "ISolemlySwearToDeleteTheDataDirectory"
-                });
+                void ServerClient.login(CredentialsProvider.default);
             }
         });
     }

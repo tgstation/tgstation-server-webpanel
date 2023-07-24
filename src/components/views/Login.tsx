@@ -73,11 +73,7 @@ class Login extends React.Component<IProps, IState> {
             return;
         }
 
-        const response = await ServerClient.login({
-            type: CredentialsType.Password,
-            userName: "admin",
-            password: "ISolemlySwearToDeleteTheDataDirectory"
-        });
+        const response = await ServerClient.login(CredentialsProvider.default);
 
         if (response.code === StatusCode.OK) {
             this.setState({
