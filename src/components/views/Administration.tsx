@@ -130,100 +130,100 @@ class Administration extends React.Component<IProps, IState> {
                     error={this.state.error}
                     onClose={() => this.setState({ error: undefined })}
                 />
-                {this.state.adminInfo ? (
-                    <div className="text-center">
-                        <h3 className=" text-secondary">
-                            <FormattedMessage id="view.admin.hostos" />
-                            <FontAwesomeIcon
-                                fixedWidth
-                                icon={this.context.serverInfo.windowsHost ? faWindows : faLinux}
-                            />
-                        </h3>
-                        <h5 className="text-secondary">
-                            <FormattedMessage id="view.admin.remote" />
-                            <a href={this.state.adminInfo.trackedRepositoryUrl}>
-                                {this.state.adminInfo.trackedRepositoryUrl}
-                            </a>
-                        </h5>
-                        <h3 className="text-secondary">
-                            <FormattedMessage id="view.admin.version.current" />
-                            <span
-                                className={
-                                    this.context.serverInfo.version <
-                                    this.state.adminInfo.latestVersion
-                                        ? "text-danger"
-                                        : ""
-                                }>
-                                {this.context.serverInfo.version}
-                            </span>
-                        </h3>
-                        <h3 className="text-secondary">
-                            <FormattedMessage id="view.admin.version.latest" />
-                            <span
-                                className={
-                                    this.context.serverInfo.version <
-                                    this.state.adminInfo.latestVersion
-                                        ? "text-danger"
-                                        : ""
-                                }>
-                                {this.state.adminInfo.latestVersion}
-                            </span>
-                        </h3>
-                        <hr />
-                        <Button
-                            className="mr-2"
-                            variant="danger"
-                            disabled={!canReboot}
-                            onClick={handleOpen}>
-                            <FormattedMessage id="view.admin.reboot.button" />
-                        </Button>
-                        <Button
-                            className="mr-2"
-                            variant="primary"
-                            disabled={!canUpdate}
-                            onClick={() => {
-                                this.props.history.push(
-                                    AppRoutes.admin_update.link ?? AppRoutes.admin_update.route
-                                );
-                            }}>
-                            <FormattedMessage id="view.admin.update.button" />
-                        </Button>
-                        <Button
-                            variant="primary"
-                            disabled={!canLogs}
-                            onClick={() => {
-                                this.props.history.push(
-                                    AppRoutes.admin_logs.link ?? AppRoutes.admin_logs.route
-                                );
-                            }}>
-                            <FormattedMessage id="view.admin.logs.button" />
-                        </Button>
-                        <Modal
-                            show={this.state.showRebootModal}
-                            onHide={handleClose}
-                            size="lg"
-                            centered>
-                            <Modal.Header closeButton>
-                                <Modal.Title>
-                                    <FormattedMessage id="view.admin.reboot.modal.title" />
-                                </Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <FormattedMessage id="view.admin.reboot.modal.body" />
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button onClick={handleClose}>
-                                    <FormattedMessage id="generic.close" />
-                                </Button>
-                                <Button variant="danger" onClick={this.restart}>
-                                    <FormattedMessage id="view.admin.reboot.button" />
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
-                    </div>
-                ) : (
-                    ""
-                )}
+                <div className="text-center">
+                    {this.state.adminInfo ? (
+                        <React.Fragment>
+                            <h3 className=" text-secondary">
+                                <FormattedMessage id="view.admin.hostos" />
+                                <FontAwesomeIcon
+                                    fixedWidth
+                                    icon={this.context.serverInfo.windowsHost ? faWindows : faLinux}
+                                />
+                            </h3>
+                            <h5 className="text-secondary">
+                                <FormattedMessage id="view.admin.remote" />
+                                <a href={this.state.adminInfo.trackedRepositoryUrl}>
+                                    {this.state.adminInfo.trackedRepositoryUrl}
+                                </a>
+                            </h5>
+                            <h3 className="text-secondary">
+                                <FormattedMessage id="view.admin.version.current" />
+                                <span
+                                    className={
+                                        this.context.serverInfo.version <
+                                        this.state.adminInfo.latestVersion
+                                            ? "text-danger"
+                                            : ""
+                                    }>
+                                    {this.context.serverInfo.version}
+                                </span>
+                            </h3>
+                            <h3 className="text-secondary">
+                                <FormattedMessage id="view.admin.version.latest" />
+                                <span
+                                    className={
+                                        this.context.serverInfo.version <
+                                        this.state.adminInfo.latestVersion
+                                            ? "text-danger"
+                                            : ""
+                                    }>
+                                    {this.state.adminInfo.latestVersion}
+                                </span>
+                            </h3>
+                        </React.Fragment>
+                    ) : null}
+                    <hr />
+                    <Button
+                        className="mr-2"
+                        variant="danger"
+                        disabled={!canReboot}
+                        onClick={handleOpen}>
+                        <FormattedMessage id="view.admin.reboot.button" />
+                    </Button>
+                    <Button
+                        className="mr-2"
+                        variant="primary"
+                        disabled={!canUpdate}
+                        onClick={() => {
+                            this.props.history.push(
+                                AppRoutes.admin_update.link ?? AppRoutes.admin_update.route
+                            );
+                        }}>
+                        <FormattedMessage id="view.admin.update.button" />
+                    </Button>
+                    <Button
+                        variant="primary"
+                        disabled={!canLogs}
+                        onClick={() => {
+                            this.props.history.push(
+                                AppRoutes.admin_logs.link ?? AppRoutes.admin_logs.route
+                            );
+                        }}>
+                        <FormattedMessage id="view.admin.logs.button" />
+                    </Button>
+                    <Modal
+                        show={this.state.showRebootModal}
+                        onHide={handleClose}
+                        size="lg"
+                        centered>
+                        <Modal.Header closeButton>
+                            <Modal.Title>
+                                <FormattedMessage id="view.admin.reboot.modal.title" />
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <FormattedMessage id="view.admin.reboot.modal.body" />
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button onClick={handleClose}>
+                                <FormattedMessage id="generic.close" />
+                            </Button>
+                            <Button variant="danger" onClick={this.restart}>
+                                <FormattedMessage id="view.admin.reboot.button" />
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </div>
             </React.Fragment>
         );
     }
