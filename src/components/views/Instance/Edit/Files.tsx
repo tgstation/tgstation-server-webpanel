@@ -215,11 +215,6 @@ class Files extends React.Component<IProps, IState> {
                     break;
                 }
             }
-
-            directory.children = directory.children
-                .sort() // alphabetize first
-                .reverse()
-                .sort((_, b) => (b.fileResponse.isDirectory ? 1 : 0));
         }
     }
 
