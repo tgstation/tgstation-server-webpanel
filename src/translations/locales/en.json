@@ -715,7 +715,7 @@
     "fields.instance.chat.name": "Chat Bot Name",
     "fields.instance.chat.name.tip": "Internal name of the chat bot",
     "fields.instance.filemode.Disallowed": "No File Management.",
-    "fields.instance.filemode.HostWrite": "Logged in users can edit any file.",
+    "fields.instance.filemode.HostWrite": "Authorized users can edit any file.",
     "fields.instance.filemode.SystemIdentityWrite": "Users using a system identity can edit files their user has access to.",
     "fields.instance.files.create": "Create Directory or Upload File",
     "fields.instance.files.create.directory": "Create directory instead of file",
