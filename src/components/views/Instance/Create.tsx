@@ -431,6 +431,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
         try {
             yml = YAML.parse(rawYml) as ITGSYml;
         } catch (e) {
+            this.addError(new InternalError(ErrorCode.BAD_YML, { void: true }));
             this.setState({
                 performingQuickSetup: false
             });
@@ -726,7 +727,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
             RouteData.selectedinstanceid = instanceId;
             this.props.history.push(AppRoutes.instanceedit.link ?? AppRoutes.instanceedit.route);
         } catch (e) {
-            this.addError(new InternalError(ErrorCode.BAD_TGS_YML, { jsError: e as Error }));
+            this.addError(new InternalError(ErrorCode.BAD_YML, { jsError: e as Error }));
             this.setState({
                 performingQuickSetup: false
             });

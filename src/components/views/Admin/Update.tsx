@@ -11,6 +11,7 @@ import { FormattedMessage } from "react-intl";
 import ReactMarkdown from "react-markdown";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { SemVer } from "semver";
+import YAML from "yaml";
 
 import AdminClient, { UpdateErrors } from "../../../ApiClient/AdminClient";
 import {
@@ -25,6 +26,7 @@ import { GeneralContext } from "../../../contexts/GeneralContext";
 import GithubClient, { TGSVersion } from "../../../utils/GithubClient";
 import { hasAdminRight, resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes } from "../../../utils/routes";
+import TGSChangelog, { Changelist, TgsComponent } from "../../../utils/tgs_changelog";
 import ErrorAlert from "../../utils/ErrorAlert";
 import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
@@ -35,6 +37,9 @@ interface IProps
     }> {}
 interface IState {
     versions: TGSVersion[];
+    changelog: TGSChangelog | null;
+    gitHubOwner: string | null;
+    gitHubRepo: string | null;
     errors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;
     //option is the numerical representation of the version
@@ -60,9 +65,12 @@ class Update extends React.Component<IProps, IState> {
         this.updateServer = this.updateServer.bind(this);
 
         this.state = {
+            changelog: null,
             versions: [],
             errors: [],
-            loading: true
+            loading: true,
+            gitHubOwner: null,
+            gitHubRepo: null
         };
     }
 
@@ -133,6 +141,13 @@ class Update extends React.Component<IProps, IState> {
                     return;
                 }
 
+                this.setState({
+                    gitHubOwner: results[2],
+                    gitHubRepo: results[3]
+                });
+
+                const loadChangelogPromise = this.loadChangelog(results[2], results[3]);
+
                 const versionInfo = await GithubClient.getVersions({
                     owner: results[2],
                     repo: results[3],
@@ -145,13 +160,42 @@ class Update extends React.Component<IProps, IState> {
                         return this.addError(versionInfo.error);
                     }
                     case StatusCode.OK: {
+                        const changelog = await loadChangelogPromise;
                         this.setState({
+                            changelog,
                             versions: versionInfo.payload
                         });
                     }
                 }
             }
         }
+    }
+
+    private async loadChangelog(owner: string, repo: string): Promise<TGSChangelog | null> {
+        const changelogYmlB64 = await GithubClient.getFile(
+            owner,
+            repo,
+            "changelog.yml",
+            "gh-pages"
+        );
+        switch (changelogYmlB64.code) {
+            case StatusCode.ERROR: {
+                this.addError(changelogYmlB64.error);
+                break;
+            }
+            case StatusCode.OK: {
+                try {
+                    const changelogYml = window.atob(changelogYmlB64.payload);
+                    return YAML.parse(changelogYml) as TGSChangelog;
+                } catch (e) {
+                    this.addError(new InternalError(ErrorCode.BAD_YML, { void: true }));
+                }
+
+                break;
+            }
+        }
+
+        return null;
     }
 
     private loadNotes(): void {
@@ -278,6 +322,162 @@ class Update extends React.Component<IProps, IState> {
         });
     }
 
+    private buildVersionDiffFromChangelog(targetVersion: string): string | null {
+        const releaseNotes = this.state.changelog;
+        if (!releaseNotes) {
+            return null;
+        }
+
+        const currentVersion = this.context.serverInfo.version;
+
+        const targetVersionSemver = new SemVer(targetVersion);
+        const currentVersionSemver = new SemVer(currentVersion);
+
+        let markdown = "";
+
+        const targetComponentVersions = releaseNotes.Components[TgsComponent.Core].find(
+            changelist => changelist.Version == targetVersion
+        )!.ComponentVersions!;
+
+        markdown += `Please refer to the [README](https://github.com/tgstation/tgstation-server#setup) for setup instructions. Full changelog can be found [here](https://raw.githubusercontent.com/tgstation/tgstation-server/gh-pages/changelog.yml).\n\n#### Component Versions\nCore: ${targetVersion}\nConfiguration: ${targetComponentVersions.Configuration}\nHTTP API: ${targetComponentVersions.HttpApi}\nDreamMaker API: ${targetComponentVersions.DreamMakerApi} (Interop: ${targetComponentVersions.InteropApi})\n[Web Control Panel](https://github.com/tgstation/tgstation-server-webpanel): ${targetComponentVersions.WebControlPanel}\nHost Watchdog: ${targetComponentVersions.HostWatchdog}\n\n`;
+
+        let lowerVersion: string;
+        let higherVersion: string;
+        if (targetVersionSemver < currentVersionSemver) {
+            markdown +=
+                "## _The version you are switching to is below the current version._\n## _The following changes will be **un**-applied!_";
+            lowerVersion = targetVersion;
+            higherVersion = currentVersion;
+        } else {
+            lowerVersion = currentVersion;
+            higherVersion = targetVersion;
+        }
+
+        const lowerVersionSemver = new SemVer(lowerVersion);
+        const higherVersionSemver = new SemVer(higherVersion);
+
+        // implemented similarly to https://github.com/tgstation/tgstation-server/blob/63815c950f18fe999c1dade7fa2773752de9f149/tools/Tgstation.Server.ReleaseNotes/Program.cs#L1392
+        const coreChangelists = releaseNotes.Components[TgsComponent.Core]
+            .filter(changelist => {
+                const changelistVersionSemver = new SemVer(changelist.Version);
+                return (
+                    changelistVersionSemver >= lowerVersionSemver &&
+                    changelistVersionSemver <= higherVersionSemver
+                );
+            })
+            .sort((changelistA, changelistB) =>
+                new SemVer(changelistA.Version).compare(changelistB.Version)
+            )
+            .reverse();
+
+        const currentReleaseChangelists: Map<TgsComponent, Changelist>[] = [];
+
+        for (let i = 0; i < coreChangelists.length - 1; ++i) {
+            const currentDic = new Map<TgsComponent, Changelist>();
+            currentReleaseChangelists.push(currentDic);
+            const nowRelease = coreChangelists[i];
+            const previousRelease = coreChangelists[i + 1];
+
+            currentDic.set(TgsComponent.Core, nowRelease);
+            Object.keys(nowRelease.ComponentVersions!).forEach(componentStr => {
+                const component = componentStr as TgsComponent;
+                const componentVersionStr = nowRelease.ComponentVersions![component];
+                const componentVersion = new SemVer(componentVersionStr);
+                if (
+                    component == TgsComponent.Core ||
+                    component == TgsComponent.NugetClient ||
+                    component == TgsComponent.NugetApi ||
+                    component == TgsComponent.NugetCommon
+                )
+                    return;
+
+                const takeNotesFrom = new SemVer(previousRelease.ComponentVersions![component]);
+                const changesEnumerator = releaseNotes.Components[component]
+                    .filter(changelist => {
+                        const changelistVersion = new SemVer(changelist.Version);
+                        return (
+                            changelistVersion > takeNotesFrom &&
+                            changelistVersion <= componentVersion
+                        );
+                    })
+                    .flatMap(x => x.Changes!)
+                    .sort((changeA, changeB) => changeA.PullRequest - changeB.PullRequest);
+                const changelist: Changelist = {
+                    Version: componentVersionStr,
+                    Changes: changesEnumerator
+                };
+
+                if (changesEnumerator.length > 0) currentDic.set(component, changelist);
+            });
+        }
+
+        currentReleaseChangelists.forEach(releaseDictionary => {
+            markdown += "\n\n";
+            const coreCl = releaseDictionary.get(TgsComponent.Core)!;
+            const coreVersion = new SemVer(coreCl.Version);
+
+            if (coreVersion.patch > 0) {
+                markdown += `## Patch ${coreVersion.patch}`;
+            } else if (coreVersion.minor > 0) {
+                markdown += `# Update ${coreVersion.minor}.0`;
+            } else {
+                markdown += `# **Major Update ${coreVersion.major}.0.0**`;
+            }
+
+            for (const component in TgsComponent) {
+                const changelist = releaseDictionary.get(component as TgsComponent);
+                if (
+                    !changelist ||
+                    (changelist.Changes?.length == 0 && component != TgsComponent.Configuration)
+                ) {
+                    continue;
+                }
+
+                markdown += "\n\n#### ";
+                if (component == TgsComponent.Configuration) {
+                    markdown += "**";
+                }
+
+                markdown += this.componentDisplayName(component);
+                if (component == TgsComponent.Configuration) {
+                    markdown += `\n- **The new configuration version is \`${changelist.Version}\` Please update your \`General:ConfigVersion\` setting appropriately.**`;
+                }
+
+                changelist.Changes?.forEach(change =>
+                    change.Descriptions.forEach(line => {
+                        markdown += `\n- ${line} ([#${change.PullRequest}](https://github.com/${this
+                            .state.gitHubOwner!}/${this.state.gitHubRepo!}/pull/${
+                            change.PullRequest
+                        })) [@${change.Author}](https://github.com/${change.Author})`;
+                    })
+                );
+            }
+        });
+
+        return markdown;
+    }
+
+    private componentDisplayName(component: string): string {
+        switch (component) {
+            case TgsComponent.HttpApi:
+                return "HTTP API";
+            case TgsComponent.InteropApi:
+                return "Interop API";
+            case TgsComponent.Configuration:
+                return "**Configuration**";
+            case TgsComponent.DreamMakerApi:
+                return "DreamMaker API";
+            case TgsComponent.HostWatchdog:
+                return "Host Watchdog (Requires reinstall to apply)";
+            case TgsComponent.Core:
+                return "Core";
+            case TgsComponent.WebControlPanel:
+                return "Web Control Panel";
+            default:
+                throw new Error("Unknown component: " + component);
+        }
+    }
+
     public render(): ReactNode {
         if (this.state.updating) {
             return <Loading text="loading.updating" />;
@@ -295,9 +495,14 @@ class Update extends React.Component<IProps, IState> {
         const canChangeVersion = hasAdminRight(permissionSet, AdministrationRights.ChangeVersion);
         const canUploadVersion = hasAdminRight(permissionSet, AdministrationRights.UploadVersion);
 
-        const selectedVersionMarkdown = this.state.selectedVersion?.body
-            .replaceAll("\r", "")
-            .replaceAll("\n", "\n\n");
+        const selectedVersionMarkdown = this.state.selectedVersion
+            ? (
+                  this.buildVersionDiffFromChangelog(this.state.selectedVersion.version) ??
+                  this.state.selectedVersion.body
+              )
+                  .replaceAll("\r", "")
+                  .replaceAll("\n", "\n\n")
+            : null;
 
         const timing = typeof this.state.secondsLeft === "number";
         return (
@@ -326,6 +531,14 @@ class Update extends React.Component<IProps, IState> {
                 {this.state.selectedVersion ? (
                     <React.Fragment>
                         <div className="text-center">
+                            <h3>
+                                <FormattedMessage id="view.admin.update.releasenotes" />
+                            </h3>
+                            <hr />
+                        </div>
+                        <ReactMarkdown>{selectedVersionMarkdown!}</ReactMarkdown>
+                        <div className="text-center">
+                            <hr />
                             <Button
                                 className="mr-3"
                                 onClick={() => this.setState({ selectedVersion: undefined })}>
@@ -333,7 +546,7 @@ class Update extends React.Component<IProps, IState> {
                             </Button>
                             <OverlayTrigger
                                 overlay={
-                                    <Tooltip id="timing-tooltip">
+                                    <Tooltip id="timing-tooltip" placement="right">
                                         <FormattedMessage id="view.admin.update.wait" />
                                     </Tooltip>
                                 }
@@ -343,12 +556,7 @@ class Update extends React.Component<IProps, IState> {
                                     {timing ? ` [${this.state.secondsLeft as number}]` : ""}
                                 </Button>
                             </OverlayTrigger>
-                            <h3>
-                                <FormattedMessage id="view.admin.update.releasenotes" />
-                            </h3>
-                            <hr />
                         </div>
-                        <ReactMarkdown>{selectedVersionMarkdown!}</ReactMarkdown>
                     </React.Fragment>
                 ) : (
                     <div className="text-center">

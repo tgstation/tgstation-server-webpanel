@@ -85,7 +85,7 @@
     "error.no_apipath": "No API path set, set an API path on the configuration page.",
     "error.compile_job_not_found": "Compile job not found.",
     "error.bad_tgs_yml_version": "Incorrect .tgs.yml version. Only version 1 is supported.",
-    "error.bad_tgs_yml": "Malformed .tgs.yml.",
+    "error.bad_yml": "Malformed .yml.",
     "error.bad_channels_json": "Malformed channels JSON.",
     "error.no_byond_version": "The target BYOND version does not exist on the server.",
     "generic.save": "Save",

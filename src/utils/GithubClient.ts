@@ -307,7 +307,8 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
     public async getFile(
         owner: string,
         repo: string,
-        path: string
+        path: string,
+        ref?: string
     ): Promise<InternalStatus<string, ErrorCode.GITHUB_FAIL>> {
         try {
             const { data } = await this.apiClient.repos.getContent({
@@ -316,7 +317,8 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                 },
                 owner,
                 repo,
-                path
+                path,
+                ref
             });
 
             // ignore directory responses
