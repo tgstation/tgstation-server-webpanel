@@ -127,7 +127,7 @@ export function Deployment(): JSX.Element {
         },
         apiValidationPort: {
             type: FieldType.Number as FieldType.Number,
-            min: 1,
+            min: 0,
             max: 65535,
             name: "fields.instance.deploy.apiport",
             tooltip: "fields.instance.deploy.apiport.desc",
