@@ -220,7 +220,11 @@ const AppRoutes = asElementTypesAppRoute({
         loose: false,
         navbarLoose: true,
 
-        isAuthorized: adminRight(AdministrationRights.ChangeVersion),
+        isAuthorized: adminRight(
+            AdministrationRights.ChangeVersion |
+                AdministrationRights.DownloadLogs |
+                AdministrationRights.UploadVersion
+        ),
 
         visibleNavbar: true,
         homeIcon: "tools",
