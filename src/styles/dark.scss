@@ -488,6 +488,14 @@ $toast-header-background-color: $gray-600;
     margin-bottom: 5px;
 }
 
+.corner-logo {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
 .behind-nav {
     z-index: 3;
 }
