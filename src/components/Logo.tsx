@@ -16,7 +16,7 @@ export default class Logo extends React.Component<IProps, IState> {
                 placement="top"
                 onToggle={showing => {
                     if (showing) {
-                        memeSelector = Math.round(Math.random() * 100) % 28;
+                        memeSelector = Math.round(Math.random() * 100) % 26;
                     }
                 }}
                 overlay={props => (
