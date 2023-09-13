@@ -13,7 +13,7 @@ export default class Logo extends React.Component<IProps, IState> {
         let memeSelector = 4;
         return (
             <OverlayTrigger
-                placement="top"
+                placement="left"
                 onToggle={showing => {
                     if (showing) {
                         memeSelector = Math.round(Math.random() * 100) % 26;
