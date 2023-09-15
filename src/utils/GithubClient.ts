@@ -34,6 +34,7 @@ export interface PullRequest {
     head: string;
     tail: string;
     testmergelabel: boolean;
+    conflictlabel: boolean;
 }
 
 type ExtractArrayType<A> = A extends Array<infer ArrayType> ? ArrayType : never;
@@ -221,6 +222,9 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                 label =>
                     label.name?.toLowerCase().includes("testmerge") ||
                     label.name?.toLowerCase().includes("test merge")
+            ),
+            conflictlabel: pr.labels.some(
+                label => label.name?.toLowerCase().includes("conflict")
             )
         };
     }
