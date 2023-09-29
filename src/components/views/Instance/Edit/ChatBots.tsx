@@ -630,15 +630,20 @@ class ChatBots extends React.Component<IProps, IState> {
                 <Button
                     variant={selected ? "secondary" : "primary"}
                     onClick={() =>
-                        this.setState({
-                            selectedChatBot:
-                                selected &&
-                                !this.state.selectedChannel &&
-                                !this.state.selectedAddNode
-                                    ? null
-                                    : chatBot,
-                            selectedChannel: null,
-                            selectedAddNode: false
+                        this.setState(prevState => {
+                            return {
+                                selectedChatBot:
+                                    selected &&
+                                    !this.state.selectedChannel &&
+                                    !this.state.selectedAddNode
+                                        ? null
+                                        : chatBot,
+                                selectedChannel: null,
+                                selectedAddNode: false,
+                                addBotProvider: selected
+                                    ? prevState.addBotProvider
+                                    : chatBot.provider
+                            };
                         })
                     }
                     className="nowrap">
