@@ -7,6 +7,7 @@ export type ConfigOption = BaseConfigOption &
 
 export interface BaseConfigOption {
     id: string;
+    site_local?: boolean;
 }
 
 export interface NumConfigOption extends BaseConfigOption {
@@ -71,6 +72,7 @@ const configOptions = asElementTypesConfig({
     apipath: {
         id: "config.apipath",
         type: "str",
+        site_local: true,
         value:
             MODE === "DEV"
                 ? DEFAULT_APIPATH

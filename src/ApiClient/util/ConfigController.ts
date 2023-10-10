@@ -1,4 +1,4 @@
-import configOptions, { ConfigOption, ConfigValue } from "./config";
+import configOptions, { BaseConfigOption, ConfigOption, ConfigValue } from "./config";
 
 export default new (class ConfigController {
     public loadconfig() {
@@ -13,6 +13,12 @@ export default new (class ConfigController {
             this.setconfig(key as keyof typeof configOptions, val);
         }
         console.log("Configuration saved", configOptions);
+    }
+
+    private getConfigKey(option: BaseConfigOption): string {
+        if (!option.site_local) return option.id;
+
+        return `${window.location.pathname}:${option.id}`;
     }
 
     private setconfig(key: keyof typeof configOptions, option: ConfigOption) {
@@ -42,7 +48,7 @@ export default new (class ConfigController {
         //if (!option.persist) return this.deleteconfig(key); //idiot proofing, alexkar proofing
 
         try {
-            localStorage.setItem(option.id, JSON.stringify(option.value));
+            localStorage.setItem(this.getConfigKey(option), JSON.stringify(option.value));
             //option.persist = true;
         } catch (e) {
             (() => {})(); //noop
@@ -51,7 +57,7 @@ export default new (class ConfigController {
 
     private getconfig(option: ConfigOption): void {
         try {
-            const data = localStorage.getItem(option.id);
+            const data = localStorage.getItem(this.getConfigKey(option));
             if (data !== undefined && data !== null) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 const json = JSON.parse(data);
@@ -68,7 +74,7 @@ export default new (class ConfigController {
     private deleteconfig(key: keyof typeof configOptions): void {
         try {
             const option = configOptions[key];
-            localStorage.removeItem(option.id);
+            localStorage.removeItem(this.getConfigKey(option));
             //option.persist = false;
         } catch (e) {
             (() => {})(); //noop
