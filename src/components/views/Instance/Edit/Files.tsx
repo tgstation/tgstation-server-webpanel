@@ -20,6 +20,7 @@ import {
 } from "../../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
+import TransferClient from "../../../../ApiClient/TransferClient";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasFilesRight } from "../../../../utils/misc";
 import ErrorAlert from "../../../utils/ErrorAlert";
@@ -317,23 +318,34 @@ class Files extends React.Component<IProps, IState> {
         let errorEncountered = false;
         const downloadSingleFile = async (
             file: ConfigurationFileResponse
-        ): Promise<File | null> => {
+        ): Promise<() => Promise<File | null>> => {
             const fileResponse = await ConfigurationFileClient.getConfigFile(
                 this.context.instance.id,
                 file.path,
-                true
+                false
             );
 
             const pathInZip = file.path.substring(directory.fileResponse.path.length);
             if (fileResponse.code === StatusCode.OK) {
-                const download = fileResponse.payload;
-                const file = new File([download.content!], pathInZip);
-                return file;
+                const phase2 = async (): Promise<File | null> => {
+                    const contents = await TransferClient.Download(fileResponse.payload.fileTicket);
+
+                    if (contents.code != StatusCode.OK) {
+                        this.addError(contents.error);
+                        return null;
+                    }
+
+                    const download = contents.payload;
+                    const file = new File([download], pathInZip);
+                    return file;
+                };
+
+                return phase2;
             }
 
             this.addError(fileResponse.error);
             errorEncountered = true;
-            return null;
+            return () => Promise.resolve(null);
         };
 
         let directoriesToEnumerate: ConfigurationFileResponse[] = [directory.fileResponse];
@@ -342,9 +354,13 @@ class Files extends React.Component<IProps, IState> {
 
         while (directoriesToEnumerate.length > 0) {
             const tasks: Promise<ConfigurationFileResponse[] | null>[] = [];
-            directoriesToEnumerate.forEach(directory => tasks.push(enumerateDirectory(directory)));
+            for (const directory of directoriesToEnumerate) {
+                const task = enumerateDirectory(directory);
+                await task;
+                tasks.push(task);
+            }
+
             directoriesToEnumerate = [];
-            await Promise.all(tasks);
 
             if (errorEncountered) {
                 this.setState({
@@ -362,13 +378,14 @@ class Files extends React.Component<IProps, IState> {
                     return;
                 }
 
-                dirInfo.forEach(directoryEntry => {
+                for (const directoryEntry of dirInfo) {
                     if (directoryEntry.isDirectory) {
                         directoriesToEnumerate.push(directoryEntry);
                     } else {
-                        fileDownloads.push(downloadSingleFile(directoryEntry));
+                        const innerPromiseFunc = await downloadSingleFile(directoryEntry);
+                        fileDownloads.push(innerPromiseFunc());
                     }
-                });
+                }
             }
         }
 
