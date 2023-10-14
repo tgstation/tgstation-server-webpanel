@@ -283,7 +283,7 @@ class App extends React.Component<IProps, IState> {
         ServerClient.on("purgeCache", this.updateContextUser);
 
         await this.loadTranslation();
-        ServerClient.initApi();
+        await ServerClient.initApi();
         await this.updateContextServer();
         if (CredentialsProvider.isTokenValid()) {
             await this.updateContextUser();

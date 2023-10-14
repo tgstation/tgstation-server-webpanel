@@ -1,4 +1,4 @@
-import { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 
 import { API_VERSION, VERSION } from "../definitions/constants";
 import { ApiClient } from "./_base";
@@ -12,6 +12,7 @@ import {
 import { CredentialsType, ICredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
+import { ServerClientRequestConfig } from "./ServerClientRequestConfig";
 import configOptions from "./util/config";
 import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
@@ -54,7 +55,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     public apiClient?: Api<unknown>;
 
     public apiRequestInterceptor = {
-        onFulfilled: async (value: AxiosRequestConfig) => {
+        onFulfilled: async (value: ServerClientRequestConfig) => {
             //Meta value that means theres no value, used in the github deployed version
             if (configOptions.apipath.value === "https://example.org:5000") {
                 const errorobj = new InternalError(ErrorCode.NO_APIPATH, {
@@ -66,7 +67,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             //This applies the authorization header, it will wait however long it needs until
             // theres a token available. It obviously won't wait for a token before sending the request
             // if its currently sending a request to the login endpoint...
-            if (!(value.url === "/" || value.url === "")) {
+            if (value.overrideTokenDetection || !(value.url === "/" || value.url === "")) {
                 const tok = await this.wait4Token();
                 (value.headers as { [key: string]: string })["Authorization"] = `Bearer ${
                     tok.bearer || ""
@@ -287,7 +288,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     public autoLogin = true;
     private loggingIn = false;
 
-    public initApi() {
+    public async initApi(): Promise<void> {
         console.log("Initializing API client");
         console.time("APIInit");
 
@@ -326,7 +327,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             console.log("Found session token");
             if (Date.parse(expiresAt) >= Date.now()) {
                 const storedToken: TokenResponse = { bearer, expiresAt };
-                this.setToken(storedToken, defaultToken);
+                await this.setToken(storedToken, defaultToken, true);
             } else {
                 console.log("But it was expired");
             }
@@ -442,7 +443,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 console.log("Login success");
                 const token = response.data as TokenResponse;
 
-                this.setToken(token, defaulted);
+                await this.setToken(token, defaulted, false);
                 const res = new InternalStatus<TokenResponse, ErrorCode.OK>({
                     code: StatusCode.OK,
                     payload: token
@@ -602,15 +603,45 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         }
     }
 
-    private setToken(token: TokenResponse, defaulted: boolean): void {
+    private async setToken(
+        token: TokenResponse,
+        defaulted: boolean,
+        validate: boolean
+    ): Promise<void> {
         // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
+
+        const previousToken = CredentialsProvider.token;
+        const previousDefaulted = CredentialsProvider.defaulted;
+
+        CredentialsProvider.token = token;
+        CredentialsProvider.defaulted = defaulted;
+
+        if (validate) {
+            let failed;
+            try {
+                const response = await this.apiClient!.homeControllerHome({
+                    overrideTokenDetection: true
+                });
+
+                failed = response.status != 200;
+            } catch (stat) {
+                failed = true;
+            }
+
+            if (failed) {
+                CredentialsProvider.token = previousToken;
+                CredentialsProvider.defaulted = previousDefaulted;
+                console.log("Stored token failed to authenticate");
+                return;
+            }
+
+            console.log("Stored token authenticated");
+        }
 
         localStorage.setItem("SessionToken", token.bearer);
         localStorage.setItem("SessionTokenExpiry", token.expiresAt);
         localStorage.setItem("SessionTokenDefault", defaulted ? "true" : "false");
 
-        CredentialsProvider.token = token;
-        CredentialsProvider.defaulted = defaulted;
         this.emit("tokenAvailable", token);
 
         //LoginHooks are a way of running several async tasks at the same time whenever the user is authenticated,
