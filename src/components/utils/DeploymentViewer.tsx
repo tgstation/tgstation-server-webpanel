@@ -11,6 +11,7 @@ import { lt as SemverLessThan } from "semver";
 
 import { CompileJobResponse, DreamDaemonSecurity } from "../../ApiClient/generatedcode/generated";
 import { InstanceEditContext } from "../../contexts/InstanceEditContext";
+import Engine from "../views/Instance/Edit/Engine";
 import { DebugJsonViewer } from "./JsonViewer";
 import Loading from "./Loading";
 import PageHelper from "./PageHelper";
@@ -214,12 +215,7 @@ class DeploymentViewer extends React.Component<IProps, IState> {
     }
 
     private renderCompileJob(compileJob: CompileJobResponse) {
-        let correctedByondVersion = compileJob.byondVersion;
-        if (correctedByondVersion.endsWith(".0"))
-            correctedByondVersion = correctedByondVersion.substring(
-                0,
-                correctedByondVersion.length - 2
-            );
+        const engineVersion = Engine.friendlyVersion(compileJob.engineVersion);
 
         // we use en-GB so we get the fucking SANE DD/MM/YYYY
         const dateFormatter: Intl.DateTimeFormatOptions = {
@@ -324,7 +320,7 @@ class DeploymentViewer extends React.Component<IProps, IState> {
                         ) : null}
                     </td>
                     <td>{compileJob.id}</td>
-                    <td>{correctedByondVersion}</td>
+                    <td>{engineVersion}</td>
                     <td>
                         {new Date(compileJob.job.startedAt).toLocaleString("en-CA", dateFormatter)}
                     </td>

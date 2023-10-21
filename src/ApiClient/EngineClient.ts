@@ -1,10 +1,11 @@
 import { ApiClient } from "./_base";
 import {
-    ByondInstallResponse,
-    ByondResponse,
+    EngineInstallResponse,
+    EngineResponse,
+    EngineVersion,
     ErrorMessageResponse,
     JobResponse,
-    PaginatedByondResponse
+    PaginatedEngineResponse
 } from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
@@ -12,17 +13,17 @@ import ServerClient from "./ServerClient";
 import TransferClient, { UploadErrors } from "./TransferClient";
 import configOptions from "./util/config";
 
-export type DeleteErrors = GenericErrors | ErrorCode.BYOND_VERSION_NOT_FOUND;
+export type DeleteErrors = GenericErrors | ErrorCode.ENGINE_VERSION_NOT_FOUND;
 
-export default new (class ByondClient extends ApiClient {
+export default new (class EngineClient extends ApiClient {
     public async getActiveVersion(
         instance: number
-    ): Promise<InternalStatus<ByondResponse, GenericErrors>> {
+    ): Promise<InternalStatus<EngineResponse, GenericErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!.byond.byondControllerRead({
+            response = await ServerClient.apiClient!.engine.engineControllerRead({
                 headers: {
                     Instance: instance.toString()
                 }
@@ -38,7 +39,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as ByondResponse
+                    payload: response.data as EngineResponse
                 });
             }
             default: {
@@ -57,12 +58,12 @@ export default new (class ByondClient extends ApiClient {
     public async listAllVersions(
         instance: number,
         { page = 1, pageSize = configOptions.itemsperpage.value as number }
-    ): Promise<InternalStatus<PaginatedByondResponse, GenericErrors>> {
+    ): Promise<InternalStatus<PaginatedEngineResponse, GenericErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!.byond.byondControllerList(
+            response = await ServerClient.apiClient!.engine.engineControllerList(
                 {
                     page: page,
                     pageSize: pageSize
@@ -84,7 +85,7 @@ export default new (class ByondClient extends ApiClient {
             case 200: {
                 return new InternalStatus({
                     code: StatusCode.OK,
-                    payload: response.data as PaginatedByondResponse
+                    payload: response.data as PaginatedEngineResponse
                 });
             }
             default: {
@@ -102,15 +103,15 @@ export default new (class ByondClient extends ApiClient {
 
     public async deleteVersion(
         instance: number,
-        version: string
+        engineVersion: EngineVersion
     ): Promise<InternalStatus<JobResponse, DeleteErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!.byond.byondControllerDelete(
+            response = await ServerClient.apiClient!.engine.engineControllerDelete(
                 {
-                    version
+                    engineVersion
                 },
                 {
                     headers: {
@@ -144,7 +145,7 @@ export default new (class ByondClient extends ApiClient {
                 return new InternalStatus({
                     code: StatusCode.ERROR,
                     error: new InternalError(
-                        ErrorCode.BYOND_VERSION_NOT_FOUND,
+                        ErrorCode.ENGINE_VERSION_NOT_FOUND,
                         {
                             errorMessage: response.data as ErrorMessageResponse
                         },
@@ -167,16 +168,16 @@ export default new (class ByondClient extends ApiClient {
 
     public async switchActive(
         instance: number,
-        version: string,
+        engineVersion: EngineVersion,
         file?: ArrayBuffer
-    ): Promise<InternalStatus<ByondInstallResponse, UploadErrors>> {
+    ): Promise<InternalStatus<EngineInstallResponse, UploadErrors>> {
         await ServerClient.wait4Init();
 
         let response;
         try {
-            response = await ServerClient.apiClient!.byond.byondControllerUpdate(
+            response = await ServerClient.apiClient!.engine.engineControllerUpdate(
                 {
-                    version: version,
+                    engineVersion,
                     uploadCustomZip: !!file
                 },
                 {
@@ -195,7 +196,7 @@ export default new (class ByondClient extends ApiClient {
         switch (response.status) {
             case 200:
             case 202: {
-                const responseData = response.data as ByondInstallResponse;
+                const responseData = response.data as EngineInstallResponse;
                 if (responseData.fileTicket) {
                     if (file) {
                         const response2 = await TransferClient.Upload(

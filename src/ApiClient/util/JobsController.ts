@@ -4,11 +4,11 @@ import { TypedEmitter } from "tiny-typed-emitter";
 import { resolvePermissionSet } from "../../utils/misc";
 import {
     AdministrationRights,
-    ByondRights,
     ChatBotRights,
     ConfigurationRights,
     DreamDaemonRights,
     DreamMakerRights,
+    EngineRights,
     ErrorCode as TGSErrorCode,
     InstanceManagerRights,
     InstancePermissionSetRights,
@@ -415,13 +415,13 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     return false;
                 }
             }
-            case RightsType.Byond: {
+            case RightsType.Engine: {
                 const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     job.instanceid
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
-                    const required = job.cancelRight as ByondRights;
-                    return !!(InstancePermissionSet.payload.byondRights & required);
+                    const required = job.cancelRight as EngineRights;
+                    return !!(InstancePermissionSet.payload.engineRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;
