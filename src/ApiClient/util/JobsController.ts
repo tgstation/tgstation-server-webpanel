@@ -1,4 +1,5 @@
-import { satisfies as SemverSatisfies } from "semver";
+import * as signalR from "@microsoft/signalr";
+import { gte as SemVerGte, satisfies as SemverSatisfies } from "semver";
 import { TypedEmitter } from "tiny-typed-emitter";
 
 import { resolvePermissionSet } from "../../utils/misc";
@@ -34,9 +35,13 @@ interface IEvents {
 export default new (class JobsController extends TypedEmitter<IEvents> {
     private fastmodecount = 0;
     public set fastmode(cycles: number) {
+        if (this.connection) {
+            return;
+        }
+
         console.log(`JobsController going in fastmode for ${cycles} cycles`);
         this.fastmodecount = cycles;
-        this.restartLoop();
+        void this.restartLoop();
     }
 
     private currentLoop: Date = new Date(0);
@@ -45,16 +50,28 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     private enableJobProgressWorkaround?: boolean;
 
     public errors: InternalError[] = [];
+    public nextRetry: Date | null;
     public jobs = new Map<number, TGSJobResponse>();
     public jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
     private jobCallback = new Map<number, Set<(job: TGSJobResponse) => unknown>>();
     private lastSeenJob = -1;
 
+    private connection: signalR.HubConnection | null;
+
     public reset(clearJobs = true) {
         if (clearJobs) {
             this.jobs = new Map<number, TGSJobResponse>();
             this.jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
+
+            if (this.connection) {
+                void this.restartLoop();
+            }
         }
+
+        if (this.connection) {
+            return;
+        }
+
         this.reloadAccessibleInstances()
             .then(this.restartLoop)
             .catch(e => {
@@ -65,6 +82,8 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     public constructor() {
         super();
 
+        this.connection = null;
+        this.nextRetry = null;
         this.loop = this.loop.bind(this);
         this.reset = this.reset.bind(this);
         this.restartLoop = this.restartLoop.bind(this);
@@ -142,17 +161,108 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
     }
 
-    public restartLoop() {
-        //we use an actual date object here because it could help prevent really weird timing
-        // issues as two different date objects cannot be equal
-        // despite the date being
-        const initDate = new Date(Date.now());
-        this.currentLoop = initDate;
-        window.setTimeout(() => {
-            this.loop(initDate).catch(e =>
-                this.errors.push(new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) }))
-            );
-        }, 0);
+    public async restartLoop(): Promise<void> {
+        const serverInfo = await ServerClient.getServerInfo();
+        let jobHubSupported = false;
+        if (serverInfo.code === StatusCode.OK) {
+            jobHubSupported = SemVerGte(serverInfo.payload.apiVersion, "9.13.0");
+        }
+
+        if (!jobHubSupported) {
+            //we use an actual date object here because it could help prevent really weird timing
+            // issues as two different date objects cannot be equal
+            // despite the date being
+            const initDate = new Date(Date.now());
+            this.currentLoop = initDate;
+            window.setTimeout(() => {
+                this.loop(initDate).catch(e =>
+                    this.errors.push(new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) }))
+                );
+            }, 0);
+
+            return;
+        }
+
+        if (this.connection) {
+            await this.connection.stop();
+        }
+
+        this.nextRetry = null;
+
+        let apiPath = configOptions.apipath.value as string;
+        if (!apiPath.endsWith("/")) {
+            apiPath = apiPath + "/";
+        }
+
+        this.connection = new signalR.HubConnectionBuilder()
+            .withUrl(`${apiPath}hubs/jobs`, {
+                accessTokenFactory: async () => {
+                    const token = await ServerClient.wait4Token();
+                    return token.bearer;
+                },
+                transport: signalR.HttpTransportType.ServerSentEvents,
+                headers: ServerClient.defaultHeaders
+            })
+            .withAutomaticReconnect({
+                nextRetryDelayInMilliseconds: (retryContext: signalR.RetryContext) => {
+                    const nextRetryMs = Math.min(2 ** retryContext.previousRetryCount, 30) * 1000;
+                    const retryDate = new Date();
+                    retryDate.setSeconds(retryDate.getMilliseconds() + nextRetryMs);
+                    this.nextRetry = retryDate;
+                    this.emit("jobsLoaded");
+                    return nextRetryMs;
+                }
+            })
+            .build();
+
+        this.connection.on("ReceiveJobUpdate", (job: JobResponse) => {
+            this.registerJob(job, job.instanceId);
+            this.emit("jobsLoaded");
+        });
+
+        this.connection.onclose(error => {
+            this.errors = [];
+            if (error) {
+                this.errors.push(
+                    new InternalError(ErrorCode.BAD_HUB_CONNECTION, { jsError: error })
+                );
+            } else {
+                this.errors.push(new InternalError(ErrorCode.BAD_HUB_CONNECTION, { void: true }));
+            }
+            this.emit("jobsLoaded");
+        });
+
+        this.connection.onreconnected(() => {
+            this.nextRetry = null;
+
+            // at this point we need to manually load all the jobs we have registered in case they've completed in the hub and are no longer receiving updates
+            const forcedRefresh = async () => {
+                await this.reloadAccessibleInstances(false);
+                await this.loop((this.currentLoop = new Date()));
+            };
+
+            void forcedRefresh();
+        });
+
+        this.connection.onreconnecting(() => {
+            this.errors = [];
+            this.errors.push(new InternalError(ErrorCode.BAD_HUB_CONNECTION, { void: true }));
+            this.emit("jobsLoaded");
+        });
+
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        this.connection.start().catch(error => {
+            this.errors = [];
+            if (error instanceof Error) {
+                this.errors.push(
+                    new InternalError(ErrorCode.BAD_HUB_CONNECTION, { jsError: error })
+                );
+            } else {
+                this.errors.push(new InternalError(ErrorCode.BAD_HUB_CONNECTION, { void: true }));
+            }
+            this.emit("jobsLoaded");
+            this.connection = null;
+        });
     }
 
     private _registerJob(job: TGSJobResponse, instanceid?: number): void;
@@ -160,6 +270,15 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     private _registerJob(job: JobResponse, instanceid: number): void;
     private _registerJob(_job: JobResponse | TGSJobResponse, instanceid?: number) {
         const job = _job as TGSJobResponse;
+        if (this.jobs.has(job.id) && this.jobs.get(job.id)!.stoppedAt) {
+            console.warn(
+                `Receieved job update for ${job.id} after it completed! Incoming job was${
+                    job.stoppedAt ? "" : " not"
+                } completed.`
+            );
+            return;
+        }
+
         if (instanceid) job.instanceid = instanceid;
         const instanceSet = this.jobsByInstance.get(job.instanceid) ?? new Map();
         this.jobsByInstance.set(job.instanceid, instanceSet);
@@ -172,7 +291,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     public registerJob(_job: JobResponse | TGSJobResponse, instanceid?: number) {
         // @ts-expect-error The signature is the same
         this._registerJob(_job, instanceid);
-        this.restartLoop();
+        if (!this.connection) {
+            void this.restartLoop();
+        }
     }
 
     private async loop(loopid: Date) {

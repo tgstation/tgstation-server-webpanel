@@ -1,7 +1,7 @@
 {
     "name": "tgstation-server-control-panel",
     "version": "4.25.6",
-    "tgs_api_version": "9.12.0",
+    "tgs_api_version": "9.13.0",
     "private": true,
     "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
     "repository": "github:tgstation/tgstation-server-control-panel",
@@ -30,6 +30,7 @@
         "@fortawesome/react-fontawesome": "^0.1.16",
         "@loadable/component": "^5.14.1",
         "@mapbox/react-click-to-select": "^2.2.1",
+        "@microsoft/signalr": "^7.0.12",
         "@octokit/plugin-paginate-rest": "^2.17.0",
         "@octokit/plugin-retry": "^3.0.9",
         "@octokit/plugin-throttling": "^3.4.1",

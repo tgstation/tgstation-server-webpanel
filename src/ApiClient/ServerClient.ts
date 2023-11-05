@@ -135,7 +135,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 // user and kick them to the login page. Snowflake behaviour: Acts as a failed login for the login endpoint
                 case 401: {
                     const request = error.config;
-                    if ((request.url === "/" || request.url === "") && request.method === "post") {
+                    if (request.url === "/" || request.url === "") {
                         return Promise.resolve(error.response);
                     }
 
@@ -288,6 +288,14 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     public autoLogin = true;
     private loggingIn = false;
 
+    public get defaultHeaders() {
+        return {
+            Accept: "application/json",
+            Api: `Tgstation.Server.Api/` + API_VERSION,
+            "Webpanel-Version": VERSION
+        };
+    }
+
     public async initApi(): Promise<void> {
         console.log("Initializing API client");
         console.time("APIInit");
@@ -296,11 +304,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             //Yes this is only initialized once even if the configOption changes, this doesn't
             baseURL: configOptions.apipath.value as string,
             withCredentials: false,
-            headers: {
-                Accept: "application/json",
-                Api: `Tgstation.Server.Api/` + API_VERSION,
-                "Webpanel-Version": VERSION
-            },
+            headers: this.defaultHeaders,
             //Global errors are handled via the catch clause and endpoint specific response codes are handled normally
             validateStatus: status => {
                 return !ServerClient.globalHandledCodes.includes(status);

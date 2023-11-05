@@ -86,7 +86,9 @@ export enum ErrorCode {
     BAD_YML = "error.bad_yml",
     BAD_TGS_YML_VERSION = "error.bad_tgs_yml_version",
 
-    BAD_CHANNELS_JSON = "error.bad_channels_json"
+    BAD_CHANNELS_JSON = "error.bad_channels_json",
+
+    BAD_HUB_CONNECTION = "error.bad_hub_connection"
 }
 
 type errorMessage = {
