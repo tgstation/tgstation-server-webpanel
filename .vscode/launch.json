@@ -14,12 +14,8 @@
             "webRoot": "${workspaceFolder}",
             "pathMappings": [
                 {
-                    "url": "webpack://tgstation-server-control-panel/src/components/views/Admin",
-                    "path": "${workspaceFolder}/src/components/views/Admin"
-                },
-                {
-                    "url": "webpack://tgstation-server-control-panel/src/components/views/Instance",
-                    "path": "${workspaceFolder}/src/components/views/Instance"
+                    "url": "webpack://tgstation-server-control-panel",
+                    "path": "${workspaceFolder}"
                 }
             ]
         },
