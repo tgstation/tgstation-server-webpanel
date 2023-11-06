@@ -203,25 +203,31 @@ export default class JobsList extends React.Component<IProps, IState> {
                         />
                     );
                 })}
-                {this.state.errors.map((error, index) => {
-                    return (
-                        <div key={index} style={{ maxWidth: this.props.widget ? 350 : "unset" }}>
-                            <ErrorAlert error={error} />
-                        </div>
-                    );
-                })}
-                {this.state.nextRetrySeconds !== null ? (
-                    <Card>
-                        {this.state.nextRetrySeconds == 0 ? (
-                            <FormattedMessage id="view.instance.jobs.reconnect_now"></FormattedMessage>
-                        ) : (
-                            <FormattedMessage
-                                id="view.instance.jobs.reconnect_in"
-                                values={{
-                                    seconds: this.state.nextRetrySeconds
-                                }}></FormattedMessage>
-                        )}
-                    </Card>
+                {this.state.errors.length > 0 ? (
+                    <React.Fragment>
+                        {this.state.errors.map((error, index) => {
+                            return (
+                                <div
+                                    key={index}
+                                    style={{ maxWidth: this.props.widget ? 350 : "unset" }}>
+                                    <ErrorAlert error={error} />
+                                </div>
+                            );
+                        })}
+                        <Card>
+                            {this.state.nextRetrySeconds === 0 ? (
+                                <FormattedMessage id="view.instance.jobs.reconnect_now"></FormattedMessage>
+                            ) : this.state.nextRetrySeconds != null ? (
+                                <FormattedMessage
+                                    id="view.instance.jobs.reconnect_in"
+                                    values={{
+                                        seconds: this.state.nextRetrySeconds
+                                    }}></FormattedMessage>
+                            ) : (
+                                <FormattedMessage id="view.instance.jobs.reconnected_auth"></FormattedMessage>
+                            )}
+                        </Card>
+                    </React.Fragment>
                 ) : null}
                 {Array.from(this.state.jobs)
                     .sort((a, b) => a[0] - b[0])

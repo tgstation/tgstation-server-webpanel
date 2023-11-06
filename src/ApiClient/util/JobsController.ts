@@ -194,7 +194,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             apiPath = apiPath + "/";
         }
 
-        this.connection = new signalR.HubConnectionBuilder()
+        const localConnection = (this.connection = new signalR.HubConnectionBuilder()
             .withUrl(`${apiPath}hubs/jobs`, {
                 accessTokenFactory: async () => {
                     const token = await ServerClient.wait4Token();
@@ -205,46 +205,77 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             })
             .withAutomaticReconnect({
                 nextRetryDelayInMilliseconds: (retryContext: signalR.RetryContext) => {
+                    if (retryContext.previousRetryCount == 0) {
+                        return 0;
+                    }
+
                     const nextRetryMs = Math.min(2 ** retryContext.previousRetryCount, 30) * 1000;
                     const retryDate = new Date();
-                    retryDate.setSeconds(retryDate.getMilliseconds() + nextRetryMs);
+                    retryDate.setMilliseconds(retryDate.getMilliseconds() + nextRetryMs);
                     this.nextRetry = retryDate;
                     this.emit("jobsLoaded");
                     return nextRetryMs;
                 }
             })
-            .build();
+            .build());
 
         this.connection.on("ReceiveJobUpdate", (job: JobResponse) => {
             this.registerJob(job, job.instanceId);
             this.emit("jobsLoaded");
         });
 
-        this.connection.onclose(error => {
-            this.errors = [];
-            if (error) {
-                this.errors.push(
-                    new InternalError(ErrorCode.BAD_HUB_CONNECTION, { jsError: error })
-                );
-            } else {
-                this.errors.push(new InternalError(ErrorCode.BAD_HUB_CONNECTION, { void: true }));
-            }
-            this.emit("jobsLoaded");
-        });
-
+        let justReconnected = true;
+        let reconnectionTimeout: NodeJS.Timeout | null = null;
         this.connection.onreconnected(() => {
             this.nextRetry = null;
+            justReconnected = true;
+            this.emit("jobsLoaded");
+            console.log("Jobs hub connection re-established, running refresh...");
 
             // at this point we need to manually load all the jobs we have registered in case they've completed in the hub and are no longer receiving updates
             const forcedRefresh = async () => {
+                clearTimeout(reconnectionTimeout!);
+                reconnectionTimeout = null;
+                if (localConnection.state !== signalR.HubConnectionState.Connected) {
+                    return;
+                }
+
+                justReconnected = false;
+
+                this.errors = [];
+                this.emit("jobsLoaded");
                 await this.reloadAccessibleInstances(false);
                 await this.loop((this.currentLoop = new Date()));
             };
 
-            void forcedRefresh();
+            if (reconnectionTimeout) {
+                clearTimeout(reconnectionTimeout);
+            }
+
+            reconnectionTimeout = setTimeout(() => void forcedRefresh(), 3000);
         });
 
         this.connection.onreconnecting(() => {
+            if (justReconnected) {
+                if (reconnectionTimeout) {
+                    clearTimeout(reconnectionTimeout);
+                    reconnectionTimeout = null;
+                }
+
+                const relog = async () => {
+                    // we reconnected and then got disconnected? That's an auth issue
+                    const result = await ServerClient.login();
+                    if (result.code != StatusCode.OK) {
+                        ServerClient.logout();
+                    } else {
+                        justReconnected = false;
+                    }
+                };
+
+                void relog();
+                return;
+            }
+
             this.errors = [];
             this.errors.push(new InternalError(ErrorCode.BAD_HUB_CONNECTION, { void: true }));
             this.emit("jobsLoaded");
@@ -279,9 +310,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             return;
         }
 
-        if (instanceid) job.instanceid = instanceid;
-        const instanceSet = this.jobsByInstance.get(job.instanceid) ?? new Map();
-        this.jobsByInstance.set(job.instanceid, instanceSet);
+        if (instanceid) job.instanceId = instanceid;
+        const instanceSet = this.jobsByInstance.get(job.instanceId) ?? new Map();
+        this.jobsByInstance.set(job.instanceId, instanceSet);
         instanceSet.set(job.id, job);
         this.jobs.set(job.id, job);
     }
@@ -289,7 +320,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     public registerJob(job: TGSJobResponse, instanceid?: number): void;
     public registerJob(job: JobResponse, instanceid: number): void;
     public registerJob(_job: JobResponse | TGSJobResponse, instanceid?: number) {
-        // @ts-expect-error The signature is the same
         this._registerJob(_job, instanceid);
         if (!this.connection) {
             void this.restartLoop();
@@ -323,7 +353,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 const remoteActive = jobs.map(job => job.id);
                 const localActive = Array.from(this.jobs.values())
                     .filter(job => !job.stoppedAt)
-                    .filter(job => job.instanceid === instanceid)
+                    .filter(job => job.instanceId === instanceid)
                     .map(job => job.id);
                 const manualIds = localActive.filter(jobId => !remoteActive.includes(jobId));
 
@@ -428,10 +458,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 this.enableJobProgressWorkaround &&
                 job.progress === undefined &&
                 !job.stoppedAt &&
-                this.accessibleInstances.has(job.instanceid)
+                this.accessibleInstances.has(job.instanceId)
             ) {
                 work.push(
-                    JobsClient.getJob(job.instanceid, job.id).then(progressedjob => {
+                    JobsClient.getJob(job.instanceId, job.id).then(progressedjob => {
                         if (loopid !== this.currentLoop) return;
                         if (progressedjob.code === StatusCode.OK) {
                             job.progress = progressedjob.payload.progress;
@@ -442,9 +472,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                                     TGSErrorCode.InstanceOffline
                             ) {
                                 console.log(
-                                    `[JobsController] Clearing instance ${job.instanceid} as it is now offline`
+                                    `[JobsController] Clearing instance ${job.instanceId} as it is now offline`
                                 );
-                                this.accessibleInstances.delete(job.instanceid);
+                                this.accessibleInstances.delete(job.instanceId);
                                 //Probably a good idea to reload the list at this point
                                 this.reloadAccessibleInstances().catch(e => {
                                     this.errors.push(
@@ -538,7 +568,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             }
             case RightsType.Byond: {
                 const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceid
+                    job.instanceId
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ByondRights;
@@ -550,7 +580,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             }
             case RightsType.ChatBots: {
                 const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceid
+                    job.instanceId
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ChatBotRights;
@@ -562,7 +592,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             }
             case RightsType.Configuration: {
                 const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceid
+                    job.instanceId
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ConfigurationRights;
@@ -574,7 +604,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             }
             case RightsType.DreamDaemon: {
                 const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceid
+                    job.instanceId
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamDaemonRights;
@@ -586,7 +616,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             }
             case RightsType.DreamMaker: {
                 const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceid
+                    job.instanceId
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamMakerRights;
@@ -598,7 +628,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             }
             case RightsType.InstancePermissionSet: {
                 const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceid
+                    job.instanceId
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as InstancePermissionSetRights;
@@ -610,7 +640,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             }
             case RightsType.Repository: {
                 const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceid
+                    job.instanceId
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as RepositoryRights;
@@ -632,7 +662,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         //no we cant cancel jobs we arent aware of yet
         if (!job) return false;
 
-        const deleteInfo = await JobsClient.deleteJob(job.instanceid, jobid);
+        const deleteInfo = await JobsClient.deleteJob(job.instanceId, jobid);
         if (deleteInfo.code === StatusCode.OK) {
             return true;
         } else {
@@ -647,7 +677,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         //no we cant cancel jobs we arent aware of yet
         if (!job) return false;
 
-        this.jobsByInstance.get(job.instanceid)?.delete(jobid);
+        this.jobsByInstance.get(job.instanceId)?.delete(jobid);
         this.jobs.delete(jobid);
         if (!noEmit) {
             this.emit("jobsLoaded");

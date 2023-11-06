@@ -266,6 +266,7 @@
     "view.instance.jobs.clearfinished": "Clear finished jobs",
     "view.instance.jobs.reconnect_in": "Attempting reconnect in {seconds}s...",
     "view.instance.jobs.reconnect_now": "Attempting reconnection...",
+    "view.instance.jobs.reconnected_auth": "Reconnected, authenticating...",
     "view.instance.moving": "[MOVING INSTANCE...]",
     "view.instance.config.instancesettings": "Instance Settings",
     "view.instance.config.instanceusers": "Instance Users",

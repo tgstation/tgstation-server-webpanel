@@ -57,7 +57,7 @@ export default function JobHistory(): JSX.Element {
     }
 
     async function onCancel(job: TGSJobResponse) {
-        const status = await JobsClient.deleteJob(job.instanceid, job.id);
+        const status = await JobsClient.deleteJob(job.instanceId, job.id);
 
         if (status.code === StatusCode.OK) {
             JobsController.fastmode = 5;
