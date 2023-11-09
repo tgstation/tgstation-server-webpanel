@@ -12,7 +12,19 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - uses: actions/checkout@v2
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Check if version is tagged
+              id: get-tag
+              run: |
+                set +ea
+                git describe --exact-match HEAD
+                if [ $? -eq 0 ]; then
+                  echo "deploy_tag=$(git describe --exact-match HEAD)" >> $GITHUB_OUTPUT
+                else
+                  echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
+                fi
 
             - name: Restore Yarn cache
               uses: actions/cache@v2
@@ -32,6 +44,11 @@ jobs:
               run: yarn install --immutable
 
             - name: Compile
+              if: steps.get-tag.outputs.deploy_tag != 'FAILED'
+              run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA --env GITHUB_TAG="${{ steps.get-tag.outputs.deploy_tag }}"
+
+            - name: Compile (no tag)
+              if: steps.get-tag.outputs.deploy_tag == 'FAILED'
               run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA
 
             #Safety against pushing broken code
