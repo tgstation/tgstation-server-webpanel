@@ -35,13 +35,16 @@ interface IEvents {
 export default new (class JobsController extends TypedEmitter<IEvents> {
     private fastmodecount = 0;
     public set fastmode(cycles: number) {
-        if (this.connection) {
-            return;
-        }
+        const doStuff = async () => {
+            if (await this.jobsHubSupported()) {
+                return;
+            }
 
-        console.log(`JobsController going in fastmode for ${cycles} cycles`);
-        this.fastmodecount = cycles;
-        void this.restartLoop();
+            console.log(`JobsController going in fastmode for ${cycles} cycles`);
+            this.fastmodecount = cycles;
+            await this.restartLoop();
+        };
+        void doStuff();
     }
 
     private currentLoop: Date = new Date(0);
@@ -58,25 +61,30 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
     private connection: signalR.HubConnection | null;
 
-    public reset(clearJobs = true) {
+    public async reset(clearJobs: boolean): Promise<void> {
         if (clearJobs) {
             this.jobs = new Map<number, TGSJobResponse>();
             this.jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
 
-            if (this.connection) {
-                void this.restartLoop();
+            if (await this.jobsHubSupported()) {
+                await this.restartLoop();
             }
         }
 
-        if (this.connection) {
+        if (await this.jobsHubSupported()) {
             return;
         }
 
-        this.reloadAccessibleInstances()
-            .then(this.restartLoop)
-            .catch(e => {
-                this.errors.push(new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) }));
-            });
+        try {
+            await this.reloadAccessibleInstances();
+        } catch (e) {
+            this.errors.push(
+                new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e as string) })
+            );
+            return;
+        }
+
+        await this.restartLoop();
     }
 
     public constructor() {
@@ -86,18 +94,36 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         this.nextRetry = null;
         this.loop = this.loop.bind(this);
         this.reset = this.reset.bind(this);
+        this.cleanConnection = this.cleanConnection.bind(this);
         this.restartLoop = this.restartLoop.bind(this);
+    }
+
+    private async cleanConnection(): Promise<void> {
+        if (!(await this.jobsHubSupported())) {
+            return;
+        }
+
+        if (this.connection) {
+            await this.connection.stop();
+        }
+
+        this.errors = [];
+        this.nextRetry = null;
+        this.jobs = new Map<number, TGSJobResponse>();
+        this.jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
+        this.emit("jobsLoaded");
     }
 
     public init() {
         window.clients["JobsController"] = this;
 
         //technically not a "cache" but we might as well reload it
-        ServerClient.on("purgeCache", this.reset);
+        ServerClient.on("purgeCache", () => void this.reset(true));
+        ServerClient.on("logout", () => void this.cleanConnection());
 
-        InstanceClient.on("instanceChange", () => this.reset(false));
+        InstanceClient.on("instanceChange", () => void this.reset(false));
         // eslint-disable-next-line @typescript-eslint/require-await
-        LoginHooks.addHook(async () => this.reset(false));
+        LoginHooks.addHook(async () => this.reset(true));
 
         ServerClient.on("loadServerInfo", response => {
             if (response.code === StatusCode.OK) {
@@ -161,14 +187,21 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
     }
 
-    public async restartLoop(): Promise<void> {
-        const serverInfo = await ServerClient.getServerInfo();
-        let jobHubSupported = false;
-        if (serverInfo.code === StatusCode.OK) {
-            jobHubSupported = SemVerGte(serverInfo.payload.apiVersion, "9.13.0");
+    private async jobsHubSupported(): Promise<boolean> {
+        if (this.connection) {
+            return true;
         }
 
-        if (!jobHubSupported) {
+        const serverInfo = await ServerClient.getServerInfo();
+        if (serverInfo.code === StatusCode.OK) {
+            return SemVerGte(serverInfo.payload.apiVersion, "9.13.0");
+        }
+
+        return false;
+    }
+
+    public async restartLoop(): Promise<void> {
+        if (!(await this.jobsHubSupported())) {
             //we use an actual date object here because it could help prevent really weird timing
             // issues as two different date objects cannot be equal
             // despite the date being
@@ -219,14 +252,14 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             })
             .build());
 
-        this.connection.on("ReceiveJobUpdate", (job: JobResponse) => {
+        localConnection.on("ReceiveJobUpdate", (job: JobResponse) => {
             this.registerJob(job, job.instanceId);
             this.emit("jobsLoaded");
         });
 
         let justReconnected = true;
         let reconnectionTimeout: NodeJS.Timeout | null = null;
-        this.connection.onreconnected(() => {
+        localConnection.onreconnected(() => {
             this.nextRetry = null;
             justReconnected = true;
             this.emit("jobsLoaded");
@@ -255,7 +288,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             reconnectionTimeout = setTimeout(() => void forcedRefresh(), 3000);
         });
 
-        this.connection.onreconnecting(() => {
+        localConnection.onreconnecting(() => {
             if (justReconnected) {
                 if (reconnectionTimeout) {
                     clearTimeout(reconnectionTimeout);
@@ -282,7 +315,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         });
 
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        this.connection.start().catch(error => {
+        localConnection.start().catch(error => {
             this.errors = [];
             if (error instanceof Error) {
                 this.errors.push(
@@ -321,9 +354,14 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     public registerJob(job: JobResponse, instanceid: number): void;
     public registerJob(_job: JobResponse | TGSJobResponse, instanceid?: number) {
         this._registerJob(_job, instanceid);
-        if (!this.connection) {
-            void this.restartLoop();
-        }
+
+        const doStuff = async () => {
+            if (!(await this.jobsHubSupported())) {
+                await this.restartLoop();
+            }
+        };
+
+        void doStuff();
     }
 
     private async loop(loopid: Date) {
