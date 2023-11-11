@@ -1,6 +1,7 @@
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, ReactNode } from "react";
+import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import FormControl from "react-bootstrap/FormControl";
@@ -52,7 +53,7 @@ interface IState {
     secondsLeft?: number | null;
     //redirect to home page
     updating?: boolean;
-    //manual entry
+    warnedAboutMajorUpdates?: boolean;
 }
 
 class Update extends React.Component<IProps, IState> {
@@ -504,6 +505,16 @@ class Update extends React.Component<IProps, IState> {
                   .replaceAll("\n", "\n\n")
             : null;
 
+        const currentVersionSemver = new SemVer(this.context.serverInfo.version);
+        const selectedVersionIsDifferentMajor =
+            this.state.selectedVersion &&
+            new SemVer(this.state.selectedVersion.version).major != currentVersionSemver.major;
+
+        const closeWarningModal = () =>
+            this.setState({
+                warnedAboutMajorUpdates: true
+            });
+
         const timing = typeof this.state.secondsLeft === "number";
         return (
             <React.Fragment>
@@ -530,6 +541,35 @@ class Update extends React.Component<IProps, IState> {
                 </div>
                 {this.state.selectedVersion ? (
                     <React.Fragment>
+                        <Modal
+                            centered
+                            show={
+                                selectedVersionIsDifferentMajor &&
+                                !this.state.warnedAboutMajorUpdates
+                            }
+                            onHide={closeWarningModal}
+                            size="lg">
+                            <Modal.Header closeButton>
+                                <Modal.Title>
+                                    <FormattedMessage id="view.admin.update.major_warn.title" />
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body className="text-danger pb-0">
+                                <FormattedMessage
+                                    id="view.admin.update.major_warn.body"
+                                    values={{
+                                        currentMajor: currentVersionSemver.major,
+                                        targetMajor: new SemVer(this.state.selectedVersion.version)
+                                            .major
+                                    }}
+                                />
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={closeWarningModal}>
+                                    <FormattedMessage id="generic.close" />
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
                         <div className="text-center">
                             <h3>
                                 <FormattedMessage id="view.admin.update.releasenotes" />

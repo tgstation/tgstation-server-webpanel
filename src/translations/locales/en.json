@@ -179,6 +179,8 @@
     "view.admin.update.selectversion.deny": "You do not have permission to update to a GitHub version",
     "view.admin.update.upload": "Upload Update Package",
     "view.admin.update.upload.deny": "You do not have permission to update using uploaded packages",
+    "view.admin.update.major_warn.title": "WARNING: Attempting Major TGS Version Change",
+    "view.admin.update.major_warn.body": "You are attempting to switch the major version of TGS from {currentMajor} to {targetMajor}! READ THE RELEASE NOTES CAREFULLY! Most TGS major upgrades constitute a change in the required .NET runtime. If this runtime is not installed PRIOR to updating, TGS will FAIL to restart after upgrading until it is! There also may be REQUIRED configuration changes that, if not made, may also result in a failure to restart!",
     "view.admin.logs.button": "TGS Logs",
     "view.user.list.cantlist": "This user does not have the permission to list users, only the current user is listed/editable.",
     "view.user.edit.cantedit": "This user does not have the permission to edit users.",
