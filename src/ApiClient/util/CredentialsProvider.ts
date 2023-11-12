@@ -18,7 +18,7 @@ export default new (class CredentialsProvider {
         password: "ISolemlySwearToDeleteTheDataDirectory"
     };
 
-    public isTokenValid() {
+    public hasToken() {
         return (
             this.token &&
             this.token

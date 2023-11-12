@@ -58,13 +58,13 @@ class Login extends React.Component<IProps, IState> {
         };
     }
 
-    public componentDidMount() {
+    public async componentDidMount(): Promise<void> {
         const oauthState =
             window.sessionStorage.getItem("oauth") ??
             CredentialsProvider.credentials?.type === CredentialsType.OAuth;
         if (!oauthState && (MODE === "PROD" || MODE === "GITHUB")) {
             // noinspection ES6MissingAwait
-            void this.tryLoginDefault();
+            await this.tryLoginDefault();
         }
     }
 
@@ -98,7 +98,7 @@ class Login extends React.Component<IProps, IState> {
         const handlePwdInput = (event: ChangeEvent<HTMLInputElement>) =>
             this.setState({ password: event.target.value });
 
-        if (this.state.busy || CredentialsProvider.isTokenValid()) {
+        if (this.state.busy || CredentialsProvider.hasToken()) {
             return <Loading text="loading.login" />;
         }
 

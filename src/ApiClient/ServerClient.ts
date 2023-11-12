@@ -296,7 +296,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         };
     }
 
-    public async initApi(): Promise<void> {
+    public async initApi(): Promise<boolean> {
         console.log("Initializing API client");
         console.time("APIInit");
 
@@ -323,6 +323,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
         console.timeEnd("APIInit");
 
+        let result = false;
         // check if there's a token stored
         const bearer = localStorage.getItem("SessionToken");
         const expiresAt = localStorage.getItem("SessionTokenExpiry");
@@ -331,7 +332,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             console.log("Found session token");
             if (Date.parse(expiresAt) >= Date.now()) {
                 const storedToken: TokenResponse = { bearer, expiresAt };
-                await this.setToken(storedToken, defaultToken, true);
+                result = await this.setToken(storedToken, defaultToken, true);
             } else {
                 console.log("But it was expired");
             }
@@ -339,6 +340,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
         this.initialized = true;
         this.emit("initialized");
+        return result;
     }
 
     //Utility function that returns a promise which resolves whenever ServerClient#ApiClient becomes valid
@@ -355,7 +357,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     //Utility function that returns a promise which resolves with the token whenever theres valid credentials(could be immediatly)
     public wait4Token() {
         return new Promise<TokenResponse>(resolve => {
-            if (CredentialsProvider.isTokenValid()) {
+            if (CredentialsProvider.hasToken()) {
                 resolve(CredentialsProvider.token!);
                 return;
             }
@@ -522,7 +524,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
     public logout() {
         //If theres no token it means theres nothing to clear
-        if (!CredentialsProvider.isTokenValid()) {
+        if (!CredentialsProvider.hasToken()) {
             return;
         }
         console.log("Logging out");
@@ -611,7 +613,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         token: TokenResponse,
         defaulted: boolean,
         validate: boolean
-    ): Promise<void> {
+    ): Promise<boolean> {
         // CredentialsProvider.token is added to all requests in the form of Authorization: Bearer <token>
 
         const previousToken = CredentialsProvider.token;
@@ -636,7 +638,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 CredentialsProvider.token = previousToken;
                 CredentialsProvider.defaulted = previousDefaulted;
                 console.log("Stored token failed to authenticate");
-                return;
+                return false;
             }
 
             console.log("Stored token authenticated");
@@ -659,6 +661,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         // TL;DR; Runs shit when you login
 
         LoginHooks.runHooks(token);
+        return true;
     }
 })();
 

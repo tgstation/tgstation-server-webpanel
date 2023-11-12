@@ -164,7 +164,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             /{"username":".+?","password":".+?"}/g,
             '{"username":"*******","password":"*******"}'
         );
-        if (CredentialsProvider.isTokenValid()) {
+        if (CredentialsProvider.hasToken()) {
             debuginfo = replaceAll(debuginfo, CredentialsProvider.token!.bearer, "**************");
         }
         if (configOptions.githubtoken.value) {
