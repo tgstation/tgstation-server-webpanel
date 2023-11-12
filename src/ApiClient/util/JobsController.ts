@@ -62,17 +62,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     private connection: signalR.HubConnection | null;
 
     public async reset(clearJobs: boolean): Promise<void> {
+        console.log("JobsController resetting");
         if (clearJobs) {
             this.jobs = new Map<number, TGSJobResponse>();
             this.jobsByInstance = new Map<number, Map<number, TGSJobResponse>>();
-
-            if (await this.jobsHubSupported()) {
-                await this.restartLoop();
-            }
-        }
-
-        if (await this.jobsHubSupported()) {
-            return;
         }
 
         try {
@@ -103,8 +96,12 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             return;
         }
 
+        console.log("JobsController: cleanConnection");
+
         if (this.connection) {
+            console.log("Stopping and removing active hub connection");
             await this.connection.stop();
+            this.connection = null;
         }
 
         this.errors = [];
@@ -123,7 +120,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
         InstanceClient.on("instanceChange", () => void this.reset(false));
         // eslint-disable-next-line @typescript-eslint/require-await
-        LoginHooks.addHook(async () => this.reset(true));
+        LoginHooks.addHook(async () => {
+            console.log("JobsController resetting due to login");
+            await this.reset(true);
+        });
 
         ServerClient.on("loadServerInfo", response => {
             if (response.code === StatusCode.OK) {
@@ -197,6 +197,8 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             return SemVerGte(serverInfo.payload.apiVersion, "9.13.0");
         }
 
+        console.warn("Failed to retrieve server info to determin jobs hub support!");
+
         return false;
     }
 
@@ -217,6 +219,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
 
         if (this.connection) {
+            console.log(
+                `Restart loop called with an active connection. State is: ${this.connection.state}`
+            );
             await this.connection.stop();
         }
 
@@ -357,6 +362,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
         const doStuff = async () => {
             if (!(await this.jobsHubSupported())) {
+                console.log(
+                    "Server does not support jobs hub, restarting loop due to job registration."
+                );
                 await this.restartLoop();
             }
         };
