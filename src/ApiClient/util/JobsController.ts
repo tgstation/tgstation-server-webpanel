@@ -91,6 +91,19 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         this.restartLoop = this.restartLoop.bind(this);
     }
 
+    private async stopAndRemoveConnection(): Promise<void> {
+        console.log("JobsController: stopAndRemoveConnection");
+
+        if (this.connection) {
+            console.log(
+                `Stopping and removing active hub connection. State is: ${this.connection.state}`
+            );
+            const connectionToStop = this.connection;
+            this.connection = null;
+            await connectionToStop.stop();
+        }
+    }
+
     private async cleanConnection(): Promise<void> {
         if (!(await this.jobsHubSupported())) {
             return;
@@ -98,11 +111,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
         console.log("JobsController: cleanConnection");
 
-        if (this.connection) {
-            console.log("Stopping and removing active hub connection");
-            await this.connection.stop();
-            this.connection = null;
-        }
+        await this.stopAndRemoveConnection();
 
         this.errors = [];
         this.nextRetry = null;
@@ -203,6 +212,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     }
 
     public async restartLoop(): Promise<void> {
+        console.log("JobsController: restartLoop");
         if (!(await this.jobsHubSupported())) {
             //we use an actual date object here because it could help prevent really weird timing
             // issues as two different date objects cannot be equal
@@ -218,12 +228,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             return;
         }
 
-        if (this.connection) {
-            console.log(
-                `Restart loop called with an active connection. State is: ${this.connection.state}`
-            );
-            await this.connection.stop();
-        }
+        await this.stopAndRemoveConnection();
 
         this.nextRetry = null;
 
@@ -321,6 +326,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
 
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         localConnection.start().catch(error => {
+            if (this.connection != localConnection) {
+                return;
+            }
+
             this.errors = [];
             if (error instanceof Error) {
                 this.errors.push(
