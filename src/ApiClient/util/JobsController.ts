@@ -263,6 +263,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             .build());
 
         localConnection.on("ReceiveJobUpdate", (job: JobResponse) => {
+            console.log(`Received update for job ${job.id}`);
             this.registerJob(job, job.instanceId);
             this.emit("jobsLoaded");
         });
