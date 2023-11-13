@@ -124,10 +124,10 @@ const configOptions = asElementTypesConfig({
         type: "bool",
         value: true
     },
-    restjobs: {
-        id: "config.restjobs",
+    restjobs2: {
+        id: "config.restjobs2",
         type: "bool",
-        value: true
+        value: false
     }
 });
 

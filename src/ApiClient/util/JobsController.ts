@@ -197,7 +197,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
     }
 
     private async jobsHubSupported(): Promise<boolean> {
-        if (configOptions.restjobs.value as boolean) {
+        if (configOptions.restjobs2.value as boolean) {
             return false;
         }
 
