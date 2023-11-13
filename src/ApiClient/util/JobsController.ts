@@ -264,12 +264,18 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     return nextRetryMs;
                 }
             })
+            .configureLogging(signalR.LogLevel.Trace)
             .build());
 
-        localConnection.on("ReceiveJobUpdate", (job: JobResponse) => {
+        localConnection.on("ReceiveJobUpdate", async (job: JobResponse) => {
             console.log(`Received update for job ${job.id}`);
             this.registerJob(job, job.instanceId);
             this.emit("jobsLoaded");
+            const canCancel = await this.canCancel(job, this.errors);
+            if (this.jobs.has(job.id)) {
+                this.jobs.get(job.id)!.canCancel = canCancel;
+                this.emit("jobsLoaded");
+            }
         });
 
         let justReconnected = true;
