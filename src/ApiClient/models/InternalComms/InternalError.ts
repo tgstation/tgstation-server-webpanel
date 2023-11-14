@@ -86,7 +86,9 @@ export enum ErrorCode {
     BAD_YML = "error.bad_yml",
     BAD_TGS_YML_VERSION = "error.bad_tgs_yml_version",
 
-    BAD_CHANNELS_JSON = "error.bad_channels_json"
+    BAD_CHANNELS_JSON = "error.bad_channels_json",
+
+    BAD_HUB_CONNECTION = "error.bad_hub_connection"
 }
 
 type errorMessage = {
@@ -162,7 +164,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
             /{"username":".+?","password":".+?"}/g,
             '{"username":"*******","password":"*******"}'
         );
-        if (CredentialsProvider.isTokenValid()) {
+        if (CredentialsProvider.hasToken()) {
             debuginfo = replaceAll(debuginfo, CredentialsProvider.token!.bearer, "**************");
         }
         if (configOptions.githubtoken.value) {

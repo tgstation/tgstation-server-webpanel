@@ -12,7 +12,6 @@ import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
 import configOptions from "./util/config";
-import CredentialsProvider from "./util/CredentialsProvider";
 import LoginHooks from "./util/LoginHooks";
 
 interface IEvents {
@@ -100,20 +99,6 @@ export default new (class UserClient extends ApiClient<IEvents> {
         bypassCache?: boolean
     ): Promise<InternalStatus<UserResponse, GetCurrentUserErrors>> {
         await ServerClient.wait4Init();
-
-        if (!CredentialsProvider.isTokenValid()) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: new InternalError(
-                    ErrorCode.HTTP_ACCESS_DENIED,
-                    {
-                        void: true
-                    },
-                    undefined,
-                    true
-                )
-            });
-        }
 
         if (this._cachedUser && !bypassCache) {
             return this._cachedUser;

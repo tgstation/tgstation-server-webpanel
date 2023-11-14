@@ -126,38 +126,40 @@ class DeploymentViewer extends React.Component<IProps, IState> {
         return (
             <Table className="table table-hover">
                 <thead>
-                    <th></th>
-                    <th></th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.id" />
-                    </th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.byond" />
-                    </th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.started_at" />
-                    </th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.completed_at" />
-                    </th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.started_by" />
-                    </th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.project" />
-                    </th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.revision" />
-                    </th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.origin" />
-                    </th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.security" />
-                    </th>
-                    <th>
-                        <FormattedMessage id="view.utils.deployment_viewer.table.dmapi" />
-                    </th>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.id" />
+                        </th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.byond" />
+                        </th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.started_at" />
+                        </th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.completed_at" />
+                        </th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.started_by" />
+                        </th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.project" />
+                        </th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.revision" />
+                        </th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.origin" />
+                        </th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.security" />
+                        </th>
+                        <th>
+                            <FormattedMessage id="view.utils.deployment_viewer.table.dmapi" />
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>{tableContents}</tbody>
             </Table>

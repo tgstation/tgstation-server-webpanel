@@ -123,6 +123,11 @@ const configOptions = asElementTypesConfig({
         id: "config.manualpr",
         type: "bool",
         value: true
+    },
+    restjobs2: {
+        id: "config.restjobs2",
+        type: "bool",
+        value: false
     }
 });
 

@@ -84,7 +84,7 @@ class InnerApp extends React.Component<InnerProps, InnerState> {
                         : DEFAULT_BASEPATH
                 }>
                 <ErrorBoundary>
-                    <AppNavbar category={this.state.passdownCat} />
+                    <AppNavbar category={this.state.passdownCat} loggedIn={this.props.loggedIn} />
                     {this.props.loading ? (
                         <Container className="mt-5 mb-5">
                             <Loading text="loading.app" />
@@ -148,7 +148,7 @@ class App extends React.Component<IProps, IState> {
         this.translationFactory = this.props.translationFactory ?? new TranslationFactory();
 
         this.state = {
-            loggedIn: !!CredentialsProvider.isTokenValid(),
+            loggedIn: false,
             loggedOut: false,
             loading: true,
             GeneralContextInfo: {
@@ -283,14 +283,15 @@ class App extends React.Component<IProps, IState> {
         ServerClient.on("purgeCache", this.updateContextUser);
 
         await this.loadTranslation();
-        await ServerClient.initApi();
+        const loggedInSuccessfully = await ServerClient.initApi();
         await this.updateContextServer();
-        if (CredentialsProvider.isTokenValid()) {
+        if (loggedInSuccessfully) {
             await this.updateContextUser();
         }
 
         this.setState({
-            loading: false
+            loading: false,
+            loggedIn: loggedInSuccessfully
         });
     }
 

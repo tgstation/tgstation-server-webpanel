@@ -17,7 +17,6 @@ import { AdministrationRights } from "../ApiClient/generatedcode/generated";
 import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../ApiClient/ServerClient";
 import UserClient from "../ApiClient/UserClient";
-import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
 import LoginHooks from "../ApiClient/util/LoginHooks";
 import { GeneralContext, UnsafeGeneralContext } from "../contexts/GeneralContext";
 import { hasAdminRight, matchesPath, resolvePermissionSet } from "../utils/misc";
@@ -29,10 +28,10 @@ interface IProps extends RouteComponentProps {
         name: string;
         key: string;
     };
+    loggedIn: boolean;
 }
 
 interface IState {
-    loggedIn: boolean;
     //so we dont actually use the routes but it allows us to make react update the component
     routes: AppRoute[];
     categories: typeof AppCategories;
@@ -50,7 +49,6 @@ class AppNavbar extends React.Component<IProps, IState> {
         this.refresh = this.refresh.bind(this);
 
         this.state = {
-            loggedIn: !!CredentialsProvider.isTokenValid(),
             routes: [],
             categories: AppCategories,
             updateAvailable: false
@@ -58,10 +56,6 @@ class AppNavbar extends React.Component<IProps, IState> {
     }
 
     private loginSuccess(): void {
-        this.setState({
-            loggedIn: true
-        });
-
         void this.checkShowServerUpdateIcon();
     }
 
@@ -90,7 +84,6 @@ class AppNavbar extends React.Component<IProps, IState> {
 
     private logout() {
         this.setState({
-            loggedIn: false,
             updateAvailable: false
         });
     }
@@ -123,7 +116,7 @@ class AppNavbar extends React.Component<IProps, IState> {
             <React.Fragment>
                 <Navbar
                     className="shadow-lg"
-                    expand={this.state.loggedIn ? "lg" : undefined}
+                    expand={this.props.loggedIn ? "lg" : undefined}
                     collapseOnSelect
                     variant="dark"
                     bg="primary">
@@ -139,7 +132,7 @@ class AppNavbar extends React.Component<IProps, IState> {
                     <Navbar.Toggle className="mr-2" aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse className="text-right mr-2" style={{ minWidth: "0px" }}>
                         <Nav>
-                            {!this.state.loggedIn ? (
+                            {!this.props.loggedIn ? (
                                 <Nav.Item>
                                     <Nav.Link
                                         onClick={() => {
@@ -283,7 +276,7 @@ class AppNavbar extends React.Component<IProps, IState> {
     }
 
     private renderUser(): React.ReactNode {
-        if (!this.state.loggedIn)
+        if (!this.props.loggedIn)
             return (
                 <React.Fragment>
                     <Button

@@ -290,7 +290,6 @@ class Repository extends React.Component<IProps, IState> {
                     );
                 });
                 JobsController.registerJob(response.payload.activeJob, this.context.instance.id);
-                JobsController.restartLoop();
                 if (this.state.deployAfter) {
                     const jobId = response.payload.activeJob.id;
                     const deployinterval = setInterval(() => {
@@ -522,7 +521,6 @@ class Repository extends React.Component<IProps, IState> {
                         );
                         if (response.code === StatusCode.OK) {
                             await this.fetchRepositoryInfo(response.payload.activeJob ?? undefined);
-                            JobsController.restartLoop();
                         } else {
                             this.addError(response.error);
                         }
@@ -711,7 +709,6 @@ class Repository extends React.Component<IProps, IState> {
                                     response.payload.activeJob,
                                     this.context.instance.id
                                 );
-                                JobsController.restartLoop();
                             } else {
                                 await this.fetchRepositoryInfo();
                             }
@@ -1155,7 +1152,6 @@ class Repository extends React.Component<IProps, IState> {
                                             response.payload.activeJob,
                                             this.context.instance.id
                                         );
-                                        JobsController.restartLoop();
                                     } else {
                                         await this.fetchRepositoryInfo();
                                     }

@@ -20,7 +20,6 @@ export type PaginatedTGSJobResponse = Omit<PaginatedJobResponse, "content"> & {
     content: TGSJobResponse[];
 };
 export type TGSJobResponse = JobResponse & {
-    instanceid: number;
     canCancel?: boolean;
 };
 

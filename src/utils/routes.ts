@@ -51,7 +51,7 @@ export interface AppRoute {
 
 function adminRight(right: AdministrationRights) {
     return async (): Promise<boolean> => {
-        if (!CredentialsProvider.isTokenValid()) return false;
+        if (!CredentialsProvider.hasToken()) return false;
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {
@@ -63,7 +63,7 @@ function adminRight(right: AdministrationRights) {
 
 function instanceManagerRight(right: InstanceManagerRights) {
     return async (): Promise<boolean> => {
-        if (!CredentialsProvider.isTokenValid()) return false;
+        if (!CredentialsProvider.hasToken()) return false;
         const response = await UserClient.getCurrentUser();
 
         if (response.code == StatusCode.OK) {

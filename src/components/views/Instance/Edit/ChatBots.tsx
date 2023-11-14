@@ -848,7 +848,7 @@ class ChatBots extends React.Component<IProps, IState> {
             const fieldsDiscord = {
                 ...fieldsCommon,
                 botToken: {
-                    type: FieldType.String as FieldType.String,
+                    type: FieldType.Password as FieldType.Password,
                     name: "fields.instance.chat.create.discord.token",
                     tooltip: "fields.instance.chat.create.discord.token.tip"
                 },

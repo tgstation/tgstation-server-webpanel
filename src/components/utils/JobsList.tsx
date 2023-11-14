@@ -1,7 +1,7 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ReactNode } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { OverlayInjectedProps } from "react-bootstrap/Overlay";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -25,6 +25,7 @@ interface IProps {
 interface IState {
     jobs: Map<number, Map<number, TGSJobResponse>>;
     errors: InternalError<ErrorCode>[];
+    nextRetrySeconds: number | null;
     ownerrors: Array<InternalError<ErrorCode> | undefined>;
     loading: boolean;
     instances: Map<number, InstanceResponse>;
@@ -47,6 +48,7 @@ export default class JobsList extends React.Component<IProps, IState> {
         this.state = {
             jobs: JobsController.jobsByInstance,
             errors: [],
+            nextRetrySeconds: null,
             ownerrors: [],
             loading: true,
             instances: new Map<number, InstanceResponse>()
@@ -75,10 +77,30 @@ export default class JobsList extends React.Component<IProps, IState> {
         JobsController.removeListener("jobsLoaded", this.handleUpdate);
     }
 
+    private currentTimeout?: NodeJS.Timeout | null;
+
     public handleUpdate(): void {
+        if (this.currentTimeout) {
+            clearTimeout(this.currentTimeout);
+            this.currentTimeout = null;
+        }
+
+        let nextRetrySeconds;
+        if (JobsController.nextRetry) {
+            if (JobsController.nextRetry.getSeconds() > new Date().getSeconds()) {
+                nextRetrySeconds = JobsController.nextRetry.getSeconds() - new Date().getSeconds();
+            } else {
+                nextRetrySeconds = 0;
+            }
+            this.currentTimeout = setTimeout(() => this.handleUpdate(), 1000);
+        } else {
+            nextRetrySeconds = null;
+        }
+
         this.setState({
             jobs: JobsController.jobsByInstance,
             errors: JobsController.errors,
+            nextRetrySeconds,
             loading: false,
             instances: JobsController.accessibleInstances
         });
@@ -181,13 +203,32 @@ export default class JobsList extends React.Component<IProps, IState> {
                         />
                     );
                 })}
-                {this.state.errors.map((error, index) => {
-                    return (
-                        <div key={index} style={{ maxWidth: this.props.widget ? 350 : "unset" }}>
-                            <ErrorAlert error={error} />
-                        </div>
-                    );
-                })}
+                {this.state.errors.length > 0 ? (
+                    <React.Fragment>
+                        {this.state.errors.map((error, index) => {
+                            return (
+                                <div
+                                    key={index}
+                                    style={{ maxWidth: this.props.widget ? 350 : "unset" }}>
+                                    <ErrorAlert error={error} />
+                                </div>
+                            );
+                        })}
+                        <Card>
+                            {this.state.nextRetrySeconds === 0 ? (
+                                <FormattedMessage id="view.instance.jobs.reconnect_now"></FormattedMessage>
+                            ) : this.state.nextRetrySeconds != null ? (
+                                <FormattedMessage
+                                    id="view.instance.jobs.reconnect_in"
+                                    values={{
+                                        seconds: this.state.nextRetrySeconds
+                                    }}></FormattedMessage>
+                            ) : (
+                                <FormattedMessage id="view.instance.jobs.reconnected_auth"></FormattedMessage>
+                            )}
+                        </Card>
+                    </React.Fragment>
+                ) : null}
                 {Array.from(this.state.jobs)
                     .sort((a, b) => a[0] - b[0])
                     .map(([instanceid, jobMap]) => {
