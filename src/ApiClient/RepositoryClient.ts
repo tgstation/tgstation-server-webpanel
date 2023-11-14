@@ -23,14 +23,11 @@ export default new (class RepositoryClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.repository.repositoryControllerCreate(
-                settings,
-                {
-                    headers: {
-                        Instance: instanceid
-                    }
+            response = await ServerClient.apiClient!.api.repositoryControllerCreate(settings, {
+                headers: {
+                    Instance: instanceid
                 }
-            );
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -77,7 +74,7 @@ export default new (class RepositoryClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.repository.repositoryControllerDelete({
+            response = await ServerClient.apiClient!.api.repositoryControllerDelete({
                 headers: {
                     Instance: instanceid
                 }
@@ -130,7 +127,7 @@ export default new (class RepositoryClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.repository.repositoryControllerRead({
+            response = await ServerClient.apiClient!.api.repositoryControllerRead({
                 headers: {
                     Instance: instanceid
                 }
@@ -193,14 +190,11 @@ export default new (class RepositoryClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.repository.repositoryControllerUpdate(
-                newSettings,
-                {
-                    headers: {
-                        Instance: instanceid
-                    }
+            response = await ServerClient.apiClient!.api.repositoryControllerUpdate(newSettings, {
+                headers: {
+                    Instance: instanceid
                 }
-            );
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

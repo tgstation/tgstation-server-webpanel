@@ -67,7 +67,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             //This applies the authorization header, it will wait however long it needs until
             // theres a token available. It obviously won't wait for a token before sending the request
             // if its currently sending a request to the login endpoint...
-            if (value.overrideTokenDetection || !(value.url === "/" || value.url === "")) {
+            if (value.overrideTokenDetection || !(value.url === "/api" || value.url === "/api/")) {
                 const tok = await this.wait4Token();
                 (value.headers as { [key: string]: string })["Authorization"] = `Bearer ${
                     tok.bearer || ""
@@ -419,7 +419,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         CredentialsProvider.default.userName.toLowerCase() &&
                     CredentialsProvider.credentials.password ==
                         CredentialsProvider.default.password;
-                response = await this.apiClient!.homeControllerCreateToken({
+                response = await this.apiClient!.api.apiRootControllerCreateToken({
                     auth: {
                         username: CredentialsProvider.credentials.userName,
                         password: CredentialsProvider.credentials.password
@@ -427,7 +427,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 });
             } else {
                 defaulted = false;
-                response = await this.apiClient!.homeControllerCreateToken({
+                response = await this.apiClient!.api.apiRootControllerCreateToken({
                     headers: {
                         OAuthProvider: CredentialsProvider.credentials.provider,
                         Authorization: `OAuth ${CredentialsProvider.credentials.token}`
@@ -568,7 +568,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await this.apiClient!.homeControllerHome();
+            response = await this.apiClient!.api.apiRootControllerServerInfo();
         } catch (stat) {
             const res = new InternalStatus<ServerInformationResponse, GenericErrors>({
                 code: StatusCode.ERROR,
@@ -625,7 +625,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         if (validate) {
             let failed;
             try {
-                const response = await this.apiClient!.homeControllerHome({
+                const response = await this.apiClient!.api.apiRootControllerServerInfo({
                     overrideTokenDetection: true
                 });
 

@@ -49,7 +49,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerList(
+            response = await ServerClient.apiClient!.api.instancePermissionSetControllerList(
                 {
                     page: page,
                     pageSize: pageSize
@@ -123,13 +123,11 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerRead(
-                {
-                    headers: {
-                        Instance: instanceid.toString()
-                    }
+            response = await ServerClient.apiClient!.api.instancePermissionSetControllerRead({
+                headers: {
+                    Instance: instanceid.toString()
                 }
-            );
+            });
         } catch (stat) {
             const res = new InternalStatus<InstancePermissionSetResponse, GenericErrors>({
                 code: StatusCode.ERROR,
@@ -176,7 +174,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerGetId(
+            response = await ServerClient.apiClient!.api.instancePermissionSetControllerGetId(
                 permissionSetId,
                 {
                     headers: {
@@ -235,7 +233,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerCreate(
+            response = await ServerClient.apiClient!.api.instancePermissionSetControllerCreate(
                 instancePermissionSet,
                 {
                     headers: {
@@ -294,7 +292,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerUpdate(
+            response = await ServerClient.apiClient!.api.instancePermissionSetControllerUpdate(
                 instancePermissionSet,
                 {
                     headers: {
@@ -353,7 +351,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instancePermissionSet.instancePermissionSetControllerDelete(
+            response = await ServerClient.apiClient!.api.instancePermissionSetControllerDelete(
                 permissionSetId,
                 {
                     headers: {

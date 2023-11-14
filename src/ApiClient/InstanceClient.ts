@@ -31,7 +31,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instance.instanceControllerList({
+            response = await ServerClient.apiClient!.api.instanceControllerList({
                 pageSize: pageSize,
                 page: page
             });
@@ -69,7 +69,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instance.instanceControllerGrantPermissions(
+            response = await ServerClient.apiClient!.api.instanceControllerGrantPermissions(
                 instance.id
             );
             this.emit("instanceChange", instance.id);
@@ -113,7 +113,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instance.instanceControllerUpdate(instance);
+            response = await ServerClient.apiClient!.api.instanceControllerUpdate(instance);
             this.emit("instanceChange", instance.id);
         } catch (stat) {
             return new InternalStatus({
@@ -154,7 +154,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instance.instanceControllerDelete(id);
+            response = await ServerClient.apiClient!.api.instanceControllerDelete(id);
             this.emit("instanceChange", id);
         } catch (stat) {
             return new InternalStatus({
@@ -196,7 +196,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instance.instanceControllerCreate(instance);
+            response = await ServerClient.apiClient!.api.instanceControllerCreate(instance);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -242,7 +242,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.instance.instanceControllerGetId(instanceid);
+            response = await ServerClient.apiClient!.api.instanceControllerGetId(instanceid);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

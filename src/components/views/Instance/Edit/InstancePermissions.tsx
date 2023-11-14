@@ -90,7 +90,6 @@ class InstancePermissions extends React.Component<IProps, IState> {
                 instancePermissionSetRights: 0,
                 repositoryRights: 0,
                 engineRights: 0,
-                byondRights: 0,
                 dreamMakerRights: 0,
                 dreamDaemonRights: 0,
                 chatBotRights: 0,

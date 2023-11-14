@@ -23,7 +23,7 @@ export default new (class EngineClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.engine.engineControllerRead({
+            response = await ServerClient.apiClient!.api.engineControllerRead({
                 headers: {
                     Instance: instance.toString()
                 }
@@ -63,7 +63,7 @@ export default new (class EngineClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.engine.engineControllerList(
+            response = await ServerClient.apiClient!.api.engineControllerList(
                 {
                     page: page,
                     pageSize: pageSize
@@ -109,7 +109,7 @@ export default new (class EngineClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.engine.engineControllerDelete(
+            response = await ServerClient.apiClient!.api.engineControllerDelete(
                 {
                     engineVersion
                 },
@@ -175,7 +175,7 @@ export default new (class EngineClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.engine.engineControllerUpdate(
+            response = await ServerClient.apiClient!.api.engineControllerUpdate(
                 {
                     engineVersion,
                     uploadCustomZip: !!file

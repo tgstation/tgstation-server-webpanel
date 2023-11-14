@@ -242,7 +242,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
 
         const localConnection = (this.connection = new signalR.HubConnectionBuilder()
-            .withUrl(`${apiPath}hubs/jobs`, {
+            .withUrl(`${apiPath}api/hubs/jobs`, {
                 accessTokenFactory: async () => {
                     const token = await ServerClient.wait4Token();
                     return token.bearer;

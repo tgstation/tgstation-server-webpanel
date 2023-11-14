@@ -72,7 +72,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.administration.administrationControllerRead();
+            response = await ServerClient.apiClient!.api.administrationControllerRead();
         } catch (stat) {
             const res = new InternalStatus<AdministrationResponse, AdminInfoErrors>({
                 code: StatusCode.ERROR,
@@ -153,7 +153,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.administration.administrationControllerDelete();
+            response = await ServerClient.apiClient!.api.administrationControllerDelete();
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -199,7 +199,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.administration.administrationControllerUpdate({
+            response = await ServerClient.apiClient!.api.administrationControllerUpdate({
                 newVersion
             });
         } catch (stat) {
@@ -281,7 +281,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.administration.administrationControllerUpdate({
+            response = await ServerClient.apiClient!.api.administrationControllerUpdate({
                 newVersion,
                 uploadZip: true
             });
@@ -373,12 +373,10 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.administration.administrationControllerListLogs(
-                {
-                    pageSize: pageSize,
-                    page: page
-                }
-            );
+            response = await ServerClient.apiClient!.api.administrationControllerListLogs({
+                pageSize: pageSize,
+                page: page
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -424,9 +422,7 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.administration.administrationControllerGetLog(
-                logName
-            );
+            response = await ServerClient.apiClient!.api.administrationControllerGetLog(logName);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

@@ -32,7 +32,7 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.job.jobControllerRead(
+            response = await ServerClient.apiClient!.api.jobControllerRead(
                 {
                     page: page,
                     pageSize: pageSize
@@ -88,7 +88,7 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.job.jobControllerGetId(jobid, {
+            response = await ServerClient.apiClient!.api.jobControllerGetId(jobid, {
                 headers: {
                     Instance: instanceid.toString()
                 }
@@ -140,7 +140,7 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.job.jobControllerDelete(jobid, {
+            response = await ServerClient.apiClient!.api.jobControllerDelete(jobid, {
                 headers: {
                     Instance: instanceid.toString()
                 }
@@ -200,7 +200,7 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.job.jobControllerList(
+            response = await ServerClient.apiClient!.api.jobControllerList(
                 {
                     pageSize,
                     page
