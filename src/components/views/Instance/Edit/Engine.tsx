@@ -547,7 +547,7 @@ class Engine extends React.Component<IProps, IState> {
                             this.setState({
                                 selectedODVersion: {
                                     engine: EngineType.OpenDream,
-                                    version: e.target.value
+                                    sourceSHA: e.target.value
                                 }
                             });
                         }}
