@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
+import { gte as SemVerGte, satisfies as SemverSatisfies } from "semver";
 
 import DreamDaemonClient from "../../../../ApiClient/DreamDaemonClient";
 import {
@@ -301,6 +302,28 @@ export default function Server(): JSX.Element {
         );
     const canActionAny = canStart || canStop || canRestart || canDump;
 
+    const canBroadcast = hasDreamDaemonRight(
+        instanceEditContext.instancePermissionSet,
+        DreamDaemonRights.BroadcastMessage
+    );
+
+    const broadcastNotAllowed =
+        !canBroadcast ||
+        (canMetadata &&
+            (watchdogSettings.status !== WatchdogStatus.Online ||
+                (watchdogSettings.activeCompileJob?.dmApiVersion != null &&
+                    !SemVerGte(watchdogSettings.activeCompileJob?.dmApiVersion, "5.7.0"))));
+
+    const broadcastFields = {
+        message: {
+            type: FieldType.String as FieldType.String,
+            name: "fields.instance.watchdog.broadcast",
+            defaultValue: "",
+            disabled: broadcastNotAllowed,
+            tooltip: "fields.instance.watchdog.broadcast.desc"
+        }
+    };
+
     const canViewDeployment = hasDreamDaemonRight(
         instanceEditContext.instancePermissionSet,
         DreamDaemonRights.ReadRevision
@@ -487,6 +510,19 @@ export default function Server(): JSX.Element {
             ) : canActionAny ? (
                 <GenericAlert title="view.instance.server.no_graceful" />
             ) : null}
+
+            <div className="w-75 mx-auto">
+                <br />
+                <InputForm
+                    fields={broadcastFields}
+                    onSave={fieldsResult => {
+                        void saveWatchdogSettings({
+                            broadcastMessage: fieldsResult.message
+                        });
+                    }}
+                    saveMessageId="view.instance.server.broadcast"
+                />
+            </div>
         </div>
     );
 }
