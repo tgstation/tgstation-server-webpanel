@@ -20,9 +20,10 @@ import {
 } from "../../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
-import TransferClient from "../../../../ApiClient/TransferClient";
+import TransferClient, { ProgressEvent } from "../../../../ApiClient/TransferClient";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasFilesRight } from "../../../../utils/misc";
+import { DownloadCard, IDownloadProps } from "../../../utils/DownloadCard";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import GenericAlert from "../../../utils/GenericAlert";
 import { FieldType } from "../../../utils/InputField";
@@ -83,6 +84,7 @@ interface IState {
     loading: boolean;
     selectedFile: DirectoryTree | null;
     selectedCreateNode: DirectoryTree | null;
+    downloads: (IDownloadProps | null)[];
 }
 
 class Files extends React.Component<IProps, IState> {
@@ -96,7 +98,8 @@ class Files extends React.Component<IProps, IState> {
             rootDirectory: null,
             loading: true,
             selectedFile: null,
-            selectedCreateNode: null
+            selectedCreateNode: null,
+            downloads: []
         };
 
         this.createEntity = this.createEntity.bind(this);
@@ -234,7 +237,7 @@ class Files extends React.Component<IProps, IState> {
             const response = await ConfigurationFileClient.getConfigFile(
                 this.context.instance.id,
                 doctoredPath,
-                false
+                null
             );
 
             const success = response.code === StatusCode.OK;
@@ -322,13 +325,16 @@ class Files extends React.Component<IProps, IState> {
             const fileResponse = await ConfigurationFileClient.getConfigFile(
                 this.context.instance.id,
                 file.path,
-                false
+                null
             );
 
             const pathInZip = file.path.substring(directory.fileResponse.path.length);
             if (fileResponse.code === StatusCode.OK) {
                 const phase2 = async (): Promise<File | null> => {
-                    const contents = await TransferClient.Download(fileResponse.payload.fileTicket);
+                    const contents = await TransferClient.Download(
+                        fileResponse.payload.fileTicket,
+                        this.allocateDownload(pathInZip)
+                    );
 
                     if (contents.code != StatusCode.OK) {
                         this.addError(contents.error);
@@ -423,19 +429,18 @@ class Files extends React.Component<IProps, IState> {
         });
 
         const selectedFile = this.state.selectedFile!;
+        const index = Math.max(
+            selectedFile.fileResponse.path.lastIndexOf("\\"),
+            selectedFile.fileResponse.path.lastIndexOf("/")
+        );
+        const fileName = selectedFile.fileResponse.path.slice(index + 1);
         const response = await ConfigurationFileClient.getConfigFile(
             this.context.instance.id,
             selectedFile.fileResponse.path,
-            true
+            this.allocateDownload(fileName)
         );
 
         if (response.code === StatusCode.OK) {
-            const index = Math.max(
-                selectedFile.fileResponse.path.lastIndexOf("\\"),
-                selectedFile.fileResponse.path.lastIndexOf("/")
-            );
-            const fileName = selectedFile.fileResponse.path.slice(index + 1);
-
             downloadFileUsingBlob(fileName, response.payload.content!);
         } else this.addError(response.error);
 
@@ -538,9 +543,64 @@ class Files extends React.Component<IProps, IState> {
         directory.children = [];
     }
 
+    private allocateDownload(filename: string) {
+        const indexPromise = new Promise<number>(resolve => {
+            this.setState(prevState => {
+                const newDownloads = [...prevState.downloads];
+                resolve(newDownloads.push(null) - 1);
+                return {
+                    downloads: newDownloads
+                };
+            });
+        });
+        let latest = 0;
+        return (progress: ProgressEvent) => {
+            const ticket = ++latest;
+            void indexPromise.then(index => {
+                if (latest !== ticket) {
+                    return;
+                }
+
+                this.setState(prevState => {
+                    const newDownloads = [...prevState.downloads];
+                    newDownloads[index] = {
+                        filename,
+                        progress,
+                        onClose: () => {
+                            this.setState(prevState => {
+                                const newDownloads = [...prevState.downloads];
+                                newDownloads[index] = null;
+                                return {
+                                    downloads: newDownloads
+                                };
+                            });
+                        }
+                    };
+                    return {
+                        downloads: newDownloads
+                    };
+                });
+            });
+        };
+    }
+
     public render(): React.ReactNode {
+        const downloadsFragment = (
+            <React.Fragment>
+                {this.state.downloads.map((download, index) => {
+                    if (!download) return;
+                    return <DownloadCard key={index} {...download} />;
+                })}
+            </React.Fragment>
+        );
+
         if (this.state.loading) {
-            return <Loading text="loading.instance.files" />;
+            return (
+                <React.Fragment>
+                    {downloadsFragment}
+                    <Loading text="loading.instance.files" />
+                </React.Fragment>
+            );
         }
 
         const instanceConfigMode = this.context.instance.configurationType;
@@ -587,6 +647,7 @@ class Files extends React.Component<IProps, IState> {
                         />
                     );
                 })}
+                {downloadsFragment}
                 <div className="d-flex flex-row">
                     {canListDirectories ? (
                         <div

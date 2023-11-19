@@ -93,6 +93,8 @@
     "generic.savetab": "Save Tab",
     "generic.saveall": "Save All",
     "generic.details": "Details",
+    "generic.downloading": "Downloading \"{file}\"...",
+    "generic.downloaded": "Downloaded \"{file}\"",
     "generic.errordetails": "Error Details ({info})",
     "generic.debugwarn": "Be careful to censor out any credentials or tokens when copying errors!",
     "generic.close": "Close",

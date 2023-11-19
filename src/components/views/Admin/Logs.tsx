@@ -13,8 +13,10 @@ import type { LogFileResponse } from "../../../ApiClient/generatedcode/generated
 import { DownloadedLog } from "../../../ApiClient/models/DownloadedLog";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
+import { ProgressEvent } from "../../../ApiClient/TransferClient";
 import { download } from "../../../utils/misc";
 import { AppRoutes, RouteData } from "../../../utils/routes";
+import { DownloadCard, IDownloadProps } from "../../utils/DownloadCard";
 import ErrorAlert from "../../utils/ErrorAlert";
 import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
@@ -39,6 +41,7 @@ interface IState {
     loading: boolean;
     page: number;
     maxPage?: number;
+    downloads: (IDownloadProps | null)[];
 }
 
 export default withRouter(
@@ -50,7 +53,8 @@ export default withRouter(
                 errors: [],
                 loading: true,
                 logs: [],
-                page: RouteData.loglistpage ?? 1
+                page: RouteData.loglistpage ?? 1,
+                downloads: []
             };
         }
 
@@ -64,7 +68,7 @@ export default withRouter(
         public async componentDidMount(): Promise<void> {
             const param = this.props.match.params.name;
             if (param) {
-                const res = await AdminClient.getLog(param);
+                const res = await AdminClient.getLog(param, this.allocateDownload(param));
 
                 switch (res.code) {
                     case StatusCode.OK: {
@@ -143,7 +147,7 @@ export default withRouter(
         }
 
         private async downloadLog(name: string): Promise<void> {
-            const res = await AdminClient.getLog(name);
+            const res = await AdminClient.getLog(name, this.allocateDownload(name));
             switch (res.code) {
                 case StatusCode.OK: {
                     download(name, res.payload.content);
@@ -154,6 +158,47 @@ export default withRouter(
                     break;
                 }
             }
+        }
+
+        private allocateDownload(filename: string) {
+            const indexPromise = new Promise<number>(resolve => {
+                this.setState(prevState => {
+                    const newDownloads = [...prevState.downloads];
+                    resolve(newDownloads.push(null) - 1);
+                    return {
+                        downloads: newDownloads
+                    };
+                });
+            });
+            let latest = 0;
+            return (progress: ProgressEvent) => {
+                const ticket = ++latest;
+                void indexPromise.then(index => {
+                    if (latest !== ticket) {
+                        return;
+                    }
+
+                    this.setState(prevState => {
+                        const newDownloads = [...prevState.downloads];
+                        newDownloads[index] = {
+                            filename,
+                            progress,
+                            onClose: () => {
+                                this.setState(prevState => {
+                                    const newDownloads = [...prevState.downloads];
+                                    newDownloads[index] = null;
+                                    return {
+                                        downloads: newDownloads
+                                    };
+                                });
+                            }
+                        };
+                        return {
+                            downloads: newDownloads
+                        };
+                    });
+                });
+            };
         }
 
         public render(): React.ReactNode {
@@ -176,6 +221,10 @@ export default withRouter(
                                 }
                             />
                         );
+                    })}
+                    {this.state.downloads.map((download, index) => {
+                        if (!download) return;
+                        return <DownloadCard key={index} {...download} />;
                     })}
                     {this.state.loading ? (
                         <Loading text="loading.logs" />

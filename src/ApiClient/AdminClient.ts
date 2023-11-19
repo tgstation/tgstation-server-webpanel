@@ -10,7 +10,7 @@ import { DownloadedLog } from "./models/DownloadedLog";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
-import TransferClient, { DownloadErrors, UploadErrors } from "./TransferClient";
+import TransferClient, { DownloadErrors, ProgressEvent, UploadErrors } from "./TransferClient";
 import configOptions from "./util/config";
 
 interface IEvents {
@@ -418,7 +418,8 @@ export default new (class AdminClient extends ApiClient<IEvents> {
     }
 
     public async getLog(
-        logName: string
+        logName: string,
+        progressHandler: (progressEvent: ProgressEvent) => void
     ): Promise<InternalStatus<DownloadedLog, LogErrors | DownloadErrors>> {
         await ServerClient.wait4Init();
 
@@ -436,7 +437,10 @@ export default new (class AdminClient extends ApiClient<IEvents> {
         switch (response.status) {
             case 200: {
                 const logFileResponse = response.data as LogFileResponse;
-                const contents = await TransferClient.Download(logFileResponse.fileTicket);
+                const contents = await TransferClient.Download(
+                    logFileResponse.fileTicket,
+                    progressHandler
+                );
                 if (contents.code === StatusCode.OK) {
                     //Object.assign() is a funky function but all it does is copy everything from the second object to the first object
                     const temp: DownloadedLog = Object.assign(

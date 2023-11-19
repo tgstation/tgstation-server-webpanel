@@ -9,7 +9,7 @@ import { DownloadedConfigFile } from "./models/DownloadedConfigFile";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import ServerClient from "./ServerClient";
-import TransferClient, { DownloadErrors, UploadErrors } from "./TransferClient";
+import TransferClient, { DownloadErrors, ProgressEvent, UploadErrors } from "./TransferClient";
 import configOptions from "./util/config";
 
 export type ConfigErrors =
@@ -114,7 +114,7 @@ export default new (class ConfigurationFileClient extends ApiClient {
     public async getConfigFile(
         instance: number,
         filePath: string,
-        getContent: boolean
+        getContentProgressHandler: ((progressEvent: ProgressEvent) => void) | null
     ): Promise<InternalStatus<DownloadedConfigFile, ConfigErrors | DownloadErrors>> {
         await ServerClient.wait4Init();
 
@@ -132,9 +132,12 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
         switch (response.status) {
             case 200: {
-                if (getContent) {
+                if (getContentProgressHandler) {
                     const payload = response.data as ConfigurationFileResponse;
-                    const contents = await TransferClient.Download(payload.fileTicket);
+                    const contents = await TransferClient.Download(
+                        payload.fileTicket,
+                        getContentProgressHandler
+                    );
 
                     if (contents.code === StatusCode.OK) {
                         const temp: DownloadedConfigFile = Object.assign(

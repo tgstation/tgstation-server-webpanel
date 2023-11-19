@@ -10,8 +10,16 @@ export type UploadErrors =
     | ErrorCode.TRANSFER_NOT_AVAILABLE
     | ErrorCode.UPLOAD_FAILED;
 
+export interface ProgressEvent {
+    loaded: number;
+    total: number;
+}
+
 export default new (class TransferClient extends ApiClient {
-    public async Download(ticket: string): Promise<InternalStatus<Blob, DownloadErrors>> {
+    public async Download(
+        ticket: string,
+        progressHandler: (progressEvent: ProgressEvent) => void
+    ): Promise<InternalStatus<Blob, DownloadErrors>> {
         await ServerClient.wait4Init();
 
         let response;
@@ -24,7 +32,8 @@ export default new (class TransferClient extends ApiClient {
                     headers: {
                         Accept: "application/json, application/octet-stream"
                     },
-                    format: "blob"
+                    format: "blob",
+                    onDownloadProgress: progressHandler
                 }
             );
         } catch (stat) {
