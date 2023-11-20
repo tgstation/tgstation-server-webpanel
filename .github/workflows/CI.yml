@@ -69,4 +69,4 @@ jobs:
               run: yarn install --immutable
 
             - name: Run ESLint
-              run: eslint ./src --ext .js,.jsx,.ts,.tsx
+              run: yarn eslint ./src --ext .js,.jsx,.ts,.tsx
