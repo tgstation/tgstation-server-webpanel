@@ -1,4 +1,5 @@
 import { AxiosError, AxiosInstance, AxiosResponse } from "axios";
+import { jwtDecode } from "jwt-decode";
 
 import { API_VERSION, VERSION } from "../definitions/constants";
 import { ApiClient } from "./_base";
@@ -326,12 +327,12 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         let result = false;
         // check if there's a token stored
         const bearer = localStorage.getItem("SessionToken");
-        const expiresAt = localStorage.getItem("SessionTokenExpiry");
+        const expiresAtUnixTimestampStr = localStorage.getItem("SessionTokenExpiry");
         const defaultToken = localStorage.getItem("SessionTokenDefault") == "true";
-        if (bearer && expiresAt) {
+        if (bearer && expiresAtUnixTimestampStr) {
             console.log("Found session token");
-            if (Date.parse(expiresAt) >= Date.now()) {
-                const storedToken: TokenResponse = { bearer, expiresAt };
+            if (parseInt(expiresAtUnixTimestampStr) * 1000 >= Date.now()) {
+                const storedToken: TokenResponse = { bearer };
                 result = await this.setToken(storedToken, defaultToken, true);
             } else {
                 console.log("But it was expired");
@@ -645,7 +646,11 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         }
 
         localStorage.setItem("SessionToken", token.bearer);
-        localStorage.setItem("SessionTokenExpiry", token.expiresAt);
+        const jwt = jwtDecode(token.bearer);
+        if (jwt.exp) {
+            localStorage.setItem("SessionTokenExpiry", jwt.exp.toString());
+        }
+
         localStorage.setItem("SessionTokenDefault", defaulted ? "true" : "false");
 
         this.emit("tokenAvailable", token);
