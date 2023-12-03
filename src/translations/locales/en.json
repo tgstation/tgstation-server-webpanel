@@ -357,6 +357,8 @@
     "view.instance.server.no_graceful": "You do not have permission to get or set the current graceful action.",
     "view.instance.server.no_actions": "You do not have permission to commit any actions.",
     "view.instance.server.broadcast": "Broadcast",
+    "view.instance.server.prompt.restart": "Are you sure you wish to immediately restart the server?",
+    "view.instance.server.prompt.stop": "Are you sure you wish to immediately stop the server?",
     "view.instance.graceful": "Graceful Action",
     "view.instance.graceful.desc": "This action will be applied the next time the server restarts",
     "view.instance.graceful.Restart": "Restart",

@@ -3,8 +3,8 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import { FormattedMessage } from "react-intl";
-import { gte as SemVerGte, satisfies as SemverSatisfies } from "semver";
+import { FormattedMessage, WrappedComponentProps } from "react-intl";
+import { gte as SemVerGte } from "semver";
 
 import DreamDaemonClient from "../../../../ApiClient/DreamDaemonClient";
 import {
@@ -34,7 +34,7 @@ enum GracefulAction {
     Restart
 }
 
-export default function Server(): JSX.Element {
+function Server(props: WrappedComponentProps): JSX.Element {
     const instanceEditContext = useContext(InstanceEditContext);
     const [watchdogSettings, setWatchdogSettings] = useState<DreamDaemonResponse>();
     const [loading, setLoading] = useState(false);
@@ -86,7 +86,7 @@ export default function Server(): JSX.Element {
     }
 
     async function stopWatchdog(): Promise<void> {
-        if (!confirm()) {
+        if (!confirm(props.intl.formatMessage({ id: "view.instance.server.prompt.stop" }))) {
             return;
         }
 
@@ -101,7 +101,7 @@ export default function Server(): JSX.Element {
     }
 
     async function restartWatchdog(): Promise<void> {
-        if (!confirm()) {
+        if (!confirm(props.intl.formatMessage({ id: "view.instance.server.prompt.restart" }))) {
             return;
         }
 
@@ -526,3 +526,5 @@ export default function Server(): JSX.Element {
         </div>
     );
 }
+
+export default injectIntl(Server);
