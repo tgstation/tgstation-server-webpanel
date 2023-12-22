@@ -3,7 +3,7 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import { FormattedMessage, WrappedComponentProps } from "react-intl";
+import { FormattedMessage, injectIntl, WrappedComponentProps } from "react-intl";
 import { gte as SemVerGte } from "semver";
 
 import DreamDaemonClient from "../../../../ApiClient/DreamDaemonClient";
