@@ -1,4 +1,5 @@
 import { AxiosError, AxiosInstance, AxiosResponse } from "axios";
+import { jwtDecode } from "jwt-decode";
 
 import { API_VERSION, VERSION } from "../definitions/constants";
 import { ApiClient } from "./_base";
@@ -67,7 +68,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             //This applies the authorization header, it will wait however long it needs until
             // theres a token available. It obviously won't wait for a token before sending the request
             // if its currently sending a request to the login endpoint...
-            if (value.overrideTokenDetection || !(value.url === "/" || value.url === "")) {
+            if (value.overrideTokenDetection || !(value.url === "/api" || value.url === "/api/")) {
                 const tok = await this.wait4Token();
                 (value.headers as { [key: string]: string })["Authorization"] = `Bearer ${
                     tok.bearer || ""
@@ -326,12 +327,12 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         let result = false;
         // check if there's a token stored
         const bearer = localStorage.getItem("SessionToken");
-        const expiresAt = localStorage.getItem("SessionTokenExpiry");
+        const expiresAtUnixTimestampStr = localStorage.getItem("SessionTokenExpiry");
         const defaultToken = localStorage.getItem("SessionTokenDefault") == "true";
-        if (bearer && expiresAt) {
+        if (bearer && expiresAtUnixTimestampStr) {
             console.log("Found session token");
-            if (Date.parse(expiresAt) >= Date.now()) {
-                const storedToken: TokenResponse = { bearer, expiresAt };
+            if (parseInt(expiresAtUnixTimestampStr) * 1000 >= Date.now()) {
+                const storedToken: TokenResponse = { bearer };
                 result = await this.setToken(storedToken, defaultToken, true);
             } else {
                 console.log("But it was expired");
@@ -419,7 +420,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         CredentialsProvider.default.userName.toLowerCase() &&
                     CredentialsProvider.credentials.password ==
                         CredentialsProvider.default.password;
-                response = await this.apiClient!.homeControllerCreateToken({
+                response = await this.apiClient!.api.apiRootControllerCreateToken({
                     auth: {
                         username: CredentialsProvider.credentials.userName,
                         password: CredentialsProvider.credentials.password
@@ -427,7 +428,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 });
             } else {
                 defaulted = false;
-                response = await this.apiClient!.homeControllerCreateToken({
+                response = await this.apiClient!.api.apiRootControllerCreateToken({
                     headers: {
                         OAuthProvider: CredentialsProvider.credentials.provider,
                         Authorization: `OAuth ${CredentialsProvider.credentials.token}`
@@ -568,7 +569,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await this.apiClient!.homeControllerHome();
+            response = await this.apiClient!.api.apiRootControllerServerInfo();
         } catch (stat) {
             const res = new InternalStatus<ServerInformationResponse, GenericErrors>({
                 code: StatusCode.ERROR,
@@ -625,7 +626,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         if (validate) {
             let failed;
             try {
-                const response = await this.apiClient!.homeControllerHome({
+                const response = await this.apiClient!.api.apiRootControllerServerInfo({
                     overrideTokenDetection: true
                 });
 
@@ -645,7 +646,11 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         }
 
         localStorage.setItem("SessionToken", token.bearer);
-        localStorage.setItem("SessionTokenExpiry", token.expiresAt);
+        const jwt = jwtDecode(token.bearer);
+        if (jwt.exp) {
+            localStorage.setItem("SessionTokenExpiry", jwt.exp.toString());
+        }
+
         localStorage.setItem("SessionTokenDefault", defaulted ? "true" : "false");
 
         this.emit("tokenAvailable", token);

@@ -1,4 +1,5 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faGamepad } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ComponentType } from "react";
 import Card from "react-bootstrap/Card";
@@ -8,11 +9,11 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router";
 
 import {
-    ByondRights,
     ChatBotRights,
     ConfigurationRights,
     DreamDaemonRights,
     DreamMakerRights,
+    EngineRights,
     InstancePermissionSetResponse,
     RepositoryRights
 } from "../../../ApiClient/generatedcode/generated";
@@ -30,10 +31,10 @@ import { AppRoutes, RouteData } from "../../../utils/routes";
 import AccessDenied from "../../utils/AccessDenied";
 import Loading from "../../utils/Loading";
 import WIPNotice from "../../utils/WIPNotice";
-import Byond from "./Edit/Byond";
 import ChatBots from "./Edit/ChatBots";
 import Config from "./Edit/Config";
 import { Deployment } from "./Edit/Deployment";
+import Engine from "./Edit/Engine";
 import Files from "./Edit/Files";
 import InstancePermissions from "./Edit/InstancePermissions";
 import JobHistory from "./Edit/JobHistory";
@@ -46,11 +47,13 @@ type IState = Omit<UnsafeInstanceEditContext, "user" | "serverInfo"> & {
     instanceid: number;
 };
 
-const minimumByondPerms =
-    ByondRights.ReadActive |
-    ByondRights.ListInstalled |
-    ByondRights.InstallOfficialOrChangeActiveVersion |
-    ByondRights.InstallCustomVersion;
+const minimumEnginePerms =
+    EngineRights.ReadActive |
+    EngineRights.ListInstalled |
+    EngineRights.InstallOfficialOrChangeActiveByondVersion |
+    EngineRights.InstallCustomByondVersion |
+    EngineRights.InstallOfficialOrChangeActiveOpenDreamVersion |
+    EngineRights.InstallCustomOpenDreamVersion;
 
 const minimumServerPerms =
     DreamDaemonRights.SetPort |
@@ -117,10 +120,10 @@ class InstanceEdit extends React.Component<IProps, IState> {
             Repository
         ],
         [
-            "byond",
-            "list-ul",
-            instancePermissionSet => !!(instancePermissionSet.byondRights & minimumByondPerms),
-            Byond
+            "engine",
+            faGamepad,
+            instancePermissionSet => !!(instancePermissionSet.engineRights & minimumEnginePerms),
+            Engine
         ],
         [
             "deployment",

@@ -28,7 +28,7 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.userGroup.userGroupControllerUpdate(group);
+            response = await ServerClient.apiClient!.api.userGroupControllerUpdate(group);
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -72,7 +72,7 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.userGroup.userGroupControllerList({
+            response = await ServerClient.apiClient!.api.userGroupControllerList({
                 pageSize: pageSize,
                 page: page
             });
@@ -111,7 +111,7 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.userGroup.userGroupControllerCreate({
+            response = await ServerClient.apiClient!.api.userGroupControllerCreate({
                 name: name,
                 permissionSet: permissionSet
             } as UserGroupCreateRequest);
@@ -147,7 +147,7 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.userGroup.userGroupControllerDelete(id);
+            response = await ServerClient.apiClient!.api.userGroupControllerDelete(id);
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
