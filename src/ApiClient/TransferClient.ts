@@ -24,7 +24,7 @@ export default new (class TransferClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.transfer.transferControllerDownload(
+            response = await ServerClient.apiClient!.api.transferControllerDownload(
                 {
                     ticket: ticket
                 },
@@ -79,7 +79,7 @@ export default new (class TransferClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.transfer.transferControllerUpload(
+            response = await ServerClient.apiClient!.api.transferControllerUpload(
                 {
                     ticket: ticket
                 },

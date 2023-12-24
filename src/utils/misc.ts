@@ -2,11 +2,11 @@ import { pathToRegexp } from "path-to-regexp";
 
 import {
     AdministrationRights,
-    ByondRights,
     ChatBotRights,
     ConfigurationRights,
     DreamDaemonRights,
     DreamMakerRights,
+    EngineRights,
     InstanceManagerRights,
     InstancePermissionSetResponse,
     InstancePermissionSetRights,
@@ -64,8 +64,11 @@ function hasInstanceManagerRight(
     return bitflagIsTrue(permissionSet.instanceManagerRights, right);
 }
 
-function hasByondRight(permissionSet: InstancePermissionSetResponse, right: ByondRights): boolean {
-    return bitflagIsTrue(permissionSet.byondRights, right);
+function hasEngineRight(
+    permissionSet: InstancePermissionSetResponse,
+    right: EngineRights
+): boolean {
+    return bitflagIsTrue(permissionSet.engineRights, right);
 }
 
 function hasChatBotRight(
@@ -124,7 +127,7 @@ export {
     resolvePermissionSet,
     bitflagIsTrue,
     hasAdminRight,
-    hasByondRight,
+    hasEngineRight,
     hasConfigRight,
     hasRepoRight,
     hasChatBotRight,

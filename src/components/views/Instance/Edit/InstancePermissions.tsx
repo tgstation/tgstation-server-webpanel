@@ -9,11 +9,11 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import {
     AdministrationRights,
-    ByondRights,
     ChatBotRights,
     ConfigurationRights,
     DreamDaemonRights,
     DreamMakerRights,
+    EngineRights,
     InstanceManagerRights,
     InstancePermissionSetResponse,
     InstancePermissionSetRights,
@@ -62,7 +62,7 @@ interface IState {
     currentPermissions: InstancePermissionSetResponse | null;
     permsinstancepermissionset: Record<string, Permission>;
     permsrepository: Record<string, Permission>;
-    permsbyond: Record<string, Permission>;
+    permsengine: Record<string, Permission>;
     permsdreammaker: Record<string, Permission>;
     permsdreamdaemon: Record<string, Permission>;
     permschatbots: Record<string, Permission>;
@@ -89,7 +89,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
                 permissionSetId: 0,
                 instancePermissionSetRights: 0,
                 repositoryRights: 0,
-                byondRights: 0,
+                engineRights: 0,
                 dreamMakerRights: 0,
                 dreamDaemonRights: 0,
                 chatBotRights: 0,
@@ -99,7 +99,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             selectedPermissionSetId: 0,
             permsinstancepermissionset: {},
             permsrepository: {},
-            permsbyond: {},
+            permsengine: {},
             permsdreammaker: {},
             permsdreamdaemon: {},
             permschatbots: {},
@@ -161,7 +161,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
             "permsinstancepermissionset"
         );
         loadEnum(RepositoryRights, "repositoryRights", "permsrepository");
-        loadEnum(ByondRights, "byondRights", "permsbyond");
+        loadEnum(EngineRights, "engineRights", "permsengine");
         loadEnum(DreamMakerRights, "dreamMakerRights", "permsdreammaker");
         loadEnum(DreamDaemonRights, "dreamDaemonRights", "permsdreamdaemon");
         loadEnum(ChatBotRights, "chatBotRights", "permschatbots");
@@ -613,8 +613,8 @@ class InstancePermissions extends React.Component<IProps, IState> {
                         title={<FormattedMessage id="perms.repository" />}>
                         {this.renderPerms("permsrepository", "repository", canEdit)}
                     </Tab>
-                    <Tab eventKey="byondperms" title={<FormattedMessage id="perms.byond" />}>
-                        {this.renderPerms("permsbyond", "byond", canEdit)}
+                    <Tab eventKey="engineperms" title={<FormattedMessage id="perms.engine" />}>
+                        {this.renderPerms("permsengine", "engine", canEdit)}
                     </Tab>
                     <Tab
                         eventKey="dreammakerperms"
@@ -653,7 +653,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
         enumname:
             | "permsinstancepermissionset"
             | "permsrepository"
-            | "permsbyond"
+            | "permsengine"
             | "permsdreammaker"
             | "permsdreamdaemon"
             | "permschatbots"
@@ -725,8 +725,8 @@ class InstancePermissions extends React.Component<IProps, IState> {
                 case "permsrepository":
                     rightsType = "RepositoryRights";
                     break;
-                case "permsbyond":
-                    rightsType = "ByondRights";
+                case "permsengine":
+                    rightsType = "EngineRights";
                     break;
                 case "permsdreammaker":
                     rightsType = "DreamMakerRights";
@@ -744,7 +744,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
 
             const newset = Object.assign(Object.assign({}, this.state.currentPermissions), {
                 [rightsType]: bitflag
-            } as { InstancePermissionSetRights: InstancePermissionSetRights } | { RepositoryRights: RepositoryRights } | { ByondRights: ByondRights } | { DreamMakerRights: DreamMakerRights } | { DreamDaemonRights: DreamDaemonRights } | { ChatBotRights: ChatBotRights } | { ConfigurationRights: ConfigurationRights });
+            } as { InstancePermissionSetRights: InstancePermissionSetRights } | { RepositoryRights: RepositoryRights } | { EngineRights: EngineRights } | { DreamMakerRights: DreamMakerRights } | { DreamDaemonRights: DreamDaemonRights } | { ChatBotRights: ChatBotRights } | { ConfigurationRights: ConfigurationRights });
 
             const response = await InstancePermissionSetClient.updateInstancePermissionSet(
                 this.context.instance.id,

@@ -5,11 +5,11 @@ import { TypedEmitter } from "tiny-typed-emitter";
 import { resolvePermissionSet } from "../../utils/misc";
 import {
     AdministrationRights,
-    ByondRights,
     ChatBotRights,
     ConfigurationRights,
     DreamDaemonRights,
     DreamMakerRights,
+    EngineRights,
     ErrorCode as TGSErrorCode,
     InstanceManagerRights,
     InstancePermissionSetRights,
@@ -242,7 +242,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
 
         const localConnection = (this.connection = new signalR.HubConnectionBuilder()
-            .withUrl(`${apiPath}hubs/jobs`, {
+            .withUrl(`${apiPath}api/hubs/jobs`, {
                 accessTokenFactory: async () => {
                     const token = await ServerClient.wait4Token();
                     return token.bearer;
@@ -632,13 +632,13 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     return false;
                 }
             }
-            case RightsType.Byond: {
+            case RightsType.Engine: {
                 const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
                     job.instanceId
                 );
                 if (InstancePermissionSet.code === StatusCode.OK) {
-                    const required = job.cancelRight as ByondRights;
-                    return !!(InstancePermissionSet.payload.byondRights & required);
+                    const required = job.cancelRight as EngineRights;
+                    return !!(InstancePermissionSet.payload.engineRights & required);
                 } else {
                     errors.push(InstancePermissionSet.error);
                     return false;

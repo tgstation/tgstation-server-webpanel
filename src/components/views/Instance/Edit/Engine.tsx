@@ -9,13 +9,19 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 
-import ByondClient from "../../../../ApiClient/ByondClient";
-import { ByondResponse, ByondRights } from "../../../../ApiClient/generatedcode/generated";
+import EngineClient from "../../../../ApiClient/EngineClient";
+import {
+    EngineResponse,
+    EngineRights,
+    EngineType,
+    EngineVersion
+} from "../../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../../ApiClient/models/InternalComms/InternalStatus";
 import JobsController from "../../../../ApiClient/util/JobsController";
 import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
-import { hasByondRight } from "../../../../utils/misc";
+import GithubClient from "../../../../utils/GithubClient";
+import { hasEngineRight } from "../../../../utils/misc";
 import { RouteData } from "../../../../utils/routes";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import GenericAlert from "../../../utils/GenericAlert";
@@ -27,27 +33,36 @@ interface IProps {}
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
-    versions: ByondResponse[];
-    activeVersion?: string | null;
-    latestVersion: string;
-    selectedVersion: string;
+    versions: EngineResponse[];
+    activeVersion?: EngineVersion;
+    latestByondVersion: EngineVersion;
+    latestODVersion: EngineVersion;
+    selectedByondVersion?: EngineVersion;
+    selectedODVersion?: EngineVersion;
     loading: boolean;
     customFile?: File | null;
     page: number;
     maxPage?: number;
 }
 
-class Byond extends React.Component<IProps, IState> {
+class Engine extends React.Component<IProps, IState> {
     public declare context: InstanceEditContext;
     public constructor(props: IProps) {
         super(props);
 
+        const initByond = {
+            version: "514.1589",
+            engine: EngineType.Byond
+        };
+        const initOD = {
+            engine: EngineType.OpenDream,
+            sourceSHA: "fab769776dada6b9bcad546094d78c604049e0e9"
+        };
         this.state = {
             versions: [],
             errors: [],
-            activeVersion: "",
-            latestVersion: "",
-            selectedVersion: "",
+            latestByondVersion: initByond,
+            latestODVersion: initOD,
             loading: true,
             page: RouteData.byondlistpage ?? 1
         };
@@ -64,8 +79,8 @@ class Byond extends React.Component<IProps, IState> {
     }
 
     private async loadVersions() {
-        if (hasByondRight(this.context.instancePermissionSet, ByondRights.ListInstalled)) {
-            const response = await ByondClient.listAllVersions(this.context.instance.id, {
+        if (hasEngineRight(this.context.instancePermissionSet, EngineRights.ListInstalled)) {
+            const response = await EngineClient.listAllVersions(this.context.instance.id, {
                 page: this.state.page
             });
             if (response.code === StatusCode.OK) {
@@ -88,11 +103,11 @@ class Byond extends React.Component<IProps, IState> {
             }
         }
 
-        if (hasByondRight(this.context.instancePermissionSet, ByondRights.ReadActive)) {
-            const response2 = await ByondClient.getActiveVersion(this.context.instance.id);
+        if (hasEngineRight(this.context.instancePermissionSet, EngineRights.ReadActive)) {
+            const response2 = await EngineClient.getActiveVersion(this.context.instance.id);
             if (response2.code === StatusCode.OK) {
                 this.setState({
-                    activeVersion: response2.payload.version
+                    activeVersion: response2.payload.engineVersion
                 });
             } else {
                 this.addError(response2.error);
@@ -100,11 +115,11 @@ class Byond extends React.Component<IProps, IState> {
         }
     }
 
-    private async switchVersion(version: string, useCustom: boolean): Promise<void> {
+    private async switchVersion(version: EngineVersion, useCustom: boolean): Promise<void> {
         this.setState({
             loading: true
         });
-        const response = await ByondClient.switchActive(
+        const response = await EngineClient.switchActive(
             this.context.instance.id,
             version,
             useCustom && this.state.customFile
@@ -145,16 +160,19 @@ class Byond extends React.Component<IProps, IState> {
     }
 
     public async componentDidMount(): Promise<void> {
-        await this.loadVersions();
-
+        const odGetPromise = GithubClient.getLatestDefaultCommit("OpenDreamProject", "OpenDream");
         fetch("https://secure.byond.com/download/version.txt")
             .then(res => res.text())
             .then(data => data.split("\n"))
             .then(versions => versions[0])
             .then(version => {
+                const engineVersion: EngineVersion = {
+                    engine: EngineType.Byond,
+                    version
+                };
                 this.setState({
-                    latestVersion: version,
-                    selectedVersion: version,
+                    latestByondVersion: engineVersion,
+                    selectedByondVersion: engineVersion,
                     loading: false
                 });
             })
@@ -164,6 +182,30 @@ class Byond extends React.Component<IProps, IState> {
                     loading: false
                 });
             });
+
+        await this.loadVersions();
+
+        const odLatestCommit = await odGetPromise;
+        if (odLatestCommit.code === StatusCode.ERROR) {
+            this.addError(odLatestCommit.error);
+            return;
+        }
+
+        const newVer = {
+            engine: EngineType.OpenDream,
+            sourceSHA: odLatestCommit.payload
+        };
+
+        this.setState(prev => {
+            return {
+                latestODVersion: newVer,
+                selectedODVersion:
+                    this.makeUniqueStringForVersion(prev.latestODVersion) ==
+                    this.makeUniqueStringForVersion(prev.selectedODVersion ?? prev.latestODVersion)
+                        ? newVer
+                        : prev.selectedODVersion
+            };
+        });
     }
 
     public render(): React.ReactNode {
@@ -171,42 +213,32 @@ class Byond extends React.Component<IProps, IState> {
             return <Loading text="loading.byond" />;
         }
 
-        const canSeeVersions = hasByondRight(
+        const canSeeVersions = hasEngineRight(
             this.context.instancePermissionSet,
-            ByondRights.ListInstalled
+            EngineRights.ListInstalled
         );
-        const canSeeCurrent = hasByondRight(
+        const canSeeCurrent = hasEngineRight(
             this.context.instancePermissionSet,
-            ByondRights.ReadActive
+            EngineRights.ReadActive
         );
-        const canInstallCustom = hasByondRight(
+        const canInstallAndSwitchByond = hasEngineRight(
             this.context.instancePermissionSet,
-            ByondRights.InstallCustomVersion
+            EngineRights.InstallOfficialOrChangeActiveByondVersion
         );
-        const canInstallAndSwitch = hasByondRight(
+        const canInstallAndSwitchOD = hasEngineRight(
             this.context.instancePermissionSet,
-            ByondRights.InstallOfficialOrChangeActiveVersion
+            EngineRights.InstallOfficialOrChangeActiveOpenDreamVersion
         );
-        const canDelete = hasByondRight(
+        const canDelete = hasEngineRight(
             this.context.instancePermissionSet,
-            ByondRights.DeleteInstall
+            EngineRights.DeleteInstall
         );
-
-        const tooltip = (innerid?: string) => {
-            if (!innerid) return <React.Fragment />;
-
-            return (
-                <Tooltip id={innerid}>
-                    <FormattedMessage id={innerid} />
-                </Tooltip>
-            );
-        };
 
         return (
             <div className="text-center">
-                <DebugJsonViewer obj={this.state.versions} />
+                <DebugJsonViewer obj={this.state} />
                 <h1>
-                    <FormattedMessage id="view.instance.byond" />
+                    <FormattedMessage id="view.instance.engine" />
                 </h1>
                 {this.state.errors.map((err, index) => {
                     if (!err) return;
@@ -229,29 +261,45 @@ class Byond extends React.Component<IProps, IState> {
                 {canSeeVersions ? (
                     <>
                         {!canSeeCurrent ? (
-                            <GenericAlert title="view.instance.byond.current_denied" />
+                            <GenericAlert title="view.instance.engine.current_denied" />
                         ) : null}
                         <div>
-                            {this.state.versions.map(version => {
+                            {this.state.versions.map(item => {
                                 // noinspection JSBitwiseOperatorUsage
                                 return (
                                     <InputGroup
                                         className="w-md-25 mb-1 mx-auto d-flex"
-                                        key={version.version}>
-                                        {canInstallAndSwitch || canSeeCurrent ? (
+                                        key={this.makeUniqueStringForVersion(item.engineVersion)}>
+                                        {canInstallAndSwitchByond || canSeeCurrent ? (
                                             <InputGroup.Prepend>
                                                 <InputGroup.Radio
                                                     name="byond"
-                                                    id={version.version!}
-                                                    value={version.version!}
-                                                    disabled={!canInstallAndSwitch}
+                                                    id={this.makeUniqueStringForVersion(
+                                                        item.engineVersion
+                                                    )}
+                                                    value={Engine.friendlyVersion(
+                                                        item.engineVersion
+                                                    )}
+                                                    disabled={
+                                                        item.engineVersion.engine ===
+                                                        EngineType.Byond
+                                                            ? !canInstallAndSwitchByond
+                                                            : item.engineVersion.engine ===
+                                                              EngineType.OpenDream
+                                                            ? !canInstallAndSwitchOD
+                                                            : false
+                                                    }
                                                     checked={
-                                                        version.version! ===
-                                                        this.state.activeVersion
+                                                        this.makeUniqueStringForVersion(
+                                                            item.engineVersion
+                                                        ) ===
+                                                        this.makeUniqueStringForVersion(
+                                                            this.state.activeVersion
+                                                        )
                                                     }
                                                     onChange={async () => {
                                                         await this.switchVersion(
-                                                            version.version!,
+                                                            item.engineVersion,
                                                             false
                                                         );
                                                     }}
@@ -260,11 +308,15 @@ class Byond extends React.Component<IProps, IState> {
                                         ) : null}
                                         <label
                                             className="flex-grow-1 m-0"
-                                            htmlFor={version.version!}>
+                                            htmlFor={this.makeUniqueStringForVersion(
+                                                item.engineVersion
+                                            )}>
                                             <OverlayTrigger
-                                                overlay={tooltip("view.instance.byond.custom")}
+                                                overlay={this.tooltip(
+                                                    "view.instance.engine.custom"
+                                                )}
                                                 show={
-                                                    !version.version!.endsWith(".0")
+                                                    item.engineVersion.customIteration
                                                         ? undefined
                                                         : false
                                                 }>
@@ -272,13 +324,8 @@ class Byond extends React.Component<IProps, IState> {
                                                     <InputGroup.Text
                                                         className="w-100"
                                                         {...triggerHandler}>
-                                                        {version.version!.endsWith(".0")
-                                                            ? version.version!.substr(
-                                                                  0,
-                                                                  version.version!.length - 2
-                                                              )
-                                                            : version.version}
-                                                        {!version.version!.endsWith(".0") ? (
+                                                        {Engine.friendlyVersion(item.engineVersion)}
+                                                        {item.engineVersion.customIteration ? (
                                                             <div
                                                                 className={"ml-auto"}
                                                                 ref={
@@ -294,10 +341,13 @@ class Byond extends React.Component<IProps, IState> {
                                                 )}
                                             </OverlayTrigger>
                                         </label>
-                                        {version.version! !== this.state.activeVersion ? (
+                                        {this.makeUniqueStringForVersion(item.engineVersion) !==
+                                        this.makeUniqueStringForVersion(
+                                            this.state.activeVersion
+                                        ) ? (
                                             <InputGroup.Append>
                                                 <OverlayTrigger
-                                                    overlay={tooltip("generic.no_perm")}
+                                                    overlay={this.tooltip("generic.no_perm")}
                                                     show={!canDelete ? undefined : false}>
                                                     <Button
                                                         variant="danger"
@@ -306,9 +356,9 @@ class Byond extends React.Component<IProps, IState> {
                                                             this.setState({
                                                                 loading: true
                                                             });
-                                                            const response = await ByondClient.deleteVersion(
+                                                            const response = await EngineClient.deleteVersion(
                                                                 this.context.instance.id,
-                                                                version.version!
+                                                                item.engineVersion
                                                             );
                                                             if (
                                                                 response.code === StatusCode.ERROR
@@ -346,29 +396,62 @@ class Byond extends React.Component<IProps, IState> {
                     </>
                 ) : canSeeCurrent ? (
                     <>
-                        <GenericAlert title="view.instance.byond.list_denied" />
+                        <GenericAlert title="view.instance.engine.list_denied" />
                         <FormattedMessage
-                            id="view.instance.byond.current_version"
+                            id="view.instance.engine.current_version"
                             values={{ version: this.state.activeVersion }}
                         />
                     </>
                 ) : (
-                    <GenericAlert title="view.instance.byond.current_and_list_denied" />
+                    <GenericAlert title="view.instance.engine.current_and_list_denied" />
                 )}
                 <hr />
+                {this.renderByondInstall()}
+                <hr />
+                {this.renderODInstall()}
+            </div>
+        );
+    }
+
+    private tooltip(innerid?: string): JSX.Element {
+        if (!innerid) return <React.Fragment />;
+
+        return (
+            <Tooltip id={innerid}>
+                <FormattedMessage id={innerid} />
+            </Tooltip>
+        );
+    }
+
+    private renderByondInstall(): React.ReactNode {
+        const canInstallCustomByond = hasEngineRight(
+            this.context.instancePermissionSet,
+            EngineRights.InstallCustomByondVersion
+        );
+        const canInstallAndSwitchByond = hasEngineRight(
+            this.context.instancePermissionSet,
+            EngineRights.InstallOfficialOrChangeActiveByondVersion
+        );
+        return (
+            <React.Fragment>
                 <h4>
-                    <FormattedMessage id="view.instance.byond.add" />
+                    <FormattedMessage id="view.instance.engine.add_byond" />
                 </h4>
                 <InputGroup className="w-md-50 w-lg-25 mb-3 mx-auto">
                     <FormControl
                         type="number"
-                        defaultValue={this.state.latestVersion.split(".")[0]}
+                        defaultValue={this.state.latestByondVersion.version!.split(".")[0]}
                         onChange={e => {
                             this.setState(prev => {
-                                const arr = prev.selectedVersion.split(".");
+                                const arr = (
+                                    prev.selectedByondVersion ?? prev.latestByondVersion
+                                ).version!.split(".");
                                 arr[0] = e.target.value;
                                 return {
-                                    selectedVersion: arr.join(".")
+                                    selectedByondVersion: {
+                                        engine: EngineType.Byond,
+                                        version: arr.join(".")
+                                    }
                                 };
                             });
                         }}
@@ -376,26 +459,35 @@ class Byond extends React.Component<IProps, IState> {
                     <InputGroup.Text className="rounded-0">.</InputGroup.Text>
                     <FormControl
                         type="number"
-                        defaultValue={this.state.latestVersion.split(".")[1]}
+                        defaultValue={this.state.latestByondVersion.version!.split(".")[1]}
                         onChange={e => {
                             this.setState(prev => {
-                                const arr = prev.selectedVersion.split(".");
+                                const arr = (
+                                    prev.selectedByondVersion ?? prev.latestByondVersion
+                                ).version!.split(".");
                                 arr[1] = e.target.value;
                                 return {
-                                    selectedVersion: arr.join(".")
+                                    selectedByondVersion: {
+                                        engine: EngineType.Byond,
+                                        version: arr.join(".")
+                                    }
                                 };
                             });
                         }}
                     />
                     <InputGroup.Append>
                         <OverlayTrigger
-                            overlay={tooltip("generic.no_perm")}
-                            show={!canInstallAndSwitch ? undefined : false}>
+                            overlay={this.tooltip("generic.no_perm")}
+                            show={!canInstallAndSwitchByond ? undefined : false}>
                             <Button
                                 variant="success"
-                                disabled={!canInstallAndSwitch}
+                                disabled={!canInstallAndSwitchByond}
                                 onClick={async () => {
-                                    await this.switchVersion(this.state.selectedVersion, true);
+                                    await this.switchVersion(
+                                        this.state.selectedByondVersion ??
+                                            this.state.latestByondVersion,
+                                        true
+                                    );
                                 }}>
                                 <FontAwesomeIcon icon={faPlus} />
                             </Button>
@@ -404,18 +496,18 @@ class Byond extends React.Component<IProps, IState> {
                 </InputGroup>
                 <Form>
                     <OverlayTrigger
-                        overlay={tooltip("generic.no_perm")}
-                        show={!canInstallCustom ? undefined : false}>
+                        overlay={this.tooltip("generic.no_perm")}
+                        show={!canInstallCustomByond ? undefined : false}>
                         <Form.File
                             custom
                             id="test"
-                            disabled={!canInstallCustom}
+                            disabled={!canInstallCustomByond}
                             className="w-md-50 w-lg-25 text-left"
                             label={
                                 this.state.customFile ? (
                                     this.state.customFile.name
                                 ) : (
-                                    <FormattedMessage id="view.instance.byond.upload" />
+                                    <FormattedMessage id="view.instance.engine.upload" />
                                 )
                             }
                             accept=".zip"
@@ -427,9 +519,119 @@ class Byond extends React.Component<IProps, IState> {
                         />
                     </OverlayTrigger>
                 </Form>
-            </div>
+            </React.Fragment>
         );
     }
+    private renderODInstall(): React.ReactNode {
+        const canInstallCustomOD = hasEngineRight(
+            this.context.instancePermissionSet,
+            EngineRights.InstallCustomOpenDreamVersion
+        );
+        const canInstallAndSwitchOD = hasEngineRight(
+            this.context.instancePermissionSet,
+            EngineRights.InstallOfficialOrChangeActiveOpenDreamVersion
+        );
+        return (
+            <React.Fragment>
+                <h4>
+                    <FormattedMessage id="view.instance.engine.add_od" />
+                </h4>
+                <InputGroup className="w-md-50 w-lg-25 mb-3 mx-auto">
+                    <FormControl
+                        type="string"
+                        defaultValue={this.state.latestODVersion.sourceSHA!}
+                        value={
+                            (this.state.selectedODVersion ?? this.state.latestODVersion).sourceSHA!
+                        }
+                        onChange={e => {
+                            this.setState({
+                                selectedODVersion: {
+                                    engine: EngineType.OpenDream,
+                                    sourceSHA: e.target.value
+                                }
+                            });
+                        }}
+                    />
+                    <InputGroup.Append>
+                        <OverlayTrigger
+                            overlay={this.tooltip("generic.no_perm")}
+                            show={!canInstallAndSwitchOD ? undefined : false}>
+                            <Button
+                                variant="success"
+                                disabled={!canInstallAndSwitchOD}
+                                onClick={async () => {
+                                    await this.switchVersion(
+                                        this.state.selectedODVersion ?? this.state.latestODVersion,
+                                        true
+                                    );
+                                }}>
+                                <FontAwesomeIcon icon={faPlus} />
+                            </Button>
+                        </OverlayTrigger>
+                    </InputGroup.Append>
+                </InputGroup>
+                <Form>
+                    <OverlayTrigger
+                        overlay={this.tooltip("generic.no_perm")}
+                        show={!canInstallCustomOD ? undefined : false}>
+                        <Form.File
+                            custom
+                            id="test"
+                            disabled={!canInstallCustomOD}
+                            className="w-md-50 w-lg-25 text-left"
+                            label={
+                                this.state.customFile ? (
+                                    this.state.customFile.name
+                                ) : (
+                                    <FormattedMessage id="view.instance.engine.upload" />
+                                )
+                            }
+                            accept=".zip"
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                this.setState({
+                                    customFile: e.target.files ? e.target.files[0] : null
+                                });
+                            }}
+                        />
+                    </OverlayTrigger>
+                </Form>
+            </React.Fragment>
+        );
+    }
+
+    private makeUniqueStringForVersion(engineVersion?: EngineVersion): string {
+        if (!engineVersion) {
+            return "null-version";
+        }
+
+        return `${engineVersion.engine}-${engineVersion.version ?? "null"}-${
+            engineVersion.sourceSHA ?? "null"
+        }-${engineVersion.customIteration ?? "null"}`;
+    }
+
+    public static friendlyVersion(engineVersion: EngineVersion): string {
+        let baseVersion: string;
+        switch (engineVersion.engine) {
+            case EngineType.Byond:
+                baseVersion = engineVersion.version!;
+                if (baseVersion.endsWith(".0")) {
+                    baseVersion = baseVersion.substring(0, baseVersion.length - 2);
+                }
+                break;
+            case EngineType.OpenDream:
+                baseVersion = `OD-${engineVersion.sourceSHA!.substring(0, 7)}`;
+                break;
+            default:
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                throw new Error(`Unknown engine type: ${engineVersion.engine}`);
+        }
+
+        if (engineVersion.customIteration) {
+            return `${baseVersion} (${engineVersion.customIteration})`;
+        }
+
+        return baseVersion;
+    }
 }
-Byond.contextType = InstanceEditContext;
-export default Byond;
+Engine.contextType = InstanceEditContext;
+export default Engine;
