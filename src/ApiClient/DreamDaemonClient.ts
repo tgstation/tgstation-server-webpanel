@@ -19,7 +19,7 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerRead({
+            response = await ServerClient.apiClient!.api.dreamDaemonControllerRead({
                 headers: {
                     Instance: instance.toString()
                 }
@@ -71,14 +71,11 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerUpdate(
-                newSettings,
-                {
-                    headers: {
-                        Instance: instance.toString()
-                    }
+            response = await ServerClient.apiClient!.api.dreamDaemonControllerUpdate(newSettings, {
+                headers: {
+                    Instance: instance.toString()
                 }
-            );
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -125,7 +122,7 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerCreate({
+            response = await ServerClient.apiClient!.api.dreamDaemonControllerCreate({
                 headers: {
                     Instance: instance.toString()
                 }
@@ -162,7 +159,7 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerDelete({
+            response = await ServerClient.apiClient!.api.dreamDaemonControllerDelete({
                 headers: {
                     Instance: instance.toString()
                 }
@@ -201,7 +198,7 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerRestart({
+            response = await ServerClient.apiClient!.api.dreamDaemonControllerRestart({
                 headers: {
                     Instance: instance.toString()
                 }
@@ -240,7 +237,7 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamDaemon.dreamDaemonControllerCreateDump({
+            response = await ServerClient.apiClient!.api.dreamDaemonControllerCreateDump({
                 headers: {
                     Instance: instance.toString()
                 }

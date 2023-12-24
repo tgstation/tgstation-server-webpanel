@@ -12,6 +12,7 @@ import {
     faFileAlt,
     faFolderMinus,
     faFolderPlus,
+    faGamepad,
     faHashtag,
     faMinus,
     faUnlock,
@@ -98,6 +99,7 @@ export default function (): void {
         faClipboard,
         faArrowLeft,
         faAngleRight,
-        faUpload
+        faUpload,
+        faGamepad
     );
 }

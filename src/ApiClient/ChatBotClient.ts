@@ -26,7 +26,7 @@ export default new (class ChatBotClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.chat.chatControllerList(
+            response = await ServerClient.apiClient!.api.chatControllerList(
                 { page, pageSize },
                 {
                     headers: {
@@ -69,7 +69,7 @@ export default new (class ChatBotClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.chat.chatControllerCreate(chatBot, {
+            response = await ServerClient.apiClient!.api.chatControllerCreate(chatBot, {
                 headers: {
                     Instance: instance.toString()
                 }
@@ -109,7 +109,7 @@ export default new (class ChatBotClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.chat.chatControllerUpdate(chatBot, {
+            response = await ServerClient.apiClient!.api.chatControllerUpdate(chatBot, {
                 headers: {
                     Instance: instance.toString()
                 }
@@ -167,7 +167,7 @@ export default new (class ChatBotClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.chat.chatControllerGetId(chatBotId, {
+            response = await ServerClient.apiClient!.api.chatControllerGetId(chatBotId, {
                 headers: {
                     Instance: instance.toString()
                 }
@@ -219,7 +219,7 @@ export default new (class ChatBotClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.chat.chatControllerDelete(chatBotId, {
+            response = await ServerClient.apiClient!.api.chatControllerDelete(chatBotId, {
                 headers: {
                     Instance: instance.toString()
                 }

@@ -48,7 +48,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
         await ServerClient.wait4Init();
         let response;
         try {
-            response = await ServerClient.apiClient!.user.userControllerUpdate(newUser);
+            response = await ServerClient.apiClient!.api.userControllerUpdate(newUser);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -119,7 +119,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
         let response;
         try {
             // UserController_Read
-            response = await ServerClient.apiClient!.user.userControllerRead();
+            response = await ServerClient.apiClient!.api.userControllerRead();
         } catch (stat) {
             const res = new InternalStatus<UserResponse, GenericErrors>({
                 code: StatusCode.ERROR,
@@ -166,7 +166,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.user.userControllerList({
+            response = await ServerClient.apiClient!.api.userControllerList({
                 page: page,
                 pageSize: pageSize
             });
@@ -209,7 +209,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.user.userControllerGetId(id);
+            response = await ServerClient.apiClient!.api.userControllerGetId(id);
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -280,7 +280,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.user.userControllerCreate(
+            response = await ServerClient.apiClient!.api.userControllerCreate(
                 newuser as UserCreateRequest
             );
         } catch (stat) {

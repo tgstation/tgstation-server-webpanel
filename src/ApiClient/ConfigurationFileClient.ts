@@ -28,7 +28,7 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.config.configurationControllerCreateDirectory(
+            response = await ServerClient.apiClient!.api.configurationControllerCreateDirectory(
                 path,
                 {
                     headers: {
@@ -73,7 +73,7 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.config.configurationControllerUpdate(
+            response = await ServerClient.apiClient!.api.configurationControllerUpdate(
                 fileRequest,
                 {
                     headers: { Instance: instance.toString() }
@@ -120,7 +120,7 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.config.configurationControllerFile(filePath, {
+            response = await ServerClient.apiClient!.api.configurationControllerFile(filePath, {
                 headers: { Instance: instance.toString() }
             });
         } catch (stat) {
@@ -190,7 +190,7 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.config.configurationControllerDirectory(
+            response = await ServerClient.apiClient!.api.configurationControllerDirectory(
                 {
                     directoryPath,
                     pageSize: pageSize,
@@ -245,7 +245,7 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.config.configurationControllerList(
+            response = await ServerClient.apiClient!.api.configurationControllerList(
                 {
                     pageSize: pageSize,
                     page: page
@@ -287,7 +287,7 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.config.configurationControllerDeleteDirectory(
+            response = await ServerClient.apiClient!.api.configurationControllerDeleteDirectory(
                 directory,
                 { headers: { Instance: instance.toString() } }
             );

@@ -116,6 +116,36 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
         });
     }
 
+    public async getLatestDefaultCommit(
+        owner: string,
+        repo: string
+    ): Promise<InternalStatus<string, ErrorCode.GITHUB_FAIL>> {
+        try {
+            const repoData = await this.apiClient.repos.get({
+                owner,
+                repo
+            });
+
+            const branch = await this.apiClient.repos.getBranch({
+                owner,
+                repo,
+                branch: repoData.data.default_branch
+            });
+
+            return new InternalStatus({
+                code: StatusCode.OK,
+                payload: branch.data.commit.sha
+            });
+        } catch (e) {
+            return new InternalStatus<string, ErrorCode.GITHUB_FAIL>({
+                code: StatusCode.ERROR,
+                error: new InternalError(ErrorCode.GITHUB_FAIL, {
+                    jsError: e as RequestError
+                })
+            });
+        }
+    }
+
     public async getVersions({
         owner,
         repo,

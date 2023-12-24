@@ -8,11 +8,15 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import YAML from "yaml";
 
-import ByondClient from "../../../ApiClient/ByondClient";
 import ConfigurationFileClient from "../../../ApiClient/ConfigurationFileClient";
 import DreamDaemonClient from "../../../ApiClient/DreamDaemonClient";
 import DreamMakerClient from "../../../ApiClient/DreamMakerClient";
-import { ConfigurationType, DreamDaemonSecurity } from "../../../ApiClient/generatedcode/generated";
+import EngineClient from "../../../ApiClient/EngineClient";
+import {
+    ConfigurationType,
+    DreamDaemonSecurity,
+    EngineType
+} from "../../../ApiClient/generatedcode/generated";
 import InstanceClient from "../../../ApiClient/InstanceClient";
 import InternalError, { ErrorCode } from "../../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStatus";
@@ -541,10 +545,13 @@ class InstanceCreate extends React.Component<IProps, IState> {
                         values={{ version: yml.byond }}
                     />
                 );
-                const byondResult = await ByondClient.switchActive(instanceId, yml.byond);
+                const engineResult = await EngineClient.switchActive(instanceId, {
+                    version: yml.byond,
+                    engine: EngineType.Byond
+                });
 
-                if (byondResult.code === StatusCode.ERROR) {
-                    this.addError(byondResult.error);
+                if (engineResult.code === StatusCode.ERROR) {
+                    this.addError(engineResult.error);
                     this.setState({
                         performingQuickSetup: false
                     });
@@ -552,7 +559,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
                     return;
                 }
 
-                JobsController.registerJob(byondResult.payload.installJob!, instanceId);
+                JobsController.registerJob(engineResult.payload.installJob!, instanceId);
             }
 
             if (secLevel != DreamDaemonSecurity.Safe) {

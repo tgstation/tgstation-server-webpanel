@@ -26,7 +26,7 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamMaker.dreamMakerControllerRead({
+            response = await ServerClient.apiClient!.api.dreamMakerControllerRead({
                 headers: {
                     Instance: instance.toString()
                 }
@@ -65,7 +65,7 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamMaker.dreamMakerControllerCreate({
+            response = await ServerClient.apiClient!.api.dreamMakerControllerCreate({
                 headers: {
                     Instance: instance.toString()
                 }
@@ -105,14 +105,11 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamMaker.dreamMakerControllerUpdate(
-                settings,
-                {
-                    headers: {
-                        Instance: instance.toString()
-                    }
+            response = await ServerClient.apiClient!.api.dreamMakerControllerUpdate(settings, {
+                headers: {
+                    Instance: instance.toString()
                 }
-            );
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -166,7 +163,7 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamMaker.dreamMakerControllerList(
+            response = await ServerClient.apiClient!.api.dreamMakerControllerList(
                 { page, pageSize },
                 {
                     headers: {
@@ -209,14 +206,11 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.dreamMaker.dreamMakerControllerGetId(
-                compileJob,
-                {
-                    headers: {
-                        Instance: instance.toString()
-                    }
+            response = await ServerClient.apiClient!.api.dreamMakerControllerGetId(compileJob, {
+                headers: {
+                    Instance: instance.toString()
                 }
-            );
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

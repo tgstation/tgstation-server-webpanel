@@ -11,15 +11,3 @@ declare global {
         publicPath: string;
     }
 }
-
-/*
-AdminClient: AdminClient;
-        ByondClient: ByondClient;
-        InstanceClient: InstanceClient;
-        InstancePermissionSetClient: InstancePermissionSetClient;
-        JobsClient: JobsClient;
-        ServerClient: ServerClient;
-        TransferClient: TransferClient;
-        UserClient: UserClient;
-        UserGroupClient: UserGroupClient;
- */
