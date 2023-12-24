@@ -11,7 +11,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import ReactMarkdown from "react-markdown";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { SemVer } from "semver";
+import { gte, lte, SemVer } from "semver";
 import YAML from "yaml";
 
 import AdminClient, { UpdateErrors } from "../../../ApiClient/AdminClient";
@@ -362,8 +362,8 @@ class Update extends React.Component<IProps, IState> {
             .filter(changelist => {
                 const changelistVersionSemver = new SemVer(changelist.Version);
                 return (
-                    changelistVersionSemver >= lowerVersionSemver &&
-                    changelistVersionSemver <= higherVersionSemver
+                    gte(changelistVersionSemver, lowerVersionSemver) &&
+                    lte(changelistVersionSemver, higherVersionSemver)
                 );
             })
             .sort((changelistA, changelistB) =>
@@ -383,7 +383,10 @@ class Update extends React.Component<IProps, IState> {
             Object.keys(nowRelease.ComponentVersions!).forEach(componentStr => {
                 const component = componentStr as TgsComponent;
                 const componentVersionStr = nowRelease.ComponentVersions![component];
+                if (!componentVersionStr) return;
+
                 const componentVersion = new SemVer(componentVersionStr);
+
                 if (
                     component == TgsComponent.Core ||
                     component == TgsComponent.NugetClient ||
