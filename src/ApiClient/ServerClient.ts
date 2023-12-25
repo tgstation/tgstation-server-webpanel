@@ -136,7 +136,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 // user and kick them to the login page. Snowflake behaviour: Acts as a failed login for the login endpoint
                 case 401: {
                     const request = error.config;
-                    if (request.url === "/" || request.url === "") {
+                    if (request.url === "/api" || request.url === "api") {
                         return Promise.resolve(error.response);
                     }
 
