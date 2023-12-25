@@ -249,9 +249,15 @@ class Login extends React.Component<IProps, IState> {
             case OAuthProvider.Discord: {
                 url = `https://discord.com/api/oauth2/authorize?response_type=code&client_id=${e(
                     this.context.serverInfo.oAuthProviderInfos.Discord.clientId
-                )}&scope=identify&state=${e(state)}&redirect_uri=${e(
-                    this.context.serverInfo.oAuthProviderInfos.Discord.redirectUri
-                )}`;
+                )}&scope=identify&state=${e(state)}`;
+                const discordRedirect = this.context.serverInfo.oAuthProviderInfos.Discord
+                    .redirectUri;
+                if (discordRedirect) {
+                    url = `${url}&redirect_uri=${e(
+                        this.context.serverInfo.oAuthProviderInfos.Discord.redirectUri
+                    )}`;
+                }
+
                 break;
             }
             case OAuthProvider.GitHub: {
