@@ -638,11 +638,14 @@ class InstanceCreate extends React.Component<IProps, IState> {
 
                     if (staticFile.populate) {
                         let success = true;
-                        const processDirectory = async (path: string): Promise<void> => {
+                        const processDirectory = async (
+                            sourcePath: string,
+                            targetPath: string
+                        ): Promise<void> => {
                             const directoryResults = await GithubClient.getDirectoryContents(
                                 this.state.repoOwner!,
                                 this.state.repoName!,
-                                path
+                                sourcePath
                             );
 
                             if (directoryResults.code === StatusCode.ERROR) {
@@ -655,8 +658,10 @@ class InstanceCreate extends React.Component<IProps, IState> {
                             }
 
                             for (const directoryItem of directoryResults.payload) {
+                                const itemTargetPath =
+                                    targetPath + directoryItem.path.substring(sourcePath.length);
                                 if (directoryItem.isDirectory) {
-                                    await processDirectory(directoryItem.path);
+                                    await processDirectory(directoryItem.path, itemTargetPath);
                                     if (!success) {
                                         return;
                                     }
@@ -664,7 +669,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
                                     this.pushStage(
                                         <FormattedMessage
                                             id="view.instance.create.quick.stage.static.transfer"
-                                            values={{ path: directoryItem.path }}
+                                            values={{ path: directoryItem.path, targetPath }}
                                         />
                                     );
 
@@ -686,7 +691,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
                                     const uploadResult = await ConfigurationFileClient.writeConfigFile(
                                         instanceId,
                                         {
-                                            path: `GameStaticFiles/${directoryItem.path}`
+                                            path: `GameStaticFiles/${itemTargetPath}`
                                         },
                                         base64ToArrayBuffer(downloadResult.payload)
                                     );
@@ -703,7 +708,11 @@ class InstanceCreate extends React.Component<IProps, IState> {
                             }
                         };
 
-                        await processDirectory(staticFile.name);
+                        if (staticFile.sources)
+                            for (const source of staticFile.sources) {
+                                await processDirectory(source, staticFile.name);
+                            }
+                        else await processDirectory(staticFile.name, staticFile.name);
                         if (!success) {
                             return;
                         }

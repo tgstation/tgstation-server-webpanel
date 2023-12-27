@@ -3,6 +3,7 @@ import { DreamDaemonSecurity } from "../ApiClient/generatedcode/generated";
 interface IStaticFile {
     name: string;
     populate?: boolean;
+    sources?: string[];
 }
 
 export function getTGSYmlSecurity(yml: ITGSYml): DreamDaemonSecurity | null {
