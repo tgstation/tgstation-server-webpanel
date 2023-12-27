@@ -549,7 +549,8 @@ class InstanceCreate extends React.Component<IProps, IState> {
             // look, we really should be prompting for reference and enable submodules but I hate webdev and can't be assed rn k? -Dominion
             const cloneResult = await RepositoryClient.cloneRepository(instanceId, {
                 origin: `https://github.com/${this.state.repoOwner}/${this.state.repoName}`,
-                updateSubmodules: true
+                updateSubmodules: true,
+                reference: branch
             });
 
             if (cloneResult.code === StatusCode.ERROR) {
