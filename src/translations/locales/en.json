@@ -251,6 +251,7 @@
     "view.instance.create.quick.warning": "Quick setup may install executable scripts or set the BYOND security level to a less secure value. Ensure you trust the codebase you are targeting.",
     "view.instance.create.repo_owner": "GitHub Repository Owner",
     "view.instance.create.repo_name": "GitHub Repository Name",
+    "view.instance.create.repo_branch": "GitHub Repository Reference (Optional)",
     "view.instance.create.access_user": "GitHub Token Username (Optional)",
     "view.instance.create.access_token": "GitHub Token (Optional)",
     "view.instance.create.path": "Instance Path on Server",

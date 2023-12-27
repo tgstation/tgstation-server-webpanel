@@ -393,13 +393,15 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
     public async getDirectoryContents(
         owner: string,
         repo: string,
-        path: string
+        path: string,
+        ref?: string
     ): Promise<InternalStatus<DirectoryItem[], ErrorCode.GITHUB_FAIL>> {
         try {
             const { data } = await this.apiClient.repos.getContent({
                 owner,
                 repo,
-                path
+                path,
+                ref
             });
 
             // ignore non-directory responses

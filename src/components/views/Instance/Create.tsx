@@ -36,6 +36,7 @@ interface IState {
     instancePath?: string;
     repoOwner?: string;
     repoName?: string;
+    repoBranch?: string;
     accessUser?: string;
     accessToken?: string;
     prefix?: string;
@@ -341,6 +342,27 @@ class InstanceCreate extends React.Component<IProps, IState> {
                                 />
                             </InputGroup>
                         </Form.Group>
+                        <Form.Group controlId="repobranch">
+                            <Form.Label>
+                                <h5>
+                                    <FormattedMessage id="view.instance.create.repo_branch" />
+                                </h5>
+                            </Form.Label>
+                            <InputGroup className="mb-1">
+                                <Form.Control
+                                    type="text"
+                                    className="flex-grow-1 w-100 w-md-auto"
+                                    required
+                                    onChange={event => {
+                                        const repoBranch = event.target.value;
+                                        this.setState({
+                                            repoBranch
+                                        });
+                                    }}
+                                    value={this.state.repoBranch}
+                                />
+                            </InputGroup>
+                        </Form.Group>
                         <Form.Group controlId="accessuser">
                             <Form.Label>
                                 <h5>
@@ -417,10 +439,12 @@ class InstanceCreate extends React.Component<IProps, IState> {
         });
         this.pushStage(<FormattedMessage id="view.instance.create.quick.stage.yml" />);
 
+        const branch = this.state.repoBranch;
         const ymlResponse = await GithubClient.getFile(
             this.state.repoOwner,
             this.state.repoName,
-            ".tgs.yml"
+            ".tgs.yml",
+            branch
         );
         if (ymlResponse.code === StatusCode.ERROR) {
             this.addError(ymlResponse.error);
@@ -468,7 +492,8 @@ class InstanceCreate extends React.Component<IProps, IState> {
                     const scriptResponse = await GithubClient.getFile(
                         this.state.repoOwner,
                         this.state.repoName,
-                        scriptPath
+                        scriptPath,
+                        branch
                     );
 
                     if (scriptResponse.code === StatusCode.ERROR) {
@@ -645,7 +670,8 @@ class InstanceCreate extends React.Component<IProps, IState> {
                             const directoryResults = await GithubClient.getDirectoryContents(
                                 this.state.repoOwner!,
                                 this.state.repoName!,
-                                sourcePath
+                                sourcePath,
+                                branch
                             );
 
                             if (directoryResults.code === StatusCode.ERROR) {
@@ -676,7 +702,8 @@ class InstanceCreate extends React.Component<IProps, IState> {
                                     const downloadResult = await GithubClient.getFile(
                                         this.state.repoOwner!,
                                         this.state.repoName!,
-                                        directoryItem.path
+                                        directoryItem.path,
+                                        branch
                                     );
 
                                     if (downloadResult.code === StatusCode.ERROR) {
