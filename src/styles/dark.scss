@@ -505,4 +505,11 @@ $toast-header-background-color: $gray-600;
     line-height: inherit;
 }
 
+//Remove container margins on smaller (unsupported) displays.
+@media (max-width: 991px) {
+    .container-md, .container-sm, .container {
+        max-width: unset !important;
+    }
+}
+
 @import "./select.scss";
