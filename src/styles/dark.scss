@@ -508,7 +508,7 @@ $toast-header-background-color: $gray-600;
 //remove container margins on small displays
 @media (max-width: 991px) {
     .container-md, .container-sm, .container {
-        max-width: unset !importaint;
+        max-width: unset !important;
     }
 }
 
