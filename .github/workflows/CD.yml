@@ -21,9 +21,9 @@ jobs:
               id: get-tag
               run: |
                 set +ea
-                git describe --exact-match HEAD
+                git describe --tags --exact-match HEAD
                 if [ $? -eq 0 ]; then
-                  echo "deploy_tag=$(git describe --exact-match HEAD)" >> $GITHUB_OUTPUT
+                  echo "deploy_tag=$(git describe --tags --exact-match HEAD)" >> $GITHUB_OUTPUT
                 else
                   echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
                 fi
