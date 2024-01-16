@@ -5,6 +5,7 @@ on:
         branches:
             - next
             - api8
+            - test-max-width
     workflow_dispatch:
 
 jobs:
