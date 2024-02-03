@@ -234,6 +234,15 @@ function Server(props: WrappedComponentProps): JSX.Element {
                 DreamDaemonRights.CreateDump
             )
         },
+        minidumps: {
+            type: FieldType.Boolean as FieldType.Boolean,
+            name: "fields.instance.watchdog.minidumps",
+            defaultValue: watchdogSettings.minidumps,
+            disabled: !hasDreamDaemonRight(
+                instanceEditContext.instancePermissionSet,
+                DreamDaemonRights.SetMinidumps
+            )
+        },
         allowWebClient: {
             type: FieldType.Boolean as FieldType.Boolean,
             name: "fields.instance.watchdog.allowwebclient",
