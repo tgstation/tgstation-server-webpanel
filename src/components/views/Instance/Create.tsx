@@ -352,7 +352,6 @@ class InstanceCreate extends React.Component<IProps, IState> {
                                 <Form.Control
                                     type="text"
                                     className="flex-grow-1 w-100 w-md-auto"
-                                    required
                                     onChange={event => {
                                         const repoBranch = event.target.value;
                                         this.setState({
