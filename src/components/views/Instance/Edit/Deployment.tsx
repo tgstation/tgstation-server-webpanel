@@ -115,6 +115,16 @@ export function Deployment(): JSX.Element {
                 DreamMakerRights.SetDme
             )
         },
+        compilerAdditionalArguments: {
+            type: FieldType.String as FieldType.String,
+            name: "fields.instance.deploy.compilerargs",
+            tooltip: "fields.instance.deploy.compilerargs.desc",
+            defaultValue: deployInfo?.compilerAdditionalArguments,
+            disabled: !hasDreamMakerRight(
+                instanceEditContext.instancePermissionSet,
+                DreamMakerRights.SetCompilerArguments
+            )
+        },
         timeout: {
             type: FieldType.Number as FieldType.Number,
             name: "fields.instance.deploy.timeout",
