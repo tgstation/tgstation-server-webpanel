@@ -152,7 +152,7 @@ export default class JobCard extends React.Component<IProps, IState> {
                     )}
 
                     {/* PROGRESS BAR */}
-                    {job.stoppedAt !== undefined ? (
+                    {job.stoppedAt == undefined ? (
                         <div className="d-flex mt-2" style={{ height: "1.5rem" }}>
                             <ProgressBar
                                 className="text-darker font-weight-bold flex-grow-1 h-unset"
