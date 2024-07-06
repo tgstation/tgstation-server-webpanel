@@ -718,7 +718,7 @@
     "fields.instance.path": "Path on disk",
     "fields.instance.chatbotlimit": "Max chatbots",
     "fields.instance.filemode": "Static File Edit Mode",
-    "fields.instance.cron": "Auto-update cron schedule (UTC, 0 to disable)",
+    "fields.instance.cron": "Auto-update cron schedule (6-part, UTC, 0 to disable)",
     "fields.instance.autoupdate": "Auto-update Interval in minutes (0 to disable)",
     "fields.instance.autoupdate.tip": "Interval begins when previous update completes or immediately upon setting.",
     "fields.instance.chat.channel.admin": "Admin Channel",
