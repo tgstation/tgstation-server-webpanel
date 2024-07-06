@@ -53,6 +53,11 @@ class InstanceSettings extends React.Component<IProps, IState> {
     }
 
     private async editInstance(instance: Omit<InstanceUpdateRequest, "id">) {
+        if (!!instance.autoUpdateCron && !!instance.autoUpdateInterval) {
+            alert("Cannot set both auto update interval and cron!");
+            return;
+        }
+
         const instanceId = this.context.instance.id;
         let newPath: string | undefined;
         if (instance.path && instance.path != this.context.instance.path) {
@@ -139,6 +144,12 @@ class InstanceSettings extends React.Component<IProps, IState> {
                 min: 0,
                 defaultValue: this.context.instance.chatBotLimit,
                 disabled: !checkIMFlag(InstanceManagerRights.SetChatBotLimit)
+            },
+            autoUpdateCron: {
+                name: "fields.instance.cron",
+                type: FieldType.String as FieldType.String,
+                defaultValue: this.context.instance.autoUpdateCron,
+                disabled: !checkIMFlag(InstanceManagerRights.SetAutoUpdate)
             },
             autoUpdateInterval: {
                 name: "fields.instance.autoupdate",
