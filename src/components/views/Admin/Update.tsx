@@ -589,10 +589,11 @@ class Update extends React.Component<IProps, IState> {
                             </Button>
                             <OverlayTrigger
                                 overlay={
-                                    <Tooltip id="timing-tooltip" placement="right">
+                                    <Tooltip id="timing-tooltip">
                                         <FormattedMessage id="view.admin.update.wait" />
                                     </Tooltip>
                                 }
+                                placement="right"
                                 show={timing}>
                                 <Button onClick={this.updateServer} disabled={timing}>
                                     <FormattedMessage id="generic.continue" />
