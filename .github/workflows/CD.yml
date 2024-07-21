@@ -15,18 +15,18 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
               with:
-                fetch-tags: true
+                  fetch-tags: true
 
             - name: Check if version is tagged
               id: get-tag
               run: |
-                set +ea
-                git describe --exact-match HEAD
-                if [ $? -eq 0 ]; then
-                  echo "deploy_tag=$(git describe --exact-match HEAD)" >> $GITHUB_OUTPUT
-                else
-                  echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
-                fi
+                  set +ea
+                  git describe --exact-match HEAD
+                  if [ $? -eq 0 ]; then
+                    echo "deploy_tag=$(git describe --exact-match HEAD)" >> $GITHUB_OUTPUT
+                  else
+                    echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
+                  fi
 
             - name: Restore Yarn cache
               uses: actions/cache@v2
