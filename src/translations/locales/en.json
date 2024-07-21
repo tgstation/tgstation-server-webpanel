@@ -688,6 +688,7 @@
     "loading.page.notfound": "Loading page: NotFound",
     "loading.perms": "Updating permissions...",
     "loading.app": "Loading app...",
+    "loading.routes": "Loading routes...",
     "loading.admin": "Loading admin info...",
     "loading.version": "Loading versions...",
     "loading.updating": "Updating server...",

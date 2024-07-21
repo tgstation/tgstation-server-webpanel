@@ -1,8 +1,8 @@
-import React, { ReactNode } from "react";
+import React, { Suspense } from "react";
 import Spinner, { SpinnerProps } from "react-bootstrap/Spinner";
 import { FormattedMessage } from "react-intl";
-import CSSTransition from "react-transition-group/CSSTransition";
-import TransitionGroup from "react-transition-group/TransitionGroup";
+
+const CssTransitionGroup = React.lazy(() => import("./CssTransitionGroup"));
 
 type IProps = SpinnerProps & {
     animation: "border" | "grow";
@@ -11,6 +11,7 @@ type IProps = SpinnerProps & {
     widthUnit: string;
     className?: string;
     text?: string;
+    noIntl?: boolean;
 };
 
 interface IState {}
@@ -22,11 +23,16 @@ export default class Loading extends React.Component<IProps, IState> {
         widthUnit: "vmin",
         center: true
     };
-    public constructor(props: IProps) {
-        super(props);
+
+    public render(): React.ReactNode {
+        return (
+            <Suspense fallback={this.renderSpinner()}>
+                <CssTransitionGroup>{this.renderSpinner()}</CssTransitionGroup>
+            </Suspense>
+        );
     }
 
-    public render(): ReactNode {
+    private renderSpinner(): NonNullable<React.ReactNode> {
         const {
             variant,
             animation,
@@ -42,27 +48,19 @@ export default class Loading extends React.Component<IProps, IState> {
             width: `${width}${widthUnit}`,
             height: `${width}${widthUnit}`
         } as React.CSSProperties;
+
         return (
-            <TransitionGroup>
-                <CSSTransition
-                    appear
-                    classNames="anim-fade"
-                    addEndListener={(node, done) => {
-                        node.addEventListener("transitionend", done, false);
-                    }}>
-                    <div className={center ? "text-center" : ""}>
-                        <Spinner
-                            variant={variant ? variant : "secondary"}
-                            className={center ? `d-block mx-auto ${className ?? ""}` : className}
-                            style={styles}
-                            animation={animation ? animation : "border"}
-                            {...otherprops}
-                        />
-                        {text ? <FormattedMessage id={text} /> : ""}
-                        {children}
-                    </div>
-                </CSSTransition>
-            </TransitionGroup>
+            <div className={center ? "text-center" : ""}>
+                <Spinner
+                    variant={variant ? variant : "secondary"}
+                    className={center ? `d-block mx-auto ${className ?? ""}` : className}
+                    style={styles}
+                    animation={animation ? animation : "border"}
+                    {...otherprops}
+                />
+                {text ? this.props.noIntl ? text : <FormattedMessage id={text} /> : ""}
+                {children}
+            </div>
         );
     }
 }

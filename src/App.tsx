@@ -1,12 +1,10 @@
 import "./App.css";
 
+// polyfills
 import * as React from "react";
-import Alert from "react-bootstrap/Alert";
-import Container from "react-bootstrap/Container";
-import { FormattedMessage, IntlProvider } from "react-intl";
-import { BrowserRouter } from "react-router-dom";
+import { Suspense } from "react";
+import { IntlProvider } from "react-intl";
 
-import Pkg from "./../package.json";
 import InternalError, {
     ErrorCode,
     GenericErrors
@@ -14,22 +12,18 @@ import InternalError, {
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
 import UserClient from "./ApiClient/UserClient";
-import CredentialsProvider from "./ApiClient/util/CredentialsProvider";
 import LoginHooks from "./ApiClient/util/LoginHooks";
-import AppNavbar from "./components/AppNavbar";
-import Logo from "./components/Logo";
-import ReportIssue from "./components/ReportIssue";
-import ErrorAlert from "./components/utils/ErrorAlert";
-import ErrorBoundary from "./components/utils/ErrorBoundary";
-import JobsList from "./components/utils/JobsList";
 import Loading from "./components/utils/Loading";
 import { GeneralContext, UnsafeGeneralContext } from "./contexts/GeneralContext";
-import { DEFAULT_BASEPATH } from "./definitions/constants";
-import Router from "./Router";
 import ITranslation from "./translations/ITranslation";
 import ITranslationFactory from "./translations/ITranslationFactory";
-import Locales from "./translations/Locales";
 import TranslationFactory from "./translations/TranslationFactory";
+
+const polyfills = import("./polyfills");
+const icolibrary = import("./utils/icolibrary");
+const ConfigController = import("./ApiClient/util/ConfigController");
+const JobsController = import("./ApiClient/util/JobsController");
+const InnerApp = React.lazy(() => import("./InnerApp"));
 
 interface IState {
     translation?: ITranslation;
@@ -37,6 +31,7 @@ interface IState {
     loggedIn: boolean;
     loggedOut: boolean;
     loading: boolean;
+    polyfills: boolean;
     GeneralContextInfo: UnsafeGeneralContext;
 }
 
@@ -44,94 +39,6 @@ interface IProps {
     readonly locale: string;
     readonly translationFactory?: ITranslationFactory;
 }
-
-interface InnerProps {
-    loading: boolean;
-    loggedIn: boolean;
-    loggedOut: boolean;
-}
-
-interface InnerState {
-    passdownCat?: { name: string; key: string };
-}
-
-class InnerApp extends React.Component<InnerProps, InnerState> {
-    public declare context: UnsafeGeneralContext;
-
-    public constructor(props: InnerProps) {
-        super(props);
-
-        this.state = {};
-    }
-
-    public componentDidMount() {
-        document.title = "TGS Webpanel v" + Pkg.version;
-        // I can't be assed to remember the default admin password
-        document.addEventListener("keydown", event => {
-            if (event.key === "L" && event.ctrlKey && event.shiftKey) {
-                ServerClient.logout();
-                void ServerClient.login(CredentialsProvider.default);
-            }
-        });
-    }
-
-    public render(): React.ReactNode {
-        return (
-            <BrowserRouter
-                basename={
-                    window.publicPath
-                        ? new URL(window.publicPath, window.location.href).pathname
-                        : DEFAULT_BASEPATH
-                }>
-                <ErrorBoundary>
-                    <AppNavbar category={this.state.passdownCat} loggedIn={this.props.loggedIn} />
-                    {this.props.loading ? (
-                        <Container className="mt-5 mb-5">
-                            <Loading text="loading.app" />
-                        </Container>
-                    ) : (
-                        <>
-                            <Container className="mt-5">
-                                <Alert variant="warning" className="d-block d-lg-none">
-                                    <Alert.Heading>
-                                        <FormattedMessage id="warning.screensize.header" />
-                                    </Alert.Heading>
-                                    <hr />
-                                    <FormattedMessage id="warning.screensize" />
-                                </Alert>
-                                {Array.from(this.context.errors.values()).map((value, idx) => {
-                                    return (
-                                        <ErrorAlert
-                                            error={value}
-                                            key={idx}
-                                            onClose={() => this.context.deleteError(value)}
-                                        />
-                                    );
-                                })}
-                            </Container>
-                            <Router
-                                loggedIn={this.props.loggedIn}
-                                loggedOut={this.props.loggedOut}
-                                selectCategory={cat => {
-                                    this.setState({
-                                        passdownCat: {
-                                            name: cat,
-                                            key: Math.random().toString()
-                                        }
-                                    });
-                                }}
-                            />
-                        </>
-                    )}
-                    {this.props.loggedIn ? <JobsList /> : null}
-                </ErrorBoundary>
-                <ReportIssue />
-                <Logo />
-            </BrowserRouter>
-        );
-    }
-}
-InnerApp.contextType = GeneralContext;
 
 class App extends React.Component<IProps, IState> {
     private readonly translationFactory: ITranslationFactory;
@@ -151,6 +58,7 @@ class App extends React.Component<IProps, IState> {
             loggedIn: false,
             loggedOut: false,
             loading: true,
+            polyfills: false,
             GeneralContextInfo: {
                 errors: new Set(),
                 user: null,
@@ -275,12 +183,22 @@ class App extends React.Component<IProps, IState> {
         void this.updateContextUser();
     }
     public async componentDidMount(): Promise<void> {
+        // dont lag the dom
+        const initIcons = await icolibrary;
+        initIcons.default();
+        (await ConfigController).default.loadconfig();
+        (await JobsController).default.init();
+
         LoginHooks.on("loginSuccess", this.finishLogin);
         ServerClient.on("logout", this.finishLogout);
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         ServerClient.on("purgeCache", this.updateContextServer);
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         ServerClient.on("purgeCache", this.updateContextUser);
+
+        await polyfills;
+
+        this.setState({ polyfills: true });
 
         await this.loadTranslation();
         const loggedInSuccessfully = await ServerClient.initApi();
@@ -305,6 +223,10 @@ class App extends React.Component<IProps, IState> {
     }
 
     public render(): React.ReactNode {
+        if (!this.state.polyfills) {
+            return <Loading>Loading polyfills...</Loading>;
+        }
+
         if (this.state.translationError) {
             return <p className="App-error">{this.state.translationError}</p>;
         }
@@ -317,13 +239,16 @@ class App extends React.Component<IProps, IState> {
                 locale={this.state.translation.locale}
                 messages={this.state.translation.messages}
                 defaultLocale="en">
-                <GeneralContext.Provider value={this.state.GeneralContextInfo as GeneralContext}>
-                    <InnerApp
-                        loading={this.state.loading}
-                        loggedIn={this.state.loggedIn}
-                        loggedOut={this.state.loggedOut}
-                    />
-                </GeneralContext.Provider>
+                <Suspense fallback={<Loading text="loading.app" />}>
+                    <GeneralContext.Provider
+                        value={this.state.GeneralContextInfo as GeneralContext}>
+                        <InnerApp
+                            loading={this.state.loading}
+                            loggedIn={this.state.loggedIn}
+                            loggedOut={this.state.loggedOut}
+                        />
+                    </GeneralContext.Provider>
+                </Suspense>
             </IntlProvider>
         );
     }
@@ -348,9 +273,3 @@ class App extends React.Component<IProps, IState> {
 }
 
 export default App;
-
-export const IndexApp = (
-    <React.StrictMode>
-        <App locale={Locales.en} />
-    </React.StrictMode>
-);

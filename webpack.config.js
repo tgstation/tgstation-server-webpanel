@@ -8,6 +8,9 @@ const { createBabelConfig } = require("./babel.config.js");
 const { DefinePlugin } = require("webpack");
 const JSONManifestPlugin = require("./jsonmanifest-plugin");
 const { version } = require("./package.json");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const createStats = verbose => ({
     assets: verbose,
@@ -56,12 +59,12 @@ module.exports = (env, options) => {
                 {
                     test: /\.css$/,
                     exclude: /node_modules/,
-                    use: ["style-loader", "css-loader"],
+                    use: [MiniCssExtractPlugin.loader, "css-loader"],
                     sideEffects: true
                 },
                 {
                     test: /\.(scss)$/,
-                    use: ["style-loader", "css-loader", "postcss-loader", "fast-sass-loader"],
+                    use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader", "fast-sass-loader"],
                     sideEffects: true
                 },
                 {
@@ -72,6 +75,10 @@ module.exports = (env, options) => {
                     }
                 }
             ]
+        },
+
+        performance: {
+            hints: 'error'
         },
 
         resolve: {
@@ -111,7 +118,12 @@ module.exports = (env, options) => {
                             comments: false
                         }
                     }
-                })
+                }),
+                new CssMinimizerPlugin({
+                    minimizerOptions: {
+                        cssModules: true,
+                    },
+                }),
             ],
             splitChunks: {
                 chunks: "all",
@@ -170,6 +182,7 @@ module.exports = (env, options) => {
         stats: createStats(true),
 
         plugins: [
+            new MiniCssExtractPlugin(),
             new CopyPlugin({
                 patterns: [
                     {
@@ -207,7 +220,10 @@ module.exports = (env, options) => {
                     sockIntegration: "wds"
                 }
             }),
-            new JSONManifestPlugin({ version: require("./package.json").version })
+            new JSONManifestPlugin({ version: require("./package.json").version }),
+            /*new BundleAnalyzerPlugin({
+                openAnalyzer: false
+            })*/
         ].filter(Boolean)
     };
 };

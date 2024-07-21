@@ -1,27 +1,10 @@
 // eslint-disable-next-line
 import "./publicPath";
 
-// definition files
-// css
-import "./styles/dark.scss";
-// polyfills
-import "@formatjs/intl-relativetimeformat/polyfill";
-import "@formatjs/intl-relativetimeformat/locale-data/en";
-import "@formatjs/intl-pluralrules/polyfill";
-import "@formatjs/intl-pluralrules/locale-data/en";
-
 import ReactDOM from "react-dom";
 
-import ConfigController from "./ApiClient/util/ConfigController";
-import JobsController from "./ApiClient/util/JobsController";
-import { IndexApp } from "./App";
+import { RootLoading } from "./RootLoading";
 import { MODE, VERSION } from "./definitions/constants";
-import initIcons from "./utils/icolibrary";
-
-// dont lag the dom
-initIcons();
-ConfigController.loadconfig();
-JobsController.init();
 
 if (window.loadedChannelFromWebpack && MODE !== "DEV") {
     alert(
@@ -43,7 +26,7 @@ try {
 }
 
 function mountApp() {
-    ReactDOM.render(IndexApp, document.getElementById("root"));
+    ReactDOM.render(RootLoading, document.getElementById("root"));
 }
 
 window.addEventListener("DOMContentLoaded", mountApp);

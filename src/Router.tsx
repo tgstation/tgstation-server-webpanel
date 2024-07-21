@@ -161,7 +161,7 @@ class Router extends Component<IProps, IState> {
 
     public render(): ReactNode {
         if (this.state.loading) {
-            return <Loading text="loading.app" />;
+            return <Loading text="loading.routes" />;
         }
 
         return (
