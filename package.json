@@ -1,6 +1,6 @@
 {
     "name": "tgstation-server-control-panel",
-    "version": "5.8.2",
+    "version": "5.9.0",
     "tgs_api_version": "10.5.0",
     "private": true,
     "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
