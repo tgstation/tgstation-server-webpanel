@@ -269,6 +269,18 @@ function Server(props: WrappedComponentProps): JSX.Element {
                 instanceEditContext.instancePermissionSet,
                 DreamDaemonRights.SetMapThreads
             )
+        },
+        openDreamTopicPort: {
+            type: FieldType.Number as FieldType.Number,
+            name: "fields.instance.watchdog.od_topic_port",
+            tooltip: "fields.instance.watchdog.od_topic_port.desc",
+            defaultValue: watchdogSettings.openDreamTopicPort,
+            min: 0,
+            max: 65535,
+            disabled: !hasDreamDaemonRight(
+                instanceEditContext.instancePermissionSet,
+                DreamDaemonRights.SetPort
+            )
         }
     };
 

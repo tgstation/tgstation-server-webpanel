@@ -78,7 +78,6 @@ module.exports = (env, options) => {
         },
 
         performance: {
-            hints: 'error'
         },
 
         resolve: {

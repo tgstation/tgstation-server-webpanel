@@ -798,6 +798,8 @@
     "fields.instance.watchdog.mapthreads": "Map Threads Count (0 for default)",
     "fields.instance.watchdog.broadcast": "Broadcast Message",
     "fields.instance.watchdog.broadcast.desc": "A message to broadcast to players using the DMAPI. Requires the server be running with an interop version >=5.7.0",
+    "fields.instance.watchdog.od_topic_port": "OpenDream Topic Port",
+    "fields.instance.watchdog.od_topic_port.desc": "Port used to receive world Topic called when launching deployments with the OpenDream engine",
     "fields.instance.repository.origincheckoutsha": "Origin SHA",
     "fields.instance.repository.origincheckoutsha.desc": "SHA of the origin commit",
     "fields.instance.repository.checkoutsha": "Checkout SHA",
