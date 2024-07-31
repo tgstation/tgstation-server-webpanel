@@ -5422,7 +5422,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^9.0.0, fs-extra@npm:^9.1.0":
+"fs-extra@npm:^11.2.0":
+  version: 11.2.0
+  resolution: "fs-extra@npm:11.2.0"
+  dependencies:
+    graceful-fs: ^4.2.0
+    jsonfile: ^6.0.1
+    universalify: ^2.0.0
+  checksum: b12e42fa40ba47104202f57b8480dd098aa931c2724565e5e70779ab87605665594e76ee5fb00545f772ab9ace167fe06d2ab009c416dc8c842c5ae6df7aa7e8
+  languageName: node
+  linkType: hard
+
+"fs-extra@npm:^9.0.0":
   version: 9.1.0
   resolution: "fs-extra@npm:9.1.0"
   dependencies:
@@ -10052,7 +10063,7 @@ __metadata:
     fast-sass-loader: ^2.0.1
     follow-redirects: ^1.13.2
     fork-ts-checker-webpack-plugin: ^6.4.0
-    fs-extra: ^9.1.0
+    fs-extra: ^11.2.0
     html-webpack-plugin: ^5.5.0
     https-browserify: ^1.0.0
     jquery: ^3.5.1
