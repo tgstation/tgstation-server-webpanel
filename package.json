@@ -59,8 +59,8 @@
         "react-transition-group": "^4.4.2",
         "semver": "^7.6.3",
         "stream-http": "^3.2.0",
-        "terser-webpack-plugin": "^5.2.5",
-        "util": "^0.12.4"
+        "terser-webpack-plugin": "^5.3.10",
+        "util": "^0.12.5"
     },
     "devDependencies": {
         "@babel/core": "^7.16.0",
