@@ -105,7 +105,6 @@
         "react-refresh": "^0.11.0",
         "sass": "^1.43.4",
         "source-map-loader": "^2.0.2",
-        "style-loader": "^2.0.0",
         "svg-loader": "0.0.2",
         "swagger-typescript-api": "^13.0.14",
         "tiny-typed-emitter": "^2.0.3",

@@ -9777,18 +9777,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"style-loader@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "style-loader@npm:2.0.0"
-  dependencies:
-    loader-utils: ^2.0.0
-    schema-utils: ^3.0.0
-  peerDependencies:
-    webpack: ^4.0.0 || ^5.0.0
-  checksum: 21425246a5a8f14d1625a657a3a56f8a323193fa341a71af818a2ed2a429efa2385a328b4381cf2f12c2d0e6380801eb9e0427ed9c3a10ff95c86e383184d632
-  languageName: node
-  linkType: hard
-
 "stylehacks@npm:^7.0.2":
   version: 7.0.2
   resolution: "stylehacks@npm:7.0.2"
@@ -10091,7 +10079,6 @@ __metadata:
     semver: ^7.5.2
     source-map-loader: ^2.0.2
     stream-http: ^3.2.0
-    style-loader: ^2.0.0
     svg-loader: 0.0.2
     swagger-typescript-api: ^13.0.14
     terser-webpack-plugin: ^5.2.5
