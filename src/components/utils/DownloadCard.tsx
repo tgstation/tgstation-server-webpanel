@@ -82,7 +82,7 @@ export class DownloadCard extends React.Component<IDownloadProps, IState> {
                         <ProgressBar
                             min={0}
                             now={Math.max(1, this.props.progress.loaded)}
-                            max={Math.max(1, this.props.progress.total)}
+                            max={Math.max(1, this.props.progress.total ?? 1)}
                             variant={completed ? "success" : "warning"}
                             animated={!completed}
                         />

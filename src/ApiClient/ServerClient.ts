@@ -1,4 +1,4 @@
-import { AxiosError, AxiosInstance, AxiosResponse } from "axios";
+import { AxiosError, AxiosHeaders, AxiosInstance, AxiosResponse } from "axios";
 import { jwtDecode } from "jwt-decode";
 
 import { API_VERSION, VERSION } from "../definitions/constants";
@@ -91,7 +91,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             // it tries to typecast the "response" we got into an error then tries to check if that "error" is
             // the snowflake no apipath github error, if it is, it rejects the promise to send it to the catch block
             // all endpoints have which simply returns the error wrapped in a status object
-            const snowflake = (error as unknown) as InternalError<ErrorCode.NO_APIPATH>;
+            const snowflake = error as unknown as InternalError<ErrorCode.NO_APIPATH>;
             if (snowflake?.code === ErrorCode.NO_APIPATH) {
                 return Promise.reject(snowflake);
             }
@@ -119,7 +119,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
             //I am sorry, this is the bulk of the shitcode, its a massive switch that handles every single
             // globally handled status code and sometimes not so globally because one endpoint decided it would be
-            const res = error.response as AxiosResponse<unknown>;
+            const res = error.response;
             switch (error.response.status) {
                 //Error code 400: Bad request, show message to user and instruct them to report it as its probably a bug
                 case 400: {
@@ -135,7 +135,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 // using the last known working credentials, if that succeeds, reissue the request, otherwise logout the
                 // user and kick them to the login page. Snowflake behaviour: Acts as a failed login for the login endpoint
                 case 401: {
-                    const request = error.config;
+                    const request = error.config!;
                     if (request.url === "/api" || request.url === "api") {
                         return Promise.resolve(error.response);
                     }
@@ -144,7 +144,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                         return this.login().then(status => {
                             switch (status.code) {
                                 case StatusCode.OK: {
-                                    return axiosServer.request(error.config);
+                                    return axiosServer.request(error.config!);
                                 }
                                 case StatusCode.ERROR: {
                                     this.emit("accessDenied");
@@ -166,7 +166,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     }
                 }
                 case 403: {
-                    const request = error.config;
+                    const request = error.config!;
                     if ((request.url === "/" || request.url === "") && request.method === "post") {
                         return Promise.resolve(error.response);
                     } else {
@@ -192,7 +192,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     const errorMessage = res.data as ErrorMessageResponse;
 
                     //Thanks for reusing a global erorr status cyber. Log operations can return 409
-                    const request = error.config;
+                    const request = error.config!;
                     if (request.url === "/Administration/Logs" && request.method === "get") {
                         return Promise.resolve(error.response);
                     }
@@ -235,7 +235,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     console.log("Server not ready, delaying request", error.config);
                     return new Promise(resolve => {
                         setTimeout(resolve, 5000);
-                    }).then(() => axiosServer.request(error.config));
+                    }).then(() => axiosServer.request(error.config!));
                     /*const errorobj = new InternalError(
                         ErrorCode.HTTP_SERVER_NOT_READY,
                             {
@@ -305,7 +305,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             //Yes this is only initialized once even if the configOption changes, this doesn't
             baseURL: configOptions.apipath.value as string,
             withCredentials: false,
-            headers: this.defaultHeaders,
+            headers: new AxiosHeaders(this.defaultHeaders),
             //Global errors are handled via the catch clause and endpoint specific response codes are handled normally
             validateStatus: status => {
                 return !ServerClient.globalHandledCodes.includes(status);
@@ -429,10 +429,10 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             } else {
                 defaulted = false;
                 response = await this.apiClient!.api.apiRootControllerCreateToken({
-                    headers: {
+                    headers: new AxiosHeaders({
                         OAuthProvider: CredentialsProvider.credentials.provider,
                         Authorization: `OAuth ${CredentialsProvider.credentials.token}`
-                    }
+                    })
                 });
             }
         } catch (stat) {

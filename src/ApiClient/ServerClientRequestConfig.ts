@@ -1,5 +1,5 @@
-import { AxiosRequestConfig } from "axios";
+import { InternalAxiosRequestConfig } from "axios";
 
-export type ServerClientRequestConfig = AxiosRequestConfig & {
+export type ServerClientRequestConfig = InternalAxiosRequestConfig & {
     overrideTokenDetection?: boolean;
 };

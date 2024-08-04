@@ -38,7 +38,7 @@
         "@octokit/request-error": "^2.0.5",
         "@octokit/rest": "^18.0.15",
         "@octokit/types": "^6.34.0",
-        "axios": "0.21.4",
+        "axios": "^1.7.2",
         "bootstrap": "^4.6.1",
         "buffer": "^6.0.3",
         "client-zip": "^2.3.0",

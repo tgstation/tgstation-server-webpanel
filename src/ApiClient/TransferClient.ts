@@ -1,3 +1,5 @@
+import { AxiosProgressEvent } from "axios";
+
 import { ApiClient } from "./_base";
 import type { ErrorMessageResponse } from "./generatedcode/generated";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
@@ -10,10 +12,7 @@ export type UploadErrors =
     | ErrorCode.TRANSFER_NOT_AVAILABLE
     | ErrorCode.UPLOAD_FAILED;
 
-export interface ProgressEvent {
-    loaded: number;
-    total: number;
-}
+export type ProgressEvent = AxiosProgressEvent;
 
 export default new (class TransferClient extends ApiClient {
     public async Download(
@@ -83,7 +82,7 @@ export default new (class TransferClient extends ApiClient {
                 {
                     ticket: ticket
                 },
-                (file as unknown) as File,
+                file as unknown as File,
                 {
                     headers: {
                         "Content-Type": "application/octect-stream"
