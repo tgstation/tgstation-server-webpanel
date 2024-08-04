@@ -30,7 +30,7 @@
         "@fortawesome/react-fontawesome": "^0.1.16",
         "@loadable/component": "^5.14.1",
         "@mapbox/react-click-to-select": "^2.2.1",
-        "@microsoft/signalr": "^7.0.12",
+        "@microsoft/signalr": "^8.0.7",
         "@octokit/core": "^3.5.0",
         "@octokit/plugin-paginate-rest": "^2.17.0",
         "@octokit/plugin-retry": "^3.0.9",

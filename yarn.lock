@@ -1769,16 +1769,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/signalr@npm:^7.0.12":
-  version: 7.0.12
-  resolution: "@microsoft/signalr@npm:7.0.12"
+"@microsoft/signalr@npm:^8.0.7":
+  version: 8.0.7
+  resolution: "@microsoft/signalr@npm:8.0.7"
   dependencies:
     abort-controller: "npm:^3.0.0"
     eventsource: "npm:^2.0.2"
     fetch-cookie: "npm:^2.0.3"
     node-fetch: "npm:^2.6.7"
     ws: "npm:^7.4.5"
-  checksum: 10/316b7d269af395de3285ac37d1e4bc5d87368cba9fcfa8dda2ffdf732bb944a8b4f278b5f4762c01e8f44f85e2e993b2b0600aa134a46877eb0ba8cc0f46fc4a
+  checksum: 10/a2b17a059a6cef070018fecbe56ad61cc6d3c0896ae10152b3b2a6985650c910f0345fa13135d770bdf67f2d504b4379edbbe7721d30eb6069795f278d690b83
   languageName: node
   linkType: hard
 
@@ -10205,7 +10205,7 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^0.1.16"
     "@loadable/component": "npm:^5.14.1"
     "@mapbox/react-click-to-select": "npm:^2.2.1"
-    "@microsoft/signalr": "npm:^7.0.12"
+    "@microsoft/signalr": "npm:^8.0.7"
     "@octokit/core": "npm:^3.5.0"
     "@octokit/plugin-paginate-rest": "npm:^2.17.0"
     "@octokit/plugin-retry": "npm:^3.0.9"
