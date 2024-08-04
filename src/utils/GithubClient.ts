@@ -2,6 +2,7 @@ import { retry } from "@octokit/plugin-retry";
 import { throttling } from "@octokit/plugin-throttling";
 import { RequestError } from "@octokit/request-error";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
+import { EndpointDefaults } from "@octokit/types";
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
@@ -93,10 +94,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
             userAgent: "tgstation-server-control-panel/" + VERSION,
             baseUrl: "https://api.github.com",
             throttle: {
-                onRateLimit: (
-                    retryAfter: number,
-                    options: { method: string; url: string; request: { retryCount: number } }
-                ) => {
+                onRateLimit: (retryAfter: number, options: Required<EndpointDefaults>) => {
                     console.warn(
                         `Request quota exhausted for request ${options.method} ${options.url}`
                     );
@@ -108,7 +106,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                     }
                     return false;
                 },
-                onAbuseLimit: (retryAfter: number, options: { method: string; url: string }) => {
+                onSecondaryRateLimit: (_: number, options: Required<EndpointDefaults>) => {
                     // does not retry, only logs a warning
                     console.warn(`Abuse detected for request ${options.method} ${options.url}`);
                 }
