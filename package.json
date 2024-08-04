@@ -28,7 +28,7 @@
         "@fortawesome/free-brands-svg-icons": "^6.6.0",
         "@fortawesome/free-solid-svg-icons": "^6.6.0",
         "@fortawesome/react-fontawesome": "^0.2.2",
-        "@loadable/component": "^5.14.1",
+        "@loadable/component": "^5.16.4",
         "@mapbox/react-click-to-select": "^2.2.1",
         "@microsoft/signalr": "^8.0.7",
         "@octokit/core": "^6.1.2",

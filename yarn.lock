@@ -1453,12 +1453,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.13.8, @babel/runtime@npm:^7.14.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.6.3, @babel/runtime@npm:^7.7.7, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.13.8, @babel/runtime@npm:^7.14.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.6.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7":
   version: 7.17.0
   resolution: "@babel/runtime@npm:7.17.0"
   dependencies:
     regenerator-runtime: "npm:^0.13.4"
   checksum: 10/b88aa580b89f0e1297df4149c9d53de4d9817c05f3c36d60727f6af9c4fd99fa38b586fa1bb2881dd95360c035c15915e3c236911d2fe4c3e6f2973e11688489
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.12.18":
+  version: 7.25.0
+  resolution: "@babel/runtime@npm:7.25.0"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10/6870e9e0e9125075b3aeba49a266f442b10820bfc693019eb6c1785c5a0edbe927e98b8238662cdcdba17842107c040386c3b69f39a0a3b217f9d00ffe685b27
   languageName: node
   linkType: hard
 
@@ -1876,16 +1885,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@loadable/component@npm:^5.14.1":
-  version: 5.15.2
-  resolution: "@loadable/component@npm:5.15.2"
+"@loadable/component@npm:^5.16.4":
+  version: 5.16.4
+  resolution: "@loadable/component@npm:5.16.4"
   dependencies:
-    "@babel/runtime": "npm:^7.7.7"
+    "@babel/runtime": "npm:^7.12.18"
     hoist-non-react-statics: "npm:^3.3.1"
     react-is: "npm:^16.12.0"
   peerDependencies:
-    react: ">=16.3.0"
-  checksum: 10/b9959e6045e621c11c55d967ee76c8ce3071a8cc71d9d7a7c2683d5e7037ff774cf455b77d4bab7dfc7af51f015baff2b489d47f8abf3a4b1341365720e5ae76
+    react: ^16.3.0 || ^17.0.0 || ^18.0.0
+  checksum: 10/ff434e13df559184f6bc85155a72edfbd1d6b814dfd06cb066908e8fc27f6265fa905bb72bf2fb139074d7777491c22c4d44ce077a4f4852157928ff7118de46
   languageName: node
   linkType: hard
 
@@ -9179,6 +9188,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"regenerator-runtime@npm:^0.14.0":
+  version: 0.14.1
+  resolution: "regenerator-runtime@npm:0.14.1"
+  checksum: 10/5db3161abb311eef8c45bcf6565f4f378f785900ed3945acf740a9888c792f75b98ecb77f0775f3bf95502ff423529d23e94f41d80c8256e8fa05ed4b07cf471
+  languageName: node
+  linkType: hard
+
 "regenerator-transform@npm:^0.15.2":
   version: 0.15.2
   resolution: "regenerator-transform@npm:0.15.2"
@@ -10321,7 +10337,7 @@ __metadata:
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
     "@fortawesome/react-fontawesome": "npm:^0.2.2"
-    "@loadable/component": "npm:^5.14.1"
+    "@loadable/component": "npm:^5.16.4"
     "@mapbox/react-click-to-select": "npm:^2.2.1"
     "@microsoft/signalr": "npm:^8.0.7"
     "@octokit/core": "npm:^6.1.2"
