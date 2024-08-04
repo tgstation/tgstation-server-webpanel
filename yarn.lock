@@ -3558,12 +3558,12 @@ __metadata:
   linkType: hard
 
 "bootstrap@npm:^4.6.1":
-  version: 4.6.1
-  resolution: "bootstrap@npm:4.6.1"
+  version: 4.6.2
+  resolution: "bootstrap@npm:4.6.2"
   peerDependencies:
     jquery: 1.9.1 - 3
     popper.js: ^1.16.1
-  checksum: 10/3930f7309a753c85942dc0d71745d82a23c6181ed8049eb414bb3437e87f75069f4ef70a3e5f2ee92a62de9080e09c3dea22ee96119d73ee32b17cdecc482533
+  checksum: 10/28a66f1d869a21208c09245fc349540deda96db02005d9c3dfd3405399eb2775733e55c74aca14697898efadfe88718fe56832ff7da718e7eb4d73c9968f668c
   languageName: node
   linkType: hard
 
@@ -3917,10 +3917,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"client-zip@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "client-zip@npm:2.3.0"
-  checksum: 10/8470801a8a13dc7397b9341d1e75182b169d3fa320de3cc3d4fa81abeb024b3f19d3e26352634b7e80adf65686dd76dd723404a7713390e30420e3d373cd667b
+"client-zip@npm:^2.4.5":
+  version: 2.4.5
+  resolution: "client-zip@npm:2.4.5"
+  checksum: 10/279baa27efc7eee056b5a341d3344ef93d2c73001f52ab678d7e45e814dae0975cac13e6858ef9047fe8366e0fd15ff2a4336c93ee407cddc95bf8c9cbc84552
   languageName: node
   linkType: hard
 
@@ -10367,7 +10367,7 @@ __metadata:
     babel-loader: "npm:^8.2.3"
     bootstrap: "npm:^4.6.1"
     buffer: "npm:^6.0.3"
-    client-zip: "npm:^2.3.0"
+    client-zip: "npm:^2.4.5"
     copy-webpack-plugin: "npm:^8.1.1"
     css-loader: "npm:^5.2.7"
     css-minimizer-webpack-plugin: "npm:^7.0.0"
