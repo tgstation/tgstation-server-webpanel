@@ -84,7 +84,7 @@
         "@types/webpack": "^5.28.0",
         "@typescript-eslint/eslint-plugin": "^8.0.0",
         "@typescript-eslint/parser": "^8.0.0",
-        "autoprefixer": "^10.4.0",
+        "autoprefixer": "^10.4.20",
         "babel-loader": "^8.2.3",
         "copy-webpack-plugin": "^8.1.1",
         "css-loader": "^5.2.7",
