@@ -9,8 +9,8 @@ import { MODE, VERSION } from "../../definitions/constants";
 import { DebugJsonViewer } from "../utils/JsonViewer";
 import Loading from "../utils/Loading";
 
-interface IProps {}
-interface IState {}
+type IProps = object;
+type IState = object;
 
 class Info extends React.Component<IProps, IState> {
     public declare context: UnsafeGeneralContext;

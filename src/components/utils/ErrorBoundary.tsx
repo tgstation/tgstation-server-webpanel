@@ -6,7 +6,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 
 import { MODE, VERSION } from "../../definitions/constants";
 
-interface IProps extends RouteComponentProps {}
+type IProps = RouteComponentProps;
 interface IState {
     error?: Error;
     errorInfo?: React.ErrorInfo;

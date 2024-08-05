@@ -39,7 +39,7 @@ interface IState {
     page: number;
     maxPage?: number;
 }
-interface IProps extends RouteComponentProps {}
+type IProps = RouteComponentProps;
 
 class InstanceList extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
@@ -147,9 +147,9 @@ class InstanceList extends React.Component<IProps, IState> {
     }
 
     private async grantPermissions(instance: Instance) {
-        const instanceedit = await InstanceClient.grantPermissions(({
+        const instanceedit = await InstanceClient.grantPermissions({
             id: instance.id
-        } as unknown) as InstanceResponse);
+        } as unknown as InstanceResponse);
 
         if (instanceedit.code === StatusCode.OK) {
             await this.loadInstances();
@@ -189,10 +189,10 @@ class InstanceList extends React.Component<IProps, IState> {
             return;
         }
 
-        const instanceedit = await InstanceClient.editInstance(({
+        const instanceedit = await InstanceClient.editInstance({
             id: instance.id,
             online: desiredState
-        } as unknown) as InstanceResponse);
+        } as unknown as InstanceResponse);
         if (instanceedit.code === StatusCode.OK) {
             await this.loadInstances();
         } else {
@@ -316,7 +316,9 @@ class InstanceList extends React.Component<IProps, IState> {
                                                 <Button
                                                     className="mx-1"
                                                     variant="warning"
-                                                    onClick={() => this.grantPermissions(value)}
+                                                    onClick={() =>
+                                                        void this.grantPermissions(value)
+                                                    }
                                                     disabled={!canGrant}>
                                                     <FontAwesomeIcon
                                                         icon={canGrant ? faUnlock : faLock}
@@ -341,7 +343,7 @@ class InstanceList extends React.Component<IProps, IState> {
                                         <Button
                                             className="mx-1"
                                             variant={value.online ? "danger" : "success"}
-                                            onClick={() => this.setOnline(value)}
+                                            onClick={() => void this.setOnline(value)}
                                             disabled={!canOnline}>
                                             <FormattedMessage
                                                 id={`view.instance.list.set.${
@@ -352,7 +354,7 @@ class InstanceList extends React.Component<IProps, IState> {
                                         {!value.online ? (
                                             <Button
                                                 variant="danger"
-                                                onClick={() => this.detach(value)}
+                                                onClick={() => void this.detach(value)}
                                                 disabled={!canDetach}>
                                                 <FontAwesomeIcon icon={faTrash} />
                                             </Button>

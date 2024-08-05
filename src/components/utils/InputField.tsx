@@ -67,119 +67,114 @@ interface ControlProps {
     name: string;
 }
 
-const StringControl = React.forwardRef<HTMLInputElement, ControlProps>(function StringControl(
-    props,
-    ref
-): JSX.Element {
-    return (
-        <Form.Control
-            value={props.value as string}
-            onChange={e => props.onChange(e.target.value)}
-            disabled={props.disabled}
-            ref={ref}
-        />
-    );
-});
-
-const PasswordControl = React.forwardRef<HTMLInputElement, ControlProps>(function PasswordControl(
-    props,
-    ref
-): JSX.Element {
-    return (
-        <Form.Control
-            value={props.value as string}
-            onChange={e => props.onChange(e.target.value)}
-            disabled={props.disabled}
-            type="password"
-            ref={ref}
-        />
-    );
-});
-
-const BooleanControl = React.forwardRef<HTMLInputElement, ControlProps>(function BooleanControl(
-    props,
-    ref
-): JSX.Element {
-    const rndId = Math.random().toString();
-    return (
-        <label
-            htmlFor={rndId}
-            className="d-flex m-0 flex-grow-1 justify-content-center align-content-center">
-            <Form.Check
-                id={rndId}
-                checked={props.value as boolean}
-                onChange={e => props.onChange(e.target.checked)}
-                type="switch"
-                className="m-auto"
+const StringControl = React.forwardRef<HTMLInputElement, ControlProps>(
+    function StringControl(props, ref): JSX.Element {
+        return (
+            <Form.Control
+                value={props.value as string}
+                onChange={e => props.onChange(e.target.value)}
                 disabled={props.disabled}
                 ref={ref}
             />
-        </label>
-    );
-});
+        );
+    }
+);
+
+const PasswordControl = React.forwardRef<HTMLInputElement, ControlProps>(
+    function PasswordControl(props, ref): JSX.Element {
+        return (
+            <Form.Control
+                value={props.value as string}
+                onChange={e => props.onChange(e.target.value)}
+                disabled={props.disabled}
+                type="password"
+                ref={ref}
+            />
+        );
+    }
+);
+
+const BooleanControl = React.forwardRef<HTMLInputElement, ControlProps>(
+    function BooleanControl(props, ref): JSX.Element {
+        const rndId = Math.random().toString();
+        return (
+            <label
+                htmlFor={rndId}
+                className="d-flex m-0 flex-grow-1 justify-content-center align-content-center">
+                <Form.Check
+                    id={rndId}
+                    checked={props.value as boolean}
+                    onChange={e => props.onChange(e.target.checked)}
+                    type="switch"
+                    className="m-auto"
+                    disabled={props.disabled}
+                    ref={ref}
+                />
+            </label>
+        );
+    }
+);
 
 type NumberControlProps = ControlProps & {
     min?: number;
     max?: number;
 };
-const NumberControl = React.forwardRef<HTMLInputElement, NumberControlProps>(function NumberControl(
-    props,
-    ref
-): JSX.Element {
-    return (
-        <Form.Control
-            value={props.value as number}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                props.onChange(
-                    isNaN(e.target.valueAsNumber) ? e.target.value : e.target.valueAsNumber
-                )
-            }
-            disabled={props.disabled}
-            min={props.min}
-            max={props.max}
-            type="number"
-            ref={ref}
-        />
-    );
-});
+const NumberControl = React.forwardRef<HTMLInputElement, NumberControlProps>(
+    function NumberControl(props, ref): JSX.Element {
+        return (
+            <Form.Control
+                value={props.value as number}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    props.onChange(
+                        isNaN(e.target.valueAsNumber) ? e.target.value : e.target.valueAsNumber
+                    )
+                }
+                disabled={props.disabled}
+                min={props.min}
+                max={props.max}
+                type="number"
+                ref={ref}
+            />
+        );
+    }
+);
 
 type EnumControlProps = ControlProps & {
     enum: AnyEnum;
     noLocalize?: boolean;
 };
-const EnumControl = React.forwardRef<HTMLSelectElement, EnumControlProps>(function EnumControl(
-    props,
-    ref
-): JSX.Element {
-    return (
-        <Form.Control
-            value={props.value as string}
-            onChange={e => props.onChange(parseInt(e.target.value))}
-            disabled={props.disabled}
-            as="select"
-            custom
-            ref={ref}>
-            {Object.entries(props.enum)
-                //filters out reverse mapping
-                .filter(([key]) => isNaN(parseInt(key)))
-                .map(([key, value]) => {
-                    return props.noLocalize ? (
-                        <option key={value} value={value}>
-                            {key}
-                        </option>
-                    ) : (
-                        <FormattedMessage id={`${props.name}.${key}`} key={key}>
-                            {message => (
-                                <option key={value} value={value}>
-                                    {message}
-                                </option>
-                            )}
-                        </FormattedMessage>
-                    );
-                })}
-        </Form.Control>
-    );
-});
+const EnumControl = React.forwardRef<HTMLSelectElement, EnumControlProps>(
+    function EnumControl(props, ref): JSX.Element {
+        return (
+            <Form.Control
+                value={props.value as string}
+                onChange={e => props.onChange(parseInt(e.target.value))}
+                disabled={props.disabled}
+                as="select"
+                custom
+                ref={ref}>
+                {Object.entries(props.enum)
+                    //filters out reverse mapping
+                    .filter(([key]) => isNaN(parseInt(key)))
+                    .map(([key, value]) => {
+                        return props.noLocalize ? (
+                            <option key={value} value={value}>
+                                {key}
+                            </option>
+                        ) : (
+                            <FormattedMessage id={`${props.name}.${key}`} key={key}>
+                                {message => (
+                                    <option key={value} value={value}>
+                                        {message}
+                                    </option>
+                                )}
+                            </FormattedMessage>
+                        );
+                    })}
+            </Form.Control>
+        );
+    }
+);
 
 export const defaultValues: Record<FieldType, InputFieldTypes> = {
     [FieldType.Enum]: 0,

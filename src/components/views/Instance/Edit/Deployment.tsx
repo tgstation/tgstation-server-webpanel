@@ -253,20 +253,22 @@ export function Deployment(): JSX.Element {
                         show={canCompile ? false : undefined}>
                         <Button
                             disabled={!canCompile}
-                            onClick={async () => {
-                                const response = await DreamMakerClient.startCompile(
-                                    instanceEditContext.instance.id
-                                );
-                                if (response.code === StatusCode.ERROR) {
-                                    addError(errorState, response.error);
-                                } else {
-                                    JobsController.registerJob(
-                                        response.payload,
+                            onClick={() =>
+                                void (async () => {
+                                    const response = await DreamMakerClient.startCompile(
                                         instanceEditContext.instance.id
                                     );
-                                    JobsController.fastmode = 5;
-                                }
-                            }}>
+                                    if (response.code === StatusCode.ERROR) {
+                                        addError(errorState, response.error);
+                                    } else {
+                                        JobsController.registerJob(
+                                            response.payload,
+                                            instanceEditContext.instance.id
+                                        );
+                                        JobsController.fastmode = 5;
+                                    }
+                                })()
+                            }>
                             <FormattedMessage id="view.instance.deploy.deploy" />
                         </Button>
                     </SimpleToolTip>

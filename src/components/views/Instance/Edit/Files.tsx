@@ -933,8 +933,8 @@ class Files extends React.Component<IProps, IState> {
                                                 !fileDirectoryTree.fullyLoaded
                                                     ? "view.instance.files.delete.directory.populated.unloaded"
                                                     : canDeleteDirectories
-                                                    ? "view.instance.files.delete.directory.populated"
-                                                    : "view.instance.files.disallowed.directory.delete"
+                                                      ? "view.instance.files.delete.directory.populated"
+                                                      : "view.instance.files.disallowed.directory.delete"
                                             }
                                         />
                                     </Tooltip>
@@ -953,8 +953,7 @@ class Files extends React.Component<IProps, IState> {
                                             confirm(
                                                 this.props.intl.formatMessage(
                                                     {
-                                                        id:
-                                                            "view.instance.files.delete.directory.confirm"
+                                                        id: "view.instance.files.delete.directory.confirm"
                                                     },
                                                     { directoryName }
                                                 )

@@ -371,8 +371,8 @@ function Server(props: WrappedComponentProps): JSX.Element {
                         watchdogSettings.status === WatchdogStatus.Online
                             ? "success"
                             : watchdogSettings.status === WatchdogStatus.Offline
-                            ? "danger"
-                            : "warning"
+                              ? "danger"
+                              : "warning"
                     }>
                     <FormattedMessage
                         id={`view.instance.server.status.${
@@ -415,7 +415,7 @@ function Server(props: WrappedComponentProps): JSX.Element {
                             <Button
                                 variant="success"
                                 className="mx-2"
-                                onClick={startWatchdog}
+                                onClick={() => void startWatchdog()}
                                 disabled={
                                     (canMetadata &&
                                         watchdogSettings.status != WatchdogStatus.Offline) ||
@@ -430,7 +430,7 @@ function Server(props: WrappedComponentProps): JSX.Element {
                             <Button
                                 variant="danger"
                                 className="mx-2"
-                                onClick={stopWatchdog}
+                                onClick={() => void stopWatchdog()}
                                 disabled={
                                     (canMetadata &&
                                         watchdogSettings.status == WatchdogStatus.Offline) ||
@@ -445,7 +445,7 @@ function Server(props: WrappedComponentProps): JSX.Element {
                             <Button
                                 variant="warning"
                                 className="mx-2"
-                                onClick={restartWatchdog}
+                                onClick={() => void restartWatchdog()}
                                 disabled={
                                     (canMetadata &&
                                         watchdogSettings.status == WatchdogStatus.Offline) ||
@@ -460,7 +460,7 @@ function Server(props: WrappedComponentProps): JSX.Element {
                             <Button
                                 variant="info"
                                 className="mx-2"
-                                onClick={dumpWatchdog}
+                                onClick={() => void dumpWatchdog()}
                                 disabled={
                                     (canMetadata &&
                                         watchdogSettings.status != WatchdogStatus.Online) ||
@@ -489,8 +489,8 @@ function Server(props: WrappedComponentProps): JSX.Element {
                             watchdogSettings.softRestart
                                 ? GracefulAction.Restart
                                 : watchdogSettings.softShutdown
-                                ? GracefulAction.Stop
-                                : GracefulAction.None
+                                  ? GracefulAction.Stop
+                                  : GracefulAction.None
                         }
                         disabled={!canGracefulAny}
                         onChange={_result => {

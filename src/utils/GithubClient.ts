@@ -1,8 +1,10 @@
+/* eslint-disable import/no-unresolved */
 import { retry } from "@octokit/plugin-retry";
 import { throttling } from "@octokit/plugin-throttling";
 import { RequestError } from "@octokit/request-error";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { EndpointDefaults } from "@octokit/types";
+/* eslint-enable import/no-unresolved */
 import { TypedEmitter } from "tiny-typed-emitter/lib";
 
 import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
@@ -45,7 +47,7 @@ export interface DirectoryItem {
     isDirectory: boolean;
 }
 
-interface IEvents {}
+type IEvents = object;
 
 /* eslint-disable */
 

@@ -5,7 +5,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 
 import GenericAlert from "./GenericAlert";
 
-interface IProps extends RouteComponentProps {}
+type IProps = RouteComponentProps;
 
 interface IState {
     auth: boolean;

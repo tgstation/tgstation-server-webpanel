@@ -19,7 +19,7 @@ import Loading from "../../utils/Loading";
 import PageHelper from "../../utils/PageHelper";
 import UserBadges from "../../utils/UserBadges";
 
-interface IProps extends RouteComponentProps {}
+type IProps = RouteComponentProps;
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;

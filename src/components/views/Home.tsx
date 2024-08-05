@@ -12,7 +12,7 @@ import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 import RouteController from "../../utils/RouteController";
 import { AppRoute, AppRoutes } from "../../utils/routes";
 
-interface IProps {}
+type IProps = object;
 interface IState {
     routes: Array<AppRoute>;
     usingDefaultCreds: boolean;

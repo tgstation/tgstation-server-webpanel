@@ -45,7 +45,7 @@ interface IState {
     quickSetupStages: React.ReactNode[];
 }
 
-interface IProps extends RouteComponentProps {}
+type IProps = RouteComponentProps;
 
 class InstanceCreate extends React.Component<IProps, IState> {
     public declare context: GeneralContext;
@@ -130,7 +130,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
                         <Tab
                             eventKey="manual"
                             title={<FormattedMessage id="view.instance.create.manual" />}>
-                            <Form onSubmit={this.submit}>
+                            <Form onSubmit={() => void this.submit()}>
                                 <Col className="mx-auto" lg={5} md={8}>
                                     <Form.Group controlId="name">
                                         <Form.Label>
@@ -229,7 +229,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
                 <Alert className="clearfix" variant="error">
                     <FormattedMessage id="view.instance.create.quick.warning" />
                 </Alert>
-                <Form onSubmit={this.quickStart}>
+                <Form onSubmit={() => void this.quickStart()}>
                     <Col className="mx-auto" lg={5} md={8}>
                         <Form.Group controlId="quickname">
                             <Form.Label>
@@ -457,7 +457,7 @@ class InstanceCreate extends React.Component<IProps, IState> {
         let yml: ITGSYml;
         try {
             yml = YAML.parse(rawYml) as ITGSYml;
-        } catch (e) {
+        } catch {
             this.addError(new InternalError(ErrorCode.BAD_YML, { void: true }));
             this.setState({
                 performingQuickSetup: false
@@ -715,13 +715,14 @@ class InstanceCreate extends React.Component<IProps, IState> {
                                         return;
                                     }
 
-                                    const uploadResult = await ConfigurationFileClient.writeConfigFile(
-                                        instanceId,
-                                        {
-                                            path: `GameStaticFiles/${itemTargetPath}`
-                                        },
-                                        base64ToArrayBuffer(downloadResult.payload)
-                                    );
+                                    const uploadResult =
+                                        await ConfigurationFileClient.writeConfigFile(
+                                            instanceId,
+                                            {
+                                                path: `GameStaticFiles/${itemTargetPath}`
+                                            },
+                                            base64ToArrayBuffer(downloadResult.payload)
+                                        );
 
                                     if (uploadResult.code === StatusCode.ERROR) {
                                         this.addError(uploadResult.error);

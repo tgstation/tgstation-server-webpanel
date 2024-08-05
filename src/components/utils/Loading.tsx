@@ -14,7 +14,7 @@ type IProps = SpinnerProps & {
     noIntl?: boolean;
 };
 
-interface IState {}
+type IState = object;
 
 export default class Loading extends React.Component<IProps, IState> {
     public static defaultProps = {

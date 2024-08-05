@@ -351,7 +351,7 @@ export default function TestMergeRow({
                                     {option.name}
                                 </button>
                             )}
-                            onChange={value => setSelectedCommit((value as unknown) as string)}
+                            onChange={value => setSelectedCommit(value as unknown as string)}
                         />
                     ) : (
                         <Loading text="loading.repo.commits" width={5} widthUnit="rem" />

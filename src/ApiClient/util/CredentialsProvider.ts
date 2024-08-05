@@ -20,9 +20,7 @@ export default new (class CredentialsProvider {
 
     public hasToken() {
         return (
-            this.token &&
-            this.token
-                .bearer /* &&
+            this.token && this.token.bearer /* &&
             (!this.token.expiresAt || new Date(this.token.expiresAt) > new Date(Date.now()))*/
         );
     }

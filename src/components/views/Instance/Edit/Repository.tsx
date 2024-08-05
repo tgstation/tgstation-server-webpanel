@@ -47,7 +47,7 @@ enum ResetType {
     Remote
 }
 
-interface IProps {}
+type IProps = object;
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
@@ -1032,11 +1032,13 @@ class Repository extends React.Component<IProps, IState> {
                                         repoInfo={repositoryInfo}
                                         finalState={
                                             this.state.desiredState.get(pr.number)
-                                                ? ((this.state.desiredState.get(pr.number) as [
-                                                      boolean,
-                                                      string,
-                                                      string
-                                                  ]).slice(1) as [string, string])
+                                                ? ((
+                                                      this.state.desiredState.get(pr.number) as [
+                                                          boolean,
+                                                          string,
+                                                          string
+                                                      ]
+                                                  ).slice(1) as [string, string])
                                                 : false
                                         }
                                         onRemove={() =>
@@ -1121,44 +1123,46 @@ class Repository extends React.Component<IProps, IState> {
                         </Button>
                         <Button
                             variant="danger"
-                            onClick={async () => {
-                                this.setState({
-                                    showDeleteModal: false,
-                                    loading: true
-                                });
-                                const response = await RepositoryClient.deleteRepository(
-                                    this.context.instance.id
-                                );
-                                this.setState({
-                                    loading: false
-                                });
-                                if (response.code === StatusCode.OK) {
-                                    if (response.payload.activeJob) {
-                                        this.setState({
-                                            loading: true
-                                        });
-                                        JobsController.fastmode = 5;
-                                        JobsController.registerCallback(
-                                            response.payload.activeJob.id,
-                                            job => {
-                                                return this.fetchRepositoryInfo(
-                                                    job,
-                                                    job.errorCode === undefined &&
-                                                        job.exceptionDetails === undefined
-                                                );
-                                            }
-                                        );
-                                        JobsController.registerJob(
-                                            response.payload.activeJob,
-                                            this.context.instance.id
-                                        );
+                            onClick={() =>
+                                void (async () => {
+                                    this.setState({
+                                        showDeleteModal: false,
+                                        loading: true
+                                    });
+                                    const response = await RepositoryClient.deleteRepository(
+                                        this.context.instance.id
+                                    );
+                                    this.setState({
+                                        loading: false
+                                    });
+                                    if (response.code === StatusCode.OK) {
+                                        if (response.payload.activeJob) {
+                                            this.setState({
+                                                loading: true
+                                            });
+                                            JobsController.fastmode = 5;
+                                            JobsController.registerCallback(
+                                                response.payload.activeJob.id,
+                                                job => {
+                                                    return this.fetchRepositoryInfo(
+                                                        job,
+                                                        job.errorCode === undefined &&
+                                                            job.exceptionDetails === undefined
+                                                    );
+                                                }
+                                            );
+                                            JobsController.registerJob(
+                                                response.payload.activeJob,
+                                                this.context.instance.id
+                                            );
+                                        } else {
+                                            await this.fetchRepositoryInfo();
+                                        }
                                     } else {
-                                        await this.fetchRepositoryInfo();
+                                        this.addError(response.error);
                                     }
-                                } else {
-                                    this.addError(response.error);
-                                }
-                            }}>
+                                })()
+                            }>
                             <FormattedMessage id="view.instance.repo.delete" />
                         </Button>
                     </Modal.Footer>

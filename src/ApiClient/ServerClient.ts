@@ -317,7 +317,11 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         );
         this.apiHttpClient.instance.interceptors.response.use(
             this.apiResponseInterceptor.onFulfilled,
-            error => this.apiResponseInterceptor.onRejected(error, this.apiHttpClient!.instance)
+            error =>
+                this.apiResponseInterceptor.onRejected(
+                    error as AxiosError,
+                    this.apiHttpClient!.instance
+                )
         );
 
         this.apiClient = new Api(this.apiHttpClient);
@@ -631,7 +635,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                 });
 
                 failed = response.status != 200;
-            } catch (stat) {
+            } catch {
                 failed = true;
             }
 

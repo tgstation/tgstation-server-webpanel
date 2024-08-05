@@ -3,7 +3,7 @@ name: Node.js CI
 on:
     push:
         branches:
-        - next
+            - next
     pull_request:
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
               run: yarn install --immutable
 
             - name: Compile
-              run: yarn run build
+              run: yarn build
 
     lint:
         name: Run Linter
@@ -69,4 +69,4 @@ jobs:
               run: yarn install --immutable
 
             - name: Run ESLint
-              run: yarn eslint ./src --ext .js,.jsx,.ts,.tsx
+              run: yarn eslint --ext .js,.jsx,.ts,.tsx

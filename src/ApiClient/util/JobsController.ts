@@ -225,7 +225,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             this.currentLoop = initDate;
             window.setTimeout(() => {
                 this.loop(initDate).catch(e =>
-                    this.errors.push(new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) }))
+                    this.errors.push(
+                        new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e as string) })
+                    )
                 );
             }, 0);
 
@@ -369,7 +371,8 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         }
 
         if (instanceid) job.instanceId = instanceid;
-        const instanceSet = this.jobsByInstance.get(job.instanceId) ?? new Map();
+        const instanceSet =
+            this.jobsByInstance.get(job.instanceId) ?? new Map<number, TGSJobResponse>();
         this.jobsByInstance.set(job.instanceId, instanceSet);
         instanceSet.set(job.id, job);
         this.jobs.set(job.id, job);
@@ -423,7 +426,8 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     .map(job => job.id);
                 const manualIds = localActive.filter(jobId => !remoteActive.includes(jobId));
 
-                const instanceSet = this.jobsByInstance.get(instanceid) ?? new Map();
+                const instanceSet =
+                    this.jobsByInstance.get(instanceid) ?? new Map<number, TGSJobResponse>();
                 this.jobsByInstance.set(instanceid, instanceSet);
                 const work: Promise<void>[] = [];
                 manualIds.forEach(jobId => {
@@ -457,7 +461,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                     //Probably a good idea to reload the list at this point
                     this.reloadAccessibleInstances().catch(e => {
                         this.errors.push(
-                            new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) })
+                            new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e as string) })
                         );
                     });
                 } else {
@@ -544,7 +548,9 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                                 //Probably a good idea to reload the list at this point
                                 this.reloadAccessibleInstances().catch(e => {
                                     this.errors.push(
-                                        new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) })
+                                        new InternalError(ErrorCode.APP_FAIL, {
+                                            jsError: Error(e as string)
+                                        })
                                     );
                                 });
                             } else {
@@ -582,17 +588,26 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         if (this.fastmodecount && loopid === this.currentLoop) {
             window.setTimeout(() => {
                 this.loop(loopid).catch(e =>
-                    this.errors.push(new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) }))
+                    this.errors.push(
+                        new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e as string) })
+                    )
                 );
             }, 800);
             this.fastmodecount--;
             console.log(`JobsController will remain in fastmode for ${this.fastmodecount} cycles`);
         } else {
-            window.setTimeout(() => {
-                this.loop(loopid).catch(e =>
-                    this.errors.push(new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) }))
-                );
-            }, (totalActiveJobs ? (configOptions.jobpollactive.value as number) : (configOptions.jobpollinactive.value as number)) * 1000);
+            window.setTimeout(
+                () => {
+                    this.loop(loopid).catch(e =>
+                        this.errors.push(
+                            new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e as string) })
+                        )
+                    );
+                },
+                (totalActiveJobs
+                    ? (configOptions.jobpollactive.value as number)
+                    : (configOptions.jobpollinactive.value as number)) * 1000
+            );
         }
     }
 
@@ -633,9 +648,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.Engine: {
-                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceId
-                );
+                const InstancePermissionSet =
+                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                        job.instanceId
+                    );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as EngineRights;
                     return !!(InstancePermissionSet.payload.engineRights & required);
@@ -645,9 +661,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.ChatBots: {
-                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceId
-                );
+                const InstancePermissionSet =
+                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                        job.instanceId
+                    );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ChatBotRights;
                     return !!(InstancePermissionSet.payload.chatBotRights & required);
@@ -657,9 +674,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.Configuration: {
-                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceId
-                );
+                const InstancePermissionSet =
+                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                        job.instanceId
+                    );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as ConfigurationRights;
                     return !!(InstancePermissionSet.payload.configurationRights & required);
@@ -669,9 +687,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.DreamDaemon: {
-                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceId
-                );
+                const InstancePermissionSet =
+                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                        job.instanceId
+                    );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamDaemonRights;
                     return !!(InstancePermissionSet.payload.dreamDaemonRights & required);
@@ -681,9 +700,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.DreamMaker: {
-                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceId
-                );
+                const InstancePermissionSet =
+                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                        job.instanceId
+                    );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as DreamMakerRights;
                     return !!(InstancePermissionSet.payload.dreamMakerRights & required);
@@ -693,9 +713,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.InstancePermissionSet: {
-                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceId
-                );
+                const InstancePermissionSet =
+                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                        job.instanceId
+                    );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as InstancePermissionSetRights;
                     return !!(InstancePermissionSet.payload.instancePermissionSetRights & required);
@@ -705,9 +726,10 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
                 }
             }
             case RightsType.Repository: {
-                const InstancePermissionSet = await InstancePermissionSetClient.getCurrentInstancePermissionSet(
-                    job.instanceId
-                );
+                const InstancePermissionSet =
+                    await InstancePermissionSetClient.getCurrentInstancePermissionSet(
+                        job.instanceId
+                    );
                 if (InstancePermissionSet.code === StatusCode.OK) {
                     const required = job.cancelRight as RepositoryRights;
                     return !!(InstancePermissionSet.payload.repositoryRights & required);

@@ -41,7 +41,7 @@ import InputField, { AnyEnum, FieldType } from "../../../utils/InputField";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 
-interface IProps extends RouteComponentProps {}
+type IProps = RouteComponentProps;
 
 interface Permission {
     readonly bitflag: number;
@@ -142,7 +142,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
                 const currentVal = !!(newPermissionSet[permSourceField] & val);
                 this.setState(
                     prevState =>
-                        (({
+                        ({
                             [permTargetField]: {
                                 ...(prevState[permTargetField] as Record<string, Permission>),
                                 [key]: {
@@ -150,7 +150,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
                                     bitflag: val
                                 }
                             }
-                        } as unknown) as IState)
+                        }) as unknown as IState
                 );
             });
         };
@@ -340,9 +340,9 @@ class InstancePermissions extends React.Component<IProps, IState> {
 
     private async grantPermissions(): Promise<void> {
         // permissions checked on input
-        const instanceedit = await InstanceClient.grantPermissions(({
+        const instanceedit = await InstanceClient.grantPermissions({
             id: this.context.instance.id
-        } as unknown) as InstanceResponse);
+        } as unknown as InstanceResponse);
 
         if (instanceedit.code != StatusCode.OK) {
             this.addError(instanceedit.error);
@@ -744,7 +744,14 @@ class InstancePermissions extends React.Component<IProps, IState> {
 
             const newset = Object.assign(Object.assign({}, this.state.currentPermissions), {
                 [rightsType]: bitflag
-            } as { InstancePermissionSetRights: InstancePermissionSetRights } | { RepositoryRights: RepositoryRights } | { EngineRights: EngineRights } | { DreamMakerRights: DreamMakerRights } | { DreamDaemonRights: DreamDaemonRights } | { ChatBotRights: ChatBotRights } | { ConfigurationRights: ConfigurationRights });
+            } as
+                | { InstancePermissionSetRights: InstancePermissionSetRights }
+                | { RepositoryRights: RepositoryRights }
+                | { EngineRights: EngineRights }
+                | { DreamMakerRights: DreamMakerRights }
+                | { DreamDaemonRights: DreamDaemonRights }
+                | { ChatBotRights: ChatBotRights }
+                | { ConfigurationRights: ConfigurationRights });
 
             const response = await InstancePermissionSetClient.updateInstancePermissionSet(
                 this.context.instance.id,
@@ -852,7 +859,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
                     <hr />
                 </Col>
                 {canEdit ? (
-                    <Button onClick={save}>
+                    <Button onClick={() => void save()}>
                         <FormattedMessage id="generic.savetab" />
                     </Button>
                 ) : (

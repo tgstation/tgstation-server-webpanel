@@ -31,10 +31,10 @@ export default class JobCard extends React.Component<IProps, IState> {
             job.errorCode !== undefined || job.exceptionDetails !== undefined
                 ? "danger"
                 : job.cancelled
-                ? "warning"
-                : job.stoppedAt
-                ? "success"
-                : "info";
+                  ? "warning"
+                  : job.stoppedAt
+                    ? "success"
+                    : "info";
 
         return (
             <Toast

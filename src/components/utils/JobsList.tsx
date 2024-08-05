@@ -302,7 +302,7 @@ export default class JobsList extends React.Component<IProps, IState> {
                                             width={this.props.width}
                                             key={job.id}
                                             onClose={this.onClose}
-                                            onCancel={this.onCancel}
+                                            onCancel={e => void this.onCancel(e)}
                                         />
                                     ))}
                             </React.Fragment>

@@ -32,10 +32,9 @@ import ErrorAlert from "../../utils/ErrorAlert";
 import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 
-interface IProps
-    extends RouteComponentProps<{
-        all: string;
-    }> {}
+type IProps = RouteComponentProps<{
+    all: string;
+}>;
 interface IState {
     versions: TGSVersion[];
     changelog: TGSChangelog | null;
@@ -188,7 +187,7 @@ class Update extends React.Component<IProps, IState> {
                 try {
                     const changelogYml = window.atob(changelogYmlB64.payload);
                     return YAML.parse(changelogYml) as TGSChangelog;
-                } catch (e) {
+                } catch {
                     this.addError(new InternalError(ErrorCode.BAD_YML, { void: true }));
                 }
 
@@ -428,8 +427,9 @@ class Update extends React.Component<IProps, IState> {
                 markdown += `# **Major Update ${coreVersion.major}.0.0**`;
             }
 
-            for (const component in TgsComponent) {
-                const changelist = releaseDictionary.get(component as TgsComponent);
+            for (const componentE in TgsComponent) {
+                const component = componentE as TgsComponent;
+                const changelist = releaseDictionary.get(component);
                 if (
                     !changelist ||
                     (changelist.Changes?.length == 0 && component != TgsComponent.Configuration)
@@ -461,7 +461,8 @@ class Update extends React.Component<IProps, IState> {
         return markdown;
     }
 
-    private componentDisplayName(component: string): string {
+    private componentDisplayName(componentS: string): string {
+        const component = componentS as TgsComponent;
         switch (component) {
             case TgsComponent.HttpApi:
                 return "HTTP API";
@@ -595,7 +596,7 @@ class Update extends React.Component<IProps, IState> {
                                 }
                                 placement="right"
                                 show={timing}>
-                                <Button onClick={this.updateServer} disabled={timing}>
+                                <Button onClick={() => void this.updateServer()} disabled={timing}>
                                     <FormattedMessage id="generic.continue" />
                                     {timing ? ` [${this.state.secondsLeft as number}]` : ""}
                                 </Button>

@@ -18,15 +18,15 @@ type FieldsOutput<Fields extends Record<string, InputFormField>> = {
     [Id in keyof Fields]: Fields[Id]["type"] extends FieldType.Number
         ? number
         : Fields[Id]["type"] extends FieldType.Enum
-        ? // @ts-expect-error Typescript doesnt seem to support union descrimination in conditional types
-          ExtractValues<Fields[Id]["enum"]>
-        : Fields[Id]["type"] extends FieldType.Boolean
-        ? boolean
-        : Fields[Id]["type"] extends FieldType.String
-        ? string
-        : Fields[Id]["type"] extends FieldType.Password
-        ? string
-        : never;
+          ? // @ts-expect-error Typescript doesnt seem to support union descrimination in conditional types
+            ExtractValues<Fields[Id]["enum"]>
+          : Fields[Id]["type"] extends FieldType.Boolean
+            ? boolean
+            : Fields[Id]["type"] extends FieldType.String
+              ? string
+              : Fields[Id]["type"] extends FieldType.Password
+                ? string
+                : never;
 };
 
 export type InputFormField = DistributiveOmit<InputFieldProps, "onChange"> & {

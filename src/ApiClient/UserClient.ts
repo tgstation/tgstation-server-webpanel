@@ -19,7 +19,7 @@ interface IEvents {
 }
 
 export type GetCurrentUserErrors = GenericErrors;
-export type EditUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND | GetCurrentUserErrors;
+export type EditUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type GetUserErrors = GenericErrors | ErrorCode.USER_NOT_FOUND;
 export type CreateUserErrors = GenericErrors | ErrorCode.USER_NO_SYS_IDENT;
 

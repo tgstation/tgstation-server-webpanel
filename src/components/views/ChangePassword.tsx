@@ -16,7 +16,7 @@ import { GeneralContext } from "../../contexts/GeneralContext";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
 
-interface IProps extends RouteComponentProps<{ id: string }> {}
+type IProps = RouteComponentProps<{ id: string }>;
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
@@ -167,7 +167,7 @@ class ChangePassword extends React.Component<IProps, IState> {
             this.setState({ password2: event.target.value });
 
         return (
-            <Form onSubmit={this.submit}>
+            <Form onSubmit={e => void this.submit(e)}>
                 <Col className="mx-auto" lg={5} md={8}>
                     {this.state.errors.map((err, index) => {
                         if (!err) return;

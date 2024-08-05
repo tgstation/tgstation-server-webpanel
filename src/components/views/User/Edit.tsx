@@ -41,7 +41,7 @@ import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 import UserBadges from "../../utils/UserBadges";
 
-interface IProps extends RouteComponentProps<{ id: string; tab?: string }> {}
+type IProps = RouteComponentProps<{ id: string; tab?: string }>;
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
@@ -436,25 +436,27 @@ class UserEdit extends React.Component<IProps, IState> {
                                                 variant={
                                                     this.state.user.enabled ? "danger" : "success"
                                                 }
-                                                onClick={async () => {
-                                                    this.setState({
-                                                        saving: true
-                                                    });
+                                                onClick={() =>
+                                                    void (async () => {
+                                                        this.setState({
+                                                            saving: true
+                                                        });
 
-                                                    const response = await UserClient.editUser({
-                                                        enabled: !this.state.user!.enabled,
-                                                        id: this.state.user!.id
-                                                    });
-                                                    if (response.code == StatusCode.OK) {
-                                                        this.loadUser(response.payload);
-                                                    } else {
-                                                        this.addError(response.error);
-                                                    }
+                                                        const response = await UserClient.editUser({
+                                                            enabled: !this.state.user!.enabled,
+                                                            id: this.state.user!.id
+                                                        });
+                                                        if (response.code == StatusCode.OK) {
+                                                            this.loadUser(response.payload);
+                                                        } else {
+                                                            this.addError(response.error);
+                                                        }
 
-                                                    this.setState({
-                                                        saving: false
-                                                    });
-                                                }}>
+                                                        this.setState({
+                                                            saving: false
+                                                        });
+                                                    })()
+                                                }>
                                                 <FormattedMessage
                                                     id={
                                                         this.state.user.enabled
@@ -585,7 +587,10 @@ class UserEdit extends React.Component<IProps, IState> {
                                                 {txt => (
                                                     <option
                                                         value={key}
-                                                        selected={oAuthConnection.provider === key}>
+                                                        selected={
+                                                            (oAuthConnection.provider as string) ===
+                                                            key
+                                                        }>
                                                         {txt}
                                                     </option>
                                                 )}
@@ -625,9 +630,10 @@ class UserEdit extends React.Component<IProps, IState> {
                                         onClick={() => {
                                             this.setState(prev => {
                                                 return {
-                                                    newOAuthConnections: prev.newOAuthConnections.filter(
-                                                        (val, idx2) => idx !== idx2
-                                                    )
+                                                    newOAuthConnections:
+                                                        prev.newOAuthConnections.filter(
+                                                            (val, idx2) => idx !== idx2
+                                                        )
                                                 };
                                             });
                                         }}>
@@ -662,7 +668,7 @@ class UserEdit extends React.Component<IProps, IState> {
                             <FormattedMessage id="view.user.edit.oauth.add" />
                         </Button>
                         <Button
-                            onClick={save}
+                            onClick={() => void save()}
                             variant="success"
                             disabled={
                                 this.state.newOAuthConnections.some(
@@ -719,7 +725,7 @@ class UserEdit extends React.Component<IProps, IState> {
                         <FormattedMessage id="perms.group.none" />
                     )}
                 </h3>
-                <div onChange={this.state.renameGroup ? undefined : this.changeGroup}>
+                <div onChange={this.state.renameGroup ? undefined : e => void this.changeGroup(e)}>
                     <InputGroup
                         className="justify-content-center mb-3"
                         as="label"
@@ -869,7 +875,7 @@ class UserEdit extends React.Component<IProps, IState> {
                     <InputGroup.Prepend>
                         <Button
                             variant="primary"
-                            onClick={this.createGroup}
+                            onClick={() => void this.createGroup()}
                             disabled={!this.canEdit || !this.state.createGroupName.length}>
                             <FontAwesomeIcon icon={faPlus} />
                         </Button>
@@ -1095,10 +1101,11 @@ class UserEdit extends React.Component<IProps, IState> {
                 }
             } else {
                 const newset = Object.assign(Object.assign({}, this.state.user.permissionSet), {
-                    [enumname == "permsadmin"
-                        ? "AdministrationRights"
-                        : "InstanceManagerRights"]: bitflag
-                } as { AdministrationRights: AdministrationRights } | { InstanceManagerRights: InstanceManagerRights });
+                    [enumname == "permsadmin" ? "AdministrationRights" : "InstanceManagerRights"]:
+                        bitflag
+                } as
+                    | { AdministrationRights: AdministrationRights }
+                    | { InstanceManagerRights: InstanceManagerRights });
                 const response = await UserClient.editUser({
                     id: this.state.user.id,
                     permissionSet: newset
@@ -1203,7 +1210,7 @@ class UserEdit extends React.Component<IProps, IState> {
                     <hr />
                 </Col>
                 {this.canEdit ? (
-                    <Button onClick={save}>
+                    <Button onClick={() => void save()}>
                         <FormattedMessage id="generic.savetab" />
                     </Button>
                 ) : (

@@ -179,7 +179,7 @@ class UserCreate extends React.Component<IProps, IState> {
                     <FormattedMessage id="routes.usercreate" />
                 </h3>
                 <Col className="mx-auto" lg={5} md={8}>
-                    <Form onSubmit={this.submitTGS}>
+                    <Form onSubmit={event => void this.submitTGS(event)}>
                         <Form.Group controlId="username">
                             <Form.Label>
                                 <FormattedMessage id="login.username" />
@@ -234,7 +234,7 @@ class UserCreate extends React.Component<IProps, IState> {
                         </Button>
                     </Form>
                     <hr />
-                    <Form onSubmit={this.submitSYS}>
+                    <Form onSubmit={event => void this.submitSYS(event)}>
                         <Form.Group controlId="sysuser">
                             <Form.Label>
                                 <FormattedMessage id="generic.systemidentifier" />

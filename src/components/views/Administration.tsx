@@ -22,7 +22,7 @@ import ErrorAlert from "../utils/ErrorAlert";
 import { DebugJsonViewer } from "../utils/JsonViewer";
 import Loading from "../utils/Loading";
 
-interface IProps extends RouteComponentProps {}
+type IProps = RouteComponentProps;
 interface IState {
     adminInfo?: AdministrationResponse;
     error?: InternalError<ErrorCode>;
@@ -218,7 +218,7 @@ class Administration extends React.Component<IProps, IState> {
                             <Button onClick={handleClose}>
                                 <FormattedMessage id="generic.close" />
                             </Button>
-                            <Button variant="danger" onClick={this.restart}>
+                            <Button variant="danger" onClick={() => void this.restart()}>
                                 <FormattedMessage id="view.admin.reboot.button" />
                             </Button>
                         </Modal.Footer>

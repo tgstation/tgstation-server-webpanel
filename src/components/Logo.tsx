@@ -4,9 +4,9 @@ import { FormattedMessage } from "react-intl";
 
 import logo from "../images/logo.svg";
 
-interface IProps {}
+type IProps = object;
 
-interface IState {}
+type IState = object;
 
 export default class Logo extends React.Component<IProps, IState> {
     public render(): React.ReactNode {

@@ -29,7 +29,7 @@ import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 import PageHelper from "../../../utils/PageHelper";
 
-interface IProps {}
+type IProps = object;
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
@@ -177,7 +177,9 @@ class Engine extends React.Component<IProps, IState> {
                 });
             })
             .catch(e => {
-                this.addError(new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e) }));
+                this.addError(
+                    new InternalError(ErrorCode.APP_FAIL, { jsError: Error(e as string) })
+                );
                 this.setState({
                     loading: false
                 });
@@ -285,9 +287,9 @@ class Engine extends React.Component<IProps, IState> {
                                                         EngineType.Byond
                                                             ? !canInstallAndSwitchByond
                                                             : item.engineVersion.engine ===
-                                                              EngineType.OpenDream
-                                                            ? !canInstallAndSwitchOD
-                                                            : false
+                                                                EngineType.OpenDream
+                                                              ? !canInstallAndSwitchOD
+                                                              : false
                                                     }
                                                     checked={
                                                         this.makeUniqueStringForVersion(
@@ -352,32 +354,37 @@ class Engine extends React.Component<IProps, IState> {
                                                     <Button
                                                         variant="danger"
                                                         disabled={!canDelete}
-                                                        onClick={async () => {
-                                                            this.setState({
-                                                                loading: true
-                                                            });
-                                                            const response = await EngineClient.deleteVersion(
-                                                                this.context.instance.id,
-                                                                item.engineVersion
-                                                            );
-                                                            if (
-                                                                response.code === StatusCode.ERROR
-                                                            ) {
-                                                                this.addError(response.error);
-                                                            } else {
-                                                                JobsController.registerJob(
-                                                                    response.payload,
-                                                                    this.context.instance.id
-                                                                );
-                                                                JobsController.registerCallback(
-                                                                    response.payload.id,
-                                                                    () => void this.loadVersions()
-                                                                );
-                                                            }
-                                                            this.setState({
-                                                                loading: false
-                                                            });
-                                                        }}>
+                                                        onClick={() =>
+                                                            void (async () => {
+                                                                this.setState({
+                                                                    loading: true
+                                                                });
+                                                                const response =
+                                                                    await EngineClient.deleteVersion(
+                                                                        this.context.instance.id,
+                                                                        item.engineVersion
+                                                                    );
+                                                                if (
+                                                                    response.code ===
+                                                                    StatusCode.ERROR
+                                                                ) {
+                                                                    this.addError(response.error);
+                                                                } else {
+                                                                    JobsController.registerJob(
+                                                                        response.payload,
+                                                                        this.context.instance.id
+                                                                    );
+                                                                    JobsController.registerCallback(
+                                                                        response.payload.id,
+                                                                        () =>
+                                                                            void this.loadVersions()
+                                                                    );
+                                                                }
+                                                                this.setState({
+                                                                    loading: false
+                                                                });
+                                                            })()
+                                                        }>
                                                         <FontAwesomeIcon icon={faTrash} />
                                                     </Button>
                                                 </OverlayTrigger>
@@ -482,13 +489,15 @@ class Engine extends React.Component<IProps, IState> {
                             <Button
                                 variant="success"
                                 disabled={!canInstallAndSwitchByond}
-                                onClick={async () => {
-                                    await this.switchVersion(
-                                        this.state.selectedByondVersion ??
-                                            this.state.latestByondVersion,
-                                        true
-                                    );
-                                }}>
+                                onClick={() =>
+                                    void (async () => {
+                                        await this.switchVersion(
+                                            this.state.selectedByondVersion ??
+                                                this.state.latestByondVersion,
+                                            true
+                                        );
+                                    })()
+                                }>
                                 <FontAwesomeIcon icon={faPlus} />
                             </Button>
                         </OverlayTrigger>
@@ -559,12 +568,15 @@ class Engine extends React.Component<IProps, IState> {
                             <Button
                                 variant="success"
                                 disabled={!canInstallAndSwitchOD}
-                                onClick={async () => {
-                                    await this.switchVersion(
-                                        this.state.selectedODVersion ?? this.state.latestODVersion,
-                                        true
-                                    );
-                                }}>
+                                onClick={() =>
+                                    void (async () => {
+                                        await this.switchVersion(
+                                            this.state.selectedODVersion ??
+                                                this.state.latestODVersion,
+                                            true
+                                        );
+                                    })()
+                                }>
                                 <FontAwesomeIcon icon={faPlus} />
                             </Button>
                         </OverlayTrigger>

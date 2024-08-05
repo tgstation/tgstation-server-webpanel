@@ -3,8 +3,8 @@ import { FormattedMessage } from "react-intl";
 
 import JobsList from "../../utils/JobsList";
 
-interface IProps {}
-interface IState {}
+type IProps = object;
+type IState = object;
 
 export default class Jobs extends React.Component<IProps, IState> {
     public render(): ReactNode {

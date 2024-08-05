@@ -267,8 +267,8 @@ class InstanceEdit extends React.Component<IProps, IState> {
                         (configOptions.instanceeditsidebar.value === InstanceEditSidebar.COLLAPSE
                             ? "pin-close"
                             : configOptions.instanceeditsidebar.value === InstanceEditSidebar.EXPAND
-                            ? "pin-open"
-                            : "")
+                              ? "pin-open"
+                              : "")
                     }
                     style={{ top: "8em" }}>
                     {InstanceEdit.tabs.map(([tabKey, icon, accessCb, component]) => {

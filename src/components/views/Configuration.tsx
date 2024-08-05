@@ -69,8 +69,8 @@ export default class Configuration extends React.Component<IProps, IState> {
                                 value.type === "enum"
                                     ? enumRef.current!.selectedOptions[0].value
                                     : value.type === "bool"
-                                    ? valueRef.current!.checked
-                                    : valueRef.current!.value;
+                                      ? valueRef.current!.checked
+                                      : valueRef.current!.value;
 
                             return {
                                 values: {
@@ -169,8 +169,8 @@ export default class Configuration extends React.Component<IProps, IState> {
                                             value.type === "num"
                                                 ? "number"
                                                 : value.type === "pwd"
-                                                ? "password"
-                                                : "text"
+                                                  ? "password"
+                                                  : "text"
                                         }
                                         className={`flex-fill mb-0 ${
                                             this.state.values[key] ? "font-weight-bold" : ""

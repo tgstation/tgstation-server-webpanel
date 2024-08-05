@@ -50,7 +50,7 @@ export default new (class ConfigController {
         try {
             localStorage.setItem(this.getConfigKey(option), JSON.stringify(option.value));
             //option.persist = true;
-        } catch (e) {
+        } catch {
             (() => {})(); //noop
         }
     }
@@ -66,7 +66,7 @@ export default new (class ConfigController {
                 }
                 //option.persist = true;
             }
-        } catch (e) {
+        } catch {
             (() => {})(); //noop
         }
     }
@@ -76,7 +76,7 @@ export default new (class ConfigController {
             const option = configOptions[key];
             localStorage.removeItem(this.getConfigKey(option));
             //option.persist = false;
-        } catch (e) {
+        } catch {
             (() => {})(); //noop
         }
     }

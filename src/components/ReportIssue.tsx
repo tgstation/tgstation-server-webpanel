@@ -4,9 +4,9 @@ import React from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 
-interface IProps {}
+type IProps = object;
 
-interface IState {}
+type IState = object;
 
 export default class ReportIssue extends React.Component<IProps, IState> {
     public render(): React.ReactNode {

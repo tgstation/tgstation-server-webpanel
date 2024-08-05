@@ -22,7 +22,7 @@ import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 import PageHelper from "../../utils/PageHelper";
 
-interface IProps extends RouteComponentProps<{ name: string | undefined }> {}
+type IProps = RouteComponentProps<{ name: string | undefined }>;
 
 interface LogEntry {
     time: string;
