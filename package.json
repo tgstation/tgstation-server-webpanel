@@ -37,7 +37,7 @@
         "@octokit/plugin-throttling": "^9.3.1",
         "@octokit/request-error": "^6.1.4",
         "@octokit/rest": "^21.0.1",
-        "axios": "^1.7.2",
+        "axios": "^1.7.3",
         "bootstrap": "^4.6.1",
         "buffer": "^6.0.3",
         "client-zip": "^2.4.5",
