@@ -1581,15 +1581,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/ecma402-abstract@npm:1.5.2":
-  version: 1.5.2
-  resolution: "@formatjs/ecma402-abstract@npm:1.5.2"
-  dependencies:
-    tslib: "npm:^2.0.1"
-  checksum: 10/eb62c26e4ef3640b6ada9f2f5002e8d6ab47452d0012cdf789dec68be6b9926c7004c526e6a0cb83fa13487ec5c5ce8de7e845ab1fdd0de5b7b056514c3f6191
-  languageName: node
-  linkType: hard
-
 "@formatjs/ecma402-abstract@npm:2.0.0":
   version: 2.0.0
   resolution: "@formatjs/ecma402-abstract@npm:2.0.0"
@@ -1691,13 +1682,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-pluralrules@npm:4.0.6":
-  version: 4.0.6
-  resolution: "@formatjs/intl-pluralrules@npm:4.0.6"
+"@formatjs/intl-pluralrules@npm:5.2.14":
+  version: 5.2.14
+  resolution: "@formatjs/intl-pluralrules@npm:5.2.14"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:1.5.2"
-    tslib: "npm:^2.0.1"
-  checksum: 10/a264cd616c7296d6dcc173ba58d08ce86e162c8b768a00ee5637fe59aa105629aaabcacee187b978615c2e17bb2e284b3a504431b2684c74f36cb916f98ab740
+    "@formatjs/ecma402-abstract": "npm:2.0.0"
+    "@formatjs/intl-localematcher": "npm:0.5.4"
+    tslib: "npm:^2.4.0"
+  checksum: 10/831dfe6b8ad84472f836091c2da4d925fba238fa2b1c36befaca668ff399f43ac7d97d715842db7a1a3baccccf611b709e368b27875be86b471592276c00cd2b
   languageName: node
   linkType: hard
 
@@ -11480,7 +11472,7 @@ __metadata:
     "@babel/preset-react": "npm:^7.24.7"
     "@babel/preset-typescript": "npm:^7.24.7"
     "@formatjs/intl-locale": "npm:^4.0.0"
-    "@formatjs/intl-pluralrules": "npm:4.0.6"
+    "@formatjs/intl-pluralrules": "npm:5.2.14"
     "@formatjs/intl-relativetimeformat": "npm:^11.2.14"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
@@ -11707,7 +11699,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.1, tslib@npm:^2.0.3":
+"tslib@npm:^2.0.3":
   version: 2.3.1
   resolution: "tslib@npm:2.3.1"
   checksum: 10/5e7de59ed9f2b705b399bda28326b7c3e7526deb48bbe1716e2e17fbd4cecbb610253d09c7b8fd0a6e76cfed9304e2e608cdb81bb1ee812d69e5089d1a94c71a
