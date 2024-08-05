@@ -10016,10 +10016,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-refresh@npm:^0.11.0":
-  version: 0.11.0
-  resolution: "react-refresh@npm:0.11.0"
-  checksum: 10/1275699e2edc39dbced9bdb00e2e167e3a2868e0c8ae117ba9551556368cfe70453068e5209240d827122aad5504a64c59a24b9b9a2a0ab932472c8750203ea3
+"react-refresh@npm:^0.14.2":
+  version: 0.14.2
+  resolution: "react-refresh@npm:0.14.2"
+  checksum: 10/512abf97271ab8623486061be04b608c39d932e3709f9af1720b41573415fa4993d0009fa5138b6705b60a98f4102f744d4e26c952b14f41a0e455521c6be4cc
   languageName: node
   linkType: hard
 
@@ -11608,7 +11608,7 @@ __metadata:
     react-intl: "npm:^6.6.8"
     react-json-view: "npm:^1.21.3"
     react-markdown: "npm:^5.0.3"
-    react-refresh: "npm:^0.11.0"
+    react-refresh: "npm:^0.14.2"
     react-rnd: "npm:^10.4.12"
     react-router-dom: "npm:^5.3.0"
     react-select-search: "npm:^3.0.9"

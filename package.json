@@ -106,7 +106,7 @@
         "postcss": "^8.4.40",
         "postcss-loader": "^8.1.1",
         "prettier": "^3.3.3",
-        "react-refresh": "^0.11.0",
+        "react-refresh": "^0.14.2",
         "sass": "^1.43.4",
         "source-map-loader": "^2.0.2",
         "svg-loader": "0.0.2",
