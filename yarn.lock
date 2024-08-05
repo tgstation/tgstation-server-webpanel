@@ -11323,7 +11323,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svg-loader@npm:0.0.2":
+"svg-loader@npm:^0.0.2":
   version: 0.0.2
   resolution: "svg-loader@npm:0.0.2"
   checksum: 10/fd8f8131ca66c244518e41306b1878735fdd81a638f68ffc2db2d06f0c62bd2f5a679390e51a4d872188af72d65929bd3ae4615422f12ce9559ac84c9c47cc14
@@ -11602,7 +11602,7 @@ __metadata:
     semver: "npm:^7.6.3"
     source-map-loader: "npm:^5.0.0"
     stream-http: "npm:^3.2.0"
-    svg-loader: "npm:0.0.2"
+    svg-loader: "npm:^0.0.2"
     swagger-typescript-api: "npm:^13.0.14"
     terser-webpack-plugin: "npm:^5.3.10"
     tiny-typed-emitter: "npm:^2.0.3"
