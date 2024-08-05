@@ -2523,12 +2523,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/loadable__component@npm:^5.13.4":
-  version: 5.13.4
-  resolution: "@types/loadable__component@npm:5.13.4"
+"@types/loadable__component@npm:^5.13.9":
+  version: 5.13.9
+  resolution: "@types/loadable__component@npm:5.13.9"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 10/b2ef3236fa773efeb81c0945d6371d792dc28719bb8d2eafe4df0eebaec1fcf78e9b8b06536c46a4fadce81bb263feb590721c57410879d2e37bf494d8800033
+  checksum: 10/a41b8883b0167fc307d6d8eaf853277bf66c0c7ea32318c8aa39eba7d99cc1f147a138a63c2e71dea27d24161545e3d6168efe44cfda2806adba83d2798153dd
   languageName: node
   linkType: hard
 
@@ -11490,7 +11490,7 @@ __metadata:
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.5.15"
     "@types/eslint": "npm:^8"
     "@types/jquery": "npm:^3"
-    "@types/loadable__component": "npm:^5.13.4"
+    "@types/loadable__component": "npm:^5.13.9"
     "@types/node": "npm:^22.1.0"
     "@types/prop-types": "npm:^15"
     "@types/react": "npm:^17.0.35"
