@@ -97,7 +97,7 @@
         "eslint-plugin-react-hooks": "^4.6.2",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "fast-sass-loader": "^2.0.1",
-        "follow-redirects": "^1.13.2",
+        "follow-redirects": "^1.15.6",
         "fork-ts-checker-webpack-plugin": "^9.0.2",
         "fs-extra": "^11.2.0",
         "html-webpack-plugin": "^5.6.0",

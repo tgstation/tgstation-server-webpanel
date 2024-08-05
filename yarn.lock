@@ -6223,7 +6223,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.13.2":
+"follow-redirects@npm:^1.0.0":
   version: 1.14.7
   resolution: "follow-redirects@npm:1.14.7"
   peerDependenciesMeta:
@@ -11613,7 +11613,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.2"
     eslint-plugin-simple-import-sort: "npm:^12.1.1"
     fast-sass-loader: "npm:^2.0.1"
-    follow-redirects: "npm:^1.13.2"
+    follow-redirects: "npm:^1.15.6"
     fork-ts-checker-webpack-plugin: "npm:^9.0.2"
     fs-extra: "npm:^11.2.0"
     html-webpack-plugin: "npm:^5.6.0"
