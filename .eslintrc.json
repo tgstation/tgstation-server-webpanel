@@ -31,7 +31,7 @@
     },
     "plugins": ["react", "@typescript-eslint", "simple-import-sort", "prettier"],
     "rules": {
-        "simple-import-sort/sort": "error",
+        "simple-import-sort/imports": "error",
         "@typescript-eslint/explicit-member-accessibility": [
             "error",
             {

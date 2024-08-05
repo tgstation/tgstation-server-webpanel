@@ -11,7 +11,7 @@ import { FormattedMessage } from "react-intl";
 import configOptions, { ConfigOption } from "../../ApiClient/util/config";
 import ConfigController from "../../ApiClient/util/ConfigController";
 
-interface IProps {}
+type IProps = object;
 interface IState {
     values: Partial<typeof configOptions>;
     //if youre adding some state, make sure it doesnt get sent to be saved
@@ -61,7 +61,7 @@ export default class Configuration extends React.Component<IProps, IState> {
                     const updateValue = () => {
                         this.setState(prevstate => {
                             const obj: ConfigOption = this.state.values[key]
-                                ? { ...this.state.values[key]! }
+                                ? { ...this.state.values[key] }
                                 : {
                                       ...currentVal
                                   };

@@ -76,7 +76,7 @@ class DirectoryTree {
     }
 }
 
-interface IProps extends WrappedComponentProps {}
+type IProps = WrappedComponentProps;
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;

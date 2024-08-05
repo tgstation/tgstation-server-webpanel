@@ -156,7 +156,7 @@ class Login extends React.Component<IProps, IState> {
                         <Card.Title>
                             <FormattedMessage id="login.type.generic" />
                         </Card.Title>
-                        <Form validated={this.state.validated} onSubmit={this.submit}>
+                        <Form validated={this.state.validated} onSubmit={e => void this.submit(e)}>
                             <Form.Group controlId="username">
                                 <Form.Label>
                                     <FormattedMessage id="login.username" />
@@ -206,7 +206,7 @@ class Login extends React.Component<IProps, IState> {
                                                 block
                                                 style={ptheme ? { background: ptheme } : undefined}
                                                 onClick={() =>
-                                                    this.startOAuth(provider as OAuthProvider)
+                                                    void this.startOAuth(provider as OAuthProvider)
                                                 }>
                                                 {providers[provider as OAuthProvider]}
                                                 <span className="ml-1">

@@ -232,14 +232,6 @@ export default class JobsList extends React.Component<IProps, IState> {
                 {Array.from(this.state.jobs)
                     .sort((a, b) => a[0] - b[0])
                     .map(([instanceid, jobMap]) => {
-                        const renderTooltip = (instanceid: number) => {
-                            return (props: OverlayInjectedProps) => (
-                                <Tooltip id={`tooltip-instance-${instanceid}`} {...props}>
-                                    {instanceid}
-                                </Tooltip>
-                            );
-                        };
-
                         let xFinishedEnabled = false;
                         jobMap.forEach(job => {
                             if (job.stoppedAt) xFinishedEnabled = true;
@@ -254,7 +246,14 @@ export default class JobsList extends React.Component<IProps, IState> {
                                 <div className="bg-dark p-2 row">
                                     <div className={`col-${xFinishedEnabled ? 9 : 12} text-center`}>
                                         <div style={instanceHeaderStyle}>
-                                            <OverlayTrigger overlay={renderTooltip(instanceid)}>
+                                            <OverlayTrigger
+                                                overlay={(props: OverlayInjectedProps) => (
+                                                    <Tooltip
+                                                        id={`tooltip-instance-${instanceid}`}
+                                                        {...props}>
+                                                        {instanceid}
+                                                    </Tooltip>
+                                                )}>
                                                 <React.Fragment>
                                                     {this.state.instances.get(instanceid)?.name ??
                                                         "Unknown"}{" "}

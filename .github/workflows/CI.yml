@@ -87,4 +87,4 @@ jobs:
                   fi
 
             - name: Run ESLint
-              run: yarn eslint --ext .js,.jsx,.ts,.tsx
+              run: yarn eslint **

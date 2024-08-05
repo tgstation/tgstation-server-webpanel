@@ -12,7 +12,7 @@ import { FormattedMessage, FormattedRelativeTime } from "react-intl";
 import { TGSJobResponse } from "../../ApiClient/JobsClient";
 import JobError from "./JobError";
 
-interface IState {}
+type IState = object;
 interface IProps {
     job: TGSJobResponse;
     width?: string;

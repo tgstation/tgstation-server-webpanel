@@ -78,7 +78,7 @@ interface ChatBot extends ChatBotResponse {
     loadedWithConnectionString?: boolean;
 }
 
-interface IProps extends WrappedComponentProps {}
+type IProps = WrappedComponentProps;
 
 interface IState {
     loading: boolean;

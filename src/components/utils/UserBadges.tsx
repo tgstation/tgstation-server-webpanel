@@ -8,7 +8,7 @@ interface IProps {
     user: UserResponse;
 }
 
-interface IState {}
+type IState = object;
 
 export default class UserBadges extends React.Component<IProps, IState> {
     public render(): React.ReactNode {

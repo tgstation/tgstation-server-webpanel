@@ -22,7 +22,7 @@ import InputForm from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 
-interface IProps extends RouteComponentProps {}
+type IProps = RouteComponentProps;
 interface IState {
     moving: boolean;
     errors: Array<InternalError<ErrorCode> | undefined>;

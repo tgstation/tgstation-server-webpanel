@@ -93,7 +93,7 @@ export default function JobHistory(): JSX.Element {
                 .sort((a, b) => b.id - a.id)
                 .filter(job => !!job.stoppedAt)
                 .map(job => (
-                    <JobCard job={job} key={job.id} onCancel={onCancel} />
+                    <JobCard job={job} key={job.id} onCancel={j => void onCancel(j)} />
                 ))}
             <PageHelper
                 selectPage={newPage => setPage(newPage)}
