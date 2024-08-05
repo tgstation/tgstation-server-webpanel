@@ -2638,12 +2638,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-transition-group@npm:^4.4.1, @types/react-transition-group@npm:^4.4.4":
+"@types/react-transition-group@npm:^4.4.1":
   version: 4.4.4
   resolution: "@types/react-transition-group@npm:4.4.4"
   dependencies:
     "@types/react": "npm:*"
   checksum: 10/f67a95c1bb1465cd695392b8e10b39e4af6898650d9e3b907b61b0421e46ae331860bc3f713aa856d38850ee3cd883e4d4eef889ed65ce1a904e88da25442e69
+  languageName: node
+  linkType: hard
+
+"@types/react-transition-group@npm:^4.4.10":
+  version: 4.4.10
+  resolution: "@types/react-transition-group@npm:4.4.10"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/b429f3bd54d9aea6c0395943ce2dda6b76fb458e902365bd91fd99bf72064fb5d59e2b74e78d10f2871908501d350da63e230d81bda2b616c967cab8dc51bd16
   languageName: node
   linkType: hard
 
@@ -11497,7 +11506,7 @@ __metadata:
     "@types/react-bootstrap": "npm:^1.0.1"
     "@types/react-dom": "npm:^17"
     "@types/react-router-dom": "npm:^5.3.2"
-    "@types/react-transition-group": "npm:^4.4.4"
+    "@types/react-transition-group": "npm:^4.4.10"
     "@types/semver": "npm:^7"
     "@types/webpack": "npm:^5.28.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.0.0"
