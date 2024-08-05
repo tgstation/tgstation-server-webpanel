@@ -4,13 +4,11 @@ on:
     push:
         branches:
             - next
-            - api8
     workflow_dispatch:
 
 jobs:
     deploy:
         runs-on: ubuntu-latest
-
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -39,8 +37,9 @@ jobs:
               with:
                   node-version: 14.x
 
-            - name: Upgrade NPM
-              run: npm install -g npm
+            - name: Setup Yarn
+              run: |
+                  corepack enable
 
             - name: Install Yarn Dependencies
               run: yarn install --immutable
