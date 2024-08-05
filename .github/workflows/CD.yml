@@ -44,7 +44,12 @@ jobs:
               run: corepack enable
 
             - name: Install Yarn Dependencies
-              run: yarn install --immutable
+              run: |
+                  unbuffer yarn install --immutable | tee yarn_output.log
+                  if cat yarn_output.log | grep YN0060; then
+                    echo "Detected incompatible peer dependencies!"
+                    exit 1
+                  fi
 
             - name: Compile
               if: steps.get-tag.outputs.deploy_tag != 'FAILED'
