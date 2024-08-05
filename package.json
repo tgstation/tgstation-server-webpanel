@@ -108,7 +108,7 @@
         "prettier": "^3.3.3",
         "react-refresh": "^0.14.2",
         "sass": "^1.77.8",
-        "source-map-loader": "^2.0.2",
+        "source-map-loader": "^5.0.0",
         "svg-loader": "0.0.2",
         "swagger-typescript-api": "^13.0.14",
         "tiny-typed-emitter": "^2.0.3",
