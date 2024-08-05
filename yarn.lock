@@ -3724,11 +3724,11 @@ __metadata:
   linkType: hard
 
 "async@npm:^2.0.1":
-  version: 2.6.3
-  resolution: "async@npm:2.6.3"
+  version: 2.6.4
+  resolution: "async@npm:2.6.4"
   dependencies:
     lodash: "npm:^4.17.14"
-  checksum: 10/c6a04e7e5669fdda767a3eb9e3b1c40782bbc3cbb0a4297ad9f87e8b1b036b57c7e69a09f5541d3e2067f2f9d2a484f463231ad9890f24b2a628f8eb53c27e64
+  checksum: 10/df8e52817d74677ab50c438d618633b9450aff26deb274da6dfedb8014130909482acdc7753bce9b72e6171ce9a9f6a92566c4ced34c3cb3714d57421d58ad27
   languageName: node
   linkType: hard
 
