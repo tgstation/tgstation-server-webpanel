@@ -87,4 +87,4 @@ jobs:
                   fi
 
             - name: Run ESLint
-              run: yarn eslint **
+              run: yarn eslint ./src/**
