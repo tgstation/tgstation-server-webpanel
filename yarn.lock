@@ -2606,12 +2606,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^16.9.14":
-  version: 16.9.14
-  resolution: "@types/react-dom@npm:16.9.14"
+"@types/react-dom@npm:^17":
+  version: 17.0.25
+  resolution: "@types/react-dom@npm:17.0.25"
   dependencies:
-    "@types/react": "npm:^16"
-  checksum: 10/202675f2824a03246aea18f8429cc8c830832cde45f3a5ccf8ea2b3e81ebe596c48ed5a185ae58bd67c7df98dcf7639e2bad7b866594ffb30c2737a93fe9d5ae
+    "@types/react": "npm:^17"
+  checksum: 10/5854802aee0f23436e086b179360e93ac6db3387339f7e9359a786245a36bff5e4c36ff380e9ddb3c7c02d720a3bc9cbb3a3433906ecb4b48482f6e5462d1d22
   languageName: node
   linkType: hard
 
@@ -2666,14 +2666,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^16":
-  version: 16.14.23
-  resolution: "@types/react@npm:16.14.23"
+"@types/react@npm:^17":
+  version: 17.0.80
+  resolution: "@types/react@npm:17.0.80"
   dependencies:
     "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
+    "@types/scheduler": "npm:^0.16"
     csstype: "npm:^3.0.2"
-  checksum: 10/f60b1f10a15e0587f6f7207e5cca7d77303ec68c2327cf28302c7a3b53bb2a47121d92a1c588224cbca4c656fbaa400e221ce13b7f40d59f0ffc2d08ec7b58a0
+  checksum: 10/f5dce5825e693313bb7f8db0199299a25be21d58a7f6eedea9dacd593d2b4013d664ed3d54e5fb241a43c7ebbdfeee41d5a500ed2979cc772a89d460aa40d8f4
   languageName: node
   linkType: hard
 
@@ -2688,6 +2688,13 @@ __metadata:
   version: 0.16.2
   resolution: "@types/scheduler@npm:0.16.2"
   checksum: 10/b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
+  languageName: node
+  linkType: hard
+
+"@types/scheduler@npm:^0.16":
+  version: 0.16.8
+  resolution: "@types/scheduler@npm:0.16.8"
+  checksum: 10/6c091b096daa490093bf30dd7947cd28e5b2cd612ec93448432b33f724b162587fed9309a0acc104d97b69b1d49a0f3fc755a62282054d62975d53d7fd13472d
   languageName: node
   linkType: hard
 
@@ -11557,7 +11564,7 @@ __metadata:
     "@types/prop-types": "npm:^15"
     "@types/react": "npm:^17.0.35"
     "@types/react-bootstrap": "npm:^1.0.1"
-    "@types/react-dom": "npm:^16.9.14"
+    "@types/react-dom": "npm:^17"
     "@types/react-router-dom": "npm:^5.3.2"
     "@types/react-transition-group": "npm:^4.4.4"
     "@types/semver": "npm:^7"
