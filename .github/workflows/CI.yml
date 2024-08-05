@@ -30,8 +30,8 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
 
-            - name: Upgrade NPM
-              run: npm install -g npm
+            - name: Setup Yarn
+              run: corepack enable
 
             - name: Install Yarn Dependencies
               run: yarn install --immutable
@@ -63,11 +63,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
 
             - name: Setup Yarn
-              run: |
-                  corepack enable
-
-            - name: Upgrade NPM
-              run: npm install -g npm
+              run: corepack enable
 
             - name: Install Yarn Dependencies
               run: yarn install --immutable

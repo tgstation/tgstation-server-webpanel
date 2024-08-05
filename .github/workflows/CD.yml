@@ -38,8 +38,7 @@ jobs:
                   node-version: 14.x
 
             - name: Setup Yarn
-              run: |
-                  corepack enable
+              run: corepack enable
 
             - name: Install Yarn Dependencies
               run: yarn install --immutable

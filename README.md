@@ -17,7 +17,7 @@ last 3 safari version
 ## Install
 
 1. Install Node.JS from <https://nodejs.org/en>
-2. Install yarn by `npm install -g yarn`
+2. Install yarn by `corepack enable`
 3. Clone this repository
 4. Run `yarn` or `yarn install` on the cloned repository
 
@@ -29,15 +29,15 @@ Make sure to run `yarn` or `yarn install` again if you pull in new changes from 
 
 ## Scripts
 
-|              |                                                                                                                                |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+|              |                                                                                                                              |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------- |
 | start        | Starts a development server that listens on `0.0.0.0:8080` The server will watch for changes in the file system to recompile |
-| generate-api | Redownloads the api spec from tgstation-server and generates typings and the axios backend.   |
-| build        | Builds a production version in `/dist`                                                 |
-| lint         | Runs eslint on the codebase to check for errors                                                                                |
-| lint-fix     | Runs eslint on the codebase to check for errors but also attempts to fix said errors                                           |
-| build-dev    | Builds a development version in `/dist`                                                                            |
-|              |                                                                                                                                |
+| generate-api | Redownloads the api spec from tgstation-server and generates typings and the axios backend.                                  |
+| build        | Builds a production version in `/dist`                                                                                       |
+| lint         | Runs eslint on the codebase to check for errors                                                                              |
+| lint-fix     | Runs eslint on the codebase to check for errors but also attempts to fix said errors                                         |
+| build-dev    | Builds a development version in `/dist`                                                                                      |
+|              |                                                                                                                              |
 
 ## License
 
