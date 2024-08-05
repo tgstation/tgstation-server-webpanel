@@ -2564,10 +2564,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.9":
-  version: 16.11.22
-  resolution: "@types/node@npm:16.11.22"
-  checksum: 10/d98eb3215984265e00e7d0d175fe48082f7082bce227547a295630cdab6aecef347620d298c95d47bff47e0b74a34ea6f20b51528032f635724a1c1d55be13a4
+"@types/node@npm:^22.1.0":
+  version: 22.1.0
+  resolution: "@types/node@npm:22.1.0"
+  dependencies:
+    undici-types: "npm:~6.13.0"
+  checksum: 10/c2ac1340509646b6c673b27fae2a46e501a97e540e7221be4dd2e0be7a0f61efefb5bf3be8bedf2dbce245fa49cfc49bba77bce73fa3c4296d0d19521ced3222
   languageName: node
   linkType: hard
 
@@ -11489,7 +11491,7 @@ __metadata:
     "@types/eslint": "npm:^8"
     "@types/jquery": "npm:^3"
     "@types/loadable__component": "npm:^5.13.4"
-    "@types/node": "npm:^16.11.9"
+    "@types/node": "npm:^22.1.0"
     "@types/prop-types": "npm:^15"
     "@types/react": "npm:^17.0.35"
     "@types/react-bootstrap": "npm:^1.0.1"
@@ -11863,6 +11865,13 @@ __metadata:
   peerDependencies:
     react: ">=15.0.0"
   checksum: 10/73ac468233e8f0f7679fcc784ed188f71c04244160db89e47473965041a21fe8d85086cb658a544ba648b91dfb99c6761f8f817d34b399a8e63b9ef706fab4ff
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~6.13.0":
+  version: 6.13.0
+  resolution: "undici-types@npm:6.13.0"
+  checksum: 10/da52e37cbc6da3a75da86fa08dd795ca8924430deb91005eb884b840e46e19013ccd4c1c289f70018e8cf0c338add24a500e7c3acfcd49b1ffb27ff9f91e38b9
   languageName: node
   linkType: hard
 
