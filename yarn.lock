@@ -9642,7 +9642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.33, postcss@npm:^8.4.40":
+"postcss@npm:^8.4.33":
   version: 8.4.40
   resolution: "postcss@npm:8.4.40"
   dependencies:
@@ -9661,6 +9661,17 @@ __metadata:
     picocolors: "npm:^1.0.1"
     source-map-js: "npm:^1.2.0"
   checksum: 10/ad9c1add892c96433b9a5502878201ede4a20c4ce02d056251f61f8d9a3e5426dab3683fe5a086edfa78a1a19f2b4988c8cea02c5122136d29758cb5a17e2621
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.41":
+  version: 8.4.41
+  resolution: "postcss@npm:8.4.41"
+  dependencies:
+    nanoid: "npm:^3.3.7"
+    picocolors: "npm:^1.0.1"
+    source-map-js: "npm:^1.2.0"
+  checksum: 10/6e6176c2407eff60493ca60a706c6b7def20a722c3adda94ea1ece38345eb99964191336fd62b62652279cec6938e79e0b1e1d477142c8d3516e7a725a74ee37
   languageName: node
   linkType: hard
 
@@ -11583,7 +11594,7 @@ __metadata:
     mini-css-extract-plugin: "npm:^2.9.0"
     path-to-regexp: "npm:^6.2.0"
     popper.js: "npm:^1.16.1"
-    postcss: "npm:^8.4.40"
+    postcss: "npm:^8.4.41"
     postcss-loader: "npm:^8.1.1"
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
