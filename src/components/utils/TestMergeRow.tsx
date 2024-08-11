@@ -5,7 +5,7 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FormattedMessage } from "react-intl";
-import SelectSearch, { fuzzySearch, SelectedOptionValue } from "react-select-search";
+import SelectSearch, { SelectedOption } from "react-select-search";
 
 import {
     RepositoryResponse,
@@ -318,7 +318,7 @@ export default function TestMergeRow({
                     <FormattedMessage id="view.instance.repo.tm.modal.label" />
                     {commits ? (
                         <SelectSearch
-                            filterOptions={fuzzySearch}
+                            fuzzySearch
                             search
                             options={commitOptions}
                             value={selectedCommit ?? activeCommit?.sha}
@@ -326,7 +326,7 @@ export default function TestMergeRow({
                             //@ts-expect-error error in the library, it's the wrong type
                             renderOption={(
                                 props,
-                                option: SelectedOptionValue & { current: boolean; latest: boolean },
+                                option: SelectedOption & { current: boolean; latest: boolean },
                                 snapshot,
                                 className
                             ) => (
@@ -334,10 +334,10 @@ export default function TestMergeRow({
                                 <button
                                     type="button"
                                     className={
-                                        className + (option.disabled ? " font-weight-bold" : "")
+                                        className + (props.disabled ? " font-weight-bold" : "")
                                     }
                                     {...props}>
-                                    <Badge>{(option.value as string).substring(0, 7)}</Badge>
+                                    <Badge>{props.value.substring(0, 7)}</Badge>
                                     {option.current ? (
                                         <Badge variant="primary" pill className="mr-1">
                                             <FormattedMessage id="generic.testmerged" />
