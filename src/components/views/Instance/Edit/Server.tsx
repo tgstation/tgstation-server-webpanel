@@ -13,6 +13,7 @@ import {
     DreamDaemonRights,
     DreamDaemonSecurity,
     DreamDaemonVisibility,
+    EngineType,
     WatchdogStatus
 } from "../../../../ApiClient/generatedcode/generated";
 import InternalError, { ErrorCode } from "../../../../ApiClient/models/InternalComms/InternalError";
@@ -359,6 +360,9 @@ function Server(props: WrappedComponentProps): JSX.Element {
         };
     }
 
+    const OneGibibyte = 1073741824;
+    const ramUsage = watchdogSettings?.immediateMemoryUsage;
+
     return (
         <div className="text-center">
             <DebugJsonViewer obj={watchdogSettings} />
@@ -381,6 +385,29 @@ function Server(props: WrappedComponentProps): JSX.Element {
                     />
                 </Badge>
             </h2>
+            {ramUsage ? (
+                <h4>
+                    <Badge
+                        pill
+                        variant={
+                            deploymentViewData?.activeCompileJob?.engineVersion.engine ==
+                            EngineType.OpenDream
+                                ? "success"
+                                : ramUsage > OneGibibyte * 3
+                                  ? "danger"
+                                  : ramUsage > OneGibibyte * 2
+                                    ? "warning"
+                                    : "success"
+                        }>
+                        <div>
+                            <FormattedMessage id="view.instance.server.status.ram" />
+                            :&nbsp;
+                            {Math.round((ramUsage / OneGibibyte) * 100) / 100}
+                            GB
+                        </div>
+                    </Badge>
+                </h4>
+            ) : null}
             <hr />
             {canViewDeployment ? (
                 <DeploymentViewer viewData={deploymentViewData} />

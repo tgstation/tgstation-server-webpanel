@@ -72,7 +72,9 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.administrationControllerRead();
+            response = await ServerClient.apiClient!.api.administrationControllerRead({
+                fresh: false
+            });
         } catch (stat) {
             const res = new InternalStatus<AdministrationResponse, AdminInfoErrors>({
                 code: StatusCode.ERROR,
