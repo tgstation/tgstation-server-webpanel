@@ -6415,10 +6415,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fuse.js@npm:^3.4.5":
-  version: 3.6.1
-  resolution: "fuse.js@npm:3.6.1"
-  checksum: 10/b0aae7e44a405a9cb2b7e4bb4532fcaca32f103a16c6ed5617c631c9e8f4b27174306b824b4bb2466eb2e29f9ca8a1024e60300ead18765cd544814ea4e86223
+"fuse.js@npm:^6.6.0":
+  version: 6.6.2
+  resolution: "fuse.js@npm:6.6.2"
+  checksum: 10/4768725963ee07dacfcb4abb001a12ea5e6e44c95d4e0918fcbfe0469107c5ad3ece2f1930396eb6c210383edf4c14ca083b91a2fc54950c5d021935a63d89de
   languageName: node
   linkType: hard
 
@@ -10050,19 +10050,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-select-search@npm:^3.0.9":
-  version: 3.0.9
-  resolution: "react-select-search@npm:3.0.9"
+"react-select-search@npm:^3.0.10":
+  version: 3.0.10
+  resolution: "react-select-search@npm:3.0.10"
   dependencies:
-    fuse.js: "npm:^3.4.5"
+    fuse.js: "npm:^6.6.0"
   peerDependencies:
-    prop-types: ^15.7.2
-    react: ^17.0.1
-    react-dom: ^17.0.1
+    prop-types: ^15.8.1
+    react: ^18.0.1 || ^17.0.1 || ^16.14.0
+    react-dom: ^18.0.1 || ^17.0.1 || ^16.14.0
   dependenciesMeta:
     fuse.js:
       optional: true
-  checksum: 10/f72a818c2670b7bdb47581934fba59ce2d0748380526ce889b6bfbdcabfbc41fadb0ebde1a0ca0cc1411eaa3f0672eabe54c00102c6ed66901f7bf489e989c41
+  checksum: 10/3e331afdc515ae6610f1bad55cd7702009bbb995f0d38df40e477b614d8329f7d1ec4c9a5f8476e1bb85b740e76636bde27a86943197a59023c0daf7f45f0cd0
   languageName: node
   linkType: hard
 
@@ -11561,7 +11561,7 @@ __metadata:
     react-refresh: "npm:^0.14.2"
     react-rnd: "npm:^10.4.12"
     react-router-dom: "npm:^5.3.0"
-    react-select-search: "npm:^3.0.9"
+    react-select-search: "npm:^3.0.10"
     react-transition-group: "npm:^4.4.5"
     sass: "npm:^1.77.8"
     semver: "npm:^7.6.3"
