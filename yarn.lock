@@ -11337,9 +11337,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-typescript-api@npm:^13.0.16":
-  version: 13.0.16
-  resolution: "swagger-typescript-api@npm:13.0.16"
+"swagger-typescript-api@npm:^13.0.21":
+  version: 13.0.21
+  resolution: "swagger-typescript-api@npm:13.0.21"
   dependencies:
     "@types/swagger-schema-official": "npm:^2.0.25"
     cosmiconfig: "npm:^9.0.0"
@@ -11354,9 +11354,9 @@ __metadata:
     swagger2openapi: "npm:^7.0.8"
     typescript: "npm:~5.5.4"
   bin:
-    sta: dist/cli.js
-    swagger-typescript-api: dist/cli.js
-  checksum: 10/039f586b7fbb5f735b112c012002ed11c0126921da93040074f5fe7dd06d2a9b9929dfdb3e8b993e61e4a74089895f72616390bbd9d28992c80afb17ce22de83
+    sta: ./dist/cli.js
+    swagger-typescript-api: ./dist/cli.js
+  checksum: 10/1f9df718a77d3e46844de068439d0fbf4bb83255e185ad264f7d46bf673172ad7a86923010651d235498a5e66f2db16b9f134b4958f300dc6fa33c8403ee5b3a
   languageName: node
   linkType: hard
 
@@ -11568,7 +11568,7 @@ __metadata:
     source-map-loader: "npm:^5.0.0"
     stream-http: "npm:^3.2.0"
     svg-loader: "npm:^0.0.2"
-    swagger-typescript-api: "npm:^13.0.16"
+    swagger-typescript-api: "npm:^13.0.21"
     terser-webpack-plugin: "npm:^5.3.10"
     tiny-typed-emitter: "npm:^2.1.0"
     typescript: "npm:^5.5.4"
