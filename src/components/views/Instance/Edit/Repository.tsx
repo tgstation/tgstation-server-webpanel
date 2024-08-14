@@ -62,6 +62,7 @@ interface IState {
     resetType: ResetType;
     desiredState: Map<number, [current: boolean, sha: string, comment: string | null] | null>;
     showDeleteModal: boolean;
+    showRecloneModal: boolean;
     manualPR: number;
     lastManualPR: number;
     deployAfter: boolean;
@@ -87,6 +88,7 @@ class Repository extends React.Component<IProps, IState> {
                 [current: boolean, sha: string, comment: string | null] | null
             >(),
             showDeleteModal: false,
+            showRecloneModal: false,
             manualPR: 0,
             lastManualPR: 0,
             deployAfter: false,
@@ -381,7 +383,10 @@ class Repository extends React.Component<IProps, IState> {
                 <DebugJsonViewer obj={this.state} />
                 {this.renderErrors()}
                 {/*Just like... hope its cloned if you don't have read access*/}
-                {this.state.repositoryInfo && !this.state.repositoryInfo.origin ? (
+
+                {this.state.cloning ? (
+                    <Loading text="loading.repo.cloning" />
+                ) : this.state.repositoryInfo && !this.state.repositoryInfo.origin ? (
                     this.renderPreClone()
                 ) : (
                     <React.Fragment>
@@ -397,6 +402,8 @@ class Repository extends React.Component<IProps, IState> {
                                 {this.renderSettings()}
                                 <hr />
                                 {this.renderTestMerges()}
+                                <hr />
+                                {this.renderReclone()}
                                 <hr />
                                 {this.renderDelete()}
                             </React.Fragment>
@@ -1074,7 +1081,112 @@ class Repository extends React.Component<IProps, IState> {
         );
     }
 
+    private renderReclone(): React.ReactNode {
+        const canReclone = hasRepoRight(
+            this.context.instancePermissionSet,
+            RepositoryRights.Reclone
+        );
+
+        return (
+            <React.Fragment>
+                <h4>
+                    <FormattedMessage id="view.instance.repo.reclone.title" />
+                </h4>
+                <span>
+                    <FormattedMessage id="view.instance.repo.reclone.desc" />
+                </span>
+                <br />
+                <Button
+                    variant="warning"
+                    className="mt-2"
+                    disabled={!canReclone}
+                    onClick={() =>
+                        this.setState({
+                            showRecloneModal: true
+                        })
+                    }>
+                    <FormattedMessage id="view.instance.repo.reclone" />
+                </Button>
+                <Modal
+                    show={this.state.showRecloneModal}
+                    onHide={() =>
+                        this.setState({
+                            showRecloneModal: false
+                        })
+                    }
+                    centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>
+                            <FormattedMessage id="view.instance.repo.reclone.title" />
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <span>
+                            <FormattedMessage id="generic.areyousure" />
+                        </span>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button
+                            onClick={() =>
+                                this.setState({
+                                    showRecloneModal: false
+                                })
+                            }>
+                            <FormattedMessage id="generic.cancel" />
+                        </Button>
+                        <Button
+                            variant="danger"
+                            onClick={() =>
+                                void (async () => {
+                                    this.setState({
+                                        showRecloneModal: false,
+                                        loading: true
+                                    });
+                                    const response = await RepositoryClient.recloneRepository(
+                                        this.context.instance.id
+                                    );
+                                    this.setState({
+                                        loading: false
+                                    });
+                                    if (response.code === StatusCode.OK) {
+                                        if (response.payload.activeJob) {
+                                            this.setState({
+                                                loading: true
+                                            });
+                                            JobsController.fastmode = 5;
+                                            JobsController.registerCallback(
+                                                response.payload.activeJob.id,
+                                                job => {
+                                                    return this.fetchRepositoryInfo(
+                                                        job,
+                                                        job.errorCode === undefined &&
+                                                            job.exceptionDetails === undefined
+                                                    );
+                                                }
+                                            );
+                                            JobsController.registerJob(
+                                                response.payload.activeJob,
+                                                this.context.instance.id
+                                            );
+                                        } else {
+                                            await this.fetchRepositoryInfo();
+                                        }
+                                    } else {
+                                        this.addError(response.error);
+                                    }
+                                })()
+                            }>
+                            <FormattedMessage id="view.instance.repo.reclone" />
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </React.Fragment>
+        );
+    }
+
     private renderDelete(): React.ReactNode {
+        const canDelete = hasRepoRight(this.context.instancePermissionSet, RepositoryRights.Delete);
+
         return (
             <React.Fragment>
                 <h4>
@@ -1087,6 +1199,7 @@ class Repository extends React.Component<IProps, IState> {
                 <Button
                     variant="danger"
                     className="mt-2"
+                    disabled={!canDelete}
                     onClick={() =>
                         this.setState({
                             showDeleteModal: true

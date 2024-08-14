@@ -11,6 +11,7 @@ import ServerClient from "./ServerClient";
 
 export type cloneRepositoryErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export type deleteRepositoryErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
+export type recloneRepositoryErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export type getRepositoryErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export type editRepositoryErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 
@@ -37,6 +38,57 @@ export default new (class RepositoryClient extends ApiClient {
 
         switch (response.status) {
             case 201: {
+                return new InternalStatus({
+                    code: StatusCode.OK,
+                    payload: response.data as RepositoryResponse
+                });
+            }
+            case 410: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.NO_DB_ENTITY,
+                        {
+                            errorMessage: response.data as ErrorMessageResponse
+                        },
+                        response
+                    )
+                });
+            }
+            default: {
+                return new InternalStatus({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
+            }
+        }
+    }
+
+    public async recloneRepository(
+        instanceid: number
+    ): Promise<InternalStatus<RepositoryResponse, recloneRepositoryErrors>> {
+        await ServerClient.wait4Init();
+
+        let response;
+        try {
+            response = await ServerClient.apiClient!.api.repositoryControllerReclone({
+                headers: {
+                    Instance: instanceid
+                }
+            });
+        } catch (stat) {
+            return new InternalStatus({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+        }
+
+        switch (response.status) {
+            case 202: {
                 return new InternalStatus({
                     code: StatusCode.OK,
                     payload: response.data as RepositoryResponse
