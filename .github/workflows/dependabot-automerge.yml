@@ -17,7 +17,7 @@ jobs:
         if: github.event.pull_request.user.id == 49699333
         steps:
             - name: my-app-install token
-              id: my-app
+              id: app-token-generation
               uses: getsentry/action-github-app-token@d4b5da6c5e37703f8c3b3e43abb5705b46e159cc
               with:
                   app_id: ${{ secrets.APP_ID }}
@@ -26,4 +26,4 @@ jobs:
             - name: Enable Automerge
               uses: daneden/enable-automerge-action@f8558b65c5b8d8bfb592c4e74e3d491624a38fbd #v1.0.2-ish
               with:
-                  github-token: ${{ env.INSTALLATION_TOKEN }}
+                  github-token: ${{ steps.app-token-generation.outputs.token }}
