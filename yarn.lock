@@ -2600,6 +2600,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-timeago@npm:^4.1.7":
+  version: 4.1.7
+  resolution: "@types/react-timeago@npm:4.1.7"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/d69d47385a8f422c7ad16dadce1bcf2ea471324d36869d4b0d412f26e10311688fd5a0bad3e3963b427c2ba5c60f42671f5fb6582eb73dba25867b6246b9ca2c
+  languageName: node
+  linkType: hard
+
 "@types/react-transition-group@npm:^4.4.1":
   version: 4.4.4
   resolution: "@types/react-transition-group@npm:4.4.4"
@@ -9855,6 +9864,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-timeago@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "react-timeago@npm:7.2.0"
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 10/53d12e23b0e0bf0a3257f7fb426f8d6cdc60b54e8a0c88bb798f3d82f8adf842e21d98d13404745151b989489e29a58cdf0b1369d219c0ffc5e7c72d6d783207
+  languageName: node
+  linkType: hard
+
 "react-transition-group@npm:^4.4.1":
   version: 4.4.2
   resolution: "react-transition-group@npm:4.4.2"
@@ -11261,6 +11279,7 @@ __metadata:
     "@types/react-bootstrap": "npm:^1.0.1"
     "@types/react-dom": "npm:^17"
     "@types/react-router-dom": "npm:^5.3.2"
+    "@types/react-timeago": "npm:^4.1.7"
     "@types/react-transition-group": "npm:^4.4.11"
     "@types/semver": "npm:^7"
     "@typescript-eslint/eslint-plugin": "npm:^8.0.1"
@@ -11306,6 +11325,7 @@ __metadata:
     react-rnd: "npm:^10.4.12"
     react-router-dom: "npm:^5.3.0"
     react-select-search: "npm:^3.0.10"
+    react-timeago: "npm:^7.2.0"
     react-transition-group: "npm:^4.4.5"
     sass: "npm:^1.77.8"
     semver: "npm:^7.6.3"

@@ -26,7 +26,9 @@ type FieldsOutput<Fields extends Record<string, InputFormField>> = {
               ? string
               : Fields[Id]["type"] extends FieldType.Password
                 ? string
-                : never;
+                : Fields[Id]["type"] extends FieldType.TextArea
+                  ? string
+                  : never;
 };
 
 export type InputFormField = DistributiveOmit<InputFieldProps, "onChange"> & {
@@ -39,6 +41,7 @@ interface IProps<Fields extends Record<string, InputFormField>> {
     hideDisabled?: boolean;
     includeAll?: boolean;
     saveMessageId?: string;
+    alwaysAllowSave?: boolean;
 }
 
 interface FieldState {
@@ -76,7 +79,7 @@ export default function InputForm<Fields extends Record<string, InputFormField>>
         );
     }
 
-    let anyDiff = false;
+    let anyDiff = props.alwaysAllowSave;
     let anyInvalid = false;
     for (const [id, fieldDescriptor] of fieldStateIds) {
         const [fieldValue] = fieldValueStates.get(fieldDescriptor)!;

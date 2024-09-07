@@ -47,11 +47,21 @@ enum ResetType {
     Remote
 }
 
+enum CredentialsType {
+    None,
+    Password,
+    Token,
+    PrivateKey
+}
+
 type IProps = object;
 
 interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     repositoryInfo: RepositoryResponse | null;
+    writableCredentials: IWritableCredentials | null;
+    credMode: CredentialsType;
+    showCredsModal: boolean;
     loading: boolean;
     cloning: boolean;
     repoBusy: boolean;
@@ -68,6 +78,11 @@ interface IState {
     deployAfter: boolean;
 }
 
+interface IWritableCredentials {
+    accessUser: string;
+    accessToken: string;
+}
+
 class Repository extends React.Component<IProps, IState> {
     public declare context: InstanceEditContext;
 
@@ -77,6 +92,9 @@ class Repository extends React.Component<IProps, IState> {
         this.state = {
             errors: [],
             repositoryInfo: null,
+            writableCredentials: null,
+            credMode: CredentialsType.PrivateKey,
+            showCredsModal: false,
             loading: true,
             cloning: false,
             unableToHookClone: false,
@@ -130,7 +148,8 @@ class Repository extends React.Component<IProps, IState> {
             });
             this.reloadDesiredState(null, resetDesiredState ?? false, false);
             this.setState({
-                repositoryInfo: null
+                repositoryInfo: null,
+                credMode: CredentialsType.PrivateKey
             });
         }
 
@@ -191,7 +210,10 @@ class Repository extends React.Component<IProps, IState> {
         } else {
             this.reloadPRs(response.payload, resetDesiredState);
             //response.payload.remoteGitProvider = RemoteGitProvider.GitLab;
-            this.setState({ repositoryInfo: response.payload });
+            this.setState({
+                repositoryInfo: response.payload,
+                credMode: CredentialsType.PrivateKey
+            });
         }
         this.setState({ loading: false });
     }
@@ -486,16 +508,6 @@ class Repository extends React.Component<IProps, IState> {
                 name: "fields.instance.repository.ref",
                 defaultValue: ""
             },
-            accessUser: {
-                type: FieldType.String as FieldType.String,
-                name: "fields.instance.repository.gituser",
-                defaultValue: ""
-            },
-            accessToken: {
-                type: FieldType.String as FieldType.Password,
-                name: "fields.instance.repository.gitpassword",
-                defaultValue: ""
-            },
             updateSubmodules: {
                 type: FieldType.Boolean as FieldType.Boolean,
                 name: "fields.instance.repository.enablesubmodules",
@@ -508,6 +520,7 @@ class Repository extends React.Component<IProps, IState> {
                 <h3>
                     <FormattedMessage id="view.instance.repo.clone" />
                 </h3>
+                {this.renderCredsModal()}
                 <InputForm
                     fields={cloneFields}
                     hideDisabled={
@@ -519,20 +532,25 @@ class Repository extends React.Component<IProps, IState> {
                         };
 
                         if (result.reference == "") repoCloneRequest.reference = null;
-                        if (result.accessUser == "") repoCloneRequest.accessUser = null;
-                        if (result.accessToken == "") repoCloneRequest.accessToken = null;
+                        if (this.state.writableCredentials) {
+                            repoCloneRequest.accessUser = this.state.writableCredentials.accessUser;
+                            repoCloneRequest.accessToken =
+                                this.state.writableCredentials.accessToken;
+                        }
 
                         const response = await RepositoryClient.cloneRepository(
                             this.context.instance.id,
                             repoCloneRequest
                         );
                         if (response.code === StatusCode.OK) {
+                            this.setState({ writableCredentials: null });
                             await this.fetchRepositoryInfo(response.payload.activeJob ?? undefined);
                         } else {
                             this.addError(response.error);
                         }
                     }}
                     includeAll
+                    alwaysAllowSave={!!this.state.writableCredentials}
                     saveMessageId="generic.clone"
                 />
             </React.Fragment>
@@ -584,33 +602,6 @@ class Repository extends React.Component<IProps, IState> {
                 disabled: !hasRepoRight(
                     this.context.instancePermissionSet,
                     RepositoryRights.ChangeCommitter
-                )
-            },
-            accessUser: {
-                type: FieldType.String as FieldType.String,
-                name: "fields.instance.repository.accessUser",
-                defaultValue: repositoryInfo ? repositoryInfo.accessUser : "",
-                tooltip: "fields.instance.repository.accessUser.desc",
-                disabled: !hasRepoRight(
-                    this.context.instancePermissionSet,
-                    RepositoryRights.ChangeCredentials
-                )
-            },
-            accessToken: {
-                type: FieldType.Password as FieldType.Password,
-                name: "fields.instance.repository.accessToken",
-                tooltip: "fields.instance.repository.accessToken.desc",
-                disabled: !hasRepoRight(
-                    this.context.instancePermissionSet,
-                    RepositoryRights.ChangeCredentials
-                )
-            },
-            clearAccessToken: {
-                type: FieldType.Boolean as FieldType.Boolean,
-                name: "fields.instance.repository.clearAccessToken",
-                disabled: !hasRepoRight(
-                    this.context.instancePermissionSet,
-                    RepositoryRights.ChangeCredentials
                 )
             },
             pushTestMergeCommits: {
@@ -690,19 +681,22 @@ class Repository extends React.Component<IProps, IState> {
                 <h3>
                     <FormattedMessage id="view.instance.repo.reposettings" />
                 </h3>
+                {this.renderCredsModal()}
                 <InputForm
                     fields={editFields}
-                    onSave={async _result => {
-                        const { clearAccessToken, ...result } = _result;
-                        if (clearAccessToken) {
-                            result.accessUser = "";
-                            result.accessToken = "";
+                    onSave={async result => {
+                        this.setState({ loading: true, writableCredentials: null });
+                        const repoUpdateRequest: RepositoryUpdateRequest = { ...result };
+                        if (this.state.writableCredentials) {
+                            repoUpdateRequest.accessUser =
+                                this.state.writableCredentials.accessUser;
+                            repoUpdateRequest.accessToken =
+                                this.state.writableCredentials.accessToken;
                         }
 
-                        this.setState({ loading: true });
                         const response = await RepositoryClient.editRepository(
                             this.context.instance.id,
-                            result
+                            repoUpdateRequest
                         );
                         this.setState({ loading: false });
                         if (response.code === StatusCode.OK) {
@@ -723,7 +717,214 @@ class Repository extends React.Component<IProps, IState> {
                             this.addError(response.error);
                         }
                     }}
+                    alwaysAllowSave={!!this.state.writableCredentials}
                 />
+            </React.Fragment>
+        );
+    }
+
+    private renderCredDetails(): React.ReactNode {
+        const credMode = this.state.credMode;
+        const writableCredentials = this.state.writableCredentials;
+        const repoInfo = this.state.repositoryInfo;
+
+        const [credModeName] = Object.entries(CredentialsType)
+            //filters out reverse mapping
+            .find(([, value]) => value == credMode)!;
+
+        const localeId = `fields.instance.repository.creds.mode.${credModeName}`;
+
+        const baseFields = {
+            username: {
+                type: FieldType.String as FieldType.String,
+                name: localeId + ".username",
+                tooltip: localeId + ".username.desc",
+                defaultValue: writableCredentials?.accessUser ?? repoInfo?.accessUser ?? ""
+            }
+        };
+
+        const regularFields = {
+            ...baseFields,
+            token: {
+                type: FieldType.Password as FieldType.Password,
+                name: localeId + ".token",
+                tooltip: localeId + ".token.desc",
+                defaultValue: writableCredentials?.accessToken ?? ""
+            }
+        };
+
+        const privateKeyFields = {
+            ...baseFields,
+            clientId: {
+                type: FieldType.String as FieldType.String,
+                name: localeId + ".id",
+                tooltip: localeId + ".id.desc"
+            },
+            privateKey: {
+                type: FieldType.TextArea as FieldType.TextArea,
+                name: localeId + ".pk",
+                tooltip: localeId + ".pk.desc"
+            }
+        };
+
+        return (
+            <React.Fragment>
+                <div
+                    style={{
+                        display: credMode != CredentialsType.PrivateKey ? "none" : undefined
+                    }}>
+                    <InputForm
+                        fields={privateKeyFields}
+                        onSave={result => {
+                            const username = result.username?.trim();
+                            const clientId = result.clientId?.trim();
+                            const privateKey = result.privateKey?.trim();
+
+                            if (!username?.length || !clientId?.length || !privateKey?.length) {
+                                alert("Please enter a username, client/app ID, and private key!");
+                                return;
+                            }
+
+                            const tgsEncodedAppPrivateKey = `TGS_PK_${clientId}:${btoa(privateKey)}`;
+
+                            this.setState({
+                                writableCredentials: {
+                                    accessUser: username,
+                                    accessToken: tgsEncodedAppPrivateKey
+                                },
+                                showCredsModal: false
+                            });
+                        }}
+                    />
+                </div>
+                <div
+                    style={{
+                        display: credMode == CredentialsType.PrivateKey ? "none" : undefined
+                    }}>
+                    <InputForm
+                        fields={regularFields}
+                        onSave={result => {
+                            const username = result.username?.trim();
+                            const token = result.token?.trim();
+
+                            if (!username?.length || !token?.length) {
+                                alert(
+                                    `Please enter both a username and a ${credMode == CredentialsType.Password ? "password" : "token"}!`
+                                );
+                                return;
+                            }
+
+                            this.setState({
+                                writableCredentials: {
+                                    accessUser: username,
+                                    accessToken: token
+                                },
+                                showCredsModal: false
+                            });
+                        }}
+                    />
+                </div>
+            </React.Fragment>
+        );
+    }
+
+    private renderCredsModal(): React.ReactNode {
+        const canCreds = hasRepoRight(
+            this.context.instancePermissionSet,
+            RepositoryRights.ChangeCredentials
+        );
+        const editButton = (
+            <Button disabled={!canCreds} onClick={() => this.setState({ showCredsModal: true })}>
+                <FormattedMessage id="generic.edit" />
+            </Button>
+        );
+        const credMode = this.state.credMode;
+
+        return (
+            <React.Fragment>
+                <Modal
+                    show={this.state.showCredsModal}
+                    onHide={() => this.setState({ showCredsModal: false })}
+                    centered
+                    size="lg">
+                    <Modal.Header closeButton>
+                        <Modal.Title>
+                            <FormattedMessage id="view.instance.repo.creds.modal.title" />
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <InputField
+                            name="fields.instance.repository.creds.mode"
+                            type={FieldType.Enum}
+                            enum={CredentialsType}
+                            defaultValue={credMode}
+                            onChange={newCredentialsType =>
+                                this.setState({ credMode: newCredentialsType })
+                            }
+                        />
+                        {credMode != CredentialsType.None ? (
+                            this.renderCredDetails()
+                        ) : (
+                            <Modal.Footer>
+                                <Button
+                                    className="text-center"
+                                    variant="danger"
+                                    onClick={() =>
+                                        this.setState({
+                                            showCredsModal: false,
+                                            writableCredentials: {
+                                                accessUser: "",
+                                                accessToken: ""
+                                            }
+                                        })
+                                    }>
+                                    <FormattedMessage id="generic.save" />
+                                </Button>
+                                <Button
+                                    className="text-center"
+                                    onClick={() =>
+                                        this.setState({
+                                            showCredsModal: false,
+                                            writableCredentials: null
+                                        })
+                                    }>
+                                    <FormattedMessage id="generic.reset" />
+                                </Button>
+                            </Modal.Footer>
+                        )}
+                        {credMode != CredentialsType.None ? (
+                            <Modal.Footer>
+                                <Button
+                                    className="text-center"
+                                    onClick={() =>
+                                        this.setState({
+                                            showCredsModal: false,
+                                            writableCredentials: null
+                                        })
+                                    }>
+                                    <FormattedMessage id="generic.reset" />
+                                </Button>
+                            </Modal.Footer>
+                        ) : null}
+                    </Modal.Body>
+                </Modal>
+                <div className="d-flex mt-5">
+                    <InputField
+                        name="view.instance.repo.creds"
+                        tooltip="view.instance.repo.creds.desc"
+                        type={FieldType.String}
+                        defaultValue={
+                            (this.state.writableCredentials
+                                ? this.state.writableCredentials.accessUser
+                                : this.state.repositoryInfo?.accessUser) || "(Unset)"
+                        }
+                        onChange={() => {}}
+                        disabled
+                        hideReadOnly
+                        additionalAppend={editButton}
+                        forceChanged={!!this.state.writableCredentials}
+                    />
+                </div>
             </React.Fragment>
         );
     }

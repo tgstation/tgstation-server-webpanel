@@ -17,6 +17,7 @@ export enum FieldType {
     Boolean = "boolean",
     Number = "number",
     String = "string",
+    TextArea = "textarea",
     Password = "password",
     Enum = "enum"
 }
@@ -28,6 +29,9 @@ export type InputFieldProps = {
     disabled?: boolean;
     tooltip?: string;
     type: FieldType;
+    hideReadOnly?: boolean;
+    additionalAppend?: React.ReactNode;
+    forceChanged?: boolean;
 } & (
     | {
           defaultValue?: boolean | null;
@@ -45,6 +49,11 @@ export type InputFieldProps = {
           defaultValue?: string | null;
           onChange: (newValue: string, isValid: boolean) => unknown;
           type: FieldType.String;
+      }
+    | {
+          defaultValue?: string | null;
+          onChange: (newValue: string, isValid: boolean) => unknown;
+          type: FieldType.TextArea;
       }
     | {
           defaultValue?: string | null;
@@ -75,6 +84,19 @@ const StringControl = React.forwardRef<HTMLInputElement, ControlProps>(
                 onChange={e => props.onChange(e.target.value)}
                 disabled={props.disabled}
                 ref={ref}
+            />
+        );
+    }
+);
+
+const TextAreaControl = React.forwardRef<HTMLInputElement, ControlProps>(
+    function StringControl(props): JSX.Element {
+        return (
+            <Form.Control
+                as="textarea"
+                value={props.value as string}
+                onChange={e => props.onChange(e.target.value)}
+                disabled={props.disabled}
             />
         );
     }
@@ -181,7 +203,8 @@ export const defaultValues: Record<FieldType, InputFieldTypes> = {
     [FieldType.Number]: 0,
     [FieldType.Boolean]: false,
     [FieldType.String]: "",
-    [FieldType.Password]: ""
+    [FieldType.Password]: "",
+    [FieldType.TextArea]: ""
 };
 
 export default function InputField(props: InputFieldProps): JSX.Element {
@@ -216,6 +239,7 @@ export default function InputField(props: InputFieldProps): JSX.Element {
                 return;
             case FieldType.String:
             case FieldType.Password:
+            case FieldType.TextArea:
                 props.onChange(currentValue as string, controlRef.current?.checkValidity() ?? true);
                 return;
         }
@@ -240,11 +264,13 @@ export default function InputField(props: InputFieldProps): JSX.Element {
         string: StringControl,
         password: PasswordControl,
         boolean: BooleanControl,
+        textarea: TextAreaControl,
         [FieldType.Number]: undefined,
         [FieldType.Enum]: undefined
     };
 
-    const changed = currentValue != (props.defaultValue ?? defaultValues[props.type]);
+    const changed =
+        currentValue != (props.defaultValue ?? defaultValues[props.type]) || props.forceChanged;
 
     return (
         <InputGroup>
@@ -258,7 +284,9 @@ export default function InputField(props: InputFieldProps): JSX.Element {
                                 <FormattedMessage id={props.name} />
                             </span>
                             <div className="ml-auto">
-                                {props.disabled ? <FormattedMessage id="generic.readonly" /> : null}
+                                {props.disabled && !props.hideReadOnly ? (
+                                    <FormattedMessage id="generic.readonly" />
+                                ) : null}
                                 <div
                                     ref={ref}
                                     className="d-inline-block ml-2"
@@ -301,17 +329,20 @@ export default function InputField(props: InputFieldProps): JSX.Element {
                     }
                 )
             )}
-
-            <InputGroup.Append>
-                <Button
-                    style={{ visibility: !changed || props.disabled ? "hidden" : undefined }}
-                    variant="danger"
-                    onClick={() =>
-                        setCurrentValue(props.defaultValue ?? defaultValues[props.type])
-                    }>
-                    <FontAwesomeIcon icon="undo" />
-                </Button>
-            </InputGroup.Append>
+            {!(!changed || props.disabled) || props.additionalAppend ? (
+                <InputGroup.Append>
+                    {!(!changed || props.disabled) ? (
+                        <Button
+                            variant="danger"
+                            onClick={() =>
+                                setCurrentValue(props.defaultValue ?? defaultValues[props.type])
+                            }>
+                            <FontAwesomeIcon icon="undo" />
+                        </Button>
+                    ) : null}
+                    {props.additionalAppend}
+                </InputGroup.Append>
+            ) : null}
         </InputGroup>
     );
 }

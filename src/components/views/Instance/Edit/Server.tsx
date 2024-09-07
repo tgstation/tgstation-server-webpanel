@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage, injectIntl, WrappedComponentProps } from "react-intl";
+import TimeAgo from "react-timeago";
 import { gte as SemVerGte } from "semver";
 
 import DreamDaemonClient from "../../../../ApiClient/DreamDaemonClient";
@@ -362,6 +363,28 @@ function Server(props: WrappedComponentProps): JSX.Element {
 
     const OneGibibyte = 1073741824;
     const ramUsage = watchdogSettings?.immediateMemoryUsage;
+    const clientCount = watchdogSettings?.clientCount;
+    const hasClientCount = clientCount != null;
+    let cantHaveClientCount =
+        !hasClientCount &&
+        canMetadata &&
+        watchdogSettings?.healthCheckSeconds != null &&
+        watchdogSettings?.healthCheckSeconds > 0 &&
+        (watchdogSettings.activeCompileJob?.dmApiVersion == null ||
+            !SemVerGte(watchdogSettings.activeCompileJob?.dmApiVersion, "5.10.0"));
+
+    cantHaveClientCount = false;
+
+    let healthCheckSecondsLeft = 0;
+    if (watchdogSettings?.launchTime && watchdogSettings.healthCheckSeconds) {
+        const startTime = new Date(watchdogSettings.launchTime);
+        const dateDiff = new Date().getTime() - startTime.getTime();
+        const secondsDiff = dateDiff / 1000;
+
+        healthCheckSecondsLeft = Math.floor(watchdogSettings.healthCheckSeconds - secondsDiff);
+    }
+
+    const hasLaunchTime = !!watchdogSettings.launchTime;
 
     return (
         <div className="text-center">
@@ -385,9 +408,10 @@ function Server(props: WrappedComponentProps): JSX.Element {
                     />
                 </Badge>
             </h2>
-            {ramUsage ? (
-                <h4>
+            <h4>
+                {ramUsage ? (
                     <Badge
+                        className="status-badge"
                         pill
                         variant={
                             deploymentViewData?.activeCompileJob?.engineVersion.engine ==
@@ -406,8 +430,63 @@ function Server(props: WrappedComponentProps): JSX.Element {
                             GB
                         </div>
                     </Badge>
-                </h4>
-            ) : null}
+                ) : null}
+                {hasClientCount ? (
+                    <Badge
+                        className="status-badge"
+                        pill
+                        variant={clientCount == 0 ? "warning" : "success"}>
+                        <div>
+                            <FormattedMessage id="view.instance.server.status.client_count" />
+                            :&nbsp;
+                            {clientCount}
+                        </div>
+                    </Badge>
+                ) : null}
+                {cantHaveClientCount ? (
+                    <Badge className="status-badge" pill variant="danger">
+                        <div>
+                            <FormattedMessage id="view.instance.server.status.client_count.cant" />
+                        </div>
+                    </Badge>
+                ) : null}
+                {!cantHaveClientCount &&
+                !hasClientCount &&
+                watchdogSettings.status === WatchdogStatus.Online ? (
+                    <Badge className="status-badge" pill variant="warning">
+                        <div>
+                            <FormattedMessage
+                                id={
+                                    healthCheckSecondsLeft > 0
+                                        ? "view.instance.server.status.client_count.pending"
+                                        : "view.instance.server.status.client_count.soon"
+                                }
+                                values={{ healthCheckSecondsLeft }}
+                            />
+                        </div>
+                    </Badge>
+                ) : null}
+                {hasLaunchTime ? (
+                    <Badge
+                        className="status-badge"
+                        pill
+                        variant={(() => {
+                            const launchTime = new Date(watchdogSettings.launchTime!);
+                            const duration = new Date().getMinutes() - launchTime.getMinutes();
+                            if (duration < 5) return "danger";
+
+                            if (duration < 15) return "warning";
+
+                            return "success";
+                            // TODO: https://github.com/nmn/react-timeago/issues/208
+                        })()}>
+                        <div>
+                            <FormattedMessage id="view.instance.server.status.uptime" />
+                            <TimeAgo date={new Date(watchdogSettings.launchTime!)} />
+                        </div>
+                    </Badge>
+                ) : null}
+            </h4>
             <hr />
             {canViewDeployment ? (
                 <DeploymentViewer viewData={deploymentViewData} />
