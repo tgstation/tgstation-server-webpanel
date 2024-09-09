@@ -5,6 +5,7 @@ import { FormattedMessage } from "react-intl";
 import DreamMakerClient from "../../../../ApiClient/DreamMakerClient";
 import {
     CompileJobResponse,
+    DMApiValidationMode,
     DreamDaemonSecurity,
     DreamMakerRequest,
     DreamMakerResponse,
@@ -158,11 +159,12 @@ export function Deployment(): JSX.Element {
                 DreamMakerRights.SetSecurityLevel
             )
         },
-        requireDMApiValidation: {
-            type: FieldType.Boolean as FieldType.Boolean,
+        dmApiValidationMode: {
+            type: FieldType.Enum as FieldType.Enum,
+            enum: DMApiValidationMode,
             name: "fields.instance.deploy.validateapi",
             tooltip: "fields.instance.deploy.validateapi.desc",
-            defaultValue: deployInfo?.requireDMApiValidation,
+            defaultValue: deployInfo?.dmApiValidationMode,
             disabled: !hasDreamMakerRight(
                 instanceEditContext.instancePermissionSet,
                 DreamMakerRights.SetApiValidationRequirement

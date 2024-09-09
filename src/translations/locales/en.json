@@ -883,8 +883,11 @@
     "fields.instance.deploy.seclevel.Safe": "Safe",
     "fields.instance.deploy.seclevel.Ultrasafe": "Ultra-Safe",
     "fields.instance.deploy.seclevel.desc": "This is only used for the DMAPI validation",
-    "fields.instance.deploy.validateapi": "Validate DMAPI",
-    "fields.instance.deploy.validateapi.desc": "This will check that the DMAPI initializes successfully without any runtimes",
+    "fields.instance.deploy.validateapi": "DMAPI Validation Mode",
+    "fields.instance.deploy.validateapi.desc": " DMAPI validation check that the DMAPI initializes successfully without any runtimes.",
+    "fields.instance.deploy.validateapi.Optional": "Attempt but do not require validation",
+    "fields.instance.deploy.validateapi.Required": "Require validation to succeed for the deployment to succeed",
+    "fields.instance.deploy.validateapi.Skipped": "Skip validation disabling all DMAPI features",
     "warning.screensize.header": "Screen size warning",
     "warning.screensize": "The TGS webpanel does not guarentee support for viewports with a width of under 992px."
 }
