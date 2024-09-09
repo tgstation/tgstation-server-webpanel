@@ -1,0 +1,1 @@
+{"version":3,"file":"7194.css","mappings":"AAAA,yBACI,aACJ","sources":["webpack://tgstation-server-control-panel/./src/components/AppNavbar.css"],"sourcesContent":[".tgs-update-notification {\n    color: #66ff07;\n}\n"],"names":[],"sourceRoot":""}
