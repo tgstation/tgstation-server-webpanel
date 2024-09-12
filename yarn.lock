@@ -8916,10 +8916,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "path-to-regexp@npm:6.3.0"
-  checksum: 10/6822f686f01556d99538b350722ef761541ec0ce95ca40ce4c29e20a5b492fe8361961f57993c71b2418de12e604478dcf7c430de34b2c31a688363a7a944d9c
+"path-to-regexp@npm:^8.0.0":
+  version: 8.1.0
+  resolution: "path-to-regexp@npm:8.1.0"
+  checksum: 10/5016a27153d99d3da6a7769a3f34eb4a35538d23a9b4044f517960978876af4d23146f0421e9714be0449f61ffffb04941ffcb7e6bd7c69cf6d891238becd587
   languageName: node
   linkType: hard
 
@@ -11316,7 +11316,7 @@ __metadata:
     jquery: "npm:^3.7.1"
     jwt-decode: "npm:^4.0.0"
     mini-css-extract-plugin: "npm:^2.9.1"
-    path-to-regexp: "npm:^6.3.0"
+    path-to-regexp: "npm:^8.0.0"
     popper.js: "npm:^1.16.1"
     postcss: "npm:^8.4.41"
     postcss-loader: "npm:^8.1.1"
