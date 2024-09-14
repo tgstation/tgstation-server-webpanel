@@ -11,7 +11,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
 import ReactMarkdown from "react-markdown";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { gte, lte, SemVer } from "semver";
+import { gte, lt, lte, SemVer } from "semver";
 import YAML from "yaml";
 
 import AdminClient, { UpdateErrors } from "../../../ApiClient/AdminClient";
@@ -343,7 +343,7 @@ class Update extends React.Component<IProps, IState> {
 
         let lowerVersion: string;
         let higherVersion: string;
-        if (targetVersionSemver < currentVersionSemver) {
+        if (lt(targetVersionSemver, currentVersionSemver)) {
             markdown +=
                 "## _The version you are switching to is below the current version._\n## _The following changes will be **un**-applied!_";
             lowerVersion = targetVersion;
