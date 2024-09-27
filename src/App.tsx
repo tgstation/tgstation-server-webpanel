@@ -1,20 +1,14 @@
-import { StrictMode, Suspense } from 'react'
+import { StrictMode } from 'react'
+
+import Loading from './components/utils/Loading'
+
 import './App.css'
 
 
 const App = () => {
   return (
     <StrictMode>
-        <Suspense
-            fallback={
-                <>
-                    <p>Loading styles...</p>
-                </>
-            }>
-            <p>
-                TODO
-            </p>
-        </Suspense>
+        <Loading />
     </StrictMode>
   )
 }
