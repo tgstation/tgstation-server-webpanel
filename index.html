@@ -2,12 +2,99 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <meta name="theme-color" content="#000000" />
+
+    <title>Loading...</title>
+
+    <link rel="manifest" href="%VITE_PUBLIC_PATH%manifest.json" data-tpl-target="href" data-tpl="!publicpath!manifest.json" />
+    <link rel="shortcut icon" href="%VITE_PUBLIC_PATH%favicon.ico" data-tpl-target="href" data-tpl="!publicpath!favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="%VITE_PUBLIC_PATH%apple-touch-icon.png" data-tpl-target="href" data-tpl="!publicpath!apple-touch-icon.png"  />
+    <link rel="icon" type="image/png" sizes="32x32" href="%VITE_PUBLIC_PATH%favicon-32x32.png" data-tpl-target="href" data-tpl="!publicpath!favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="%VITE_PUBLIC_PATH%favicon-16x16.png" data-tpl-target="href" data-tpl="!publicpath!favicon-16x16.png" />
+    <link rel="mask-icon" href="%VITE_PUBLIC_PATH%safari-pinned-tab.svg" color="#5bbad5" data-tpl="!publicpath!safari-pinned-tab.svg" />
+    <meta name="msapplication-TileColor" content="#da532c" />
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script>
+        try {
+            window.publicPath = "%VITE_PUBLIC_PATH%";
+            function loadChannel(channel) {
+                const handler = (e) => {
+                    if (channel !== publicPath && confirm("The webpanel has failed to load from " + channel + ", this may be due to a misconfiguration. Press OK to load the webpanel from the fallback. Error: \n" + e)) {
+                        loadChannel(publicPath);
+                    } else {
+                        alert("An error has occured within the webpanel bootstraper: \n" + e)
+                    }
+                }
+
+                try {
+                    if (channel === "webpack") {
+                        channel = publicPath;
+                        window.loadedChannelFromWebpack = true;
+                    }
+
+                    if (!channel.endsWith("/")) {
+                        channel = channel + "/";
+                    }
+
+                    fetch(channel + "webpanelmanifest.json").then(e => {
+                        e.json().then(data => {
+                            console.log(data);
+
+                            for (const entry of data.entries) {
+                                const scripttag = document.createElement("script");
+                                scripttag.src = channel + entry;
+                                document.body.append(scripttag);
+                            }
+                        }).catch(handler)
+                    }).catch(handler);
+                } catch (e) {
+                    handler(e)
+                }
+            }
+
+            if("%VITE_DEV_MODE%" == "true") {
+                const scripttag = document.createElement("script");
+                scripttag.src = "/src/main.tsx";
+                scripttag.type = "module"
+                document.body.append(scripttag);
+            } else {
+                fetch("channel.json", {
+                    headers: {
+                        "X-Webpanel-Fetch-Channel": "true"
+                    }
+                }).then(e => {
+                    e.json().then(channel => {
+                        if (channel.publicPath && channel.publicPath !== "") {
+                            if (!channel.publicPath.endsWith("/")) {
+                                channel.publicPath = channel.publicPath + "/";
+                            }
+                            window.publicPath = channel.publicPath
+                        }
+
+                        document.querySelectorAll(':not(html)').forEach(node => {
+                            const { tpl, tplTarget } = node.dataset;
+
+                            if (!tplTarget) return
+
+                            node.setAttribute(tplTarget, tpl.replaceAll("!publicpath!", publicPath))
+                        });
+
+                        loadChannel(channel.channel)
+                    }).catch((e) => {
+                        if (confirm("An error has occured within the webpanel bootstraper. Press OK to load the webpanel from the fallback. Error:\n" + e)) {
+                            loadChannel("%VITE_PUBLIC_PATH%");
+                        } else {
+                            alert("An error has occured within the webpanel bootstraper: \n" + e)
+                        }
+                    })
+                })
+            }
+        } catch (e) {
+            alert("An error has occured within the webpanel bootstraper: \n" + e)
+        }
+    </script>
   </body>
 </html>

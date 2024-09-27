@@ -12,11 +12,7 @@ export default class AppLoading extends React.Component {
     public render(): React.ReactNode {
         return (
             <React.StrictMode>
-                <Suspense fallback={<p className="text-center">Loading spinner...</p>}>
-                    <Suspense fallback={<Loading text="Loading bundles..." noIntl></Loading>}>
-                        <App locale={Locales.en} />
-                    </Suspense>
-                </Suspense>
+                <Loading text="Loading bundles..." noIntl></Loading>
             </React.StrictMode>
         );
     }
