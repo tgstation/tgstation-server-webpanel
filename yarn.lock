@@ -2607,7 +2607,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromatic@npm:^11.4.0":
+"chromatic@npm:^11.10.4, chromatic@npm:^11.4.0":
   version: 11.10.4
   resolution: "chromatic@npm:11.10.4"
   peerDependencies:
@@ -6055,6 +6055,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
     autoprefixer: "npm:^10.4.20"
+    chromatic: "npm:^11.10.4"
     concurrently: "npm:^9.0.1"
     eslint: "npm:^9.9.0"
     eslint-plugin-react-hooks: "npm:^5.1.0-rc.0"
