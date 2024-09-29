@@ -29,7 +29,7 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "chromatic": "npx chromatic --project-token=chpt_d91fb89186cb623"
+    "chromatic": "npx chromatic"
   },
   "dependencies": {
     "concurrently": "^9.0.1",

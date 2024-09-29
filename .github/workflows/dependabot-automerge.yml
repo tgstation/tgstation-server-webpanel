@@ -5,6 +5,7 @@ on:
         types: [opened, reopened]
         branches:
             - next
+            - graphql
 
 concurrency:
     group: "dependabot-automerge-${{ github.head_ref || github.run_id }}-${{ github.event_name }}"

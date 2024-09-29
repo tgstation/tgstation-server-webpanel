@@ -9,4 +9,7 @@ const config: Meta<typeof Loading> = {
 export default config;
 
 export const NoText = () => <Loading />;
-export const LoadingText = () => <Loading messageId="loading.loading" />;
+export const TranslatedLoadingText = () => (
+    <Loading message="loading.loading" />
+);
+export const UntranslatedText = () => <Loading message="Untranslated" noIntl />;
