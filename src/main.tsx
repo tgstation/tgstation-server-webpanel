@@ -28,7 +28,7 @@ function mountApp() {
     const root = createRoot(document.getElementById("root")!);
     root.render(
         <App
-            locale={navigator.languages[0]}
+            preferredLocales={navigator.languages}
             translationFactory={new TranslationFactory()}
         />
     );

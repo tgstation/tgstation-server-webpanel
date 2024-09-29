@@ -1,11 +1,8 @@
 import ITranslation from "./ITranslation";
 import ITranslationFactory from "./ITranslationFactory";
-import Locales from "./Locales";
 import Translation from "./Translation";
 
 class TranslationFactory implements ITranslationFactory {
-    private static readonly fallbackLocale: string = Locales.en;
-
     private static getShortHandedLocale(locale: string): string {
         return locale.split("-")[0];
     }
@@ -22,12 +19,10 @@ class TranslationFactory implements ITranslationFactory {
         }
 
         if (!localization) {
-            let shortHandedLocale =
+            const shortHandedLocale =
                 TranslationFactory.getShortHandedLocale(locale);
             if (shortHandedLocale === locale) {
-                if (shortHandedLocale === TranslationFactory.fallbackLocale)
-                    throw new Error("Invalid locale: " + locale);
-                shortHandedLocale = TranslationFactory.fallbackLocale;
+                throw new Error("Invalid locale: " + locale);
             }
             return await this.loadTranslation(shortHandedLocale);
         }

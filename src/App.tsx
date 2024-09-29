@@ -7,33 +7,60 @@ import ITranslationFactory from "./translations/ITranslationFactory";
 import ITranslation from "./translations/ITranslation";
 import { IntlProvider } from "react-intl";
 import Meta from "./components/core/Meta/Meta";
+import Locales from "./translations/Locales";
 
 interface IProps {
-    locale: string;
+    preferredLocales: readonly string[];
     translationFactory: ITranslationFactory;
 }
 
 const App = (props: IProps) => {
     const [translations, setTranslations] = useState<ITranslation | null>(null);
 
-    // TODO
-    const [, setTranslationError] = useState<string | null>(null);
-
     useEffect(() => {
         void (async () => {
             try {
-                const loadedTranslation =
-                    await props.translationFactory.loadTranslation(
-                        props.locale
+                let loadedTranslation: ITranslation | null = null;
+                console.log(JSON.stringify(props.preferredLocales));
+                for (const locale of props.preferredLocales) {
+                    try {
+                        loadedTranslation =
+                            await props.translationFactory.loadTranslation(
+                                locale
+                            );
+                        if (loadedTranslation) {
+                            setTranslations(loadedTranslation);
+                            break;
+                        }
+                    } catch {
+                        (() => {})();
+                    }
+
+                    console.log(`Failed to load localization: ${locale}`);
+                }
+
+                if (!loadedTranslation) {
+                    const FallbackLocale = Locales.en;
+                    alert(
+                        `Failed to load localization for preferred locale(s): ${props.preferredLocales.join(
+                            ", "
+                        )}. Falling back to ${FallbackLocale}.`
                     );
-                setTranslations(loadedTranslation);
+
+                    loadedTranslation =
+                        await props.translationFactory.loadTranslation(
+                            FallbackLocale
+                        );
+                }
             } catch (error) {
-                setTranslationError(
-                    JSON.stringify(error) ?? "An unknown error occurred"
+                alert(
+                    `Could not load any localization: ${
+                        JSON.stringify(error) ?? "An unknown error occurred"
+                    }`
                 );
             }
         })();
-    }, [props.locale, props.translationFactory]);
+    }, [props.preferredLocales, props.translationFactory]);
 
     return (
         <StrictMode>
