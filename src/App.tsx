@@ -2,12 +2,12 @@ import { StrictMode, useEffect, useState } from "react";
 
 import Loading from "./components/utils/Loading/Loading";
 
-import ThemeProvider from "./context/theme/Provider";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import ITranslation from "./translations/ITranslation";
 import { IntlProvider } from "react-intl";
 import Meta from "./components/core/Meta/Meta";
 import Locales from "./translations/Locales";
+import ConfigProvider from "./context/config/Provider";
 
 interface IProps {
     preferredLocales: readonly string[];
@@ -21,7 +21,6 @@ const App = (props: IProps) => {
         void (async () => {
             try {
                 let loadedTranslation: ITranslation | null = null;
-                console.log(JSON.stringify(props.preferredLocales));
                 for (const locale of props.preferredLocales) {
                     try {
                         loadedTranslation =
@@ -64,7 +63,7 @@ const App = (props: IProps) => {
 
     return (
         <StrictMode>
-            <ThemeProvider>
+            <ConfigProvider>
                 {translations ? (
                     <IntlProvider
                         locale={translations.locale}
@@ -76,7 +75,7 @@ const App = (props: IProps) => {
                 ) : (
                     <Loading />
                 )}
-            </ThemeProvider>
+            </ConfigProvider>
         </StrictMode>
     );
 };

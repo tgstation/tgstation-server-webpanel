@@ -1801,15 +1801,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-helmet@npm:^6":
-  version: 6.1.11
-  resolution: "@types/react-helmet@npm:6.1.11"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/f7b3bb2151d992a108ae46fed876fb9c8119108397d9a01d150c5642782997542c8b3c52e742b56e8689b7dbfa62ca9cfc76aa7e05dec4e60c652f7ef53fa783
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:*, @types/react@npm:^18.3.3":
   version: 18.3.8
   resolution: "@types/react@npm:18.3.8"
@@ -5383,27 +5374,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-fast-compare@npm:^3.1.1":
-  version: 3.2.2
-  resolution: "react-fast-compare@npm:3.2.2"
-  checksum: 10c0/0bbd2f3eb41ab2ff7380daaa55105db698d965c396df73e6874831dbafec8c4b5b08ba36ff09df01526caa3c61595247e3269558c284e37646241cba2b90a367
-  languageName: node
-  linkType: hard
-
-"react-helmet@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "react-helmet@npm:6.1.0"
-  dependencies:
-    object-assign: "npm:^4.1.1"
-    prop-types: "npm:^15.7.2"
-    react-fast-compare: "npm:^3.1.1"
-    react-side-effect: "npm:^2.1.0"
-  peerDependencies:
-    react: ">=16.3.0"
-  checksum: 10c0/1d2831d9c3b4f5c91f020076aeb6502437a4788077d0c438421e466eb9633d5dc2aacedf7b779a970b807d61cf87793c5ff76ee3190a185d71c90b5cfb367e96
-  languageName: node
-  linkType: hard
-
 "react-intl@npm:^6.7.0":
   version: 6.7.0
   resolution: "react-intl@npm:6.7.0"
@@ -5453,15 +5423,6 @@ __metadata:
   version: 0.14.2
   resolution: "react-refresh@npm:0.14.2"
   checksum: 10c0/875b72ef56b147a131e33f2abd6ec059d1989854b3ff438898e4f9310bfcc73acff709445b7ba843318a953cb9424bcc2c05af2b3d80011cee28f25aef3e2ebb
-  languageName: node
-  linkType: hard
-
-"react-side-effect@npm:^2.1.0":
-  version: 2.1.2
-  resolution: "react-side-effect@npm:2.1.2"
-  peerDependencies:
-    react: ^16.3.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/5d934cae438f701ce646f566750ae6a445e99185ce1a026108f9db728147f7962a22ecf8db79ff26089953a3799b3607766904f4f10194ce42bcd5a1aa0215e8
   languageName: node
   linkType: hard
 
@@ -6141,7 +6102,6 @@ __metadata:
     "@types/node": "npm:^22.7.3"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
-    "@types/react-helmet": "npm:^6"
     "@vitejs/plugin-react": "npm:^4.3.1"
     autoprefixer: "npm:^10.4.20"
     chromatic: "npm:^11.10.4"
@@ -6157,7 +6117,6 @@ __metadata:
     postcss: "npm:^8.4.47"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-helmet: "npm:^6.1.0"
     react-intl: "npm:^6.7.0"
     storybook: "npm:8.3.4"
     tailwind-merge: "npm:^2.5.2"
