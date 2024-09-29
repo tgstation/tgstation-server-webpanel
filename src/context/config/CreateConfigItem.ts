@@ -9,7 +9,6 @@ const CreateTypedConfigItem = <TConfig>(
     serializer: (runtimeValue: TConfig) => string,
     defaultValue: TConfig,
     storageKey: string,
-    password?: boolean,
     effect?: (newValue: TConfig) => void
 ): IConfigItem<TConfig> => {
     const fullStorageKey = `${RootConfigStorageKey}.${storageKey}`;
@@ -22,7 +21,6 @@ const CreateTypedConfigItem = <TConfig>(
         return {
             value: defaultValue,
             setValue: () => null,
-            password: password || false,
         };
     }
 
@@ -48,23 +46,20 @@ const CreateTypedConfigItem = <TConfig>(
 
             setValue(newValue);
         },
-        password: password || false,
     };
 };
 
 export const CreateStringConfigItem = (
     forContext: boolean,
     defaultValue: string,
-    storageKey: string,
-    password?: boolean
+    storageKey: string
 ) =>
     CreateTypedConfigItem<string>(
         forContext,
         (configValue) => configValue,
         (runtimeValue) => runtimeValue,
         defaultValue,
-        storageKey,
-        password
+        storageKey
     );
 
 export default CreateTypedConfigItem;

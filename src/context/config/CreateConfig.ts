@@ -19,15 +19,14 @@ export enum JobsWidgetOptions {
     Never = "never",
 }
 
-const CreateConfig = (forContext: boolean) => {
+const CreateConfig = (forContext: boolean, darkOverride?: boolean) => {
     return {
         Theme: CreateTypedConfigItem<Theme>(
             forContext,
             (configValue) => configValue as Theme,
             (runtimeValue) => runtimeValue.toString(),
-            "system",
+            darkOverride ? "dark" : "system",
             "theme",
-            false,
             (theme) => {
                 const root = window.document.documentElement;
 
@@ -47,12 +46,7 @@ const CreateConfig = (forContext: boolean) => {
                 root.classList.add(theme);
             }
         ),
-        GitHubToken: CreateStringConfigItem(
-            forContext,
-            "",
-            "githubtoken",
-            true
-        ),
+        GitHubToken: CreateStringConfigItem(forContext, "", "githubtoken"),
         ApiPath: CreateStringConfigItem(
             forContext,
             InitialServerUrl,

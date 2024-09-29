@@ -2,6 +2,7 @@ import type { Preview } from "@storybook/react";
 import AddIntlEn from "./AddIntlEn";
 
 import "../src/index.css";
+import AddConfigDark from "./AddConfigDark";
 
 const preview: Preview = {
     parameters: {
@@ -12,7 +13,7 @@ const preview: Preview = {
             },
         },
     },
-    decorators: [AddIntlEn],
+    decorators: [AddIntlEn, AddConfigDark],
 };
 
 export default preview;
