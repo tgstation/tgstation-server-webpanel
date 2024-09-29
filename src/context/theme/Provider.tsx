@@ -41,7 +41,7 @@ const ThemeProvider = (props: IProps) => {
     };
 
     return (
-        <ThemeContext.Provider {...props} value={value}>
+        <ThemeContext.Provider value={value}>
             {props.children}
         </ThemeContext.Provider>
     );
