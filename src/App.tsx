@@ -2,12 +2,11 @@ import { StrictMode, useEffect, useState } from "react";
 
 import Loading from "./components/utils/Loading/Loading";
 
-import { Helmet } from "react-helmet";
-import Pkg from "../package.json";
-import ThemeProvider from "./lib/theme/Provider";
+import ThemeProvider from "./context/theme/Provider";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import ITranslation from "./translations/ITranslation";
-import { FormattedMessage } from "react-intl";
+import { IntlProvider } from "react-intl";
+import Meta from "./components/core/Meta/Meta";
 
 interface IProps {
     locale: string;
@@ -36,23 +35,20 @@ const App = (props: IProps) => {
         })();
     }, [props.locale, props.translationFactory]);
 
-    const version = Pkg.version;
-
-    const coreApp = (
-        <>
-            <Helmet>
-                <title>
-                    <FormattedMessage id="title" values={{ version }} />
-                </title>
-            </Helmet>
-            <Loading />
-        </>
-    );
-
     return (
         <StrictMode>
             <ThemeProvider>
-                {translations ? coreApp : <Loading />}
+                {translations ? (
+                    <IntlProvider
+                        locale={translations.locale}
+                        messages={translations.messages}
+                        defaultLocale="en"
+                    >
+                        <Meta />
+                    </IntlProvider>
+                ) : (
+                    <Loading />
+                )}
             </ThemeProvider>
         </StrictMode>
     );

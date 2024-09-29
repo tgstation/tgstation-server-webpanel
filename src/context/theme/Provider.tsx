@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 import Theme from "./Theme";
-import ThemeProviderContext from "./Context";
+import ThemeContext from "./Context";
 
 interface IProps {
     children: React.ReactNode;
-    defaultTheme?: Theme;
-    storageKey?: string;
 }
 
 const ThemeProvider = (props: IProps) => {
-    const defaultTheme = props.defaultTheme || "system";
-    const storageKey = props.storageKey || "tgswp-ui-theme";
+    const defaultTheme = "system";
+    const storageKey = "tgswp-ui-theme";
     const [theme, setTheme] = useState<Theme>(
         () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
     );
@@ -43,9 +41,9 @@ const ThemeProvider = (props: IProps) => {
     };
 
     return (
-        <ThemeProviderContext.Provider {...props} value={value}>
+        <ThemeContext.Provider {...props} value={value}>
             {props.children}
-        </ThemeProviderContext.Provider>
+        </ThemeContext.Provider>
     );
 };
 
