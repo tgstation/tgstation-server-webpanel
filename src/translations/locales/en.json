@@ -1,4 +1,5 @@
 {
+    "title": "TGS Webpanel v{version}",
     "routes.home": "Home",
     "routes.user_manager": "User Manager",
     "routes.login": "Log In",

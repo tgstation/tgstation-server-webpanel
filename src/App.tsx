@@ -7,6 +7,7 @@ import Pkg from "../package.json";
 import ThemeProvider from "./lib/theme/Provider";
 import ITranslationFactory from "./translations/ITranslationFactory";
 import ITranslation from "./translations/ITranslation";
+import { FormattedMessage } from "react-intl";
 
 interface IProps {
     locale: string;
@@ -35,10 +36,14 @@ const App = (props: IProps) => {
         })();
     }, [props.locale, props.translationFactory]);
 
+    const version = Pkg.version;
+
     const coreApp = (
         <>
             <Helmet>
-                <title>TGS Webpanel v{Pkg.version}</title>
+                <title>
+                    <FormattedMessage id="title" values={{ version }} />
+                </title>
             </Helmet>
             <Loading />
         </>
