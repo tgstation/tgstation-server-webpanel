@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 
-import Loading from "./components/utils/Loading";
+import Loading from "./components/utils/Loading/Loading";
 
 import { Helmet } from "react-helmet";
 import Pkg from "../package.json";
