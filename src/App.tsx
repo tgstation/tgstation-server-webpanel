@@ -4,8 +4,9 @@ import Loading from "./components/utils/Loading/Loading";
 
 import { Helmet } from "react-helmet";
 import Pkg from "../package.json";
-import ITranslation from "./translations/ITranslation";
+import ThemeProvider from "./lib/theme/Provider";
 import ITranslationFactory from "./translations/ITranslationFactory";
+import ITranslation from "./translations/ITranslation";
 
 interface IProps {
     locale: string;
@@ -43,7 +44,13 @@ const App = (props: IProps) => {
         </>
     );
 
-    return <StrictMode>{translations ? coreApp : <Loading />}</StrictMode>;
+    return (
+        <StrictMode>
+            <ThemeProvider>
+                {translations ? coreApp : <Loading />}
+            </ThemeProvider>
+        </StrictMode>
+    );
 };
 
 export default App;
