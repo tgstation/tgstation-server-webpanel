@@ -21,6 +21,7 @@ const CreateTypedConfigItem = <TConfig>(
         return {
             value: defaultValue,
             setValue: () => null,
+            localizationId: fullStorageKey,
         };
     }
 
@@ -46,6 +47,7 @@ const CreateTypedConfigItem = <TConfig>(
 
             setValue(newValue);
         },
+        localizationId: fullStorageKey,
     };
 };
 

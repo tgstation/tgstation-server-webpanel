@@ -8,38 +8,43 @@ import {
 } from "@/components/ui/tooltip";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, HTMLInputTypeAttribute } from "react";
 import { FormattedMessage } from "react-intl";
 
 interface IProps {
     onChange?: ChangeEventHandler<HTMLInputElement>;
     label: string;
     tooltip?: string;
+    type?: HTMLInputTypeAttribute;
 }
 
 const InputGroup = (props: IProps) => {
     return (
-        <div className="flex rounded-lg shadown-sm">
-            <Label className="px-4 inline-flex items-center min-w-fit rounded-s-md border border-e-0 text-sm text-gray-500">
-                <FormattedMessage id={props.label} />
+        <>
+            <div className="px-4 inline-flex justify-between items-center min-w-fit rounded-s-md border border-e-0 text-sm">
+                <Label>
+                    <FormattedMessage id={props.label} />
+                </Label>
                 {props.tooltip ? (
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <FontAwesomeIcon
-                                    className="ml-4"
-                                    icon={faInfo}
-                                />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <FormattedMessage id={props.tooltip} />
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    <div className="items-end">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <FontAwesomeIcon
+                                        className="ml-4"
+                                        icon={faInfo}
+                                    />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <FormattedMessage id={props.tooltip} />
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
                 ) : null}
-            </Label>
-            <Input onChange={props.onChange} />
-        </div>
+            </div>
+            <Input onChange={props.onChange} type={props.type} />
+        </>
     );
 };
 

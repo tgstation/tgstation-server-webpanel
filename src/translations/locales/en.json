@@ -701,6 +701,8 @@
     "config.manualreset.desc": "Controls whether or not an input box is displayed to force a repository reset. This option is ignored and the manual PR entry box is always displayed when using a repository hosted on GitLab.",
     "config.restjobs2": "Force HTTP Polling for Job Updates",
     "config.restjobs2.desc": "Workaround for if SignalR job updates are failing",
+    "config.theme": "Theming",
+    "config.theme.desc": "Set dark mode explicitly or to match your system",
     "loading.loading": "Loading...",
     "loading.login": "Logging in...",
     "loading.page": "Loading page: ",

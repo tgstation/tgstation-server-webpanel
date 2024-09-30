@@ -8,8 +8,18 @@ const config: Meta<typeof InputGroup> = {
 
 export default config;
 
-export const Test = () => <InputGroup label="Test" />;
-export const Loading = () => <InputGroup label="loading.loading" />;
+export const Test = () => (
+    <div className="grid grid-cols-2">
+        <InputGroup label="Test" />
+    </div>
+);
+export const Loading = () => (
+    <div className="grid grid-cols-2">
+        <InputGroup label="loading.loading" />
+    </div>
+);
 export const Tooltip = () => (
-    <InputGroup label="Test" tooltip="loading.loading" />
+    <div className="grid grid-cols-2">
+        <InputGroup label="Test" tooltip="loading.loading" />
+    </div>
 );

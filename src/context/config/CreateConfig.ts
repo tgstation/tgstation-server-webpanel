@@ -25,14 +25,14 @@ const CreateConfig = (forContext: boolean, darkOverride?: boolean) => {
             forContext,
             (configValue) => configValue as Theme,
             (runtimeValue) => runtimeValue.toString(),
-            darkOverride ? "dark" : "system",
+            darkOverride ? Theme.Dark : Theme.System,
             "theme",
             (theme) => {
                 const root = window.document.documentElement;
 
                 root.classList.remove("light", "dark");
 
-                if (theme === "system") {
+                if (theme === Theme.System) {
                     const systemTheme = window.matchMedia(
                         "(prefers-color-scheme: dark)"
                     ).matches
@@ -50,14 +50,14 @@ const CreateConfig = (forContext: boolean, darkOverride?: boolean) => {
         ApiPath: CreateStringConfigItem(
             forContext,
             InitialServerUrl,
-            "serverUrl"
+            "apipath"
         ),
         JobsWidgetDisplay: CreateTypedConfigItem<JobsWidgetOptions>(
             forContext,
             (configValue) => configValue as JobsWidgetOptions,
             (runtimeValue) => runtimeValue,
             JobsWidgetOptions.Auto,
-            "jobswidgedisplay"
+            "jobswidgetdisplay"
         ),
         ShowJson: CreateTypedConfigItem<boolean>(
             forContext,
