@@ -9,6 +9,8 @@ import Meta from "./components/core/Meta/Meta";
 import Locales from "./translations/Locales";
 import ConfigProvider from "./context/config/Provider";
 
+import icolibrary from "./components/utils/icolibrary";
+
 interface IProps {
     preferredLocales: readonly string[];
     translationFactory: ITranslationFactory;
@@ -60,6 +62,10 @@ const App = (props: IProps) => {
             }
         })();
     }, [props.preferredLocales, props.translationFactory]);
+
+    useEffect(() => {
+        icolibrary();
+    });
 
     return (
         <StrictMode>
