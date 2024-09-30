@@ -8,11 +8,11 @@ import {
 } from "@/components/ui/tooltip";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ChangeEventHandler, HTMLInputTypeAttribute } from "react";
+import { HTMLInputTypeAttribute, ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 interface IProps {
-    onChange?: ChangeEventHandler<HTMLInputElement>;
+    children: ReactNode;
     label: string;
     tooltip?: string;
     type?: HTMLInputTypeAttribute;
@@ -21,7 +21,7 @@ interface IProps {
 const InputGroup = (props: IProps) => {
     return (
         <>
-            <div className="px-4 inline-flex justify-between items-center min-w-fit rounded-s-md border border-e-0 text-sm">
+            <div className="px-4 inline-flex justify-between items-center min-w-fit rounded-s-md border text-sm">
                 <Label>
                     <FormattedMessage id={props.label} />
                 </Label>
@@ -43,7 +43,7 @@ const InputGroup = (props: IProps) => {
                     </div>
                 ) : null}
             </div>
-            <Input onChange={props.onChange} type={props.type} />
+            {props.children}
         </>
     );
 };

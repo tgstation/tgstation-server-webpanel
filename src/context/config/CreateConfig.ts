@@ -43,7 +43,7 @@ const CreateConfig = (forContext: boolean, darkOverride?: boolean) => {
                     return;
                 }
 
-                root.classList.add(theme);
+                root.classList.add(theme.toLowerCase());
             }
         ),
         GitHubToken: CreateStringConfigItem(forContext, "", "githubtoken"),

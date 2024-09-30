@@ -1,5 +1,6 @@
 import { Meta } from "@storybook/react";
 import InputGroup from "./InputGroup";
+import { Input } from "@/components/ui/input";
 
 const config: Meta<typeof InputGroup> = {
     component: InputGroup,
@@ -8,18 +9,24 @@ const config: Meta<typeof InputGroup> = {
 
 export default config;
 
-export const Test = () => (
+export const TextBoxTest = () => (
     <div className="grid grid-cols-2">
-        <InputGroup label="Test" />
+        <InputGroup label="Test">
+            <Input />
+        </InputGroup>
     </div>
 );
-export const Loading = () => (
+export const TextBoxLoading = () => (
     <div className="grid grid-cols-2">
-        <InputGroup label="loading.loading" />
+        <InputGroup label="loading.loading">
+            <Input />
+        </InputGroup>
     </div>
 );
-export const Tooltip = () => (
+export const TextBox = () => (
     <div className="grid grid-cols-2">
-        <InputGroup label="Test" tooltip="loading.loading" />
+        <InputGroup label="Test" tooltip="loading.loading">
+            <Input />
+        </InputGroup>
     </div>
 );
