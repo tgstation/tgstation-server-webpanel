@@ -26,3 +26,7 @@ dist-ssr
 .yarn/install-state.gz
 
 *storybook.log
+*.tsbuildinfo
+
+src/api/**
+

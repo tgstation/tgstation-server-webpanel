@@ -1,15 +1,13 @@
 import { StrictMode, useEffect, useState } from "react";
+import { IntlProvider } from "react-intl";
 
 import Loading from "./components/utils/Loading/Loading";
-
 import ITranslationFactory from "./translations/ITranslationFactory";
 import ITranslation from "./translations/ITranslation";
-import { IntlProvider } from "react-intl";
-import Meta from "./components/core/Meta/Meta";
 import Locales from "./translations/Locales";
 import ConfigProvider from "./context/config/Provider";
-
 import icolibrary from "./components/utils/icolibrary";
+import RelayEnvironment from "./components/core/RelayEnvironment/RelayEnvironment";
 
 interface IProps {
     preferredLocales: readonly string[];
@@ -76,7 +74,7 @@ const App = (props: IProps) => {
                         messages={translations.messages}
                         defaultLocale="en"
                     >
-                        <Meta />
+                        <RelayEnvironment />
                     </IntlProvider>
                 ) : (
                     <Loading />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import IConfigItem from "./IConfigItem";
 
 const RootConfigStorageKey = "config"; // legacy support

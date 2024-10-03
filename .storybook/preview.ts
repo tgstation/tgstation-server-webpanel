@@ -1,19 +1,20 @@
 import type { Preview } from "@storybook/react";
+
+import AddConfigDark from "./AddConfigDark";
 import AddIntlEn from "./AddIntlEn";
 
 import "../src/index.css";
-import AddConfigDark from "./AddConfigDark";
 
 const preview: Preview = {
     parameters: {
         controls: {
             matchers: {
                 color: /(background|color)$/i,
-                date: /Date$/i,
-            },
-        },
+                date: /Date$/i
+            }
+        }
     },
-    decorators: [AddIntlEn, AddConfigDark],
+    decorators: [AddIntlEn, AddConfigDark]
 };
 
 export default preview;

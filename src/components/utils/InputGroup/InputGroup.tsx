@@ -1,15 +1,10 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { HTMLInputTypeAttribute, ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
+
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Label } from "@/components/ui/label";
 
 interface IProps {
     children: ReactNode;
@@ -30,10 +25,7 @@ const InputGroup = (props: IProps) => {
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <FontAwesomeIcon
-                                        className="ml-4"
-                                        icon={faInfo}
-                                    />
+                                    <FontAwesomeIcon className="ml-4" icon={faInfo} />
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     <FormattedMessage id={props.tooltip} />

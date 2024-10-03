@@ -1,10 +1,12 @@
 import { Meta } from "@storybook/react";
+
 import InputGroup from "./InputGroup";
+
 import { Input } from "@/components/ui/input";
 
 const config: Meta<typeof InputGroup> = {
     component: InputGroup,
-    title: "Input Group",
+    title: "Input Group"
 };
 
 export default config;

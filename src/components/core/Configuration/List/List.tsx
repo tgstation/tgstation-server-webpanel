@@ -1,13 +1,15 @@
-import ConfigContext from "@/context/config/Context";
 import { useContext } from "react";
-import Item from "../Item/Item";
-import EnumDropdown from "@/components/utils/EnumDropdown/EnumDropdown";
-import Theme from "@/context/config/Theme";
-import { Input } from "@/components/ui/input";
-import { JobsWidgetOptions } from "@/context/config/CreateConfig";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
 import { FormattedMessage } from "react-intl";
+
+import Item from "../Item/Item";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import EnumDropdown from "@/components/utils/EnumDropdown/EnumDropdown";
+import ConfigContext from "@/context/config/Context";
+import { JobsWidgetOptions } from "@/context/config/CreateConfig";
+import Theme from "@/context/config/Theme";
 
 const List = () => {
     const config = useContext(ConfigContext);
@@ -22,44 +24,35 @@ const List = () => {
                 <Item
                     configItem={config.Theme}
                     input={(currentValue, setValue) => (
-                        <EnumDropdown
-                            enum={Theme}
-                            value={currentValue}
-                            onChange={setValue}
-                        />
+                        <EnumDropdown enum={Theme} value={currentValue} onChange={setValue} />
                     )}
                     onSave={onSave}
                 />
                 <Item
                     configItem={config.ApiPath}
-                    input={(currentValue) => <Input value={currentValue} />}
+                    input={currentValue => <Input value={currentValue} />}
                     onSave={onSave}
                 />
                 <Item
                     configItem={config.GitHubToken}
-                    input={(currentValue) => (
-                        <Input type="password" value={currentValue} />
-                    )}
+                    input={currentValue => <Input type="password" value={currentValue} />}
                     onSave={onSave}
                 />
                 <Item
                     configItem={config.JobsWidgetDisplay}
-                    input={(currentValue) => (
-                        <EnumDropdown
-                            enum={JobsWidgetOptions}
-                            value={currentValue}
-                        />
+                    input={currentValue => (
+                        <EnumDropdown enum={JobsWidgetOptions} value={currentValue} />
                     )}
                     onSave={onSave}
                 />
                 <Item
                     configItem={config.ManualPR}
-                    input={(currentValue) => <Switch checked={currentValue} />}
+                    input={currentValue => <Switch checked={currentValue} />}
                     onSave={onSave}
                 />
                 <Item
                     configItem={config.ShowJson}
-                    input={(currentValue) => <Switch checked={currentValue} />}
+                    input={currentValue => <Switch checked={currentValue} />}
                     onSave={onSave}
                 />
             </div>
@@ -67,9 +60,8 @@ const List = () => {
                 <Button
                     className="col-start-2"
                     onClick={() => {
-                        saveCallbacks.forEach((callback) => callback());
-                    }}
-                >
+                        saveCallbacks.forEach(callback => callback());
+                    }}>
                     <FormattedMessage id="generic.save" />
                 </Button>
             </div>

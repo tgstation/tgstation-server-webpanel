@@ -1,6 +1,7 @@
+import { ReactNode, useEffect, useState } from "react";
+
 import InputGroup from "@/components/utils/InputGroup/InputGroup";
 import IConfigItem from "@/context/config/IConfigItem";
-import { ReactNode, useEffect, useState } from "react";
 
 interface IProps<TConfig> {
     configItem: IConfigItem<TConfig>;
@@ -23,8 +24,7 @@ const Item = <TConfig,>(props: IProps<TConfig>) => {
     return (
         <InputGroup
             label={props.configItem.localizationId}
-            tooltip={`${props.configItem.localizationId}.desc`}
-        >
+            tooltip={`${props.configItem.localizationId}.desc`}>
             {props.input(state, setState)}
         </InputGroup>
     );

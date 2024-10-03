@@ -1,3 +1,6 @@
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import { FormattedMessage } from "react-intl";
+
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -5,8 +8,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { FormattedMessage } from "react-intl";
 
 export interface IProps<TEnum> {
     enum: Record<string, string>;

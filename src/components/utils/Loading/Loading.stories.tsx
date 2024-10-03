@@ -1,4 +1,5 @@
 import { Meta } from "@storybook/react";
+
 import Loading from "./Loading";
 
 const config: Meta<typeof Loading> = {
