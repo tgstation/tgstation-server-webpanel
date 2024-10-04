@@ -161,6 +161,11 @@ export default function TestMergeRow({
                             <FormattedMessage id="view.instance.repo.testmergelabel" />
                         </Badge>
                     ) : null}
+                    {pr.conflictlabel ? (
+                        <Badge pill className="text-white text-capitalize mr-2" variant="danger">
+                            <FormattedMessage id="view.instance.repo.conflictlabel" />
+                        </Badge>
+                    ) : null}
                 </td>
                 <td>
                     <a href={pr.link} target="_blank" rel="noreferrer">

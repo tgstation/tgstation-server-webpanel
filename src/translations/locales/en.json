@@ -416,6 +416,7 @@
     "view.instance.repo.manual.desc": "Use this box to manually test merge a pull/merge request by entering its number and clicking \"Add Test Merge\"",
     "view.instance.repo.addmanual": "Add Test Merge",
     "view.instance.repo.testmergelabel": "Labelled",
+    "view.instance.repo.conflictlabel": "Merge Conflict",
     "view.instance.repo.norepoinfo": "You lack the permission to display information about the repository",
     "view.instance.repo.delete.title": "Delete Repository",
     "view.instance.repo.delete.desc": "This will delete the local copy of the repository. Instance settings, code modifications, event scripts and static files will be preserved.",
