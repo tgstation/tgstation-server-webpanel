@@ -7,5 +7,12 @@
     "**/__mocks__/**",
     "**/__generated__/**"
   ],
-  "eagerEsModules": true
+  "eagerEsModules": true,
+  "customScalarTypes": {
+    "DateTime": "string",
+    "Jwt": "string",
+    "Semver": "string",
+    "UnsignedInt": "number",
+    "URL": "string"
+  }
 }
