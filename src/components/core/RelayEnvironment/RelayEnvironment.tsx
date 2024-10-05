@@ -7,7 +7,7 @@ import Layout from "../Layout/Layout";
 import Pkg from "@/../package.json";
 import ConfigContext from "@/context/config/Context";
 import SessionProvider from "@/context/session/Provider";
-import CreateRelayEnvironment from "@/utils/CreateRelayEnvironment";
+import CreateRelayEnvironment from "@/lib/CreateRelayEnvironment";
 
 const RelayEnvironment = () => {
     const version = Pkg.version;
@@ -20,15 +20,16 @@ const RelayEnvironment = () => {
 
     const config = useContext(ConfigContext);
 
-    const { relayEnviroment, setBearer } = useMemo(
+    const { relayEnviroment, setAuthorizationHeader } = useMemo(
         () => CreateRelayEnvironment(config.ApiPath.value),
         [config.ApiPath.value]
     );
 
     return (
         <RelayEnvironmentProvider environment={relayEnviroment}>
-            <SessionProvider setBearer={setBearer}>
-                <Layout />
+            <SessionProvider
+                setBearer={bearer => setAuthorizationHeader(`Bearer ${bearer}`, false)}>
+                <Layout setTemporaryHeader={header => setAuthorizationHeader(header, true)} />
             </SessionProvider>
         </RelayEnvironmentProvider>
     );

@@ -6,7 +6,11 @@ import OAuthOptions from "./OAuthOptions/OAuthOptions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
 
-const Login = () => {
+interface IProps {
+    setTemporaryHeader: (headerValue: string) => void;
+}
+
+const Login = (props: IProps) => {
     return (
         <Card>
             <CardHeader>

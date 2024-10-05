@@ -22,13 +22,16 @@ const CreateRelayEnvironment = (
     serverUrl: string
 ): {
     relayEnviroment: Environment;
-    setBearer: (bearer: string | null) => void;
+    setAuthorizationHeader: (headerValue: string | null, temporary: boolean) => void;
 } => {
     const graphQLEndpoint = `${serverUrl}/api/graphql`;
 
-    let currentBearer: string | null = null;
+    let currentAuthHeader: string | null = null;
+    let temporaryAuthHeader: string | null = null;
     const createAuthHeader = () => {
-        return currentBearer ? `Bearer ${currentBearer}` : "";
+        const header = temporaryAuthHeader ?? currentAuthHeader;
+        temporaryAuthHeader = null;
+        return header ?? "";
     };
 
     const fetchFn: FetchFunction = async (request, variables) => {
@@ -38,7 +41,7 @@ const CreateRelayEnvironment = (
                 Accept: "application/graphql-response+json; charset=utf-8, application/json; charset=utf-8",
                 "Content-Type": "application/json",
                 Api: `Tgstation.Server.Api/${Pkg.tgs_api_version}`,
-                Authorization: request.name === "Login" ? "" : createAuthHeader() // login should always be unauthed
+                Authorization: createAuthHeader()
             },
             body: JSON.stringify({
                 query: request.text, // <-- The GraphQL document composed by Relay
@@ -109,7 +112,15 @@ const CreateRelayEnvironment = (
             network: Network.create(fetchFn, subscribeFn),
             store: new Store(new RecordSource())
         }),
-        setBearer: newBearer => (currentBearer = newBearer)
+        setAuthorizationHeader: (headerValue, temporary) => {
+            if (temporary) {
+                if (temporaryAuthHeader)
+                    throw new Error("Temporary auth header set multiple times without use!");
+                temporaryAuthHeader = headerValue;
+            } else {
+                currentAuthHeader = headerValue;
+            }
+        }
     };
 };
 

@@ -5,11 +5,15 @@ import Router from "../Router/Router";
 
 import "./Layout.css";
 
-const Layout = () => {
+interface IProps {
+    setTemporaryHeader: (headerValue: string) => void;
+}
+
+const Layout = (props: IProps) => {
     return (
         <div className="core-Layout">
             <Navbar />
-            <Router />
+            <Router setTemporaryHeader={props.setTemporaryHeader} />
             <ReportIssue />
             <Logo />
         </div>
