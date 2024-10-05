@@ -30,3 +30,4 @@ dist-ssr
 
 src/api/**
 
+**/__generated__/**
