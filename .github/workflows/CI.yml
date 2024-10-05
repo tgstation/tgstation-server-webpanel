@@ -17,7 +17,9 @@ jobs:
         steps:
               # expect used for unbuffer
             - name: Install Native Dependencies
-              run: sudo apt-get expect-dev
+              run: |
+                sudo apt-get update
+                sudo apt-get install expect
 
             - name: Checkout
               uses: actions/checkout@v4
