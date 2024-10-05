@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 
 import App from "./App.tsx";
 import "./index.css";
-import TranslationFactory from "./translations/TranslationFactory.ts";
+import TranslationFactory from "./lib/translations/TranslationFactory.ts";
 
 import Pkg from "@/../package.json";
 

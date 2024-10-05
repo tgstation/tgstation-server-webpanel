@@ -1,10 +1,12 @@
+import { Suspense } from "react";
 import { FormattedMessage } from "react-intl";
 
+import OAuthOptions from "./OAuthOptions/OAuthOptions";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Loading from "@/components/utils/Loading/Loading";
 
 const Login = () => {
-    const anyOauth = true;
-
     return (
         <Card>
             <CardHeader>
@@ -23,21 +25,9 @@ const Login = () => {
                         <p>Card Content</p>
                     </CardContent>
                 </Card>
-                {anyOauth ? (
-                    <>
-                        <hr className="my-4" />
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>
-                                    <FormattedMessage id="login.type.oauth" />
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p>Card Content</p>
-                            </CardContent>
-                        </Card>
-                    </>
-                ) : null}
+                <Suspense fallback={<Loading />}>
+                    <OAuthOptions />
+                </Suspense>
             </CardContent>
         </Card>
     );

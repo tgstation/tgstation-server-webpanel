@@ -1,9 +1,9 @@
 import { Meta, StoryObj } from "@storybook/react";
 
-import EnumDropdown from "./Login";
-const config: Meta<typeof EnumDropdown> = {
-    component: EnumDropdown,
-    title: "Login"
+import Login from "./Login";
+const config: Meta<typeof Login> = {
+    component: Login,
+    title: "Routed/Login"
 };
 
 export default config;

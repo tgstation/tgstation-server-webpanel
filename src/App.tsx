@@ -1,13 +1,13 @@
 import { StrictMode, useEffect, useState } from "react";
 import { IntlProvider } from "react-intl";
 
-import Loading from "./components/utils/Loading/Loading";
-import ITranslationFactory from "./translations/ITranslationFactory";
-import ITranslation from "./translations/ITranslation";
-import Locales from "./translations/Locales";
-import ConfigProvider from "./context/config/Provider";
-import icolibrary from "./components/utils/icolibrary";
 import RelayEnvironment from "./components/core/RelayEnvironment/RelayEnvironment";
+import icolibrary from "./components/utils/icolibrary";
+import Loading from "./components/utils/Loading/Loading";
+import ConfigProvider from "./context/config/Provider";
+import ITranslation from "./lib/translations/ITranslation";
+import ITranslationFactory from "./lib/translations/ITranslationFactory";
+import Locales from "./lib/translations/Locales";
 
 interface IProps {
     preferredLocales: readonly string[];
@@ -23,10 +23,7 @@ const App = (props: IProps) => {
                 let loadedTranslation: ITranslation | null = null;
                 for (const locale of props.preferredLocales) {
                     try {
-                        loadedTranslation =
-                            await props.translationFactory.loadTranslation(
-                                locale
-                            );
+                        loadedTranslation = await props.translationFactory.loadTranslation(locale);
                         if (loadedTranslation) {
                             setTranslations(loadedTranslation);
                             break;
@@ -46,10 +43,9 @@ const App = (props: IProps) => {
                         )}. Falling back to ${FallbackLocale}.`
                     );
 
-                    loadedTranslation =
-                        await props.translationFactory.loadTranslation(
-                            FallbackLocale
-                        );
+                    loadedTranslation = await props.translationFactory.loadTranslation(
+                        FallbackLocale
+                    );
                 }
             } catch (error) {
                 alert(
@@ -72,8 +68,7 @@ const App = (props: IProps) => {
                     <IntlProvider
                         locale={translations.locale}
                         messages={translations.messages}
-                        defaultLocale="en"
-                    >
+                        defaultLocale="en">
                         <RelayEnvironment />
                     </IntlProvider>
                 ) : (
