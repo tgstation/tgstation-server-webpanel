@@ -11,16 +11,13 @@ class TranslationFactory implements ITranslationFactory {
         //fancy type annotations but its just load the json file in this variable as a map of strings to strings
         let localization: { [key: string]: string } | null;
         try {
-            localization = (await import(`./locales/${locale}.json`)) as {
-                [key: string]: string;
-            };
+            localization = (await import(`./locales/${locale}.json`)).default;
         } catch {
             localization = null;
         }
 
         if (!localization) {
-            const shortHandedLocale =
-                TranslationFactory.getShortHandedLocale(locale);
+            const shortHandedLocale = TranslationFactory.getShortHandedLocale(locale);
             if (shortHandedLocale === locale) {
                 throw new Error("Invalid locale: " + locale);
             }
@@ -31,11 +28,7 @@ class TranslationFactory implements ITranslationFactory {
         try {
             model = new Translation(locale, localization);
         } catch (e) {
-            throw Error(
-                `Error loading localization for locale '${locale}': ${JSON.stringify(
-                    e
-                )}`
-            );
+            throw Error(`Error loading localization for locale '${locale}': ${JSON.stringify(e)}`);
         }
 
         return model;
