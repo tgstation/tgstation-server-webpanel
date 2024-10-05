@@ -10,6 +10,11 @@ import {
     Store,
     SubscribeFunction
 } from "relay-runtime";
+import {
+    PayloadData,
+    PayloadError,
+    PayloadExtensions
+} from "relay-runtime/lib/network/RelayNetworkTypes";
 
 import Pkg from "@/../package.json";
 
@@ -63,11 +68,14 @@ const CreateRelayEnvironment = (
                 error: (error: unknown) => relaySink.error(error),
                 complete: () => relaySink.complete(),
                 next: (value: ExecutionResult<Data, Extensions>) => {
-                    return {
-                        data: value.data,
-                        errors: value.errors,
-                        extensions: value.extensions
-                    };
+                    const data = value.data as PayloadData;
+                    const errors = value.errors?.map(graphQLError => graphQLError as PayloadError);
+                    const extensions = value.extensions as PayloadExtensions;
+                    relaySink.next({
+                        data,
+                        errors,
+                        extensions
+                    });
                 }
             };
         };
