@@ -31,3 +31,5 @@ dist-ssr
 src/api/**
 
 **/__generated__/**
+
+.env.development
