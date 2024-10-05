@@ -6,6 +6,7 @@ import Pkg from "../../../../package.json";
 import Layout from "../Layout/Layout";
 
 import ConfigContext from "@/context/config/Context";
+import SessionProvider from "@/context/session/Provider";
 import CreateRelayEnvironment from "@/utils/CreateRelayEnvironment";
 
 const RelayEnvironment = () => {
@@ -26,7 +27,9 @@ const RelayEnvironment = () => {
 
     return (
         <RelayEnvironmentProvider environment={relayEnviroment}>
-            <Layout setBearer={setBearer} />
+            <SessionProvider setBearer={setBearer}>
+                <Layout />
+            </SessionProvider>
         </RelayEnvironmentProvider>
     );
 };
