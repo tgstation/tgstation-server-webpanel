@@ -11,7 +11,7 @@ interface IProps {
 const SessionProvider = (props: IProps) => {
     const [session, setSession] = useState<ISession | null>(null);
     const sessionContext = {
-        session,
+        currentSession: session,
         setSession: (session: ISession) => {
             props.setBearer(session.bearer);
             setSession(session);

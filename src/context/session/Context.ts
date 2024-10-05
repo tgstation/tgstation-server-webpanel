@@ -3,12 +3,12 @@ import { createContext } from "react";
 import ISession from "./Session";
 
 interface ISessionContext {
-    session: ISession | null;
+    currentSession: ISession | null;
     setSession: (credentials: ISession) => void;
 }
 
 const SessionContext = createContext<ISessionContext>({
-    session: null,
+    currentSession: null,
     setSession: () => {}
 });
 export default SessionContext;
