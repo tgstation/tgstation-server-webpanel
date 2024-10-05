@@ -4,7 +4,7 @@ import List from "./List";
 
 const config: Meta<typeof List> = {
     component: List,
-    title: "Configuration List"
+    title: "Routed/Configuration/List"
 };
 
 export default config;

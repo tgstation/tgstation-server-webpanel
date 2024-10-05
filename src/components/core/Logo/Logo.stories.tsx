@@ -4,7 +4,7 @@ import Logo from "./Logo";
 
 const config: Meta<typeof Logo> = {
     component: Logo,
-    title: "Bottom Right Logo"
+    title: "Core/Logo"
 };
 
 export default config;

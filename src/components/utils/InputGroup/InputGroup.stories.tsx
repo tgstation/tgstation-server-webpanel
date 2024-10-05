@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 
 const config: Meta<typeof InputGroup> = {
     component: InputGroup,
-    title: "Input Group"
+    title: "Utils/Input Group"
 };
 
 export default config;

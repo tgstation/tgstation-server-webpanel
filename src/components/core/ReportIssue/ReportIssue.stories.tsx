@@ -4,7 +4,7 @@ import ReportIssue from "./ReportIssue";
 
 const config: Meta<typeof ReportIssue> = {
     component: ReportIssue,
-    title: "Report Issue"
+    title: "Core/Report Issue"
 };
 
 export default config;

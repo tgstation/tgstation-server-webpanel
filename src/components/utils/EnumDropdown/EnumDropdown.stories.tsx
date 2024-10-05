@@ -4,7 +4,7 @@ import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 import EnumDropdown from "./EnumDropdown";
 const config: Meta<typeof EnumDropdown> = {
     component: EnumDropdown,
-    title: "Enum Dropdown",
+    title: "Utils/Enum Dropdown",
     args: {
         onChange: fn()
     }
