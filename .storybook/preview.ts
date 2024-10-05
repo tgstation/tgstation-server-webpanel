@@ -3,7 +3,7 @@ import type { Preview } from "@storybook/react";
 import AddConfigDark from "./AddConfigDark";
 import AddIntlEn from "./AddIntlEn";
 
-import "../src/index.css";
+import "@/index.css";
 
 const preview: Preview = {
     parameters: {

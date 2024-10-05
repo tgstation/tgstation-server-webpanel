@@ -3,7 +3,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import TranslationFactory from "./translations/TranslationFactory.ts";
-import Pkg from "./../package.json";
+
+import Pkg from "@/../package.json";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 if ((window as any).loadedChannelFromWebpack && import.meta.env.PROD) {
@@ -28,17 +29,11 @@ try {
 function mountApp() {
     const root = createRoot(document.getElementById("root")!);
     root.render(
-        <App
-            preferredLocales={navigator.languages}
-            translationFactory={new TranslationFactory()}
-        />
+        <App preferredLocales={navigator.languages} translationFactory={new TranslationFactory()} />
     );
 }
 
 window.addEventListener("DOMContentLoaded", mountApp);
-if (
-    document.readyState === "interactive" ||
-    document.readyState === "complete"
-) {
+if (document.readyState === "interactive" || document.readyState === "complete") {
     mountApp();
 }

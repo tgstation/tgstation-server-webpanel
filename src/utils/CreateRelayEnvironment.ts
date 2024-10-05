@@ -1,4 +1,3 @@
-
 import { ExecutionResult } from "graphql";
 import { createClient, Sink } from "graphql-sse";
 import {
@@ -12,7 +11,7 @@ import {
     SubscribeFunction
 } from "relay-runtime";
 
-import Pkg from "../../package.json";
+import Pkg from "@/../package.json";
 
 const CreateRelayEnvironment = (
     serverUrl: string

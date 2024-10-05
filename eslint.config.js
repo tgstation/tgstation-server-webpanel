@@ -32,7 +32,9 @@ export default tseslint.config(
         {
             'newlines-between': "always"
         }
-      ]
+      ],
+      'import/no-relative-parent-imports': "error",
+      'import/no-useless-path-segments': "error"
     },
   },
 )

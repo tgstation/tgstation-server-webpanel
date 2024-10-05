@@ -2,9 +2,9 @@ import { useContext, useEffect, useMemo } from "react";
 import { useIntl } from "react-intl";
 import { RelayEnvironmentProvider } from "react-relay";
 
-import Pkg from "../../../../package.json";
 import Layout from "../Layout/Layout";
 
+import Pkg from "@/../package.json";
 import ConfigContext from "@/context/config/Context";
 import SessionProvider from "@/context/session/Provider";
 import CreateRelayEnvironment from "@/utils/CreateRelayEnvironment";
