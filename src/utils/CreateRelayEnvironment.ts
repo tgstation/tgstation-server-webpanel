@@ -46,7 +46,15 @@ const CreateRelayEnvironment = (
             })
         });
 
-        return await resp.json();
+        const result = await resp.json();
+
+        if (import.meta.env.VITE_RELAY_DELAY_SECONDS) {
+            await new Promise<void>(resolve => {
+                setTimeout(() => resolve(), import.meta.env.VITE_RELAY_DELAY_SECONDS * 1000);
+            });
+        }
+
+        return result;
     };
 
     // We only want to setup subscriptions if we are on the client.
