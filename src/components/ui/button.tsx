@@ -4,7 +4,7 @@ import * as React from "react";
 
 import buttonVariants from "./buttonVariants";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/shadcn/utils";
 export interface ButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement>,
         VariantProps<typeof buttonVariants> {
