@@ -6,7 +6,7 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuTrigger,
+    DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
 export interface IProps<TEnum> {
@@ -21,16 +21,12 @@ const EnumDropdown = <TEnum extends string>(props: IProps<TEnum>) => {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" data-testid="dropdown-button">
-                    {props.noIntl ? (
-                        props.value
-                    ) : (
-                        <FormattedMessage id={props.value} />
-                    )}
+                    {props.noIntl ? props.value : <FormattedMessage id={props.value} />}
                     <CaretSortIcon />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent data-testid="dropdown-content">
-                {Object.keys(props.enum).map((key) => {
+                {Object.keys(props.enum).map(key => {
                     return (
                         <DropdownMenuItem
                             key={key}
@@ -40,8 +36,7 @@ const EnumDropdown = <TEnum extends string>(props: IProps<TEnum>) => {
                                     props.onChange(newValue);
                                 }
                             }}
-                            data-testid={`dropdown-item-${key}`}
-                        >
+                            data-testid={`dropdown-item-${key}`}>
                             {props.noIntl ? (
                                 props.enum[key]
                             ) : (
