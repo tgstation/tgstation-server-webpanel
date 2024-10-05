@@ -22,7 +22,7 @@ const RelayEnvironment = () => {
 
     const { relayEnviroment, setBearer } = useMemo(
         () => CreateRelayEnvironment(config.ApiPath.value),
-        [config.ApiPath]
+        [config.ApiPath.value]
     );
 
     return (
