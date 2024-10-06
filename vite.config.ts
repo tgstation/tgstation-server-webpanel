@@ -1,6 +1,7 @@
 import path from "path";
 
 import react from "@vitejs/plugin-react";
+import removeTestIdAttribute from "rollup-plugin-jsx-remove-attributes";
 import { defineConfig } from "vite";
 import relay from "vite-plugin-relay";
 
@@ -11,7 +12,14 @@ export default defineConfig({
             external: ["src/main.tsx"]
         }
     },
-    plugins: [relay, react()],
+    plugins: [
+        relay,
+        react(),
+        removeTestIdAttribute({
+            attributes: ["data-testid"], // remove test attributes from jsx
+            usage: "vite"
+        })
+    ],
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src")

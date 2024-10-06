@@ -88,6 +88,7 @@
     "postcss": "^8.4.47",
     "relay-compiler": "^18.1.0",
     "relay-test-utils": "^18.1.0",
+    "rollup-plugin-jsx-remove-attributes": "^2.0.3",
     "storybook": "^8.3.5",
     "tailwindcss": "^3.4.13",
     "type-fest": "^4.26.1",

@@ -7186,6 +7186,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rollup-plugin-jsx-remove-attributes@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "rollup-plugin-jsx-remove-attributes@npm:2.0.3"
+  peerDependencies:
+    "@rollup/pluginutils": 5.1 - 5.2
+    escodegen: 2.1 - 2.2
+    estree-walker: 3.x - 4
+    vite: 5.2 - 6
+  checksum: 10c0/b83593646848f4a1f614a8f6ddcc155728cd3d90d55c915708ac6a5e006e4cbd12341a5584f01e6719fc186323268210eaabf5c57ce4abb0fbe8374ec772fc06
+  languageName: node
+  linkType: hard
+
 "rollup@npm:^4.20.0":
   version: 4.22.4
   resolution: "rollup@npm:4.22.4"
@@ -7833,6 +7845,7 @@ __metadata:
     react-relay: "npm:^18.1.0"
     relay-compiler: "npm:^18.1.0"
     relay-test-utils: "npm:^18.1.0"
+    rollup-plugin-jsx-remove-attributes: "npm:^2.0.3"
     storybook: "npm:^8.3.5"
     tailwind-merge: "npm:^2.5.2"
     tailwindcss: "npm:^3.4.13"
