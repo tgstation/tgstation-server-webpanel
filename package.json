@@ -70,7 +70,7 @@
         "@babel/preset-env": "^7.25.3",
         "@babel/preset-react": "^7.25.7",
         "@babel/preset-typescript": "^7.25.7",
-        "@octokit/types": "^13.5.0",
+        "@octokit/types": "^13.6.1",
         "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
         "@types/eslint": "^8",
         "@types/jquery": "^3",
