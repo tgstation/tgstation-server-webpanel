@@ -2372,6 +2372,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/types@npm:^13.6.1":
+  version: 13.6.1
+  resolution: "@octokit/types@npm:13.6.1"
+  dependencies:
+    "@octokit/openapi-types": "npm:^22.2.0"
+  checksum: 10/9ea6189839439e1085799cc16ee699292538d9c14dd15e9e45462377287f863b6be93455d2ad9acffd561018a0c35adbb9d1437e92075c9058d6c6d69ff2f503
+  languageName: node
+  linkType: hard
+
 "@pkgr/core@npm:^0.1.0":
   version: 0.1.1
   resolution: "@pkgr/core@npm:0.1.1"
@@ -11260,7 +11269,7 @@ __metadata:
     "@octokit/plugin-throttling": "npm:^9.3.2"
     "@octokit/request-error": "npm:^6.1.4"
     "@octokit/rest": "npm:^21.0.2"
-    "@octokit/types": "npm:^13.5.0"
+    "@octokit/types": "npm:^13.6.1"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.5.15"
     "@types/eslint": "npm:^8"
     "@types/jquery": "npm:^3"
