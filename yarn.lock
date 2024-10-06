@@ -2468,13 +2468,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sindresorhus/is@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "@sindresorhus/is@npm:4.6.0"
-  checksum: 10/e7f36ed72abfcd5e0355f7423a72918b9748bb1ef370a59f3e5ad8d40b728b85d63b272f65f63eec1faf417cda89dcb0aeebe94015647b6054659c1442fe5ce0
-  languageName: node
-  linkType: hard
-
 "@sindresorhus/merge-streams@npm:^2.1.0":
   version: 2.3.0
   resolution: "@sindresorhus/merge-streams@npm:2.3.0"
@@ -4228,13 +4221,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"char-regex@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "char-regex@npm:1.0.2"
-  checksum: 10/1ec5c2906adb9f84e7f6732a40baef05d7c85401b82ffcbc44b85fbd0f7a2b0c2a96f2eb9cf55cae3235dc12d4023003b88f09bcae8be9ae894f52ed746f4d48
-  languageName: node
-  linkType: hard
-
 "character-entities-legacy@npm:^1.0.0":
   version: 1.1.4
   resolution: "character-entities-legacy@npm:1.1.4"
@@ -4524,6 +4510,13 @@ __metadata:
   version: 2.0.0
   resolution: "connect-history-api-fallback@npm:2.0.0"
   checksum: 10/3b26bf4041fdb33deacdcb3af9ae11e9a0b413fb14c95844d74a460b55e407625b364955dcf965c654605cde9d24ad5dad423c489aa430825aab2035859aba0c
+  languageName: node
+  linkType: hard
+
+"consola@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "consola@npm:3.2.3"
+  checksum: 10/02972dcb048c337357a3628438e5976b8e45bcec22fdcfbe9cd17622992953c4d695d5152f141464a02deac769b1d23028e8ac87f56483838df7a6bbf8e0f5a2
   languageName: node
   linkType: hard
 
@@ -5259,13 +5252,6 @@ __metadata:
   version: 8.0.0
   resolution: "emoji-regex@npm:8.0.0"
   checksum: 10/c72d67a6821be15ec11997877c437491c313d924306b8da5d87d2a2bcc2cec9903cb5b04ee1a088460501d8e5b44f10df82fdc93c444101a7610b80c8b6938e1
-  languageName: node
-  linkType: hard
-
-"emojilib@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "emojilib@npm:2.4.0"
-  checksum: 10/bef767eca49acaa881388d91bee6936ea57ae367d603d5227ff0a9da3e2d1e774a61c447e5f2f4901797d023c4b5239bc208285b6172a880d3655024a0f44980
   languageName: node
   linkType: hard
 
@@ -8423,18 +8409,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-emoji@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "node-emoji@npm:2.1.3"
-  dependencies:
-    "@sindresorhus/is": "npm:^4.6.0"
-    char-regex: "npm:^1.0.2"
-    emojilib: "npm:^2.4.0"
-    skin-tone: "npm:^2.0.0"
-  checksum: 10/e9cff16f557972bc45040c26cb686961935c582af612bd41446f0094834088c1cdf7d4370a39ce5d42b71c1352a35b8d8a7a2fec53922b51abf54f36e56cc614
-  languageName: node
-  linkType: hard
-
 "node-fetch-h2@npm:^2.3.0":
   version: 2.3.0
   resolution: "node-fetch-h2@npm:2.3.0"
@@ -10728,15 +10702,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"skin-tone@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "skin-tone@npm:2.0.0"
-  dependencies:
-    unicode-emoji-modifier-base: "npm:^1.0.0"
-  checksum: 10/19de157586b8019cacc55eb25d9d640f00fc02415761f3e41a4527142970fd4e7f6af0333bc90e879858766c20a976107bb386ffd4c812289c01d51f2c8d182c
-  languageName: node
-  linkType: hard
-
 "slash@npm:^3.0.0":
   version: 3.0.0
   resolution: "slash@npm:3.0.0"
@@ -11138,18 +11103,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-typescript-api@npm:^13.0.21":
-  version: 13.0.21
-  resolution: "swagger-typescript-api@npm:13.0.21"
+"swagger-typescript-api@npm:^13.0.22":
+  version: 13.0.22
+  resolution: "swagger-typescript-api@npm:13.0.22"
   dependencies:
     "@types/swagger-schema-official": "npm:^2.0.25"
+    consola: "npm:^3.2.3"
     cosmiconfig: "npm:^9.0.0"
     didyoumean: "npm:^1.2.2"
     eta: "npm:^2.2.0"
     js-yaml: "npm:^4.1.0"
     lodash: "npm:^4.17.21"
     nanoid: "npm:^3.3.7"
-    node-emoji: "npm:^2.1.3"
     prettier: "npm:~3.3.3"
     swagger-schema-official: "npm:2.0.0-bab6bed"
     swagger2openapi: "npm:^7.0.8"
@@ -11157,7 +11122,7 @@ __metadata:
   bin:
     sta: ./dist/cli.js
     swagger-typescript-api: ./dist/cli.js
-  checksum: 10/1f9df718a77d3e46844de068439d0fbf4bb83255e185ad264f7d46bf673172ad7a86923010651d235498a5e66f2db16b9f134b4958f300dc6fa33c8403ee5b3a
+  checksum: 10/a26f0077d72cce00ce2f911a69c77962eb24f301cafb281893e938d07b941e57ffa635006fc9d2acad0813ecf5cdd8d8e9af5ea382b7b17d9357aeb96e529e82
   languageName: node
   linkType: hard
 
@@ -11348,7 +11313,7 @@ __metadata:
     source-map-loader: "npm:^5.0.0"
     stream-http: "npm:^3.2.0"
     svg-loader: "npm:^0.0.2"
-    swagger-typescript-api: "npm:^13.0.21"
+    swagger-typescript-api: "npm:^13.0.22"
     terser-webpack-plugin: "npm:^5.3.10"
     tiny-typed-emitter: "npm:^2.1.0"
     typescript: "npm:^5.5.4"
@@ -11658,13 +11623,6 @@ __metadata:
   version: 2.0.0
   resolution: "unicode-canonical-property-names-ecmascript@npm:2.0.0"
   checksum: 10/39be078afd014c14dcd957a7a46a60061bc37c4508ba146517f85f60361acf4c7539552645ece25de840e17e293baa5556268d091ca6762747fdd0c705001a45
-  languageName: node
-  linkType: hard
-
-"unicode-emoji-modifier-base@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "unicode-emoji-modifier-base@npm:1.0.0"
-  checksum: 10/6e1521d35fa69493207eb8b41f8edb95985d8b3faf07c01d820a1830b5e8403e20002563e2f84683e8e962a49beccae789f0879356bf92a4ec7a4dd8e2d16fdb
   languageName: node
   linkType: hard
 
