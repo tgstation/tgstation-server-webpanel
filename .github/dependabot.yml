@@ -1,13 +1,19 @@
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 version: 2
 updates:
-    - package-ecosystem: nuget
+    - package-ecosystem: npm
       directory: /
       schedule:
           interval: daily
       open-pull-requests-limit: 100
     - package-ecosystem: github-actions
       directory: /
+      schedule:
+          interval: daily
+      open-pull-requests-limit: 100
+    - package-ecosystem: npm
+      directory: /
+      target-branch: graphql
       schedule:
           interval: daily
       open-pull-requests-limit: 100
