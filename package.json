@@ -32,7 +32,7 @@
         "@mapbox/react-click-to-select": "^2.2.1",
         "@microsoft/signalr": "^8.0.7",
         "@octokit/core": "^6.1.2",
-        "@octokit/plugin-paginate-rest": "^11.3.3",
+        "@octokit/plugin-paginate-rest": "^11.3.5",
         "@octokit/plugin-retry": "^7.1.2",
         "@octokit/plugin-throttling": "^9.3.2",
         "@octokit/request-error": "^6.1.4",
