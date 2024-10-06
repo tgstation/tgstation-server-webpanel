@@ -40,15 +40,20 @@ jobs:
 
             - name: Install Yarn Dependencies
               run: yarn install --immutable
-#              run: | Temporarily disabled until storybook updates eslint
-#                  unbuffer yarn install --immutable | tee yarn_output.log
-#                  if cat yarn_output.log | grep YN0060; then
-#                    echo "Detected incompatible peer dependencies!"
-#                    exit 1
-#                  fi
+              run: |
+                  unbuffer yarn install --immutable | tee yarn_output.log
+                  if cat yarn_output.log | grep YN0060; then
+                    echo "Detected incompatible peer dependencies!"
+                    exit 1
+                  fi
 
             - name: Compile
-              run: yarn build
+              run:
+                unbuffer yarn build --immutable | tee yarn_output.log
+                if cat yarn_output.log | grep build.chunkSizeWarningLimit; then
+                  echo "Detected chunk size warning peer dependencies!"
+                  exit 1
+                fi
 
     lint:
         name: Run Linter
