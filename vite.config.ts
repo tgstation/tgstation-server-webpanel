@@ -9,8 +9,9 @@ import relay from "vite-plugin-relay";
 export default defineConfig({
     build: {
         rollupOptions: {
-            external: ["src/main.tsx"]
-        }
+            input: ["index.html", "src/main.tsx"]
+        },
+        manifest: "webpanelmanifest.json"
     },
     plugins: [
         relay,

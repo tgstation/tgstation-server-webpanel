@@ -1,5 +1,3 @@
-const devImport = import("./main.tsx");
-
 try {
     window.publicPath = import.meta.env.VITE_PUBLIC_PATH;
     function loadChannel(channel) {
@@ -12,22 +10,16 @@ try {
         }
 
         try {
-            if (channel === "webpack") {
-                channel = publicPath;
-                window.loadedChannelFromWebpack = true;
-            }
-
             if (!channel.endsWith("/")) {
                 channel = channel + "/";
             }
 
             fetch(channel + "webpanelmanifest.json").then(e => {
                 e.json().then(data => {
-                    for (const entry of data.entries) {
-                        const scripttag = document.createElement("script");
-                        scripttag.src = channel + entry;
-                        document.body.append(scripttag);
-                    }
+                    const entry = data["src/main.tsx"].file;
+                    const scripttag = document.createElement("script");
+                    scripttag.src = channel + entry;
+                    document.body.append(scripttag);
                 }).catch(handler)
             }).catch(handler);
         } catch (e) {
@@ -36,7 +28,8 @@ try {
     }
 
     if(import.meta.env.VITE_DEV_MODE == "true") {
-        devImport.then(module => module());
+        const directImport = import("./main.tsx");
+        directImport.then(module => module());
     } else {
         fetch("channel.json", {
             headers: {
@@ -62,7 +55,7 @@ try {
                 loadChannel(channel.channel)
             }).catch((e) => {
                 if (confirm("An error has occured within the webpanel bootstraper. Press OK to load the webpanel from the fallback. Error:\n" + e)) {
-                    loadChannel(import.meta.env.VITE_PUBLIC_PATH);
+                    loadChannel(publicPath);
                 } else {
                     alert("An error has occured within the webpanel bootstraper: \n" + e)
                 }
