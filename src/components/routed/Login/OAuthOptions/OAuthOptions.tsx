@@ -14,6 +14,8 @@ const OAuthOptions = () => {
         return null;
     }
 
+    console.log(JSON.stringify(data));
+
     return (
         <>
             <hr className="my-4" />

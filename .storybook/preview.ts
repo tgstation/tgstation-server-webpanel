@@ -2,6 +2,7 @@ import type { Preview } from "@storybook/react";
 
 import AddConfigDark from "./AddConfigDark";
 import AddIntlEn from "./AddIntlEn";
+import AddMockRelayEnvironment from "./MockRelayEnvironment";
 
 import "@/index.css";
 
@@ -14,7 +15,7 @@ const preview: Preview = {
             }
         }
     },
-    decorators: [AddIntlEn, AddConfigDark]
+    decorators: [AddIntlEn, AddConfigDark, AddMockRelayEnvironment]
 };
 
 export default preview;

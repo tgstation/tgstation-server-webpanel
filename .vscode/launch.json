@@ -6,11 +6,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Firefox",
+            "name": "Launch Panel",
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
             "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Story",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:6006",
             "webRoot": "${workspaceFolder}"
         }
     ]

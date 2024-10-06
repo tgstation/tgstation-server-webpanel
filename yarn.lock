@@ -864,25 +864,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@imchhh/storybook-addon-relay@npm:^0.0.14":
-  version: 0.0.14
-  resolution: "@imchhh/storybook-addon-relay@npm:0.0.14"
-  dependencies:
-    type-fest: "npm:^3.6.1"
-  peerDependencies:
-    "@storybook/addons": ^6 || ^7
-    react: ^17 || ^18
-    react-dom: ^17 || ^18
-    react-relay: ^14 || ^15 || ^16
-    relay-runtime: ^14 || ^15 || ^16
-    relay-test-utils: ^14 || ^15 || ^16
-  peerDependenciesMeta:
-    relay-runtime:
-      optional: true
-  checksum: 10c0/7bc355e38eacd3135ecef754b0e9e9448c0acdf2da62474409da270bb512991b9e6fc40cbdff4b0c6206b8c38fff8246c9a220b24fb1a4f033897f895eeccbb6
-  languageName: node
-  linkType: hard
-
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -2473,7 +2454,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-relay@npm:^16.0.6":
+"@types/react-relay@npm:*, @types/react-relay@npm:^16.0.6":
   version: 16.0.6
   resolution: "@types/react-relay@npm:16.0.6"
   dependencies:
@@ -2507,6 +2488,17 @@ __metadata:
   version: 17.0.4
   resolution: "@types/relay-runtime@npm:17.0.4"
   checksum: 10c0/d784d49413d4e9da90274bcf8949d8f522e94f4663569c4eb915ccd69581f5035114b27d17ccd347243aa97315774b30c127c8c0692860a116293ecf2376430a
+  languageName: node
+  linkType: hard
+
+"@types/relay-test-utils@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "@types/relay-test-utils@npm:17.0.0"
+  dependencies:
+    "@types/react": "npm:*"
+    "@types/react-relay": "npm:*"
+    "@types/relay-runtime": "npm:*"
+  checksum: 10c0/edd8f394acbcd7fa570e1109431baa88fa509f3e5bd0346150d86732170e4af836138ce3fd4374cf0a8acd7a061f96ffd99a9adefce61d46fcba1610fe8cefb4
   languageName: node
   linkType: hard
 
@@ -3168,14 +3160,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-relay@npm:^18.0.0":
-  version: 18.0.0
-  resolution: "babel-plugin-relay@npm:18.0.0"
+"babel-plugin-relay@npm:^18.1.0":
+  version: 18.1.0
+  resolution: "babel-plugin-relay@npm:18.1.0"
   dependencies:
     babel-plugin-macros: "npm:^2.0.0"
     cosmiconfig: "npm:^5.0.5"
     graphql: "npm:15.3.0"
-  checksum: 10c0/d514165007a403bd72a3ed75730465cc13da162ac8a83ff8f8b18f8206aad2a149e1b49fec5d7dca3297906ad632451e2be89c317c0e05aff00881221c93cfca
+  checksum: 10c0/e1c653f6a4eb5df2f43c0eb67d8c21bc83e4d8ed7b9c8aa08d652cfb9804234044de60e6351ecb9829b63d8ad9dfde3d7cefbbef90f7b82488dc455cb69b1a79
   languageName: node
   linkType: hard
 
@@ -6924,18 +6916,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-relay@npm:^18.0.0":
-  version: 18.0.0
-  resolution: "react-relay@npm:18.0.0"
+"react-relay@npm:^18.1.0":
+  version: 18.1.0
+  resolution: "react-relay@npm:18.1.0"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
     nullthrows: "npm:^1.1.1"
-    relay-runtime: "npm:18.0.0"
+    relay-runtime: "npm:18.1.0"
   peerDependencies:
     react: ^16.9.0 || ^17 || ^18
-  checksum: 10c0/613bd11f26eceb934a13dbf644ac9a670ee436e8785285611c3670c3ea9b16b37b61a0e12b0703a8fecc19f2d6b57be65e01bba4631f2ec1e81a2a90262ec98d
+  checksum: 10c0/d074092360ade1f202586c9023934e63c1d6f491a65eefa5a37ef31d243097fc7835683a91656a4f9c5e8493c08156a9c277a7e22f1e12530c95fa6ff3d05818
   languageName: node
   linkType: hard
 
@@ -7087,23 +7079,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"relay-compiler@npm:^18.0.0":
-  version: 18.0.0
-  resolution: "relay-compiler@npm:18.0.0"
+"relay-compiler@npm:^18.1.0":
+  version: 18.1.0
+  resolution: "relay-compiler@npm:18.1.0"
   bin:
     relay-compiler: cli.js
-  checksum: 10c0/b72bc4eb4b91ebb65850bcb0dc6e9ed281f2a34d64f8eaceac061568f259fbd9b4e3c7e64402b369afa0bae7a2143af3972423c8a4d86c7ddaf7d00ff7ddfedd
+  checksum: 10c0/c274538d9102f8d8eb8d7f09dfa4fd59c03e92866114cf46f9afb004984bb25f053d17f35056b5f8d1902ac15327381698574f5ee6df1faa2a3e50eb303bcaf7
   languageName: node
   linkType: hard
 
-"relay-runtime@npm:18.0.0, relay-runtime@npm:^18.0.0":
-  version: 18.0.0
-  resolution: "relay-runtime@npm:18.0.0"
+"relay-runtime@npm:18.1.0, relay-runtime@npm:^18.1.0":
+  version: 18.1.0
+  resolution: "relay-runtime@npm:18.1.0"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
-  checksum: 10c0/5ba3829e1b063961ec6c9e862cf7f6821fa32b584a41f8137d8446ac6e9be74f6bd9d090967e849b18da86341122aa5737b61b5c34f76c7ffda914afdf36ea3f
+  checksum: 10c0/d3d75a211828dba972578a1692dc7f2ef41f7ca563a3b75791d4bfcf545bcc67cfd452abc0abbabef06cdbf392a53a9e3f041323bdba0730fb36402dfec7cdb1
+  languageName: node
+  linkType: hard
+
+"relay-test-utils@npm:^18.1.0":
+  version: 18.1.0
+  resolution: "relay-test-utils@npm:18.1.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.0"
+    fbjs: "npm:^3.0.2"
+    invariant: "npm:^2.2.4"
+    relay-runtime: "npm:18.1.0"
+  checksum: 10c0/8d56b96cf3e65fc2f1fccc6fab5615e806cfe4d6852df39e62df0e74c4b38ba2aba4c58a6df70748ec4f9f3550c0ca3355405ecfadee0c9a4f45c46dc65151a4
   languageName: node
   linkType: hard
 
@@ -7781,7 +7785,6 @@ __metadata:
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
     "@fortawesome/react-fontawesome": "npm:^0.2.2"
-    "@imchhh/storybook-addon-relay": "npm:^0.0.14"
     "@radix-ui/react-dropdown-menu": "npm:^2.1.1"
     "@radix-ui/react-icons": "npm:^1.3.0"
     "@radix-ui/react-label": "npm:^2.1.0"
@@ -7801,9 +7804,10 @@ __metadata:
     "@types/react-dom": "npm:^18.3.0"
     "@types/react-relay": "npm:^16.0.6"
     "@types/relay-runtime": "npm:^17.0.4"
+    "@types/relay-test-utils": "npm:^17.0.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
     autoprefixer: "npm:^10.4.20"
-    babel-plugin-relay: "npm:^18.0.0"
+    babel-plugin-relay: "npm:^18.1.0"
     chromatic: "npm:^11.10.4"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
@@ -7821,13 +7825,15 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-intl: "npm:^6.7.0"
-    react-relay: "npm:^18.0.0"
-    relay-compiler: "npm:^18.0.0"
-    relay-runtime: "npm:^18.0.0"
+    react-relay: "npm:^18.1.0"
+    relay-compiler: "npm:^18.1.0"
+    relay-runtime: "npm:^18.1.0"
+    relay-test-utils: "npm:^18.1.0"
     storybook: "npm:^8.3.4"
     tailwind-merge: "npm:^2.5.2"
     tailwindcss: "npm:^3.4.13"
     tailwindcss-animate: "npm:^1.0.7"
+    type-fest: "npm:^4.26.1"
     typescript: "npm:^5.5.3"
     typescript-eslint: "npm:^8.0.1"
     vite: "npm:^5.4.1"
@@ -8007,10 +8013,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^3.6.1":
-  version: 3.13.1
-  resolution: "type-fest@npm:3.13.1"
-  checksum: 10c0/547d22186f73a8c04590b70dcf63baff390078c75ea8acd366bbd510fd0646e348bd1970e47ecf795b7cff0b41d26e9c475c1fedd6ef5c45c82075fbf916b629
+"type-fest@npm:^4.26.1":
+  version: 4.26.1
+  resolution: "type-fest@npm:4.26.1"
+  checksum: 10c0/d2719ff8d380befe8a3c61068f37f28d6fa2849fd140c5d2f0f143099e371da6856aad7c97e56b83329d45bfe504afe9fd936a7cff600cc0d46aa9ffb008d6c6
   languageName: node
   linkType: hard
 

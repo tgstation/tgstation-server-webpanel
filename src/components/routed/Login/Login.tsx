@@ -11,6 +11,7 @@ interface IProps {
 }
 
 const Login = (props: IProps) => {
+    props.setTemporaryHeader("bearer asdf");
     return (
         <Card>
             <CardHeader>
