@@ -5,8 +5,7 @@ import Login from "./Login";
 import GetOAuthProviders from "./OAuthOptions/graphql/GetOAuthProviders";
 import {
     GetOAuthProvidersQuery,
-    GetOAuthProvidersQuery$data,
-    OAuthProvider
+    GetOAuthProvidersQuery$data
 } from "./OAuthOptions/graphql/__generated__/GetOAuthProvidersQuery.graphql";
 
 import { WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
@@ -15,77 +14,46 @@ let mockData: GetOAuthProvidersQuery$data;
 
 let oAuthProviders: string[] = [];
 const setMockData = () => {
-    const actualProviders: {
-        readonly key: OAuthProvider;
-        readonly value: {
-            readonly clientId: string | null | undefined;
-            readonly redirectUri: string | null | undefined;
-            readonly serverUrl: string | null | undefined;
-        };
-    }[] = [];
+    const mockDiscord = {
+        clientID: "test_discord_client_id"
+    };
+
+    const mockGitHub = {
+        clientID: "test_github_client_id",
+        redirectUri: "https://github.com"
+    };
+
+    const mockInvision = {
+        clientID: "test_invision_client_id",
+        redirectUri: "https://localhost:8080",
+        serverUrl: "https://invision.com"
+    };
+
+    const mockKeycloak = {
+        clientID: "test_invision_client_id",
+        redirectUri: "https://localhost:8080",
+        serverUrl: "https://keycloak.com"
+    };
+
+    const mockTG = {
+        clientID: "test_tgstation_client_id",
+        redirectUri: "https://tgstation13.org"
+    };
 
     const hasProvider = (provider: string) => oAuthProviders.some(x => x === provider);
-    if (hasProvider("Discord")) {
-        actualProviders.push({
-            key: "DISCORD",
-            value: {
-                clientId: "test_discord_client_id",
-                redirectUri: "https://discord.com",
-                serverUrl: undefined
-            }
-        });
-    }
-
-    if (hasProvider("GitHub")) {
-        actualProviders.push({
-            key: "GIT_HUB",
-            value: {
-                clientId: "test_github_client_id",
-                redirectUri: "https://github.com",
-                serverUrl: undefined
-            }
-        });
-    }
-
-    if (hasProvider("Invision")) {
-        actualProviders.push({
-            key: "GIT_HUB",
-            value: {
-                clientId: "test_invision_client_id",
-                redirectUri: "https://invision.com",
-                serverUrl: undefined
-            }
-        });
-    }
-
-    if (hasProvider("Keycloak")) {
-        actualProviders.push({
-            key: "KEYCLOAK",
-            value: {
-                clientId: "test_invision_client_id",
-                redirectUri: "https://keycloak.com",
-                serverUrl: undefined
-            }
-        });
-    }
-
-    if (hasProvider("TGForums")) {
-        actualProviders.push({
-            key: "TG_FORUMS",
-            value: {
-                clientId: "test_tgstation_client_id",
-                redirectUri: "https://tgstation13.org",
-                serverUrl: undefined
-            }
-        });
-    }
 
     mockData = {
         swarm: {
             currentNode: {
                 gateway: {
                     information: {
-                        oAuthProviderInfos: actualProviders
+                        oAuthProviderInfos: {
+                            gitHub: hasProvider("GitHub") ? mockGitHub : null,
+                            discord: hasProvider("Discord") ? mockDiscord : null,
+                            invisionCommunity: hasProvider("Invision") ? mockInvision : null,
+                            tgForums: hasProvider("TGForums") ? mockTG : null,
+                            keycloak: hasProvider("Keycloak") ? mockKeycloak : null
+                        }
                     }
                 }
             }
@@ -114,7 +82,7 @@ const config: Meta<typeof TestComponent> = {
     },
     argTypes: {
         oAuthProviders: {
-            options: ["Discord", "GitHub", "Invision", "Keycloak", "TGForums"],
+            options: ["Discord", "GitHub", "TGForums", "Invision", "Keycloak"],
             control: {
                 type: "inline-check"
             },

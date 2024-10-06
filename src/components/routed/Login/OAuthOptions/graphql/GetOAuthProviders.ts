@@ -7,11 +7,26 @@ const GetOAuthProviders = graphql`
                 gateway {
                     information {
                         oAuthProviderInfos {
-                            key
-                            value {
-                                clientId
+                            discord {
+                                clientID
+                            }
+                            gitHub {
+                                clientID
+                                redirectUri
+                            }
+                            invisionCommunity {
+                                clientID
                                 redirectUri
                                 serverUrl
+                            }
+                            keycloak {
+                                clientID
+                                redirectUri
+                                serverUrl
+                            }
+                            tgForums {
+                                clientID
+                                redirectUri
                             }
                         }
                     }
