@@ -2274,7 +2274,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-paginate-rest@npm:^11.0.0, @octokit/plugin-paginate-rest@npm:^11.3.3":
+"@octokit/plugin-paginate-rest@npm:^11.0.0":
   version: 11.3.3
   resolution: "@octokit/plugin-paginate-rest@npm:11.3.3"
   dependencies:
@@ -2282,6 +2282,17 @@ __metadata:
   peerDependencies:
     "@octokit/core": ">=6"
   checksum: 10/87eeb4dd68a8207e669989cdbf9de3717b74038d630c2b803cbc7a9c44c3ff74771ce1cf45fa056b7172aaaa80fd9a0e4bf5eca06aabc19f30e7e29898f1f69e
+  languageName: node
+  linkType: hard
+
+"@octokit/plugin-paginate-rest@npm:^11.3.5":
+  version: 11.3.5
+  resolution: "@octokit/plugin-paginate-rest@npm:11.3.5"
+  dependencies:
+    "@octokit/types": "npm:^13.6.0"
+  peerDependencies:
+    "@octokit/core": ">=6"
+  checksum: 10/daa911bb370818d8cd561a7d449d164cbad6e9e29c11c666054f1ecc19d2ea9fbdc9ef8c65f33a1102096eb671847d343ae57acbeb17185e64447741ffdfde3e
   languageName: node
   linkType: hard
 
@@ -2372,7 +2383,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/types@npm:^13.6.1":
+"@octokit/types@npm:^13.6.0, @octokit/types@npm:^13.6.1":
   version: 13.6.1
   resolution: "@octokit/types@npm:13.6.1"
   dependencies:
@@ -11264,7 +11275,7 @@ __metadata:
     "@mapbox/react-click-to-select": "npm:^2.2.1"
     "@microsoft/signalr": "npm:^8.0.7"
     "@octokit/core": "npm:^6.1.2"
-    "@octokit/plugin-paginate-rest": "npm:^11.3.3"
+    "@octokit/plugin-paginate-rest": "npm:^11.3.5"
     "@octokit/plugin-retry": "npm:^7.1.2"
     "@octokit/plugin-throttling": "npm:^9.3.2"
     "@octokit/request-error": "npm:^6.1.4"
