@@ -2318,15 +2318,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-throttling@npm:^9.3.1":
-  version: 9.3.1
-  resolution: "@octokit/plugin-throttling@npm:9.3.1"
+"@octokit/plugin-throttling@npm:^9.3.2":
+  version: 9.3.2
+  resolution: "@octokit/plugin-throttling@npm:9.3.2"
   dependencies:
     "@octokit/types": "npm:^13.0.0"
     bottleneck: "npm:^2.15.3"
   peerDependencies:
     "@octokit/core": ^6.0.0
-  checksum: 10/5471a23547e3d326828bed89cd0f9c55625e68603a93daa5b7a1faea41013c47967cd53f44c3bf0433bcd78d1e99ea3595f2166a243db46d8ff6ce262380f34f
+  checksum: 10/1babc660a4e70b1a61bdefa0accd2a4eed8b6d029b7f8a4b655953c98c165fcdd1c5190bf242ee4d6808a636a9cf2bf6275dae4c487cf41e4521ee3b07c850c8
   languageName: node
   linkType: hard
 
@@ -11257,7 +11257,7 @@ __metadata:
     "@octokit/core": "npm:^6.1.2"
     "@octokit/plugin-paginate-rest": "npm:^11.3.3"
     "@octokit/plugin-retry": "npm:^7.1.2"
-    "@octokit/plugin-throttling": "npm:^9.3.1"
+    "@octokit/plugin-throttling": "npm:^9.3.2"
     "@octokit/request-error": "npm:^6.1.4"
     "@octokit/rest": "npm:^21.0.2"
     "@octokit/types": "npm:^13.5.0"
