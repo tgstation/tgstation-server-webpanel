@@ -39,12 +39,13 @@ jobs:
               run: corepack enable
 
             - name: Install Yarn Dependencies
-              run: |
-                  unbuffer yarn install --immutable | tee yarn_output.log
-                  if cat yarn_output.log | grep YN0060; then
-                    echo "Detected incompatible peer dependencies!"
-                    exit 1
-                  fi
+              run: yarn install --immutable
+#              run: | Temporarily disabled until storybook updates eslint
+#                  unbuffer yarn install --immutable | tee yarn_output.log
+#                  if cat yarn_output.log | grep YN0060; then
+#                    echo "Detected incompatible peer dependencies!"
+#                    exit 1
+#                  fi
 
             - name: Compile
               run: yarn build
