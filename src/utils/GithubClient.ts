@@ -11,6 +11,7 @@ import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/Inte
 import InternalStatus, { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
 import configOptions from "../ApiClient/util/config";
 import { VERSION } from "../definitions/constants";
+import delay from "./delay";
 
 export interface TGSVersion {
     version: string;
@@ -258,7 +259,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                 return pr;
             }
 
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await delay(5000);
         }
 
         return this.getPR({ owner, repo, wantedPR });
