@@ -2,7 +2,8 @@
   "name": "tgstation-server-webpanel",
   "private": true,
   "version": "7.0.0",
-  "tgs_api_version": "10.10.0",
+  "tgs_graphql_api_version": "0.1.0",
+  "tgs_rest_api_version": "10.10.0",
   "homepage": "https://tgstation.github.io/tgstation-server-webpanel",
   "repository": {
     "type": "git",

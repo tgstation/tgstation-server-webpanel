@@ -40,7 +40,7 @@ const CreateRelayEnvironment = (
             headers: {
                 Accept: "application/graphql-response+json; charset=utf-8, application/json; charset=utf-8",
                 "Content-Type": "application/json",
-                Api: `Tgstation.Server.Api/${Pkg.tgs_api_version}`,
+                Api: `Tgstation.Server.Api/${Pkg.tgs_graphql_api_version}`,
                 Authorization: createAuthHeader()
             },
             body: JSON.stringify({
@@ -65,7 +65,7 @@ const CreateRelayEnvironment = (
         url: graphQLEndpoint,
         headers: (): Record<string, string> => {
             return {
-                Api: `Tgstation.Server.Api/${Pkg.tgs_api_version}`,
+                Api: `Tgstation.Server.Api/${Pkg.tgs_graphql_api_version}`,
                 Authorization: createAuthHeader()
             };
         }
