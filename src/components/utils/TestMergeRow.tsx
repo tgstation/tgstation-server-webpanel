@@ -161,7 +161,7 @@ export default function TestMergeRow({
                             <FormattedMessage id="view.instance.repo.testmergelabel" />
                         </Badge>
                     ) : null}
-                    {pr.conflictlabel ? (
+                    {pr.mergeable === false ? (
                         <Badge pill className="text-white text-capitalize mr-2" variant="danger">
                             <FormattedMessage id="view.instance.repo.conflictlabel" />
                         </Badge>

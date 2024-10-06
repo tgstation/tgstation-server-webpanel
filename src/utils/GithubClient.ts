@@ -34,14 +34,10 @@ export interface PullRequest {
     head: string;
     tail: string;
     testmergelabel: boolean;
-    conflictlabel: boolean;
+    mergeable: boolean | null;
 }
 
-type ExtractArrayType<A> = A extends Array<infer ArrayType> ? ArrayType : never;
-export type GithubPullRequest = ExtractArrayType<
-    RestEndpointMethodTypes["pulls"]["list"]["response"]["data"]
->;
-export type FullGithubPullRequest = RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
+export type GithubPullRequest = RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
 
 export interface DirectoryItem {
     path: string;
@@ -209,12 +205,12 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
         });
     }
 
-    private transformPR(pr: FullGithubPullRequest | GithubPullRequest): PullRequest {
+    private transformPR(pr: GithubPullRequest): PullRequest {
         return {
             number: pr.number,
             title: pr.title,
             author: pr.user?.login ?? "ghost",
-            state: pr.merged_at ? "merged" : (pr.state as "open" | "closed"),
+            state: pr.merged_at ? "merged" : pr.state,
             link: pr.html_url,
             head: pr.head.sha,
             tail: pr.base.sha,
@@ -223,8 +219,49 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                     label.name?.toLowerCase().includes("testmerge") ||
                     label.name?.toLowerCase().includes("test merge")
             ),
-            conflictlabel: pr.labels.some(label => label.name?.toLowerCase().includes("conflict"))
+            mergeable: pr.mergeable
         };
+    }
+
+    private async getPR({
+        owner,
+        repo,
+        wantedPR
+    }: {
+        owner: string;
+        repo: string;
+        wantedPR: number;
+    }) {
+        const pr = await this.apiClient.pulls.get({
+            owner,
+            repo,
+            pull_number: wantedPR
+        });
+
+        return this.transformPR(pr.data);
+    }
+
+    private async getPRUntilMergeable({
+        owner,
+        repo,
+        wantedPR
+    }: {
+        owner: string;
+        repo: string;
+        wantedPR: number;
+    }) {
+        //Retry three times to get the mergeable status
+        for (let i = 0; i < 2; i++) {
+            const pr = await this.getPR({ owner, repo, wantedPR });
+
+            if (pr.mergeable !== null) {
+                return pr;
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+
+        return this.getPR({ owner, repo, wantedPR });
     }
 
     public async getPRs({
@@ -238,26 +275,26 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
     }): Promise<InternalStatus<PullRequest[], ErrorCode.GITHUB_FAIL>> {
         let payload: PullRequest[] = [];
         try {
-            payload = (
+            const visiblePRs = (
                 await this.apiClient.paginate(this.apiClient.pulls.list, {
                     owner,
                     repo,
                     state: "open"
                 })
-            ).map(this.transformPR);
+            ).map(pr => pr.number);
 
             for (const wantedPR of wantedPRs ?? []) {
-                if (!payload.find(pr => pr.number == wantedPR)) {
-                    const pr = (
-                        await this.apiClient.pulls.get({
-                            owner,
-                            repo,
-                            pull_number: wantedPR
-                        })
-                    ).data;
-                    payload.push(this.transformPR(pr));
+                if (!visiblePRs.includes(wantedPR)) {
+                    visiblePRs.push(wantedPR);
                 }
             }
+
+            const prPromises = visiblePRs.map(wantedPR =>
+                this.getPRUntilMergeable({ owner, repo, wantedPR })
+            );
+
+            //Fetch them in parallel to not waste extra time with polling
+            payload = await Promise.all(prPromises);
         } catch (e) {
             console.error(e);
             return new InternalStatus<PullRequest[], ErrorCode.GITHUB_FAIL>({
