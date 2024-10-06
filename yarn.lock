@@ -2453,7 +2453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^18.3.3":
+"@types/react@npm:*":
   version: 18.3.8
   resolution: "@types/react@npm:18.3.8"
   dependencies:
@@ -2473,7 +2473,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/relay-runtime@npm:*, @types/relay-runtime@npm:^17.0.4":
+"@types/relay-runtime@npm:*":
   version: 17.0.4
   resolution: "@types/relay-runtime@npm:17.0.4"
   checksum: 10c0/d784d49413d4e9da90274bcf8949d8f522e94f4663569c4eb915ccd69581f5035114b27d17ccd347243aa97315774b30c127c8c0692860a116293ecf2376430a
@@ -6972,7 +6972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react@npm:^18.3.1":
+"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
@@ -7077,7 +7077,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"relay-runtime@npm:18.1.0, relay-runtime@npm:^18.1.0":
+"relay-runtime@npm:18.1.0":
   version: 18.1.0
   resolution: "relay-runtime@npm:18.1.0"
   dependencies:
@@ -7788,10 +7788,8 @@ __metadata:
     "@storybook/react-vite": "npm:^8.3.4"
     "@storybook/test": "npm:^8.3.4"
     "@types/node": "npm:^22.7.3"
-    "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     "@types/react-relay": "npm:^16.0.6"
-    "@types/relay-runtime": "npm:^17.0.4"
     "@types/relay-test-utils": "npm:^17.0.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
     autoprefixer: "npm:^10.4.20"
@@ -7810,12 +7808,10 @@ __metadata:
     graphql-sse: "npm:^2.5.3"
     lucide-react: "npm:^0.446.0"
     postcss: "npm:^8.4.47"
-    react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-intl: "npm:^6.7.0"
     react-relay: "npm:^18.1.0"
     relay-compiler: "npm:^18.1.0"
-    relay-runtime: "npm:^18.1.0"
     relay-test-utils: "npm:^18.1.0"
     storybook: "npm:^8.3.5"
     tailwind-merge: "npm:^2.5.2"
