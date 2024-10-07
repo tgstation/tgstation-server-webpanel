@@ -28,8 +28,7 @@ try {
     }
 
     if(import.meta.env.VITE_DEV_MODE == "true") {
-        const directImport = import("./main.tsx");
-        directImport.then(module => module());
+        import("./main.tsx");
     } else {
         fetch("channel.json", {
             headers: {
