@@ -26,7 +26,7 @@
   "scripts": {
     "dev": "concurrently --kill-others \"npm:dev-server\" \"npm:storybook\" \"npm:relay\"",
     "dev-server": "vite",
-    "build": "yarn grab-api && relay-compiler --validate && tsc -b && vite build",
+    "build": "yarn grab-api && relay-compiler && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
