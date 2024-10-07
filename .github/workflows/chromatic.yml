@@ -37,7 +37,7 @@ jobs:
           run: yarn
 
         - name: Run Relay
-          run: yarn relay
+          run: yarn relay-build
 
         - name: Run Chromatic
           uses: chromaui/action@latest
