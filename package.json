@@ -33,6 +33,7 @@
     "build-storybook": "storybook build",
     "chromatic": "yarn grab-api && relay-compiler && npx chromatic",
     "relay": "yarn grab-api && relay-compiler --watch",
+    "relay-build": "yarn grab-api && relay-compiler",
     "grab-api": "node --no-warnings src/api/grab.js"
   },
   "dependencies": {

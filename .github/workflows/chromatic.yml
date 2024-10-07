@@ -36,6 +36,9 @@ jobs:
         - name: Install Dependencies
           run: yarn
 
+        - name: Run Relay
+          run: yarn relay
+
         - name: Run Chromatic
           uses: chromaui/action@latest
           with:
