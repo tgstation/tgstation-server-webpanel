@@ -9,6 +9,7 @@ import {
 } from "./OAuthOptions/graphql/__generated__/GetOAuthProvidersQuery.graphql";
 
 import { WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
+import { ICredentials } from "@/lib/Credentials";
 
 let mockData: GetOAuthProvidersQuery$data;
 
@@ -65,7 +66,7 @@ setMockData();
 
 interface IExtraArgs {
     oAuthProviders: string[];
-    setTemporaryHeader: (headerValue: string) => void;
+    setTemporaryCredentials: (credentials: ICredentials) => void;
 }
 
 const TestComponent = (args: IExtraArgs) => {
@@ -78,7 +79,7 @@ const config: Meta<typeof TestComponent> = {
     component: TestComponent,
     title: "Routed/Login",
     args: {
-        setTemporaryHeader: fn()
+        setTemporaryCredentials: fn()
     },
     argTypes: {
         oAuthProviders: {
