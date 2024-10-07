@@ -23,7 +23,8 @@ function mountApp() {
     );
 }
 
-window.addEventListener("DOMContentLoaded", mountApp);
 if (document.readyState === "interactive" || document.readyState === "complete") {
     mountApp();
+} else {
+    window.addEventListener("DOMContentLoaded", mountApp);
 }
