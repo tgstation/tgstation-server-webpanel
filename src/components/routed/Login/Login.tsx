@@ -33,9 +33,9 @@ const Login = (props: IProps) => {
             commitLogin({
                 variables: {},
                 onCompleted: response => {
-                    if (response.login) {
+                    if (response.login.loginResult) {
                         session.setSession({
-                            bearer: response.login.bearer,
+                            bearer: response.login.loginResult.bearer,
                             originalCredentials: credentials
                         });
                     } else {

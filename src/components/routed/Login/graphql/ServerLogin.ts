@@ -11,10 +11,12 @@ const ServerLogin = graphql`
                     message
                 }
             }
-            bearer
-            user {
-                id
-                name
+            loginResult {
+                bearer
+                user {
+                    id
+                    name
+                }
             }
         }
     }
