@@ -77,7 +77,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
     "babel-plugin-relay": "^18.1.0",
-    "chromatic": "^11.10.4",
+    "chromatic": "^11.11.0",
     "concurrently": "^9.0.1",
     "eslint": "^9.9.0",
     "eslint-plugin-import": "^2.31.0",
