@@ -16,6 +16,7 @@ export default defineConfig({
     plugins: [
         relay,
         react(),
+        // keep this one last, the storybook config pops it off
         removeTestIdAttribute({
             attributes: ["data-testid"], // remove test attributes from jsx
             usage: "vite"
