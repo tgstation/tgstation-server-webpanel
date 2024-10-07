@@ -16,33 +16,51 @@ import {
     PayloadExtensions
 } from "relay-runtime/lib/network/RelayNetworkTypes";
 
+import { ICredentials, OAuthCredentials } from "./Credentials";
+
 import Pkg from "@/../package.json";
 
 const CreateRelayEnvironment = (
     serverUrl: string
 ): {
     relayEnviroment: Environment;
-    setAuthorizationHeader: (headerValue: string | null, temporary: boolean) => void;
+    setCredentials: (credentials: ICredentials | null, temporary: boolean) => void;
 } => {
     const graphQLEndpoint = `${serverUrl}/api/graphql`;
 
-    let currentAuthHeader: string | null = null;
-    let temporaryAuthHeader: string | null = null;
+    let currentCredentials: ICredentials | null = null;
+    let temporaryCredentials: ICredentials | null = null;
     const createAuthHeader = () => {
-        const header = temporaryAuthHeader ?? currentAuthHeader;
-        temporaryAuthHeader = null;
-        return header ?? "";
+        const credentials = currentCredentials ?? temporaryCredentials;
+        const header = credentials?.createAuthorizationHeader();
+
+        if (credentials instanceof OAuthCredentials) {
+            return [header, credentials.provider];
+        }
+
+        temporaryCredentials = null;
+        return [header, null];
     };
 
     const fetchFn: FetchFunction = async (request, variables) => {
+        const [authHeader, oAuthHeader] = createAuthHeader();
+        const requestHeaders: HeadersInit = new Headers();
+        requestHeaders.set(
+            "Accept",
+            "application/graphql-response+json; charset=utf-8, application/json; charset=utf-8"
+        );
+        requestHeaders.set("Content-Type", "application/json");
+        requestHeaders.set("Api", `Tgstation.Server.Api/${Pkg.tgs_graphql_api_version}`);
+        if (authHeader) {
+            requestHeaders.set("Authorization", authHeader);
+            if (oAuthHeader) {
+                requestHeaders.set("OAuthProvider", oAuthHeader);
+            }
+        }
+
         const resp = await fetch(graphQLEndpoint, {
             method: "POST",
-            headers: {
-                Accept: "application/graphql-response+json; charset=utf-8, application/json; charset=utf-8",
-                "Content-Type": "application/json",
-                Api: `Tgstation.Server.Api/${Pkg.tgs_graphql_api_version}`,
-                Authorization: createAuthHeader()
-            },
+            headers: requestHeaders,
             body: JSON.stringify({
                 query: request.text, // <-- The GraphQL document composed by Relay
                 variables
@@ -64,9 +82,16 @@ const CreateRelayEnvironment = (
     const subscriptionsClient = createClient({
         url: graphQLEndpoint,
         headers: (): Record<string, string> => {
+            const [authHeader] = createAuthHeader();
+            if (authHeader) {
+                return {
+                    Api: `Tgstation.Server.Api/${Pkg.tgs_graphql_api_version}`,
+                    Authorization: authHeader
+                };
+            }
+
             return {
-                Api: `Tgstation.Server.Api/${Pkg.tgs_graphql_api_version}`,
-                Authorization: createAuthHeader()
+                Api: `Tgstation.Server.Api/${Pkg.tgs_graphql_api_version}`
             };
         }
     });
@@ -106,19 +131,18 @@ const CreateRelayEnvironment = (
         });
     };
 
-    console.log("Creating relay environment...");
     return {
         relayEnviroment: new Environment({
             network: Network.create(fetchFn, subscribeFn),
             store: new Store(new RecordSource())
         }),
-        setAuthorizationHeader: (headerValue, temporary) => {
+        setCredentials: (credentials, temporary) => {
             if (temporary) {
-                if (temporaryAuthHeader)
-                    throw new Error("Temporary auth header set multiple times without use!");
-                temporaryAuthHeader = headerValue;
+                if (temporaryCredentials)
+                    throw new Error("Temporary credentials set multiple times without use!");
+                temporaryCredentials = credentials;
             } else {
-                currentAuthHeader = headerValue;
+                currentCredentials = credentials;
             }
         }
     };

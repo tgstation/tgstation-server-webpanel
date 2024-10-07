@@ -20,16 +20,17 @@ const RelayEnvironment = () => {
 
     const config = useContext(ConfigContext);
 
-    const { relayEnviroment, setAuthorizationHeader } = useMemo(
+    const { relayEnviroment, setCredentials } = useMemo(
         () => CreateRelayEnvironment(config.ApiPath.value),
         [config.ApiPath.value]
     );
 
     return (
         <RelayEnvironmentProvider environment={relayEnviroment}>
-            <SessionProvider
-                setBearer={bearer => setAuthorizationHeader(`Bearer ${bearer}`, false)}>
-                <Layout setTemporaryHeader={header => setAuthorizationHeader(header, true)} />
+            <SessionProvider setCredentials={credentials => setCredentials(credentials, false)}>
+                <Layout
+                    setTemporaryCredentials={credentials => setCredentials(credentials, true)}
+                />
             </SessionProvider>
         </RelayEnvironmentProvider>
     );

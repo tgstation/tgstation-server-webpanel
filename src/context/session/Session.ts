@@ -1,13 +1,4 @@
-interface IUserPasswordCredentials {
-    username: string;
-    password: string;
-}
-
-interface IOAuthCredentials {
-    oAuthCode: string;
-}
-
-type ICredentials = IUserPasswordCredentials | IOAuthCredentials;
+import { ICredentials } from "@/lib/Credentials";
 
 export default interface ISession {
     bearer: string;

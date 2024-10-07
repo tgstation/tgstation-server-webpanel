@@ -3,9 +3,11 @@ import { ReactNode, useState } from "react";
 import SessionContext from "./Context";
 import ISession from "./Session";
 
+import { BearerCredentials, ICredentials } from "@/lib/Credentials";
+
 interface IProps {
     children: ReactNode;
-    setBearer: (bearer: string) => void;
+    setCredentials: (credentials: ICredentials) => void;
 }
 
 const SessionProvider = (props: IProps) => {
@@ -13,7 +15,7 @@ const SessionProvider = (props: IProps) => {
     const sessionContext = {
         currentSession: session,
         setSession: (session: ISession) => {
-            props.setBearer(session.bearer);
+            props.setCredentials(new BearerCredentials(session.bearer));
             setSession(session);
         }
     };

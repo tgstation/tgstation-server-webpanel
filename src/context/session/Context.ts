@@ -4,7 +4,7 @@ import ISession from "./Session";
 
 interface ISessionContext {
     currentSession: ISession | null;
-    setSession: (credentials: ISession) => void;
+    setSession: (session: ISession) => void;
 }
 
 const SessionContext = createContext<ISessionContext>({

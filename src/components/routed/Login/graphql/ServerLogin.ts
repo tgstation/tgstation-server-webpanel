@@ -1,7 +1,8 @@
 import { graphql } from "react-relay";
 
-const LoginMutation = graphql`
-    mutation LoginMutation {
+// TODO: Retrieve user details from a common fragment
+const ServerLogin = graphql`
+    mutation ServerLoginMutation {
         login {
             errors {
                 ... on ErrorMessageError {
@@ -19,4 +20,4 @@ const LoginMutation = graphql`
     }
 `;
 
-export default LoginMutation;
+export default ServerLogin;
