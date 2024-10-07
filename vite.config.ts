@@ -17,10 +17,7 @@ export default defineConfig(({ mode }) => {
             attributes: ["data-testid"], // remove test attributes from jsx
             usage: "vite"
         });
-    if (process.env.VITE_DEV_MODE === "false") {
-        console.log("Production mode detected");
-    } else {
-        console.log("Dev mode detected");
+    if (process.env.VITE_DEV_MODE !== "false") {
         plugins.push(testAttributeRemoverPlugin);
     }
 
