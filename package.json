@@ -31,7 +31,7 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "chromatic": "npx chromatic",
+    "chromatic": "yarn grab-api && relay-compiler && npx chromatic",
     "relay": "yarn grab-api && relay-compiler --watch",
     "grab-api": "node --no-warnings src/api/grab.js"
   },
