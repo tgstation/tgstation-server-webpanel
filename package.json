@@ -26,14 +26,14 @@
   "scripts": {
     "dev": "concurrently --kill-others \"npm:dev-server\" \"npm:storybook\" \"npm:relay\"",
     "dev-server": "vite",
-    "build": "yarn grab-api && relay-compiler && tsc -b && vite build",
+    "build": "yarn relay-build && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "chromatic": "yarn grab-api && relay-compiler && npx chromatic",
+    "chromatic": "yarn relay-build && npx chromatic",
     "relay": "yarn grab-api && relay-compiler --watch",
-    "relay-build": "yarn grab-api && relay-compiler",
+    "relay-build": "yarn grab-api && relay-compiler --watchman false",
     "grab-api": "node --no-warnings src/api/grab.js"
   },
   "dependencies": {
