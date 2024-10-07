@@ -50,7 +50,7 @@ jobs:
               run: corepack enable
 
             - name: Install Yarn Dependencies
-              run: yarn
+              run: yarn install --immutable
 
             - name: Compile
               if: steps.get-tag.outputs.deploy_tag != 'FAILED'
