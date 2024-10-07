@@ -8,51 +8,87 @@ on:
     pull_request:
 
 jobs:
-    build:
-        name: Build
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [20.x]
-        steps:
-              # expect used for unbuffer
-            - name: Install Native Dependencies
-              run: |
-                sudo apt-get update
-                sudo apt-get install expect
+  build:
+      name: Build
+      runs-on: ubuntu-latest
+      strategy:
+          matrix:
+              node-version: [20.x]
+      steps:
+            # expect used for unbuffer
+          - name: Install Native Dependencies
+            run: |
+              sudo apt-get update
+              sudo apt-get install expect
 
-            - name: Checkout
-              uses: actions/checkout@v4
+          - name: Checkout
+            uses: actions/checkout@v4
 
-            - name: Restore Yarn cache
-              uses: actions/cache@v4
-              with:
-                  path: .yarn/cache
-                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          - name: Restore Yarn cache
+            uses: actions/cache@v4
+            with:
+                path: .yarn/cache
+                key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
 
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ matrix.node-version }}
+          - name: Use Node.js ${{ matrix.node-version }}
+            uses: actions/setup-node@v4
+            with:
+                node-version: ${{ matrix.node-version }}
 
-            - name: Setup Yarn
-              run: corepack enable
+          - name: Setup Yarn
+            run: corepack enable
 
-            - name: Install Yarn Dependencies
-              run: |
-                  unbuffer yarn install --immutable | tee yarn_output.log
-                  if cat yarn_output.log | grep YN0060; then
-                    echo "Detected incompatible peer dependencies!"
-                    exit 1
-                  fi
+          - name: Install Yarn Dependencies
+            run:  yarn install --immutable
 
-            - name: Compile
-              run:
-                unbuffer yarn build --immutable | tee yarn_output.log
-                if cat yarn_output.log | grep build.chunkSizeWarningLimit; then
-                  echo "Detected chunk size warning peer dependencies!"
+          - name: Build
+            run: yarn build
+
+  strict-build:
+      name: Strict Build
+      runs-on: ubuntu-latest
+      strategy:
+          matrix:
+              node-version: [20.x]
+      steps:
+            # expect used for unbuffer
+          - name: Install Native Dependencies
+            run: |
+              sudo apt-get update
+              sudo apt-get install expect
+
+          - name: Checkout
+            uses: actions/checkout@v4
+
+          - name: Restore Yarn cache
+            uses: actions/cache@v4
+            with:
+                path: .yarn/cache
+                key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
+          - name: Use Node.js ${{ matrix.node-version }}
+            uses: actions/setup-node@v4
+            with:
+                node-version: ${{ matrix.node-version }}
+
+          - name: Setup Yarn
+            run: corepack enable
+
+          - name: Install Yarn Dependencies
+            run: |
+                unbuffer yarn install --immutable | tee yarn_output.log
+                if cat yarn_output.log | grep YN0060; then
+                  echo "Detected incompatible peer dependencies!"
                   exit 1
                 fi
+
+          - name: Compile
+            run: |
+              unbuffer yarn build | tee yarn_output.log
+              if cat yarn_output.log | grep build.chunkSizeWarningLimit; then
+                echo "Detected chunk size warning peer dependencies!"
+                exit 1
+              fi
 
     lint:
         name: Run Linter
