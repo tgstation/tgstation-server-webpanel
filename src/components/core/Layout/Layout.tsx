@@ -3,8 +3,8 @@ import Navbar from "../Navbar/Navbar";
 import ReportIssue from "../ReportIssue/ReportIssue";
 import Router from "../Router/Router";
 
+import ErrorBoundary from "@/components/utils/ErrorBoundary/ErrorBoundary";
 import { ICredentials } from "@/lib/Credentials";
-
 import "./Layout.css";
 
 interface IProps {
@@ -14,10 +14,12 @@ interface IProps {
 const Layout = (props: IProps) => {
     return (
         <div className="core-Layout">
-            <Navbar />
-            <Router setTemporaryCredentials={props.setTemporaryCredentials} />
-            <ReportIssue />
-            <Logo />
+            <ErrorBoundary>
+                <Navbar />
+                <Router setTemporaryCredentials={props.setTemporaryCredentials} />
+                <ReportIssue />
+                <Logo />
+            </ErrorBoundary>
         </div>
     );
 };
