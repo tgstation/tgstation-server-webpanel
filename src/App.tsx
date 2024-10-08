@@ -1,13 +1,18 @@
-import { StrictMode, useEffect, useState } from "react";
+import { lazy, StrictMode, Suspense, useEffect, useState } from "react";
 import { IntlProvider } from "react-intl";
 
-import RelayEnvironment from "./components/core/RelayEnvironment/RelayEnvironment";
 import icolibrary from "./components/utils/icolibrary";
 import Loading from "./components/utils/Loading/Loading";
 import ConfigProvider from "./context/config/Provider";
+import devDelay from "./lib/devDelay";
 import ITranslation from "./lib/translations/ITranslation";
 import ITranslationFactory from "./lib/translations/ITranslationFactory";
 import Locales from "./lib/translations/Locales";
+
+const RelayEnvironment = lazy(async () => {
+    await devDelay();
+    return await import("@/components/core/RelayEnvironment/RelayEnvironment");
+});
 
 interface IProps {
     preferredLocales: readonly string[];
@@ -69,7 +74,9 @@ const App = (props: IProps) => {
                         locale={translations.locale}
                         messages={translations.messages}
                         defaultLocale="en">
-                        <RelayEnvironment />
+                        <Suspense fallback={<Loading message="loading.loading" />}>
+                            <RelayEnvironment />
+                        </Suspense>
                     </IntlProvider>
                 ) : (
                     <Loading />

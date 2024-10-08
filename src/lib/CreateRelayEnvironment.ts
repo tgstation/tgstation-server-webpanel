@@ -69,9 +69,9 @@ const CreateRelayEnvironment = (
 
         const result = await resp.json();
 
-        if (import.meta.env.VITE_RELAY_DELAY_SECONDS) {
+        if (import.meta.env.VITE_DEV_DELAY_SECONDS) {
             await new Promise<void>(resolve => {
-                setTimeout(() => resolve(), import.meta.env.VITE_RELAY_DELAY_SECONDS * 1000);
+                setTimeout(() => resolve(), import.meta.env.VITE_DEV_DELAY_SECONDS * 1000);
             });
         }
 
