@@ -7,7 +7,7 @@ import logo from "@/images/logo.svg";
 const Logo = () => {
     const [meme, setMeme] = useState(4); // chosen by fair dice roll
     return (
-        <>
+        <div className="fixed bottom-0 right-0 mb-1 mr-1">
             <TooltipProvider>
                 <Tooltip
                     onOpenChange={open => {
@@ -16,14 +16,14 @@ const Logo = () => {
                         }
                     }}>
                     <TooltipTrigger>
-                        <img className="nowrap corner-logo" width={50} height={50} src={logo} />
+                        <img className="nowrap" width={50} height={50} src={logo} />
                     </TooltipTrigger>
                     <TooltipContent>
                         <FormattedMessage id={`view.meme_${meme}`} />
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
-        </>
+        </div>
     );
 };
 

@@ -7,12 +7,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const ReportIssue = () => {
     return (
-        <>
+        <div className="fixed bottom-0 left-0 ml-1 mb-1">
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger>
                         <Button
-                            className="report-issue"
                             onClick={() =>
                                 window.open(
                                     "https://github.com/tgstation/tgstation-server-webpanel/issues/new"
@@ -26,7 +25,7 @@ const ReportIssue = () => {
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
-        </>
+        </div>
     );
 };
 

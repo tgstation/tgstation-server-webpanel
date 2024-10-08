@@ -5,7 +5,6 @@ import Router from "../Router/Router";
 
 import ErrorBoundary from "@/components/utils/ErrorBoundary/ErrorBoundary";
 import { ICredentials } from "@/lib/Credentials";
-import "./Layout.css";
 
 interface IProps {
     setTemporaryCredentials: (credentials: ICredentials) => void;
@@ -13,14 +12,14 @@ interface IProps {
 
 const Layout = (props: IProps) => {
     return (
-        <div className="core-Layout">
-            <ErrorBoundary>
-                <Navbar />
+        <ErrorBoundary>
+            <Navbar />
+            <div className="mt-16">
                 <Router setTemporaryCredentials={props.setTemporaryCredentials} />
-                <ReportIssue />
-                <Logo />
-            </ErrorBoundary>
-        </div>
+            </div>
+            <ReportIssue />
+            <Logo />
+        </ErrorBoundary>
     );
 };
 

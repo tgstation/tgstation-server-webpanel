@@ -17,9 +17,9 @@ const Navbar = () => {
     ];
 
     return (
-        <nav>
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-md">
             <div className="container mx-1 px-4 sm:px-6 bg-primary shadow-md">
-                <div className="flex items-center h-16">
+                <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
                         <a href="/" className="text-xl font-bold text-white">
                             tgstation-server
