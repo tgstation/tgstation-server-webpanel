@@ -849,17 +849,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.12.0":
+"@eslint/js@npm:9.12.0, @eslint/js@npm:^9.12.0":
   version: 9.12.0
   resolution: "@eslint/js@npm:9.12.0"
   checksum: 10c0/325650a59a1ce3d97c69441501ebaf415607248bacbe8c8ca35adc7cb73b524f592f266a75772f496b06f3239e3ee1996722a242148085f0ee5fb3dd7065897c
-  languageName: node
-  linkType: hard
-
-"@eslint/js@npm:^9.9.0":
-  version: 9.11.0
-  resolution: "@eslint/js@npm:9.11.0"
-  checksum: 10c0/7403aeba28ba9cae3470d149b334a51375eb7fd850f167555c81cc72fe98e5cc5ac3059ccdbe68eb255a49d7498a7288d25429af0c7d20afeb4b3c0748349bb4
   languageName: node
   linkType: hard
 
@@ -8121,7 +8114,7 @@ __metadata:
   resolution: "tgstation-server-webpanel@workspace:."
   dependencies:
     "@chromatic-com/storybook": "npm:2.0.2"
-    "@eslint/js": "npm:^9.9.0"
+    "@eslint/js": "npm:^9.12.0"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
