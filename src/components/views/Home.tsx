@@ -40,20 +40,22 @@ export default class Home extends React.Component<IProps, IState> {
         });
     }
 
-    public async componentDidMount(): Promise<void> {
-        this.setState({
-            routes: await RouteController.getRoutes(false)
-        });
-        RouteController.on("refreshAll", this.setRoutes);
+    public componentDidMount(): void {
+        void (async () => {
+            this.setState({
+                routes: await RouteController.getRoutes(false)
+            });
+            RouteController.on("refreshAll", this.setRoutes);
 
-        await ServerClient.wait4Token();
-        const usingDefaultCreds = CredentialsProvider.defaulted || false;
-        this.setState(prevState => {
-            return {
-                routes: prevState.routes,
-                usingDefaultCreds: usingDefaultCreds
-            };
-        });
+            await ServerClient.wait4Token();
+            const usingDefaultCreds = CredentialsProvider.defaulted || false;
+            this.setState(prevState => {
+                return {
+                    routes: prevState.routes,
+                    usingDefaultCreds: usingDefaultCreds
+                };
+            });
+        })();
     }
 
     public componentWillUnmount(): void {

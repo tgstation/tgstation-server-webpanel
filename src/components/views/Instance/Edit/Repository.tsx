@@ -127,14 +127,14 @@ class Repository extends React.Component<IProps, IState> {
         });
     }
 
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         this.setState({
             deployAfter: hasDreamMakerRight(
                 this.context.instancePermissionSet,
                 DreamMakerRights.Compile
             )
         });
-        await this.fetchRepositoryInfo(undefined, true);
+        void this.fetchRepositoryInfo(undefined, true);
     }
 
     private async fetchRepositoryInfo(

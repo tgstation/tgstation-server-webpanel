@@ -60,19 +60,21 @@ class ChangePassword extends React.Component<IProps, IState> {
         this.submit = this.submit.bind(this);
     }
 
-    public async componentDidMount(): Promise<void> {
-        const user = await UserClient.getUser(this.state.userId);
-        if (user.code == StatusCode.OK) {
-            this.setState({
-                user: user.payload
-            });
-        } else {
-            this.addError(user.error);
-        }
+    public componentDidMount(): void {
+        void (async () => {
+            const user = await UserClient.getUser(this.state.userId);
+            if (user.code == StatusCode.OK) {
+                this.setState({
+                    user: user.payload
+                });
+            } else {
+                this.addError(user.error);
+            }
 
-        this.setState({
-            loading: false
-        });
+            this.setState({
+                loading: false
+            });
+        })();
     }
 
     private addError(error: InternalError<ErrorCode>): void {

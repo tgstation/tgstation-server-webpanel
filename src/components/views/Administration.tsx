@@ -42,7 +42,7 @@ class Administration extends React.Component<IProps, IState> {
         };
     }
 
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         this.setState({
             busy: true
         });
@@ -51,11 +51,13 @@ class Administration extends React.Component<IProps, IState> {
         console.time("DataLoad");
         tasks.push(this.loadAdminInfo());
 
-        await Promise.all(tasks);
-        console.timeEnd("DataLoad");
-        this.setState({
-            busy: false
-        });
+        void (async () => {
+            await Promise.all(tasks);
+            console.timeEnd("DataLoad");
+            this.setState({
+                busy: false
+            });
+        })();
     }
 
     private async loadAdminInfo() {

@@ -135,25 +135,27 @@ class UserEdit extends React.Component<IProps, IState> {
         }
     }
 
-    public async componentDidMount(): Promise<void> {
-        const userid = parseInt(this.props.match.params.id);
-        const response = await UserClient.getUser(userid);
-        switch (response.code) {
-            case StatusCode.ERROR: {
-                this.addError(response.error);
-                break;
+    public componentDidMount(): void {
+        void (async () => {
+            const userid = parseInt(this.props.match.params.id);
+            const response = await UserClient.getUser(userid);
+            switch (response.code) {
+                case StatusCode.ERROR: {
+                    this.addError(response.error);
+                    break;
+                }
+                case StatusCode.OK: {
+                    this.loadUser(response.payload);
+                    break;
+                }
             }
-            case StatusCode.OK: {
-                this.loadUser(response.payload);
-                break;
-            }
-        }
 
-        await this.loadGroups();
+            await this.loadGroups();
 
-        this.setState({
-            loading: false
-        });
+            this.setState({
+                loading: false
+            });
+        })();
     }
 
     private async loadGroups() {

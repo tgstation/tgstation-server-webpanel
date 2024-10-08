@@ -58,48 +58,50 @@ export default withRouter(
             };
         }
 
-        public async componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
+        public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
             if (prevState.page !== this.state.page) {
                 RouteData.loglistpage = this.state.page;
-                await this.loadLogs();
+                void this.loadLogs();
             }
         }
 
-        public async componentDidMount(): Promise<void> {
-            const param = this.props.match.params.name;
-            if (param) {
-                const res = await AdminClient.getLog(param, this.allocateDownload(param));
+        public componentDidMount(): void {
+            void (async () => {
+                const param = this.props.match.params.name;
+                if (param) {
+                    const res = await AdminClient.getLog(param, this.allocateDownload(param));
 
-                switch (res.code) {
-                    case StatusCode.OK: {
-                        const regex = RegExp(
-                            /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7}[-+]\d{2}:\d{2})\s+(.*?)(?=(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7}[-+]\d{2}:\d{2}|$))/,
-                            "gs"
-                        );
-                        let match;
-                        const entries: LogEntry[] = [];
-                        while ((match = regex.exec(res.payload.content)) !== null) {
-                            entries.push({
-                                time: match[1],
-                                content: match[2]
-                            });
-                        }
-                        this.setState({
-                            viewedLog: {
-                                logFile: res.payload,
-                                entries: entries
+                    switch (res.code) {
+                        case StatusCode.OK: {
+                            const regex = RegExp(
+                                /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7}[-+]\d{2}:\d{2})\s+(.*?)(?=(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7}[-+]\d{2}:\d{2}|$))/,
+                                "gs"
+                            );
+                            let match;
+                            const entries: LogEntry[] = [];
+                            while ((match = regex.exec(res.payload.content)) !== null) {
+                                entries.push({
+                                    time: match[1],
+                                    content: match[2]
+                                });
                             }
-                        });
-                        break;
-                    }
-                    case StatusCode.ERROR: {
-                        this.addError(res.error);
-                        break;
+                            this.setState({
+                                viewedLog: {
+                                    logFile: res.payload,
+                                    entries: entries
+                                }
+                            });
+                            break;
+                        }
+                        case StatusCode.ERROR: {
+                            this.addError(res.error);
+                            break;
+                        }
                     }
                 }
-            }
 
-            await this.loadLogs();
+                await this.loadLogs();
+            })();
         }
 
         private async loadLogs(): Promise<void> {

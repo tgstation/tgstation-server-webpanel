@@ -182,35 +182,37 @@ class App extends React.Component<IProps, IState> {
 
         void this.updateContextUser();
     }
-    public async componentDidMount(): Promise<void> {
-        // dont lag the dom
-        const initIcons = await icolibrary;
-        initIcons.default();
-        (await ConfigController).default.loadconfig();
-        (await JobsController).default.init();
+    public componentDidMount(): void {
+        void (async () => {
+            // dont lag the dom
+            const initIcons = await icolibrary;
+            initIcons.default();
+            (await ConfigController).default.loadconfig();
+            (await JobsController).default.init();
 
-        LoginHooks.on("loginSuccess", this.finishLogin);
-        ServerClient.on("logout", this.finishLogout);
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        ServerClient.on("purgeCache", this.updateContextServer);
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        ServerClient.on("purgeCache", this.updateContextUser);
+            LoginHooks.on("loginSuccess", this.finishLogin);
+            ServerClient.on("logout", this.finishLogout);
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            ServerClient.on("purgeCache", this.updateContextServer);
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            ServerClient.on("purgeCache", this.updateContextUser);
 
-        await polyfills;
+            await polyfills;
 
-        this.setState({ polyfills: true });
+            this.setState({ polyfills: true });
 
-        await this.loadTranslation();
-        const loggedInSuccessfully = await ServerClient.initApi();
-        await this.updateContextServer();
-        if (loggedInSuccessfully) {
-            await this.updateContextUser();
-        }
+            await this.loadTranslation();
+            const loggedInSuccessfully = await ServerClient.initApi();
+            await this.updateContextServer();
+            if (loggedInSuccessfully) {
+                await this.updateContextUser();
+            }
 
-        this.setState({
-            loading: false,
-            loggedIn: loggedInSuccessfully
-        });
+            this.setState({
+                loading: false,
+                loggedIn: loggedInSuccessfully
+            });
+        })();
     }
 
     public componentWillUnmount(): void {

@@ -74,12 +74,14 @@ class Update extends React.Component<IProps, IState> {
         };
     }
 
-    public async componentDidMount(): Promise<void> {
-        await this.loadVersions();
+    public componentDidMount(): void {
+        void (async () => {
+            await this.loadVersions();
 
-        this.setState({
-            loading: false
-        });
+            this.setState({
+                loading: false
+            });
+        })();
     }
 
     public componentWillUnmount(): void {
