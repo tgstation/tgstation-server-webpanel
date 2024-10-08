@@ -1,50 +1,26 @@
-# React + TypeScript + Vite
+# tgstation-server-webpanel
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Developing
 
-Currently, two official plugins are available:
+### Installing Dependencies
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install node.js v20 or later.
+1. Install [watchman](https://github.com/facebook/watchman).
+1. Run `corepack enable`.
+1. Run `yarn` to install dependencies.
 
-## Expanding the ESLint configuration
+### Running the Dev Server
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Run `yarn dev` to start the dev server.
 
-- Configure the top-level `parserOptions` property like this:
+The panel will be hosted out of http://localhost:5173/
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Storybook will be hosted out of http://localhost:6006/
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Building
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Run `yarn build` to package the panel for distribution. Output will be placed in the `dist` folder.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## License
+
+This work is licensed under AGPL-3.0. See the LICENSE file for more information.
