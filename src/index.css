@@ -2,17 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body.dark {
-    background: #212529;
-    color: #ffffff;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-        "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-        "Segoe UI Symbol", "Noto Color Emoji";
-}
-p {
-    text-align: center;
-}
-
 @layer base {
     :root {
         --background: 0 0% 100%;
@@ -72,7 +61,7 @@ p {
 
 @layer base {
     * {
-        @apply border-border;
+        @apply border-border font-bootstrap;
     }
     body {
         @apply bg-background text-foreground;
