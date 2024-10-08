@@ -111,9 +111,9 @@ class ChatBots extends React.Component<IProps, IState> {
         this.renderChatBotBrowser = this.renderChatBotBrowser.bind(this);
     }
 
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         if (hasChatBotRight(this.context.instancePermissionSet, ChatBotRights.Read))
-            await this.refresh();
+            void this.refresh();
         else
             this.setState({
                 loading: false

@@ -186,8 +186,8 @@ class InstanceEdit extends React.Component<IProps, IState> {
         });
     }
 
-    public async componentDidMount(): Promise<void> {
-        await this.reloadInstance();
+    public componentDidMount(): void {
+        void this.reloadInstance();
     }
 
     public componentDidUpdate(prevProps: Readonly<IProps>) {

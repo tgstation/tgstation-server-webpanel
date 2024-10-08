@@ -149,17 +149,14 @@ class Engine extends React.Component<IProps, IState> {
         });
     }
 
-    public async componentDidUpdate(
-        prevProps: Readonly<IProps>,
-        prevState: Readonly<IState>
-    ): Promise<void> {
+    public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>): void {
         if (prevState.page !== this.state.page) {
             RouteData.byondlistpage = this.state.page;
-            await this.loadVersions();
+            void this.loadVersions();
         }
     }
 
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         const odGetPromise = GithubClient.getLatestDefaultCommit("OpenDreamProject", "OpenDream");
         fetch("https://secure.byond.com/download/version.txt")
             .then(res => res.text())
@@ -185,29 +182,33 @@ class Engine extends React.Component<IProps, IState> {
                 });
             });
 
-        await this.loadVersions();
+        void (async () => {
+            await this.loadVersions();
 
-        const odLatestCommit = await odGetPromise;
-        if (odLatestCommit.code === StatusCode.ERROR) {
-            this.addError(odLatestCommit.error);
-            return;
-        }
+            const odLatestCommit = await odGetPromise;
+            if (odLatestCommit.code === StatusCode.ERROR) {
+                this.addError(odLatestCommit.error);
+                return;
+            }
 
-        const newVer = {
-            engine: EngineType.OpenDream,
-            sourceSHA: odLatestCommit.payload
-        };
-
-        this.setState(prev => {
-            return {
-                latestODVersion: newVer,
-                selectedODVersion:
-                    this.makeUniqueStringForVersion(prev.latestODVersion) ==
-                    this.makeUniqueStringForVersion(prev.selectedODVersion ?? prev.latestODVersion)
-                        ? newVer
-                        : prev.selectedODVersion
+            const newVer = {
+                engine: EngineType.OpenDream,
+                sourceSHA: odLatestCommit.payload
             };
-        });
+
+            this.setState(prev => {
+                return {
+                    latestODVersion: newVer,
+                    selectedODVersion:
+                        this.makeUniqueStringForVersion(prev.latestODVersion) ==
+                        this.makeUniqueStringForVersion(
+                            prev.selectedODVersion ?? prev.latestODVersion
+                        )
+                            ? newVer
+                            : prev.selectedODVersion
+                };
+            });
+        })();
     }
 
     public render(): React.ReactNode {

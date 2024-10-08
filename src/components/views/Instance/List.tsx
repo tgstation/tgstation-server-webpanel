@@ -68,10 +68,10 @@ class InstanceList extends React.Component<IProps, IState> {
         });
     }
 
-    public async componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
+    public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
         if (prevState.page !== this.state.page) {
             RouteData.instancelistpage = this.state.page;
-            await this.loadInstances();
+            void this.loadInstances();
         }
     }
 
@@ -142,8 +142,8 @@ class InstanceList extends React.Component<IProps, IState> {
         });
     }
 
-    public async componentDidMount(): Promise<void> {
-        await this.loadInstances();
+    public componentDidMount(): void {
+        void this.loadInstances();
     }
 
     private async grantPermissions(instance: Instance) {

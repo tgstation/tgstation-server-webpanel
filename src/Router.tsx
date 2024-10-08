@@ -77,7 +77,7 @@ class Router extends Component<IProps, IState> {
         });
     }
 
-    public async componentDidMount() {
+    public componentDidMount() {
         RouteController.on("refreshAll", this.refreshListener);
 
         this.props.history.listen(location => {
@@ -121,21 +121,23 @@ class Router extends Component<IProps, IState> {
         }
         this.props.history.replace(oauthstate.url);
 
-        const response = await ServerClient.login({
-            type: CredentialsType.OAuth,
-            provider: oauthstate.provider,
-            token: code
-        });
-
-        window.sessionStorage.removeItem("oauth");
-
-        if (response.code === StatusCode.OK) {
-            this.setState({
-                loading: false
+        void (async () => {
+            const response = await ServerClient.login({
+                type: CredentialsType.OAuth,
+                provider: oauthstate.provider,
+                token: code
             });
-        } else {
-            return this.setErrorAndEnd(response.error);
-        }
+
+            window.sessionStorage.removeItem("oauth");
+
+            if (response.code === StatusCode.OK) {
+                this.setState({
+                    loading: false
+                });
+            } else {
+                this.setErrorAndEnd(response.error);
+            }
+        })();
     }
 
     public componentWillUnmount(): void {

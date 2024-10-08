@@ -381,7 +381,7 @@ class InstancePermissions extends React.Component<IProps, IState> {
         }
     }
 
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         const currentPermissionSetId = resolvePermissionSet(this.context.user).id!;
         this.setState({
             selectedPermissionSetId: currentPermissionSetId,
@@ -390,18 +390,20 @@ class InstancePermissions extends React.Component<IProps, IState> {
 
         const prom = this.loadCurrentPermissions(currentPermissionSetId);
         const prom2 = this.loadAllPermissionSets();
-        await this.loadUsersAndGroups();
-        await prom;
-        await prom2;
+        void (async () => {
+            await this.loadUsersAndGroups();
+            await prom;
+            await prom2;
 
-        this.setState({
-            loading: false
-        });
+            this.setState({
+                loading: false
+            });
+        })();
     }
 
-    public async componentWillUnmount(): Promise<void> {
+    public componentWillUnmount(): void {
         if (this.state.instanceNeedsReload) {
-            await this.context.reloadInstance();
+            void this.context.reloadInstance();
         }
     }
 

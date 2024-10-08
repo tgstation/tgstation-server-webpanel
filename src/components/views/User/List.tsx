@@ -99,34 +99,33 @@ export default withRouter(
             });
         }
 
-        public async componentDidUpdate(
-            prevProps: Readonly<IProps>,
-            prevState: Readonly<IState>
-        ): Promise<void> {
+        public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>): void {
             if (prevState.page !== this.state.page) {
                 RouteData.userlistpage = this.state.page;
-                await this.loadUsers();
+                void this.loadUsers();
             }
         }
 
-        public async componentDidMount(): Promise<void> {
-            const response = await UserClient.getCurrentUser();
-            if (response.code == StatusCode.OK) {
-                const canList = !!(
-                    resolvePermissionSet(response.payload).administrationRights &
-                    AdministrationRights.ReadUsers
-                );
-                this.setState({
-                    canList
-                });
+        public componentDidMount(): void {
+            void (async () => {
+                const response = await UserClient.getCurrentUser();
+                if (response.code == StatusCode.OK) {
+                    const canList = !!(
+                        resolvePermissionSet(response.payload).administrationRights &
+                        AdministrationRights.ReadUsers
+                    );
+                    this.setState({
+                        canList
+                    });
 
-                await this.loadUsers();
-            } else {
-                this.addError(response.error);
-            }
-            this.setState({
-                loading: false
-            });
+                    await this.loadUsers();
+                } else {
+                    this.addError(response.error);
+                }
+                this.setState({
+                    loading: false
+                });
+            })();
         }
 
         public render(): React.ReactNode {

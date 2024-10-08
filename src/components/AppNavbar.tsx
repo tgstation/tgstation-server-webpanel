@@ -94,15 +94,17 @@ class AppNavbar extends React.Component<IProps, IState> {
         });
     }
 
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         LoginHooks.on("loginSuccess", this.loginSuccess);
         ServerClient.on("logout", this.logout);
 
-        this.setState({
-            routes: await RouteController.getRoutes()
-        });
+        void (async () => {
+            this.setState({
+                routes: await RouteController.getRoutes()
+            });
 
-        RouteController.on("refresh", this.refresh);
+            RouteController.on("refresh", this.refresh);
+        })();
     }
 
     public componentWillUnmount(): void {

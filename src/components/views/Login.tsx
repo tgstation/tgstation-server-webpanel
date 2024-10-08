@@ -58,13 +58,13 @@ class Login extends React.Component<IProps, IState> {
         };
     }
 
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         const oauthState =
             window.sessionStorage.getItem("oauth") ??
             CredentialsProvider.credentials?.type === CredentialsType.OAuth;
         if (!oauthState && (MODE === "PROD" || MODE === "GITHUB")) {
             // noinspection ES6MissingAwait
-            await this.tryLoginDefault();
+            void this.tryLoginDefault();
         }
     }
 

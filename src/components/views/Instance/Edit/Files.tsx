@@ -120,8 +120,8 @@ class Files extends React.Component<IProps, IState> {
         });
     }
 
-    public async componentDidMount(): Promise<void> {
-        await this.loadRootDir();
+    public componentDidMount(): void {
+        void this.loadRootDir();
     }
 
     private async loadRootDir() {
