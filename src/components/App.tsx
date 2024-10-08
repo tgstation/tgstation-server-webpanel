@@ -1,13 +1,14 @@
 import { lazy, StrictMode, Suspense, useEffect, useState } from "react";
 import { IntlProvider } from "react-intl";
 
-import icolibrary from "./components/utils/icolibrary";
-import Loading from "./components/utils/Loading/Loading";
-import ConfigProvider from "./context/config/Provider";
-import devDelay from "./lib/devDelay";
-import ITranslation from "./lib/translations/ITranslation";
-import ITranslationFactory from "./lib/translations/ITranslationFactory";
-import Locales from "./lib/translations/Locales";
+import ConfigProvider from "../context/config/Provider";
+import devDelay from "../lib/devDelay";
+import ITranslation from "../lib/translations/ITranslation";
+import ITranslationFactory from "../lib/translations/ITranslationFactory";
+import Locales from "../lib/translations/Locales";
+
+import Loading from "./utils/Loading/Loading";
+import icolibrary from "./utils/icolibrary";
 
 const RelayEnvironment = lazy(async () => {
     await devDelay();
