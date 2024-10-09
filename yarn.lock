@@ -1792,16 +1792,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/ecma402-abstract@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@formatjs/ecma402-abstract@npm:2.0.0"
-  dependencies:
-    "@formatjs/intl-localematcher": "npm:0.5.4"
-    tslib: "npm:^2.4.0"
-  checksum: 10/41543ba509ea3c7d6530d57b888115f7ca242f13462a951fae4d1d1f28bae10c999f4dea28a71d2f08366d4889a3f5276cae3a16c6f6417b841a84fd314c2234
-  languageName: node
-  linkType: hard
-
 "@formatjs/ecma402-abstract@npm:2.1.0":
   version: 2.1.0
   resolution: "@formatjs/ecma402-abstract@npm:2.1.0"
@@ -1916,14 +1906,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-relativetimeformat@npm:^11.2.14":
-  version: 11.2.14
-  resolution: "@formatjs/intl-relativetimeformat@npm:11.2.14"
+"@formatjs/intl-relativetimeformat@npm:^11.2.15":
+  version: 11.2.15
+  resolution: "@formatjs/intl-relativetimeformat@npm:11.2.15"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:2.0.0"
+    "@formatjs/ecma402-abstract": "npm:2.1.0"
     "@formatjs/intl-localematcher": "npm:0.5.4"
     tslib: "npm:^2.4.0"
-  checksum: 10/a61febd0262c803b568598f64f734a3f2e5f06934b52d19ebd5cc48b8ad0b8e282868fb28cbceff49e6494ad924d86e5af1714a108b16c945bad349453cd58b8
+  checksum: 10/a7890892cd52e37c427982a700d7613cd6a68f73e9c0bf785e9841442b37ba491d1eded3fe6df8ad4ccba4754ad6b5e9b3cc082a5d227b2988a8b6709775bea5
   languageName: node
   linkType: hard
 
@@ -11255,7 +11245,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.25.7"
     "@formatjs/intl-locale": "npm:^4.0.1"
     "@formatjs/intl-pluralrules": "npm:5.2.15"
-    "@formatjs/intl-relativetimeformat": "npm:^11.2.14"
+    "@formatjs/intl-relativetimeformat": "npm:^11.2.15"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
