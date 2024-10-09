@@ -1802,6 +1802,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/ecma402-abstract@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@formatjs/ecma402-abstract@npm:2.1.0"
+  dependencies:
+    "@formatjs/fast-memoize": "npm:2.2.0"
+    "@formatjs/intl-localematcher": "npm:0.5.4"
+    tslib: "npm:^2.4.0"
+  checksum: 10/8e25d2739c03913c61f0ec12a71ab7baf03386cff540e7470bee73e78e4fe9f09c9dfa860223f1177acdcfd0fa341041d25b2fe4e0a77e7209d0680831982bac
+  languageName: node
+  linkType: hard
+
 "@formatjs/fast-memoize@npm:2.2.0":
   version: 2.2.0
   resolution: "@formatjs/fast-memoize@npm:2.2.0"
@@ -1893,14 +1904,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-pluralrules@npm:5.2.14":
-  version: 5.2.14
-  resolution: "@formatjs/intl-pluralrules@npm:5.2.14"
+"@formatjs/intl-pluralrules@npm:5.2.15":
+  version: 5.2.15
+  resolution: "@formatjs/intl-pluralrules@npm:5.2.15"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:2.0.0"
+    "@formatjs/ecma402-abstract": "npm:2.1.0"
     "@formatjs/intl-localematcher": "npm:0.5.4"
     tslib: "npm:^2.4.0"
-  checksum: 10/831dfe6b8ad84472f836091c2da4d925fba238fa2b1c36befaca668ff399f43ac7d97d715842db7a1a3baccccf611b709e368b27875be86b471592276c00cd2b
+  checksum: 10/8a6c756afeca3d1cb5b9f93a479993e6f036341ea32264a4542e6f65488733f9c97dc8457ba6d3d049de7160177040e47bb51f8dbbc5268e22d6800ef5d90802
   languageName: node
   linkType: hard
 
@@ -11242,7 +11253,7 @@ __metadata:
     "@babel/preset-react": "npm:^7.25.7"
     "@babel/preset-typescript": "npm:^7.25.7"
     "@formatjs/intl-locale": "npm:^4.0.0"
-    "@formatjs/intl-pluralrules": "npm:5.2.14"
+    "@formatjs/intl-pluralrules": "npm:5.2.15"
     "@formatjs/intl-relativetimeformat": "npm:^11.2.14"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
