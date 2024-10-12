@@ -11,7 +11,7 @@ class TranslationFactory implements ITranslationFactory {
         //fancy type annotations but its just load the json file in this variable as a map of strings to strings
         let localization: { [key: string]: string } | null;
         try {
-            localization = (await import(`./locales/${locale}.json`)).default;
+            localization = (await import(`../../locales/${locale}.json`)).default;
         } catch {
             localization = null;
         }
