@@ -681,7 +681,7 @@
     "perms.group.none": "No group",
     "perms.group.current": "Current Group: ",
     "perms.group.cantlist": "You lack the permission to list all users. You need it to be able to list all groups",
-    "config.githubtoken": "Github token",
+    "config.githubtoken": "Github Token",
     "config.githubtoken.desc": "You can supply a private authorization token for github to bypass some rate limiting on the github API.",
     "config.apipath": "TGS API Path",
     "config.apipath.desc": "Sets the API client server's path.",
