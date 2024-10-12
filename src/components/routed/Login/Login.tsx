@@ -95,7 +95,11 @@ const Login = (props: IProps) => {
         </Card>
     );
 
-    const AttemptingLoginSpinner = () => <Loading message="loading.login" />;
+    const AttemptingLoginSpinner = () => (
+        <div className="lg:col-start-3 lg:col-end-9 md:col-start-2 md:col-end-8">
+            <Loading message="loading.login" />
+        </div>
+    );
 
     return (
         <div className="grid lg:grid-cols-11 md:grid-cols-8">

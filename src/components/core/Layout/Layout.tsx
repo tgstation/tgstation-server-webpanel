@@ -14,7 +14,7 @@ const Layout = (props: IProps) => {
     return (
         <ErrorBoundary>
             <Navbar />
-            <div className="mt-16">
+            <div className="mt-20">
                 <Router setTemporaryCredentials={props.setTemporaryCredentials} />
             </div>
             <ReportIssue />
