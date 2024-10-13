@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { IntlProvider } from "react-intl";
 
-import localization from "@/lib/translations/locales/en.json";
+import localization from "@/locales/en.json";
 
 const AddIntlEn = (Story: FC) => {
     return (

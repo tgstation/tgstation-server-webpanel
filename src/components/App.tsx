@@ -75,7 +75,14 @@ const App = (props: IProps) => {
                         locale={translations.locale}
                         messages={translations.messages}
                         defaultLocale="en">
-                        <Suspense fallback={<Loading message="loading.loading" />}>
+                        <Suspense
+                            fallback={
+                                <div className="grid lg:grid-cols-11 md:grid-cols-8">
+                                    <div className="lg:col-start-3 lg:col-end-9 md:col-start-2 md:col-end-8">
+                                        <Loading message="loading.loading" />
+                                    </div>
+                                </div>
+                            }>
                             <RelayEnvironment />
                         </Suspense>
                     </IntlProvider>
