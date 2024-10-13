@@ -43,7 +43,8 @@ type Story = StoryObj<typeof config>;
 
 export const Empty: Story = {};
 
-export const OneError: Story = {
+export const OneErrorClosePlay: Story = {
+    name: "One Error (Closes on Play)",
     args: {
         errors: [
             {
