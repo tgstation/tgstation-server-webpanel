@@ -10,7 +10,7 @@ import ErrorsProvider from "@/context/errors/Provider";
 import sleep from "@/lib/sleep";
 
 interface IArgs {
-    errors?: ErrorMessageFragment$data[];
+    errors?: (ErrorMessageFragment$data | Error)[];
 }
 
 const InnerTestComponent = (props: IArgs) => {
@@ -82,12 +82,7 @@ export const ThreeErrors: Story = {
                 additionalData: "Some additional data",
                 " $fragmentType": "ErrorMessageFragment"
             },
-            {
-                errorCode: "DOTNET_DIAGNOSTICS_FAILURE",
-                message: "Test Error Message 3",
-                additionalData: null,
-                " $fragmentType": "ErrorMessageFragment"
-            }
+            new Error("DEEZ NUTZ")
         ]
     }
 };

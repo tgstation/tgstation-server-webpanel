@@ -6,7 +6,7 @@ import { ErrorMessageFragment$data } from "@/components/graphql/__generated__/Er
 
 export interface IErrorsContext {
     errors: ReadonlyArray<IErrorRecord>;
-    addErrors: (errors: ReadonlyArray<ErrorMessageFragment$data>) => void;
+    addErrors: (errors: ReadonlyArray<ErrorMessageFragment$data | Error>) => void;
     removeErrors: (keys: ReadonlyArray<string>) => void;
 }
 
