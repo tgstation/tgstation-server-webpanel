@@ -9,7 +9,6 @@ import PasswordForm from "./PasswordForm/PasswordForm";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
-import ErrorsContext from "@/context/errors/Context";
 import SessionContext from "@/context/session/Context";
 import { ICredentials, UserPasswordCredentials } from "@/lib/Credentials";
 
@@ -59,19 +58,6 @@ const Login = (props: IProps) => {
         },
         [AttemptLogin]
     );
-
-    const context = useContext(ErrorsContext);
-    useEffect(() => {
-        context.addErrors([
-            {
-                message: "Fake error",
-                additionalData: null,
-                errorCode: null,
-                " $fragmentType": "ErrorMessageFragment"
-            }
-        ]);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     useEffect(() => {
         window.addEventListener("keydown", KeydownEventHandler);
