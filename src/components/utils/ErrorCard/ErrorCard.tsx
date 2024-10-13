@@ -1,18 +1,26 @@
+import { X } from "lucide-react";
 import { ErrorInfo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import Pkg from "@/../package.json";
+import { ErrorMessageFragment$data } from "@/components/graphql/__generated__/ErrorMessageFragment.graphql";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface IProps {
-    report: boolean;
-    error: Error;
+    report?: boolean;
+    error: Error | ErrorMessageFragment$data;
     errorInfo?: ErrorInfo;
+    onClose?: () => void;
 }
 
 const ErrorCard = (props: IProps) => {
     const intl = useIntl();
+    const isErrorMessage = !!props.error.message;
+    const jsError = props.error as Error;
+    const tgsError = props.error as ErrorMessageFragment$data;
+
     const formattedError = props.errorInfo
         ? intl.formatMessage(
               {
@@ -23,6 +31,16 @@ const ErrorCard = (props: IProps) => {
                   stackTrace: props.errorInfo?.componentStack
               }
           )
+        : isErrorMessage
+        ? intl.formatMessage(
+              {
+                  id: "error.errorMessage"
+              },
+              {
+                  message: tgsError.message,
+                  additionalData: tgsError.additionalData
+              }
+          )
         : intl.formatMessage(
               {
                   id: "error.withoutstacktrace"
@@ -31,11 +49,31 @@ const ErrorCard = (props: IProps) => {
                   version: Pkg.version
               }
           );
+
+    const titleMessage = (
+        <div className="text-lg">
+            <FormattedMessage id="error.somethingwentwrong" />
+        </div>
+    );
+
     return (
-        <Card className="bg-destructive text-destructive-foreground">
+        <Card className="bg-destructive text-destructive-foreground mb-4">
             <CardHeader>
                 <CardTitle>
-                    <FormattedMessage id="error.somethingwentwrong" />
+                    {props.onClose ? (
+                        <div className="flex justify-between">
+                            {titleMessage}
+                            <Button
+                                onClick={props.onClose}
+                                variant="ghost"
+                                size="icon"
+                                data-testid="errorcard-close">
+                                <X />
+                            </Button>
+                        </div>
+                    ) : (
+                        titleMessage
+                    )}
                 </CardTitle>
                 {props.report ? (
                     <CardDescription>
@@ -45,9 +83,11 @@ const ErrorCard = (props: IProps) => {
             </CardHeader>
             <CardContent className="grid gap-2">
                 <Alert>
-                    <AlertTitle>
-                        {props.error.name}: {props.error.message}
-                    </AlertTitle>
+                    {!isErrorMessage ? (
+                        <AlertTitle>
+                            {jsError.name}: {jsError.message}
+                        </AlertTitle>
+                    ) : null}
                     <AlertDescription>
                         <code className="block whitespace-pre-wrap">{formattedError}</code>
                     </AlertDescription>

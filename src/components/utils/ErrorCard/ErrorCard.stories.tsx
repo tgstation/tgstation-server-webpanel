@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react";
+import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 
 import ErrorCard from "./ErrorCard";
 
@@ -21,5 +22,38 @@ export const WithStack: Story = {
         errorInfo: {
             componentStack: "\nThis is a stack trace\nWhat do you expect?"
         }
+    }
+};
+export const WithoutStackAndClose: Story = {
+    args: {
+        error: new Error("Deez nuts"),
+        onClose: fn()
+    },
+    play: async ({ args, canvasElement, step }) => {
+        const canvas = within(canvasElement);
+
+        await step("Close card", async () => {
+            await userEvent.click(canvas.getByTestId("errorcard-close"));
+        });
+
+        await waitFor(() => expect(args.onClose).toBeCalled());
+    }
+};
+export const WithStackAndClose: Story = {
+    args: {
+        error: new Error("Deez nuts"),
+        errorInfo: {
+            componentStack: "\nThis is a stack trace\nWhat do you expect?"
+        },
+        onClose: fn()
+    },
+    play: async ({ args, canvasElement, step }) => {
+        const canvas = within(canvasElement);
+
+        await step("Close card", async () => {
+            await userEvent.click(canvas.getByTestId("errorcard-close"));
+        });
+
+        await waitFor(() => expect(args.onClose).toBeCalled());
     }
 };

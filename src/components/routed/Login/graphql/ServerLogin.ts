@@ -5,17 +5,12 @@ const ServerLogin = graphql`
     mutation ServerLoginMutation {
         login {
             errors {
-                ... on ErrorMessageError {
-                    additionalData
-                    errorCode
-                    message
-                }
+                ...ErrorMessageFragment
             }
             loginResult {
                 bearer
                 user {
-                    id
-                    name
+                    ...CommonUserDetailsFragment
                 }
             }
         }

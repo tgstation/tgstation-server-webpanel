@@ -6,6 +6,7 @@ import Layout from "../Layout/Layout";
 
 import Pkg from "@/../package.json";
 import ConfigContext from "@/context/config/Context";
+import ErrorsProvider from "@/context/errors/Provider";
 import SessionProvider from "@/context/session/Provider";
 import CreateRelayEnvironment from "@/lib/CreateRelayEnvironment";
 
@@ -28,9 +29,11 @@ const RelayEnvironment = () => {
     return (
         <RelayEnvironmentProvider environment={relayEnviroment}>
             <SessionProvider setCredentials={credentials => setCredentials(credentials, false)}>
-                <Layout
-                    setTemporaryCredentials={credentials => setCredentials(credentials, true)}
-                />
+                <ErrorsProvider>
+                    <Layout
+                        setTemporaryCredentials={credentials => setCredentials(credentials, true)}
+                    />
+                </ErrorsProvider>
             </SessionProvider>
         </RelayEnvironmentProvider>
     );

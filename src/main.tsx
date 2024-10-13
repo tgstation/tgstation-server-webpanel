@@ -15,7 +15,7 @@ try {
 } catch {
     (() => {})();
 }
-
+console.log("here1");
 function mountApp() {
     const root = createRoot(document.getElementById("root")!);
     root.render(
