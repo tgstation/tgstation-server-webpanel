@@ -12,9 +12,11 @@ interface IProps {
 
 const TestComponent = (props: IProps) => {
     return (
-        <ErrorBoundary locationKey={props.locationKey}>
-            <FailComponent />
-        </ErrorBoundary>
+        <div className="w-full" style={{ height: "500px" }} data-chromatic="ignore">
+            <ErrorBoundary locationKey={props.locationKey}>
+                <FailComponent />
+            </ErrorBoundary>
+        </div>
     );
 };
 
