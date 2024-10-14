@@ -4614,16 +4614,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-storybook@npm:0.10.0--canary.156.ce8985b.0":
-  version: 0.10.0--canary.156.ce8985b.0
-  resolution: "eslint-plugin-storybook@npm:0.10.0--canary.156.ce8985b.0"
+"eslint-plugin-storybook@npm:0.10.0--canary.156.1435cb8.0":
+  version: 0.10.0--canary.156.1435cb8.0
+  resolution: "eslint-plugin-storybook@npm:0.10.0--canary.156.1435cb8.0"
   dependencies:
     "@storybook/csf": "npm:^0.0.1"
     "@typescript-eslint/utils": "npm:^8.8.1"
     ts-dedent: "npm:^2.2.0"
   peerDependencies:
     eslint: ">=6"
-  checksum: 10c0/95d385b356abb7da91b2346e11786e5d08918dd9dc0fdb61a4ebac5280875f72daf9dc5cbf4c059a5aa617b614d36fee21d3be8ad3dac1677125edea26186c40
+  checksum: 10c0/30cfe98dda9872af45be484de206354895f25c4a4940a96b4689a1ed38b1e27100cca453ddc47016acb38a27802c3f4877aefa5c5e25ef4e6958ea1ed0678630
   languageName: node
   linkType: hard
 
@@ -8063,7 +8063,7 @@ __metadata:
     eslint-plugin-import: "npm:^2.31.0"
     eslint-plugin-react-hooks: "npm:^5.1.0-rc.0"
     eslint-plugin-react-refresh: "npm:^0.4.9"
-    eslint-plugin-storybook: "npm:0.10.0--canary.156.ce8985b.0"
+    eslint-plugin-storybook: "npm:0.10.0--canary.156.1435cb8.0"
     estree-walker: "npm:^3.0.3"
     globals: "npm:^15.11.0"
     graphql: "npm:16.x"
