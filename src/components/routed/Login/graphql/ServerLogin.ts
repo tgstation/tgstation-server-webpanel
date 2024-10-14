@@ -5,7 +5,7 @@ const ServerLogin = graphql`
     mutation ServerLoginMutation {
         login {
             errors {
-                ...ErrorMessageFragment
+                ...ErrorMessageArrayFragment
             }
             loginResult {
                 bearer

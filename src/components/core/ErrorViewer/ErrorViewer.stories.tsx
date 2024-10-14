@@ -4,13 +4,13 @@ import { useContext, useEffect } from "react";
 
 import ErrorViewer from "./ErrorViewer";
 
-import { ErrorMessageFragment$data } from "@/components/graphql/__generated__/ErrorMessageFragment.graphql";
+import { ErrorMessageSingleFragment$data } from "@/components/graphql/__generated__/ErrorMessageSingleFragment.graphql";
 import ErrorsContext from "@/context/errors/Context";
 import ErrorsProvider from "@/context/errors/Provider";
 import sleep from "@/lib/sleep";
 
 interface IArgs {
-    errors?: ErrorMessageFragment$data[];
+    errors?: (ErrorMessageSingleFragment$data | Error)[];
 }
 
 const InnerTestComponent = (props: IArgs) => {
@@ -43,14 +43,15 @@ type Story = StoryObj<typeof config>;
 
 export const Empty: Story = {};
 
-export const OneError: Story = {
+export const OneErrorClosePlay: Story = {
+    name: "One Error (Closes on Play)",
     args: {
         errors: [
             {
                 errorCode: "API_INVALID_PAGE_OR_PAGE_SIZE",
                 message: "Test Error Message 1",
                 additionalData: null,
-                " $fragmentType": "ErrorMessageFragment"
+                " $fragmentType": "ErrorMessageSingleFragment"
             }
         ]
     },
@@ -74,20 +75,15 @@ export const ThreeErrors: Story = {
                 errorCode: "API_INVALID_PAGE_OR_PAGE_SIZE",
                 message: "Test Error Message 1",
                 additionalData: null,
-                " $fragmentType": "ErrorMessageFragment"
+                " $fragmentType": "ErrorMessageSingleFragment"
             },
             {
                 errorCode: "BAD_HEADERS",
                 message: "Test Error Message 2",
                 additionalData: "Some additional data",
-                " $fragmentType": "ErrorMessageFragment"
+                " $fragmentType": "ErrorMessageSingleFragment"
             },
-            {
-                errorCode: "DOTNET_DIAGNOSTICS_FAILURE",
-                message: "Test Error Message 3",
-                additionalData: null,
-                " $fragmentType": "ErrorMessageFragment"
-            }
+            new Error("DEEZ NUTZ")
         ]
     }
 };

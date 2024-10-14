@@ -2,12 +2,17 @@ import { createContext } from "react";
 
 import IErrorRecord from "./ErrorRecord";
 
-import { ErrorMessageFragment$data } from "@/components/graphql/__generated__/ErrorMessageFragment.graphql";
+import { ErrorMessageArrayFragment$data } from "@/components/graphql/__generated__/ErrorMessageArrayFragment.graphql";
+import { ErrorMessageSingleFragment$data } from "@/components/graphql/__generated__/ErrorMessageSingleFragment.graphql";
 
 export interface IErrorsContext {
     errors: ReadonlyArray<IErrorRecord>;
-    addErrors: (errors: ReadonlyArray<ErrorMessageFragment$data>) => void;
-    removeErrors: (keys: ReadonlyArray<string>) => void;
+    addErrors: (
+        errors:
+            | ErrorMessageArrayFragment$data
+            | ReadonlyArray<Error | ErrorMessageSingleFragment$data>
+    ) => void;
+    removeErrors: (keys?: ReadonlyArray<string>) => void;
 }
 
 const ErrorsContext = createContext<IErrorsContext>({

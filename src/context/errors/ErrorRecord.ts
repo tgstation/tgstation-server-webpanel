@@ -1,8 +1,8 @@
-import { ErrorMessageFragment$data } from "@/components/graphql/__generated__/ErrorMessageFragment.graphql";
+import { ErrorMessageSingleFragment$data } from "@/components/graphql/__generated__/ErrorMessageSingleFragment.graphql";
 
 interface IErrorRecord {
     key: string;
-    error: ErrorMessageFragment$data;
+    error: ErrorMessageSingleFragment$data | Error;
 }
 
 export default IErrorRecord;
