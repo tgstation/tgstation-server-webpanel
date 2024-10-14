@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - next
+            - back-patch
     workflow_dispatch:
 
 jobs:
