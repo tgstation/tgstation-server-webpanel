@@ -57,3 +57,25 @@ export const WithStackAndClose: Story = {
         await waitFor(() => expect(args.onClose).toBeCalled());
     }
 };
+export const TgsErrorWithAdditionalData: Story = {
+    name: "TGS Error With Additional Data",
+    args: {
+        error: {
+            errorCode: "USER_NAME_CHANGE",
+            additionalData: "some AdditionalData",
+            message: "TGS fuckery",
+            " $fragmentType": "ErrorMessageSingleFragment"
+        }
+    }
+};
+export const TgsError: Story = {
+    name: "TGS Error",
+    args: {
+        error: {
+            errorCode: "USER_NAME_CHANGE",
+            message: "TGS fuckery",
+            additionalData: null,
+            " $fragmentType": "ErrorMessageSingleFragment"
+        }
+    }
+};

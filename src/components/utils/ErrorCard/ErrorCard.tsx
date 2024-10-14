@@ -17,7 +17,7 @@ interface IProps {
 
 const ErrorCard = (props: IProps) => {
     const intl = useIntl();
-    const isErrorMessage = !!props.error.message;
+    const isErrorMessage = !!props.error.message && !(props.error instanceof Error);
     const jsError = props.error as Error;
     const tgsError = props.error as ErrorMessageSingleFragment$data;
 
