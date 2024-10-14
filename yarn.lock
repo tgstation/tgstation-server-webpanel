@@ -1796,14 +1796,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-relativetimeformat@npm:^11.2.15":
-  version: 11.2.15
-  resolution: "@formatjs/intl-relativetimeformat@npm:11.2.15"
+"@formatjs/intl-relativetimeformat@npm:^11.2.16":
+  version: 11.2.16
+  resolution: "@formatjs/intl-relativetimeformat@npm:11.2.16"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:2.1.0"
-    "@formatjs/intl-localematcher": "npm:0.5.4"
-    tslib: "npm:^2.4.0"
-  checksum: 10/a7890892cd52e37c427982a700d7613cd6a68f73e9c0bf785e9841442b37ba491d1eded3fe6df8ad4ccba4754ad6b5e9b3cc082a5d227b2988a8b6709775bea5
+    "@formatjs/ecma402-abstract": "npm:2.2.0"
+    "@formatjs/intl-localematcher": "npm:0.5.5"
+    tslib: "npm:^2.7.0"
+  checksum: 10/9c9b9f624948b51c3a3dcae88e27931a20032e78cef717bc2a54405c9a65de3239e8a2f9b1f9f10e0340bb4724dcfbbd2f9309fbca9d8ac4b8fb24feff04c8f8
   languageName: node
   linkType: hard
 
@@ -11288,7 +11288,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.25.7"
     "@formatjs/intl-locale": "npm:^4.0.2"
     "@formatjs/intl-pluralrules": "npm:5.2.16"
-    "@formatjs/intl-relativetimeformat": "npm:^11.2.15"
+    "@formatjs/intl-relativetimeformat": "npm:^11.2.16"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
