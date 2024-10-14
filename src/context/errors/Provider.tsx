@@ -18,12 +18,24 @@ const ErrorsProvider = (props: IProps) => {
             newErrors.forEach(error =>
                 newErrorRecords.push({
                     key: v4(),
-                    error
+                    error:
+                        error instanceof Error
+                            ? error
+                            : {
+                                  ...error,
+                                  " $fragmentType": "ErrorMessageSingleFragment"
+                              }
                 })
             );
+
             setErrors(newErrorRecords);
         },
         removeErrors: keys => {
+            if (!keys) {
+                setErrors([]);
+                return;
+            }
+
             const newErrorRecords = errors.filter(
                 record => !keys.some(keyToRemove => keyToRemove === record.key)
             );

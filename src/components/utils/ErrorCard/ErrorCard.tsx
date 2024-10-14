@@ -3,14 +3,14 @@ import { ErrorInfo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import Pkg from "@/../package.json";
-import { ErrorMessageFragment$data } from "@/components/graphql/__generated__/ErrorMessageFragment.graphql";
+import { ErrorMessageSingleFragment$data } from "@/components/graphql/__generated__/ErrorMessageSingleFragment.graphql";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface IProps {
     report?: boolean;
-    error: Error | ErrorMessageFragment$data;
+    error: Error | ErrorMessageSingleFragment$data;
     errorInfo?: ErrorInfo;
     onClose?: () => void;
 }
@@ -19,7 +19,7 @@ const ErrorCard = (props: IProps) => {
     const intl = useIntl();
     const isErrorMessage = !!props.error.message;
     const jsError = props.error as Error;
-    const tgsError = props.error as ErrorMessageFragment$data;
+    const tgsError = props.error as ErrorMessageSingleFragment$data;
 
     const formattedError = props.errorInfo
         ? intl.formatMessage(
@@ -32,15 +32,7 @@ const ErrorCard = (props: IProps) => {
               }
           )
         : isErrorMessage
-        ? intl.formatMessage(
-              {
-                  id: "error.errorMessage"
-              },
-              {
-                  message: tgsError.message,
-                  additionalData: tgsError.additionalData
-              }
-          )
+        ? tgsError.additionalData || null
         : intl.formatMessage(
               {
                   id: "error.withoutstacktrace"
@@ -52,7 +44,7 @@ const ErrorCard = (props: IProps) => {
 
     const titleMessage = (
         <div className="text-lg">
-            <FormattedMessage id="error.somethingwentwrong" />
+            {isErrorMessage ? tgsError.message : <FormattedMessage id="error.somethingwentwrong" />}
         </div>
     );
 
@@ -81,18 +73,20 @@ const ErrorCard = (props: IProps) => {
                     </CardDescription>
                 ) : null}
             </CardHeader>
-            <CardContent className="grid gap-2">
-                <Alert>
-                    {!isErrorMessage ? (
-                        <AlertTitle>
-                            {jsError.name}: {jsError.message}
-                        </AlertTitle>
-                    ) : null}
-                    <AlertDescription>
-                        <code className="block whitespace-pre-wrap">{formattedError}</code>
-                    </AlertDescription>
-                </Alert>
-            </CardContent>
+            {formattedError ? (
+                <CardContent className="grid gap-2">
+                    <Alert>
+                        {!isErrorMessage ? (
+                            <AlertTitle>
+                                {jsError.name}: {jsError.message}
+                            </AlertTitle>
+                        ) : null}
+                        <AlertDescription>
+                            <code className="block whitespace-pre-wrap">{formattedError}</code>
+                        </AlertDescription>
+                    </Alert>
+                </CardContent>
+            ) : null}
         </Card>
     );
 };

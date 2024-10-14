@@ -9,6 +9,7 @@ import PasswordForm from "./PasswordForm/PasswordForm";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
+import useMutationErrors from "@/context/errors/useMutationErrors";
 import SessionContext from "@/context/session/Context";
 import { ICredentials, UserPasswordCredentials } from "@/lib/Credentials";
 
@@ -23,6 +24,8 @@ const DefaultCredentials = new UserPasswordCredentials(
 
 const Login = (props: IProps) => {
     const [commitLogin, isLoginInFlight] = useMutation<ServerLoginMutation>(ServerLogin);
+    const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
+
     const showCard = !isLoginInFlight;
 
     const session = useContext(SessionContext);
@@ -38,16 +41,14 @@ const Login = (props: IProps) => {
                             bearer: response.login.loginResult.bearer,
                             originalCredentials: credentials
                         });
-                    } else {
-                        // TODO
                     }
+
+                    payloadErrorsHandler(response.login.errors);
                 },
-                onError: error => {
-                    console.log(error);
-                }
+                onError: requestErrorHandler
             });
         },
-        [props, commitLogin, session]
+        [props, commitLogin, session, requestErrorHandler, payloadErrorsHandler]
     );
 
     const KeydownEventHandler = useCallback(
