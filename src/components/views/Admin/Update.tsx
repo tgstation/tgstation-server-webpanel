@@ -381,11 +381,6 @@ class Update extends React.Component<IProps, IState> {
             currentDic.set(TgsComponent.Core, nowRelease);
             Object.keys(nowRelease.ComponentVersions!).forEach(componentStr => {
                 const component = componentStr as TgsComponent;
-                const componentVersionStr = nowRelease.ComponentVersions![component];
-                if (!componentVersionStr) return;
-
-                const componentVersion = new SemVer(componentVersionStr);
-
                 if (
                     component == TgsComponent.Core ||
                     component == TgsComponent.NugetClient ||
@@ -394,7 +389,15 @@ class Update extends React.Component<IProps, IState> {
                 )
                     return;
 
-                const takeNotesFrom = new SemVer(previousRelease.ComponentVersions![component]);
+                const componentVersionStr = nowRelease.ComponentVersions![component];
+                if (!componentVersionStr) return;
+
+                const componentVersion = new SemVer(componentVersionStr);
+
+                const previousComponentVersionStr = previousRelease.ComponentVersions![component];
+                if (!previousComponentVersionStr) return;
+
+                const takeNotesFrom = new SemVer(previousComponentVersionStr);
                 const changesEnumerator = releaseNotes.Components[component]
                     .filter(changelist => {
                         const changelistVersion = new SemVer(changelist.Version);
