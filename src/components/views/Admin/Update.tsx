@@ -503,14 +503,26 @@ class Update extends React.Component<IProps, IState> {
         const canChangeVersion = hasAdminRight(permissionSet, AdministrationRights.ChangeVersion);
         const canUploadVersion = hasAdminRight(permissionSet, AdministrationRights.UploadVersion);
 
-        const selectedVersionMarkdown = this.state.selectedVersion
-            ? (
-                  this.buildVersionDiffFromChangelog(this.state.selectedVersion.version) ??
-                  this.state.selectedVersion.body
-              )
-                  .replaceAll("\r", "")
-                  .replaceAll("\n", "\n\n")
-            : null;
+        const wrapVersionDiffAttempt = () => {
+            if (this.state.selectedVersion)
+                try {
+                    return (
+                        this.buildVersionDiffFromChangelog(this.state.selectedVersion.version) ??
+                        this.state.selectedVersion.body
+                    );
+                } catch {
+                    return (
+                        "# WARNING: COULD NOT PARSE RELEASE NOTES FROM GITHUB. SHOWING ONLY THE LATEST VERSION'S RELEASE NOTES!\n\n" +
+                        this.state.selectedVersion.body
+                    );
+                }
+
+            return null;
+        };
+
+        const selectedVersionMarkdown = wrapVersionDiffAttempt()
+            ?.replaceAll("\r", "")
+            ?.replaceAll("\n", "\n\n");
 
         const currentVersionSemver = new SemVer(this.context.serverInfo.version);
         const selectedVersionIsDifferentMajor =
