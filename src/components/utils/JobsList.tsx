@@ -148,6 +148,7 @@ export default class JobsList extends React.Component<IProps, IState> {
                     zIndex: 5
                 }}>
                 <Rnd
+                    cancel=".btn,.close"
                     className={`jobswidget ${display ? "" : "invisible"}`}
                     style={{
                         pointerEvents: "auto",
