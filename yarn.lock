@@ -2798,14 +2798,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/relay-test-utils@npm:^17.0.0":
-  version: 17.0.0
-  resolution: "@types/relay-test-utils@npm:17.0.0"
+"@types/relay-test-utils@npm:^18.0.0":
+  version: 18.0.0
+  resolution: "@types/relay-test-utils@npm:18.0.0"
   dependencies:
     "@types/react": "npm:*"
     "@types/react-relay": "npm:*"
     "@types/relay-runtime": "npm:*"
-  checksum: 10c0/edd8f394acbcd7fa570e1109431baa88fa509f3e5bd0346150d86732170e4af836138ce3fd4374cf0a8acd7a061f96ffd99a9adefce61d46fcba1610fe8cefb4
+  checksum: 10c0/9f9f0245727c7a67c1631cbcae520d11b5ff2d668a4439fd52927162e1c2555b8849c3d0ddf6595e768d9fa675f30a574a8ebe6eef35ab2a38c20705bedc5653
   languageName: node
   linkType: hard
 
@@ -8109,7 +8109,7 @@ __metadata:
     "@types/react": "npm:^18"
     "@types/react-dom": "npm:^18.3.1"
     "@types/react-relay": "npm:^16.0.6"
-    "@types/relay-test-utils": "npm:^17.0.0"
+    "@types/relay-test-utils": "npm:^18.0.0"
     "@types/uuid": "npm:^10"
     "@vitejs/plugin-react": "npm:^4.3.2"
     autoprefixer: "npm:^10.4.20"
