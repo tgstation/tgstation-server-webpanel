@@ -4,6 +4,10 @@ import App from "./components/App.tsx";
 import "./index.css";
 import TranslationFactory from "./lib/translations/TranslationFactory.ts";
 
+if (import.meta.env.DEV) {
+    console.log(`Using dev delay: ${import.meta.env.VITE_DEV_DELAY_SECONDS}s`);
+}
+
 // At some point, the webpanel had the ability to save passwords, this is however,
 // insecure as compromised webhosts can lead to code being served from an untrusted source,
 // leaking the saved password. Makes sure it's not there anymore
@@ -15,7 +19,7 @@ try {
 } catch {
     (() => {})();
 }
-console.log("here1");
+
 function mountApp() {
     const root = createRoot(document.getElementById("root")!);
     root.render(
