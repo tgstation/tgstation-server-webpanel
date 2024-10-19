@@ -1,18 +1,16 @@
+import ILocationState from "@/components/routed/Login/LocationState";
 import useSession from "@/context/session/useSession";
-import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-interface IProps {
-    children: ReactNode;
-}
-
-const ProtectedRoute = (props: IProps) => {
+const ProtectedRoute = () => {
     const session = useSession();
+    const location = useLocation();
     if (session.currentSession == null) {
-        return <Navigate to="/login" />;
+        const state: ILocationState = { from: location };
+        return <Navigate to="/login" state={state} />;
     }
 
-    return props.children;
+    return <Outlet />;
 };
 
 export default ProtectedRoute;

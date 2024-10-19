@@ -12,7 +12,8 @@ import Loading from "@/components/utils/Loading/Loading";
 import useMutationErrors from "@/context/errors/useMutationErrors";
 import useSession from "@/context/session/useSession";
 import { ICredentials, UserPasswordCredentials } from "@/lib/Credentials";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Location, Navigate, useLocation } from "react-router-dom";
+import ILocationState from "./LocationState";
 
 interface IProps {
     setTemporaryCredentials: (credentials: ICredentials) => void;
@@ -25,18 +26,12 @@ const DefaultCredentials = new UserPasswordCredentials(
 
 const Login = (props: IProps) => {
     const session = useSession();
-
-    // Can happen if we login with no history
-    if (session.currentSession != null) {
-        return <Navigate to="/" replace />;
-    }
+    const location = useLocation() as Location<ILocationState>;
 
     const [commitLogin, isLoginInFlight] = useMutation<ServerLoginMutation>(ServerLogin);
     const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
 
     const showCard = !isLoginInFlight;
-
-    const navigate = useNavigate();
 
     const AttemptLogin = useCallback(
         (credentials: ICredentials) => {
@@ -49,9 +44,6 @@ const Login = (props: IProps) => {
                             bearer: response.login.loginResult.bearer,
                             originalCredentials: credentials
                         });
-
-                        // always try to go back
-                        navigate(-1);
                     }
 
                     payloadErrorsHandler(response.login.errors);
@@ -106,6 +98,11 @@ const Login = (props: IProps) => {
             </CardContent>
         </Card>
     );
+
+    // Can happen if we login with no history
+    if (!!session.currentSession) {
+        return <Navigate to={location.state.from ?? "/home"} replace />;
+    }
 
     const AttemptingLoginSpinner = () => (
         <div className="lg:col-start-3 lg:col-end-9 md:col-start-2 md:col-end-8">

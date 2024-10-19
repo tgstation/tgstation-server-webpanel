@@ -57,16 +57,17 @@ const Router = (props: IProps) => {
                     element: <Login setTemporaryCredentials={props.setTemporaryCredentials} />
                 },
                 {
-                    path: "",
-                    element: (
-                        <ProtectedRoute>
-                            <Home />
-                        </ProtectedRoute>
-                    )
-                },
-                {
-                    path: "*",
-                    element: <NotFound />
+                    element: <ProtectedRoute />,
+                    children: [
+                        {
+                            path: "",
+                            element: <Home />
+                        },
+                        {
+                            path: "*",
+                            element: <NotFound />
+                        }
+                    ]
                 }
             ]
         }
