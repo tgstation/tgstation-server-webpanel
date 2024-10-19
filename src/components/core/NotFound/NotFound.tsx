@@ -15,7 +15,7 @@ const NotFound = () => (
         </CardHeader>
         <CardContent>
             <div className="bg-transparent text-danger">
-                <code className="block whitespace-pre-wrap">
+                <code className="block whitespace-pre-wrap" data-chromatic="ignore">
                     {`Webpanel Version: ${Pkg.version}\nWebpanel Mode: ${
                         import.meta.env.VITE_DEV_MODE ? "DEV" : "PROD"
                     }\nCurrent route: ${window.location.toString()}`}
