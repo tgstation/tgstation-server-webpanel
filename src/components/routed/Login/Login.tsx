@@ -101,7 +101,7 @@ const Login = (props: IProps) => {
 
     // Can happen if we login with no history
     if (!!session.currentSession) {
-        return <Navigate to={location.state.from ?? "/home"} replace />;
+        return <Navigate to={location.state?.from ?? "/home"} replace />;
     }
 
     const AttemptingLoginSpinner = () => (

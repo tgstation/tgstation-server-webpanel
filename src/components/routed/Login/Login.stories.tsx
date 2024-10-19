@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 
 import Login from "./Login";
 import GetOAuthProviders from "./OAuthOptions/graphql/GetOAuthProviders";
@@ -8,8 +8,15 @@ import {
     GetOAuthProvidersQuery$data
 } from "./OAuthOptions/graphql/__generated__/GetOAuthProvidersQuery.graphql";
 
-import { WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
+import { MockRelayEnvironment, WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
+import ErrorsProvider from "@/context/errors/Provider";
+import useErrors from "@/context/errors/useErrors";
+import SessionProvider from "@/context/session/Provider";
+import useSession from "@/context/session/useSession";
 import { ICredentials } from "@/lib/Credentials";
+import sleep from "@/lib/sleep";
+import { useEffect } from "react";
+import { MockPayloadGenerator } from "relay-test-utils";
 
 let mockData: GetOAuthProvidersQuery$data;
 
@@ -67,19 +74,55 @@ setMockData();
 interface IExtraArgs {
     oAuthProviders: string[];
     setTemporaryCredentials: (credentials: ICredentials) => void;
+    onSessionCreated: () => void;
+    hasErrors: () => void;
 }
 
-const TestComponent = (args: IExtraArgs) => {
+const InnerTestComponent = (args: IExtraArgs) => {
     oAuthProviders = args.oAuthProviders ?? [];
     setMockData();
+
+    const session = useSession();
+    useEffect(() => {
+        if (session.currentSession) {
+            args.onSessionCreated();
+        }
+    }, [args, session]);
+
+    const errors = useErrors();
+    useEffect(() => {
+        if (errors.errors.length > 0) {
+            args.hasErrors();
+        }
+    }, [args, errors]);
+
     return <Login {...args} />;
+};
+
+const TestComponent = (args: IExtraArgs) => {
+    return (
+        <ErrorsProvider>
+            <SessionProvider setCredentials={() => {}}>
+                <InnerTestComponent {...args} />
+            </SessionProvider>
+        </ErrorsProvider>
+    );
+};
+
+const relay: WithRelayParameters<GetOAuthProvidersQuery> = {
+    query: GetOAuthProviders,
+    mockResolvers: {
+        Query: () => mockData
+    }
 };
 
 const config: Meta<typeof TestComponent> = {
     component: TestComponent,
     title: "Routed/Login",
     args: {
-        setTemporaryCredentials: fn()
+        setTemporaryCredentials: fn(),
+        onSessionCreated: fn(),
+        hasErrors: fn()
     },
     argTypes: {
         oAuthProviders: {
@@ -89,6 +132,10 @@ const config: Meta<typeof TestComponent> = {
             },
             name: "OAuth Providers"
         }
+    },
+    parameters: {
+        query: GetOAuthProviders,
+        relay
     }
 };
 
@@ -96,16 +143,94 @@ export default config;
 
 type Story = StoryObj<typeof config>;
 
-const relay: WithRelayParameters<GetOAuthProvidersQuery> = {
-    query: GetOAuthProviders,
-    mockResolvers: {
-        Query: () => mockData
+export const Default: Story = {};
+export const SuccessfulLoginTest: Story = {
+    play: async ({ args, canvasElement, step }) => {
+        const canvas = within(canvasElement);
+
+        await sleep(1000);
+        const usernameField = canvas.getByTestId("login-username");
+        const passwordField = canvas.getByTestId("login-password");
+        const submitButton = canvas.getByTestId("login-submit");
+
+        await step("Fake login", async () => {
+            expect(args.setTemporaryCredentials).not.toBeCalled();
+            expect(args.onSessionCreated).not.toBeCalled();
+            expect(args.hasErrors).not.toBeCalled();
+            await userEvent.type(usernameField, "test username");
+            await userEvent.type(passwordField, "some password");
+            await userEvent.click(submitButton);
+            await waitFor(() => {
+                const usernameField = canvas.queryByTestId("login-username");
+                expect(usernameField).toBeNull();
+                expect(args.setTemporaryCredentials).toBeCalled();
+            });
+
+            MockRelayEnvironment.mock.resolveMostRecentOperation(operation => {
+                const payload = MockPayloadGenerator.generate(operation, {
+                    LoginPayload: () => ({
+                        errors: [],
+                        loginResult: {
+                            bearer: "new_bearer",
+                            user: {
+                                id: "current_user_id",
+                                name: "current_user_name"
+                            }
+                        },
+                        query: {}
+                    })
+                });
+
+                return payload;
+            });
+            await waitFor(() => {
+                expect(args.onSessionCreated).toBeCalled();
+                expect(args.hasErrors).not.toBeCalled();
+            });
+        });
     }
 };
 
-export const Default: Story = {
-    parameters: {
-        query: GetOAuthProviders,
-        relay
+export const UnauthenticatedLoginTest: Story = {
+    play: async ({ args, canvasElement, step }) => {
+        const canvas = within(canvasElement);
+
+        await sleep(1000);
+        const usernameField = canvas.getByTestId("login-username");
+        const passwordField = canvas.getByTestId("login-password");
+        const submitButton = canvas.getByTestId("login-submit");
+
+        await step("Fake login", async () => {
+            expect(args.setTemporaryCredentials).not.toBeCalled();
+            expect(args.onSessionCreated).not.toBeCalled();
+            await userEvent.type(usernameField, "test username");
+            await userEvent.type(passwordField, "some password");
+            await userEvent.click(submitButton);
+            await waitFor(() => {
+                const usernameField = canvas.queryByTestId("login-username");
+                expect(usernameField).toBeNull();
+                expect(args.setTemporaryCredentials).toBeCalled();
+            });
+
+            MockRelayEnvironment.mock.resolveMostRecentOperation(operation => {
+                const payload = MockPayloadGenerator.generate(operation, {
+                    LoginPayload: () => ({
+                        errors: [
+                            {
+                                message: "Unauthenticated"
+                            }
+                        ],
+                        loginResult: null,
+                        query: {}
+                    })
+                });
+
+                return payload;
+            });
+            await waitFor(() => {
+                expect(args.onSessionCreated).not.toBeCalled();
+                expect(args.hasErrors).toBeCalled();
+            });
+        });
     }
 };

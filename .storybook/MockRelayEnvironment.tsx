@@ -62,6 +62,8 @@ export type WithRelayParameters<TQuery extends OperationType, TResolvers = objec
      */
 };
 
+export let MockRelayEnvironment = createMockEnvironment();
+
 const AddMockRelayEnvironment = makeDecorator({
     name: "AddMockRelayEnvironment",
     parameterName: "relay",
@@ -75,15 +77,15 @@ const AddMockRelayEnvironment = makeDecorator({
             return getStory(context) as any;
         };
 
-        const environment = createMockEnvironment();
+        MockRelayEnvironment = createMockEnvironment();
 
         const resolver: OperationMockResolver = operation =>
             MockPayloadGenerator.generate(operation, mockResolvers);
-        environment.mock.queueOperationResolver(resolver);
-        environment.mock.queuePendingOperation(query, variables);
+        MockRelayEnvironment.mock.queueOperationResolver(resolver);
+        MockRelayEnvironment.mock.queuePendingOperation(query, variables);
 
         return (
-            <RelayEnvironmentProvider environment={environment}>
+            <RelayEnvironmentProvider environment={MockRelayEnvironment}>
                 <Renderer />
             </RelayEnvironmentProvider>
         );
