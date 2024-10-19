@@ -1,4 +1,5 @@
 import type { Preview } from "@storybook/react";
+import { withRouter } from "storybook-addon-remix-react-router";
 
 import AddConfigDark from "./AddConfigDark";
 import AddIntlEn from "./AddIntlEn";
@@ -15,7 +16,7 @@ const preview: Preview = {
             }
         }
     },
-    decorators: [AddIntlEn, AddConfigDark, AddMockRelayEnvironment]
+    decorators: [AddIntlEn, AddConfigDark, AddMockRelayEnvironment, withRouter]
 };
 
 export default preview;
