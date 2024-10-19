@@ -1,6 +1,7 @@
+import { FormattedMessage } from "react-intl";
+
 import Pkg from "@/../package.json";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormattedMessage } from "react-intl";
 
 const NotFound = () => (
     <Card className="bg-transparent text-transparent-foreground mb-4">

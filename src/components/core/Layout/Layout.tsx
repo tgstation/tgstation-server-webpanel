@@ -1,12 +1,14 @@
-import Loading from "@/components/utils/Loading/Loading";
+import { Suspense } from "react";
+import { Outlet } from "react-router-dom";
+
 import ErrorViewer from "../ErrorViewer/ErrorViewer";
 import Logo from "../Logo/Logo";
 import Navbar from "../Navbar/Navbar";
 import ReportIssue from "../ReportIssue/ReportIssue";
 
+import Loading from "@/components/utils/Loading/Loading";
 import ErrorBoundary from "@/components/utils/ErrorBoundary/ErrorBoundary";
-import { Suspense } from "react";
-import { Outlet } from "react-router-dom";
+
 
 const Layout = () => {
     return (

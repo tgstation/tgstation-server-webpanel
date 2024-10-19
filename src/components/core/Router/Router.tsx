@@ -1,10 +1,12 @@
-import Loading from "@/components/utils/Loading/Loading";
-import { ICredentials } from "@/lib/Credentials";
-import devDelay from "@/lib/devDelay";
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import RethrowRouteError from "./RethrowRouteError/RethrowRouteError";
+
+import devDelay from "@/lib/devDelay";
+import { ICredentials } from "@/lib/Credentials";
+import Loading from "@/components/utils/Loading/Loading";
 
 const Configuration = lazy(
     async () =>

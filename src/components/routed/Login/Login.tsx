@@ -1,19 +1,19 @@
 import { Suspense, useCallback, useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import { useMutation } from "react-relay";
+import { Location, Navigate, useLocation } from "react-router-dom";
 
 import { ServerLoginMutation } from "./graphql/__generated__/ServerLoginMutation.graphql";
 import ServerLogin from "./graphql/ServerLogin";
 import OAuthOptions from "./OAuthOptions/OAuthOptions";
 import PasswordForm from "./PasswordForm/PasswordForm";
+import ILocationState from "./LocationState";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
 import useMutationErrors from "@/context/errors/useMutationErrors";
 import useSession from "@/context/session/useSession";
 import { ICredentials, UserPasswordCredentials } from "@/lib/Credentials";
-import { Location, Navigate, useLocation } from "react-router-dom";
-import ILocationState from "./LocationState";
 
 interface IProps {
     setTemporaryCredentials: (credentials: ICredentials) => void;
@@ -100,7 +100,7 @@ const Login = (props: IProps) => {
     );
 
     // Can happen if we login with no history
-    if (!!session.currentSession) {
+    if (session.currentSession) {
         return <Navigate to={location.state?.from ?? "/home"} replace />;
     }
 

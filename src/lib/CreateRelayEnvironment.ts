@@ -17,9 +17,10 @@ import {
 } from "relay-runtime/lib/network/RelayNetworkTypes";
 
 import { ICredentials, OAuthCredentials } from "./Credentials";
+import devDelay from "./devDelay";
 
 import Pkg from "@/../package.json";
-import devDelay from "./devDelay";
+
 
 const CreateRelayEnvironment = (
     serverUrl: string

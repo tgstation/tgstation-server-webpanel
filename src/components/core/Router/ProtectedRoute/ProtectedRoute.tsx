@@ -1,6 +1,7 @@
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+
 import ILocationState from "@/components/routed/Login/LocationState";
 import useSession from "@/context/session/useSession";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const ProtectedRoute = () => {
     const session = useSession();

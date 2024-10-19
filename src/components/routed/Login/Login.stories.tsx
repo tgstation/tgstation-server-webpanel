@@ -1,5 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
+import { useEffect } from "react";
+import { MockPayloadGenerator } from "relay-test-utils";
 
 import Login from "./Login";
 import GetOAuthProviders from "./OAuthOptions/graphql/GetOAuthProviders";
@@ -15,8 +17,6 @@ import SessionProvider from "@/context/session/Provider";
 import useSession from "@/context/session/useSession";
 import { ICredentials } from "@/lib/Credentials";
 import sleep from "@/lib/sleep";
-import { useEffect } from "react";
-import { MockPayloadGenerator } from "relay-test-utils";
 
 let mockData: GetOAuthProvidersQuery$data;
 

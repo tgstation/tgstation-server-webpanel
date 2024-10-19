@@ -1,9 +1,10 @@
 import { ReactNode, useState } from "react";
 import { v4 } from "uuid";
 
-import ErrorBoundary from "@/components/utils/ErrorBoundary/ErrorBoundary";
 import IErrorRecord from "./ErrorRecord";
 import ErrorsContext, { IErrorsContext } from "./ErrorsContext";
+
+import ErrorBoundary from "@/components/utils/ErrorBoundary/ErrorBoundary";
 
 interface IProps {
     children: ReactNode;
