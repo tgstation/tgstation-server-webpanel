@@ -1,8 +1,10 @@
 import { ReactNode, useState } from "react";
 import { v4 } from "uuid";
 
-import ErrorsContext, { IErrorsContext } from "./Context";
 import IErrorRecord from "./ErrorRecord";
+import ErrorsContext, { IErrorsContext } from "./ErrorsContext";
+
+import ErrorBoundary from "@/components/utils/ErrorBoundary/ErrorBoundary";
 
 interface IProps {
     children: ReactNode;
@@ -43,7 +45,11 @@ const ErrorsProvider = (props: IProps) => {
         }
     };
 
-    return <ErrorsContext.Provider value={errorsContext}>{props.children}</ErrorsContext.Provider>;
+    return (
+        <ErrorsContext.Provider value={errorsContext}>
+            <ErrorBoundary>{props.children}</ErrorBoundary>
+        </ErrorsContext.Provider>
+    );
 };
 
 export default ErrorsProvider;

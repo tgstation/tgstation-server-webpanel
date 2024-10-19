@@ -1,5 +1,5 @@
+import ConfigContext from "./ConfigContext";
 import CreateConfig from "./CreateConfig";
-import ConfigContext from "./Context";
 
 interface IProps {
     children: React.ReactNode;
@@ -8,11 +8,7 @@ interface IProps {
 
 const ConfigProvider = (props: IProps) => {
     const config = CreateConfig(false, props.darkOverride);
-    return (
-        <ConfigContext.Provider value={config}>
-            {props.children}
-        </ConfigContext.Provider>
-    );
+    return <ConfigContext.Provider value={config}>{props.children}</ConfigContext.Provider>;
 };
 
 export default ConfigProvider;

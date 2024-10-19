@@ -2,6 +2,7 @@
 
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -9,31 +10,26 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const Navbar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    const navItems = [
-        { name: "Home", href: "/" },
-        { name: "About", href: "/about" },
-        { name: "Services", href: "/services" },
-        { name: "Contact", href: "/contact" }
-    ];
+    const navItems = [{ name: "Configuration", href: "/config" }];
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-md">
             <div className="container mx-1 px-4 sm:px-6 bg-primary shadow-md">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
-                        <a href="/" className="text-xl font-bold text-white">
+                        <Link to="/" className="text-xl font-bold text-white">
                             tgstation-server
-                        </a>
+                        </Link>
                     </div>
                     <div className="hidden md:block">
                         <div className="ml-10 flex items-baseline space-x-4">
                             {navItems.map(item => (
-                                <a
+                                <Link
                                     key={item.name}
-                                    href={item.href}
+                                    to={item.href}
                                     className="text-white hover:bg-primary hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
                                     {item.name}
-                                </a>
+                                </Link>
                             ))}
                         </div>
                     </div>
@@ -57,13 +53,13 @@ const Navbar = () => {
                                 className="w-[240px] sm:w-[300px] bg-primary">
                                 <nav className="flex flex-col space-y-4 mt-6">
                                     {navItems.map(item => (
-                                        <a
+                                        <Link
                                             key={item.name}
-                                            href={item.href}
+                                            to={item.href}
                                             className="text-white hover:bg-primary hover:text-primary-foreground px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
                                             onClick={() => setIsMobileMenuOpen(false)}>
                                             {item.name}
-                                        </a>
+                                        </Link>
                                     ))}
                                 </nav>
                             </SheetContent>

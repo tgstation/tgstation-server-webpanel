@@ -1,16 +1,18 @@
-import { Suspense, useCallback, useContext, useEffect } from "react";
+import { Suspense, useCallback, useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import { useMutation } from "react-relay";
+import { Location, Navigate, useLocation } from "react-router-dom";
 
 import { ServerLoginMutation } from "./graphql/__generated__/ServerLoginMutation.graphql";
 import ServerLogin from "./graphql/ServerLogin";
 import OAuthOptions from "./OAuthOptions/OAuthOptions";
 import PasswordForm from "./PasswordForm/PasswordForm";
+import ILocationState from "./LocationState";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
 import useMutationErrors from "@/context/errors/useMutationErrors";
-import SessionContext from "@/context/session/Context";
+import useSession from "@/context/session/useSession";
 import { ICredentials, UserPasswordCredentials } from "@/lib/Credentials";
 
 interface IProps {
@@ -23,12 +25,13 @@ const DefaultCredentials = new UserPasswordCredentials(
 );
 
 const Login = (props: IProps) => {
+    const session = useSession();
+    const location = useLocation() as Location<ILocationState>;
+
     const [commitLogin, isLoginInFlight] = useMutation<ServerLoginMutation>(ServerLogin);
     const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
 
     const showCard = !isLoginInFlight;
-
-    const session = useContext(SessionContext);
 
     const AttemptLogin = useCallback(
         (credentials: ICredentials) => {
@@ -95,6 +98,11 @@ const Login = (props: IProps) => {
             </CardContent>
         </Card>
     );
+
+    // Can happen if we login with no history
+    if (session.currentSession) {
+        return <Navigate to={location.state?.from ?? "/home"} replace />;
+    }
 
     const AttemptingLoginSpinner = () => (
         <div className="lg:col-start-3 lg:col-end-9 md:col-start-2 md:col-end-8">

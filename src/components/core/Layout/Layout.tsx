@@ -1,31 +1,32 @@
+import { Suspense } from "react";
+import { Outlet } from "react-router-dom";
+
 import ErrorViewer from "../ErrorViewer/ErrorViewer";
 import Logo from "../Logo/Logo";
 import Navbar from "../Navbar/Navbar";
 import ReportIssue from "../ReportIssue/ReportIssue";
-import Router from "../Router/Router";
 
+import Loading from "@/components/utils/Loading/Loading";
 import ErrorBoundary from "@/components/utils/ErrorBoundary/ErrorBoundary";
-import { ICredentials } from "@/lib/Credentials";
 
-interface IProps {
-    setTemporaryCredentials: (credentials: ICredentials) => void;
-}
 
-const Layout = (props: IProps) => {
+const Layout = () => {
     return (
-        <ErrorBoundary>
+        <>
             <Navbar />
-            <div className="mt-20">
-                <div className="grid grid-cols-8">
-                    <div className="col-start-3 col-end-7">
+            <div className="mt-20 grid grid-cols-8">
+                <div className="lg:col-start-2 lg:col-end-8">
+                    <ErrorBoundary>
                         <ErrorViewer />
-                    </div>
+                        <Suspense fallback={<Loading />}>
+                            <Outlet />
+                        </Suspense>
+                    </ErrorBoundary>
                 </div>
-                <Router setTemporaryCredentials={props.setTemporaryCredentials} />
             </div>
             <ReportIssue />
             <Logo />
-        </ErrorBoundary>
+        </>
     );
 };
 

@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     const testAttributeRemoverPlugin =
         // keep this one last, the storybook config pops it off
         removeTestIdAttribute({
-            attributes: ["data-testid"], // remove test attributes from jsx
+            attributes: ["data-testid", "data-chromatic"], // remove test attributes from jsx
             usage: "vite"
         });
     if (process.env.VITE_DEV_MODE !== "false") {

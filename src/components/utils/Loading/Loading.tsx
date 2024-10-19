@@ -9,7 +9,7 @@ interface IProps {
 const Loading = function (props: IProps) {
     return (
         <div className="flex flex-col items-center justify-center space-y-2">
-            <Loader2 className="w-3/4 h-3/4 animate-spin text-primary" />
+            <Loader2 className="w-3/5 h-3/5 animate-spin text-primary" />
             {props.message ? (
                 <p className="font-medium text-muted-foreground">
                     {props.noIntl ? props.message : <FormattedMessage id={props.message} />}

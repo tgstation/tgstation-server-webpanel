@@ -1,10 +1,8 @@
-import { useContext } from "react";
-
 import ErrorCard from "@/components/utils/ErrorCard/ErrorCard";
-import ErrorsContext from "@/context/errors/Context";
+import useErrors from "@/context/errors/useErrors";
 
 const ErrorViewer = () => {
-    const context = useContext(ErrorsContext);
+    const context = useErrors();
 
     return (
         <>

@@ -10,10 +10,13 @@ import Locales from "../lib/translations/Locales";
 import Loading from "./utils/Loading/Loading";
 import icolibrary from "./utils/icolibrary";
 
-const RelayEnvironment = lazy(async () => {
-    await devDelay();
-    return await import("@/components/core/RelayEnvironment/RelayEnvironment");
-});
+const Environment = lazy(
+    async () =>
+        await devDelay(
+            () => import("@/components/core/Environment/Environment"),
+            "Component Load: Environment"
+        )
+);
 
 interface IProps {
     preferredLocales: readonly string[];
@@ -83,7 +86,7 @@ const App = (props: IProps) => {
                                     </div>
                                 </div>
                             }>
-                            <RelayEnvironment />
+                            <Environment />
                         </Suspense>
                     </IntlProvider>
                 ) : (

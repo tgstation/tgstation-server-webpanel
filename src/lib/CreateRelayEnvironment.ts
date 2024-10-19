@@ -17,8 +17,10 @@ import {
 } from "relay-runtime/lib/network/RelayNetworkTypes";
 
 import { ICredentials, OAuthCredentials } from "./Credentials";
+import devDelay from "./devDelay";
 
 import Pkg from "@/../package.json";
+
 
 const CreateRelayEnvironment = (
     serverUrl: string
@@ -58,24 +60,18 @@ const CreateRelayEnvironment = (
             }
         }
 
-        const resp = await fetch(graphQLEndpoint, {
-            method: "POST",
-            headers: requestHeaders,
-            body: JSON.stringify({
-                query: request.text, // <-- The GraphQL document composed by Relay
-                variables
-            })
-        });
-
-        const result = await resp.json();
-
-        if (import.meta.env.VITE_DEV_DELAY_SECONDS) {
-            await new Promise<void>(resolve => {
-                setTimeout(() => resolve(), import.meta.env.VITE_DEV_DELAY_SECONDS * 1000);
+        return await devDelay(async () => {
+            const resp = await fetch(graphQLEndpoint, {
+                method: "POST",
+                headers: requestHeaders,
+                body: JSON.stringify({
+                    query: request.text, // <-- The GraphQL document composed by Relay
+                    variables
+                })
             });
-        }
 
-        return result;
+            return await resp.json();
+        }, "Relay Request");
     };
 
     // We only want to setup subscriptions if we are on the client.

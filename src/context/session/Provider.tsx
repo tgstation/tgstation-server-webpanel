@@ -1,7 +1,7 @@
 import { ReactNode, useState } from "react";
 
-import SessionContext from "./Context";
 import ISession from "./Session";
+import SessionContext from "./SessionContext";
 
 import { BearerCredentials, ICredentials } from "@/lib/Credentials";
 
