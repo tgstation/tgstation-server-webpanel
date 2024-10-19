@@ -12,6 +12,7 @@ import Loading from "@/components/utils/Loading/Loading";
 import useMutationErrors from "@/context/errors/useMutationErrors";
 import useSession from "@/context/session/useSession";
 import { ICredentials, UserPasswordCredentials } from "@/lib/Credentials";
+import { Navigate, useNavigate } from "react-router-dom";
 
 interface IProps {
     setTemporaryCredentials: (credentials: ICredentials) => void;
@@ -23,12 +24,19 @@ const DefaultCredentials = new UserPasswordCredentials(
 );
 
 const Login = (props: IProps) => {
+    const session = useSession();
+
+    // Can happen if we login with no history
+    if (session.currentSession != null) {
+        return <Navigate to="/" replace />;
+    }
+
     const [commitLogin, isLoginInFlight] = useMutation<ServerLoginMutation>(ServerLogin);
     const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
 
     const showCard = !isLoginInFlight;
 
-    const session = useSession();
+    const navigate = useNavigate();
 
     const AttemptLogin = useCallback(
         (credentials: ICredentials) => {
@@ -41,6 +49,9 @@ const Login = (props: IProps) => {
                             bearer: response.login.loginResult.bearer,
                             originalCredentials: credentials
                         });
+
+                        // always try to go back
+                        navigate(-1);
                     }
 
                     payloadErrorsHandler(response.login.errors);

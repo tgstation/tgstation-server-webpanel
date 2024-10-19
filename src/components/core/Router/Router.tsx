@@ -3,6 +3,7 @@ import { ICredentials } from "@/lib/Credentials";
 import devDelay from "@/lib/devDelay";
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import RethrowRouteError from "./RethrowRouteError/RethrowRouteError";
 
 const Configuration = lazy(
@@ -11,6 +12,11 @@ const Configuration = lazy(
             () => import("@/components/routed/Configuration/Configuration"),
             "Component Load: Configuration"
         )
+);
+
+const Home = lazy(
+    async () =>
+        await devDelay(() => import("@/components/routed/Home/Home"), "Component Load: Home")
 );
 
 const Layout = lazy(
@@ -49,6 +55,14 @@ const Router = (props: IProps) => {
                 {
                     path: "login",
                     element: <Login setTemporaryCredentials={props.setTemporaryCredentials} />
+                },
+                {
+                    path: "",
+                    element: (
+                        <ProtectedRoute>
+                            <Home />
+                        </ProtectedRoute>
+                    )
                 },
                 {
                     path: "*",
