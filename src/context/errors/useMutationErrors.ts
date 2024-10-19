@@ -1,16 +1,15 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFragment } from "react-relay";
-
-import ErrorsContext from "./Context";
 
 import { ErrorMessageArrayFragment$key } from "@/components/graphql/__generated__/ErrorMessageArrayFragment.graphql";
 import ErrorMessageArray from "@/components/graphql/ErrorMessageArray";
+import useErrors from "./useErrors";
 
 const useMutationErrors = (): [
     (error: Error) => void,
     (errors?: ErrorMessageArrayFragment$key | null) => void
 ] => {
-    const errors = useContext(ErrorsContext);
+    const errors = useErrors();
 
     const requestErrorHandler = (error: Error) => {
         errors.addErrors([error]);

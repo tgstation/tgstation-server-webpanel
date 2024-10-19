@@ -1,9 +1,9 @@
-import { useContext, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useIntl } from "react-intl";
 import { RelayEnvironmentProvider } from "react-relay";
 
 import Pkg from "@/../package.json";
-import ConfigContext from "@/context/config/Context";
+import useConfig from "@/context/config/useConfig";
 import ErrorsProvider from "@/context/errors/Provider";
 import SessionProvider from "@/context/session/Provider";
 import CreateRelayEnvironment from "@/lib/CreateRelayEnvironment";
@@ -18,7 +18,7 @@ const Environment = () => {
         document.title = intl.formatMessage({ id: "title" }, { version });
     });
 
-    const config = useContext(ConfigContext);
+    const config = useConfig();
 
     const { relayEnviroment, setCredentials } = useMemo(
         () => CreateRelayEnvironment(config.ApiPath.value),

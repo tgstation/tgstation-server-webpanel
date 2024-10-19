@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useContext, useEffect } from "react";
+import { Suspense, useCallback, useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import { useMutation } from "react-relay";
 
@@ -10,7 +10,7 @@ import PasswordForm from "./PasswordForm/PasswordForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
 import useMutationErrors from "@/context/errors/useMutationErrors";
-import SessionContext from "@/context/session/Context";
+import useSession from "@/context/session/useSession";
 import { ICredentials, UserPasswordCredentials } from "@/lib/Credentials";
 
 interface IProps {
@@ -28,7 +28,7 @@ const Login = (props: IProps) => {
 
     const showCard = !isLoginInFlight;
 
-    const session = useContext(SessionContext);
+    const session = useSession();
 
     const AttemptLogin = useCallback(
         (credentials: ICredentials) => {

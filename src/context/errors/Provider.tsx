@@ -2,8 +2,8 @@ import { ReactNode, useState } from "react";
 import { v4 } from "uuid";
 
 import ErrorBoundary from "@/components/utils/ErrorBoundary/ErrorBoundary";
-import ErrorsContext, { IErrorsContext } from "./Context";
 import IErrorRecord from "./ErrorRecord";
+import ErrorsContext, { IErrorsContext } from "./ErrorsContext";
 
 interface IProps {
     children: ReactNode;

@@ -1,12 +1,12 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, waitFor, within } from "@storybook/test";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 
 import ErrorViewer from "./ErrorViewer";
 
 import { ErrorMessageSingleFragment$data } from "@/components/graphql/__generated__/ErrorMessageSingleFragment.graphql";
-import ErrorsContext from "@/context/errors/Context";
 import ErrorsProvider from "@/context/errors/Provider";
+import useErrors from "@/context/errors/useErrors";
 import sleep from "@/lib/sleep";
 
 interface IArgs {
@@ -14,7 +14,7 @@ interface IArgs {
 }
 
 const InnerTestComponent = (props: IArgs) => {
-    const context = useContext(ErrorsContext);
+    const context = useErrors();
 
     useEffect(() => {
         context.addErrors(props.errors ?? []);

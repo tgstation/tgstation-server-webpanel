@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { FormattedMessage } from "react-intl";
 
 import Item from "./Item/Item";
@@ -7,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import EnumDropdown from "@/components/utils/EnumDropdown/EnumDropdown";
-import ConfigContext from "@/context/config/Context";
 import { JobsWidgetOptions } from "@/context/config/CreateConfig";
 import Theme from "@/context/config/Theme";
+import useConfig from "@/context/config/useConfig";
 
 const List = () => {
-    const config = useContext(ConfigContext);
+    const config = useConfig();
 
     const saveCallbacks: (() => void)[] = [];
 
