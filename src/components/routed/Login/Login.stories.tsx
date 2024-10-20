@@ -11,9 +11,9 @@ import {
 } from "./OAuthOptions/graphql/__generated__/GetOAuthProvidersQuery.graphql";
 
 import { MockRelayEnvironment, WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
-import ErrorsProvider from "@/context/errors/Provider";
+import ErrorsProvider from "@/context/errors/ErrorsProvider";
 import useErrors from "@/context/errors/useErrors";
-import SessionProvider from "@/context/session/Provider";
+import SessionProvider from "@/context/session/SessionProvider";
 import useSession from "@/context/session/useSession";
 import { ICredentials } from "@/lib/Credentials";
 import sleep from "@/lib/sleep";

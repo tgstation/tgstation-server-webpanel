@@ -6,8 +6,8 @@ import Router from "../Router/Router";
 
 import Pkg from "@/../package.json";
 import useConfig from "@/context/config/useConfig";
-import ErrorsProvider from "@/context/errors/Provider";
-import SessionProvider from "@/context/session/Provider";
+import ErrorsProvider from "@/context/errors/ErrorsProvider";
+import SessionProvider from "@/context/session/SessionProvider";
 import CreateRelayEnvironment from "@/lib/CreateRelayEnvironment";
 
 const Environment = () => {
