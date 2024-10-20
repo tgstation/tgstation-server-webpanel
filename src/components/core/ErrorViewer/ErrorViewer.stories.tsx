@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import ErrorViewer from "./ErrorViewer";
 
 import { ErrorMessageSingleFragment$data } from "@/components/graphql/__generated__/ErrorMessageSingleFragment.graphql";
-import ErrorsProvider from "@/context/errors/Provider";
+import ErrorsProvider from "@/context/errors/ErrorsProvider";
 import useErrors from "@/context/errors/useErrors";
 import sleep from "@/lib/sleep";
 

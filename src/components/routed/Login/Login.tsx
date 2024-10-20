@@ -5,24 +5,23 @@ import { Location, Navigate, useLocation } from "react-router-dom";
 
 import { ServerLoginMutation } from "./graphql/__generated__/ServerLoginMutation.graphql";
 import ServerLogin from "./graphql/ServerLogin";
+import ILocationState from "./LocationState";
 import OAuthOptions from "./OAuthOptions/OAuthOptions";
 import PasswordForm from "./PasswordForm/PasswordForm";
-import ILocationState from "./LocationState";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
 import useMutationErrors from "@/context/errors/useMutationErrors";
 import useSession from "@/context/session/useSession";
-import { ICredentials, UserPasswordCredentials } from "@/lib/Credentials";
+import {
+    DefaultUserPasswordCredentials,
+    ICredentials,
+    UserPasswordCredentials
+} from "@/lib/Credentials";
 
 interface IProps {
     setTemporaryCredentials: (credentials: ICredentials) => void;
 }
-
-const DefaultCredentials = new UserPasswordCredentials(
-    "admin",
-    "ISolemlySwearToDeleteTheDataDirectory"
-);
 
 const Login = (props: IProps) => {
     const session = useSession();
@@ -42,6 +41,7 @@ const Login = (props: IProps) => {
                     if (response.login.loginResult) {
                         session.setSession({
                             bearer: response.login.loginResult.bearer,
+                            userId: response.login.loginResult.user.id,
                             originalCredentials: credentials
                         });
                     }
@@ -57,7 +57,7 @@ const Login = (props: IProps) => {
     const KeydownEventHandler = useCallback(
         (event: KeyboardEvent) => {
             if (event.key === "L" && event.ctrlKey && event.shiftKey) {
-                AttemptLogin(DefaultCredentials);
+                AttemptLogin(new DefaultUserPasswordCredentials());
             }
         },
         [AttemptLogin]

@@ -1,20 +1,14 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import HomeRoutes from "../../routed/Home/HomeRoutes";
+
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import RethrowRouteError from "./RethrowRouteError/RethrowRouteError";
 
-import devDelay from "@/lib/devDelay";
-import { ICredentials } from "@/lib/Credentials";
 import Loading from "@/components/utils/Loading/Loading";
-
-const Configuration = lazy(
-    async () =>
-        await devDelay(
-            () => import("@/components/routed/Configuration/Configuration"),
-            "Component Load: Configuration"
-        )
-);
+import { ICredentials } from "@/lib/Credentials";
+import devDelay from "@/lib/devDelay";
 
 const Home = lazy(
     async () =>
@@ -51,13 +45,10 @@ const Router = (props: IProps) => {
             errorElement: <RethrowRouteError />,
             children: [
                 {
-                    path: "config",
-                    element: <Configuration />
-                },
-                {
                     path: "login",
                     element: <Login setTemporaryCredentials={props.setTemporaryCredentials} />
                 },
+                ...HomeRoutes.filter(route => route.unprotected),
                 {
                     element: <ProtectedRoute />,
                     children: [
@@ -65,6 +56,7 @@ const Router = (props: IProps) => {
                             path: "",
                             element: <Home />
                         },
+                        ...HomeRoutes.filter(route => !route.unprotected),
                         {
                             path: "*",
                             element: <NotFound />
