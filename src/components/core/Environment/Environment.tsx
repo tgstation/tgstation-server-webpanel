@@ -8,7 +8,7 @@ import Pkg from "@/../package.json";
 import useConfig from "@/context/config/useConfig";
 import ErrorsProvider from "@/context/errors/ErrorsProvider";
 import SessionProvider from "@/context/session/SessionProvider";
-import CreateRelayEnvironment from "@/lib/CreateRelayEnvironment";
+import CreateTgsRelayEnvironment from "@/lib/CreateTgsRelayEnvironment";
 
 const Environment = () => {
     const version = Pkg.version;
@@ -22,7 +22,7 @@ const Environment = () => {
     const config = useConfig();
 
     const { relayEnviroment, setCredentials } = useMemo(
-        () => CreateRelayEnvironment(config.ApiPath.value),
+        () => CreateTgsRelayEnvironment(config.ApiPath.value),
         [config.ApiPath.value]
     );
 
