@@ -472,7 +472,16 @@ function Server(props: WrappedComponentProps): JSX.Element {
                         pill
                         variant={(() => {
                             const launchTime = new Date(watchdogSettings.launchTime!);
-                            const duration = new Date().getMinutes() - launchTime.getMinutes();
+                            const diffMinutes = (dt2: Date, dt1: Date) => {
+                                // Calculate the difference in milliseconds between the two provided dates and convert it to seconds
+                                let diff = (dt2.getTime() - dt1.getTime()) / 1000;
+                                // Convert the difference from seconds to minutes
+                                diff /= 60;
+                                // Return the absolute value of the rounded difference in minutes
+                                return Math.abs(Math.round(diff));
+                            };
+
+                            const duration = diffMinutes(new Date(), launchTime);
                             if (duration < 5) return "danger";
 
                             if (duration < 15) return "warning";
