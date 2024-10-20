@@ -41,6 +41,7 @@ const Login = (props: IProps) => {
                     if (response.login.loginResult) {
                         session.setSession({
                             bearer: response.login.loginResult.bearer,
+                            userId: response.login.loginResult.user.id,
                             originalCredentials: credentials
                         });
                     }

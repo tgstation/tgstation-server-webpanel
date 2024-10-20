@@ -134,7 +134,6 @@ const config: Meta<typeof TestComponent> = {
         }
     },
     parameters: {
-        query: GetOAuthProviders,
         relay
     }
 };

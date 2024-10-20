@@ -10,6 +10,7 @@ const ServerLogin = graphql`
             loginResult {
                 bearer
                 user {
+                    id
                     ...CommonUserDetailsFragment
                 }
             }
