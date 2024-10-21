@@ -454,6 +454,8 @@
     "view.info.userlimit": "User Limit: ",
     "view.info.grouplimit": "Group Limit: ",
     "view.info.oauth": "OAuth Support: ",
+    "view.info.swarmversion": "Swarm Protocol Version: ",
+    "view.info.gqlapiversion": "GraphQL API Version: ",
     "view.meme_0": "Toxic Gamers' Sanctuary",
     "view.meme_1": "The Great Spaceman",
     "view.meme_2": "The Griefers' Stronghold",

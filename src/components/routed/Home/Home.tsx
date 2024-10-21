@@ -1,5 +1,5 @@
 import { FormattedMessage } from "react-intl";
-import { PreloadedQuery, usePreloadedQuery } from "react-relay";
+import { PreloadedQuery, usePreloadedQuery, useRelayEnvironment } from "react-relay";
 
 import { HomeCardPermissionsQuery } from "./graphql/__generated__/HomeCardPermissionsQuery.graphql";
 import HomeCardPermissions from "./graphql/HomeCardPermissions";
@@ -15,6 +15,7 @@ interface IProps {
 
 const Home = (props: IProps) => {
     const session = useSession();
+    const relayEnvironment = useRelayEnvironment();
     const usingDefaultCredentials =
         !!session.currentSession?.originalCredentials.defaultCredentials;
 
@@ -34,7 +35,7 @@ const Home = (props: IProps) => {
                 </Alert>
             ) : null}
             <div className="flex flex-row flex-wrap justify-center">
-                {HomeRoutes.map(route => (
+                {HomeRoutes(relayEnvironment).map(route => (
                     <div
                         key={route.localeNameId}
                         className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">

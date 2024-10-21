@@ -7,7 +7,10 @@ import {
     faUser
 } from "@fortawesome/free-solid-svg-icons";
 import { lazy } from "react";
+import { Environment } from "react-relay";
 import { RouteObject } from "react-router-dom";
+
+import ServerInfoRouteLoader from "../ServerInfo/ServerInfoRouteLoader";
 
 import HomeCardProps from "./HomeCard/HomeCardProps";
 
@@ -28,7 +31,7 @@ interface IHomeRouteProtected {
 
 type HomeRoute = RouteObject & IHomeRouteProtected & Omit<HomeCardProps, "queryData">;
 
-const HomeRoutes: HomeRoute[] = [
+const HomeRoutes = (relayEnviroment: Environment): HomeRoute[] => [
     {
         path: "instances",
         icon: faHdd,
@@ -72,12 +75,11 @@ const HomeRoutes: HomeRoute[] = [
         element: <Configuration />,
         unprotected: true
     },
-    {
+    ServerInfoRouteLoader(relayEnviroment, {
         path: "/info",
         icon: faInfoCircle,
-        localeNameId: "routes.info",
-        element: <NotFound />
-    }
+        localeNameId: "routes.info"
+    })
 ];
 
 export default HomeRoutes;

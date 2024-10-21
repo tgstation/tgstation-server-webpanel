@@ -30,13 +30,16 @@ const WrapQueryDisposal = <TQuery extends OperationType>(props: IProps<TQuery>) 
     return props.elementFunc(queryRef);
 };
 
-const RouteQueryLoader = <TQuery extends OperationType>(
+const RouteQueryLoader = <
+    TQuery extends OperationType,
+    TRouteObject extends RouteObject = RouteObject
+>(
     relayEnvironment: Environment,
     query: GraphQLTaggedNode,
     variablesProvider: (args: LoaderFunctionArgs) => VariablesOf<TQuery> | null,
-    partialRoute: RouteObject,
+    partialRoute: TRouteObject,
     elementFunc: (queryRef: PreloadedQuery<TQuery> | null) => ReactNode
-): RouteObject => {
+): TRouteObject => {
     if (partialRoute.element) {
         throw new Error("Route element should not be set!");
     }

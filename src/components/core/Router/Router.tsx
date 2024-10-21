@@ -31,6 +31,7 @@ const NotFound = lazy(
 
 const Router = () => {
     const relayEnviroment = useRelayEnvironment();
+    const homeRoutes = HomeRoutes(relayEnviroment);
     const router = createBrowserRouter([
         {
             path: "/",
@@ -41,14 +42,14 @@ const Router = () => {
                     path: "login",
                     element: <Login />
                 },
-                ...HomeRoutes.filter(route => route.unprotected),
+                ...homeRoutes.filter(route => route.unprotected),
                 {
                     element: <ProtectedRoute />,
                     children: [
                         HomeRouteLoader(relayEnviroment, {
                             path: ""
                         }),
-                        ...HomeRoutes.filter(route => !route.unprotected),
+                        ...homeRoutes.filter(route => !route.unprotected),
                         {
                             path: "*",
                             element: <NotFound />
