@@ -23,7 +23,6 @@ const WrapQueryDisposal = <TQuery extends OperationType>(props: IProps<TQuery>) 
             return () => {};
         }
         return () => {
-            console.log("Disposing query");
             disposeFn();
         };
     }, [disposeFn]);
@@ -53,7 +52,6 @@ const RouteQueryLoader = <TQuery extends OperationType>(
         const variables = variablesProvider(args);
         let loaderData: ILoaderData<TQuery>;
         if (variables) {
-            console.log("loading query");
             loaderData = {
                 queryRef: loadQuery<TQuery>(relayEnvironment, query, variables)
             };
