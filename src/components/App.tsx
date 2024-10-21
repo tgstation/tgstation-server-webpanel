@@ -1,4 +1,4 @@
-import { lazy, StrictMode, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { IntlProvider } from "react-intl";
 
 import ConfigProvider from "../context/config/ConfigProvider";
@@ -71,29 +71,27 @@ const App = (props: IProps) => {
     });
 
     return (
-        <StrictMode>
-            <ConfigProvider>
-                {translations ? (
-                    <IntlProvider
-                        locale={translations.locale}
-                        messages={translations.messages}
-                        defaultLocale="en">
-                        <Suspense
-                            fallback={
-                                <div className="grid lg:grid-cols-11 md:grid-cols-8">
-                                    <div className="lg:col-start-3 lg:col-end-9 md:col-start-2 md:col-end-8">
-                                        <Loading message="loading.loading" />
-                                    </div>
+        <ConfigProvider>
+            {translations ? (
+                <IntlProvider
+                    locale={translations.locale}
+                    messages={translations.messages}
+                    defaultLocale="en">
+                    <Suspense
+                        fallback={
+                            <div className="grid lg:grid-cols-11 md:grid-cols-8">
+                                <div className="lg:col-start-3 lg:col-end-9 md:col-start-2 md:col-end-8">
+                                    <Loading message="loading.loading" />
                                 </div>
-                            }>
-                            <Environment />
-                        </Suspense>
-                    </IntlProvider>
-                ) : (
-                    <Loading />
-                )}
-            </ConfigProvider>
-        </StrictMode>
+                            </div>
+                        }>
+                        <Environment />
+                    </Suspense>
+                </IntlProvider>
+            ) : (
+                <Loading />
+            )}
+        </ConfigProvider>
     );
 };
 

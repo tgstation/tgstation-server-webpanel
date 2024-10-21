@@ -6,9 +6,10 @@ import Router from "../Router/Router";
 
 import Pkg from "@/../package.json";
 import useConfig from "@/context/config/useConfig";
+import SetCredentialsContext from "@/context/credentials/SetCredentialsContext";
 import ErrorsProvider from "@/context/errors/ErrorsProvider";
 import SessionProvider from "@/context/session/SessionProvider";
-import CreateRelayEnvironment from "@/lib/CreateRelayEnvironment";
+import CreateTgsRelayEnvironment from "@/lib/CreateTgsRelayEnvironment";
 
 const Environment = () => {
     const version = Pkg.version;
@@ -22,19 +23,19 @@ const Environment = () => {
     const config = useConfig();
 
     const { relayEnviroment, setCredentials } = useMemo(
-        () => CreateRelayEnvironment(config.ApiPath.value),
+        () => CreateTgsRelayEnvironment(config.ApiPath.value),
         [config.ApiPath.value]
     );
 
     return (
         <RelayEnvironmentProvider environment={relayEnviroment}>
-            <SessionProvider setCredentials={credentials => setCredentials(credentials, false)}>
-                <ErrorsProvider>
-                    <Router
-                        setTemporaryCredentials={credentials => setCredentials(credentials, true)}
-                    />
-                </ErrorsProvider>
-            </SessionProvider>
+            <SetCredentialsContext.Provider value={{ setCredentials }}>
+                <SessionProvider>
+                    <ErrorsProvider>
+                        <Router />
+                    </ErrorsProvider>
+                </SessionProvider>
+            </SetCredentialsContext.Provider>
         </RelayEnvironmentProvider>
     );
 };

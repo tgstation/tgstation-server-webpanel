@@ -18,9 +18,9 @@ import {
 
 import { ICredentials, OAuthCredentials } from "./Credentials";
 import devDelay from "./devDelay";
+import { TgsNetworkErrorPrefix } from "./NetworkErrorPrefixes";
 
 import Pkg from "@/../package.json";
-
 
 const CreateRelayEnvironment = (
     serverUrl: string
@@ -61,14 +61,23 @@ const CreateRelayEnvironment = (
         }
 
         return await devDelay(async () => {
-            const resp = await fetch(graphQLEndpoint, {
-                method: "POST",
-                headers: requestHeaders,
-                body: JSON.stringify({
-                    query: request.text, // <-- The GraphQL document composed by Relay
-                    variables
-                })
-            });
+            let resp;
+            try {
+                resp = await fetch(graphQLEndpoint, {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify({
+                        query: request.text, // <-- The GraphQL document composed by Relay
+                        variables
+                    })
+                });
+            } catch (error) {
+                if (error instanceof TypeError) {
+                    error.message = TgsNetworkErrorPrefix + error.message;
+                }
+
+                throw error;
+            }
 
             return await resp.json();
         }, "Relay Request");

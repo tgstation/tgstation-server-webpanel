@@ -1,21 +1,23 @@
 import { ReactNode, useState } from "react";
 
+import useSetCredentials from "../credentials/useSetCredentials";
+
 import ISession from "./Session";
 import SessionContext from "./SessionContext";
 
-import { BearerCredentials, ICredentials } from "@/lib/Credentials";
+import { BearerCredentials } from "@/lib/Credentials";
 
 interface IProps {
     children: ReactNode;
-    setCredentials: (credentials: ICredentials) => void;
 }
 
 const SessionProvider = (props: IProps) => {
     const [session, setSession] = useState<ISession | null>(null);
+    const setCredentialsContext = useSetCredentials();
     const sessionContext = {
         currentSession: session,
         setSession: (session: ISession) => {
-            props.setCredentials(new BearerCredentials(session.bearer));
+            setCredentialsContext.setCredentials(new BearerCredentials(session.bearer), false);
             setSession(session);
         }
     };

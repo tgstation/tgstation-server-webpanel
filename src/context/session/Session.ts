@@ -2,6 +2,6 @@ import { ICredentials } from "@/lib/Credentials";
 
 export default interface ISession {
     bearer: string;
-    userId: string;
+    userID: string;
     originalCredentials: ICredentials;
 }
