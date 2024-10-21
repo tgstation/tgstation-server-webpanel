@@ -73,7 +73,7 @@
     "@rollup/pluginutils": "^5.1.2",
     "@storybook/addon-essentials": "^8.3.6",
     "@storybook/addon-interactions": "^8.3.6",
-    "@storybook/addon-links": "^8.3.5",
+    "@storybook/addon-links": "^8.3.6",
     "@storybook/blocks": "^8.3.6",
     "@storybook/channels": "^8.3.6",
     "@storybook/components": "^8.3.6",

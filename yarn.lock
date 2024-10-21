@@ -2130,20 +2130,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-links@npm:^8.3.5":
-  version: 8.3.5
-  resolution: "@storybook/addon-links@npm:8.3.5"
+"@storybook/addon-links@npm:^8.3.6":
+  version: 8.3.6
+  resolution: "@storybook/addon-links@npm:8.3.6"
   dependencies:
     "@storybook/csf": "npm:^0.1.11"
     "@storybook/global": "npm:^5.0.0"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^8.3.5
+    storybook: ^8.3.6
   peerDependenciesMeta:
     react:
       optional: true
-  checksum: 10c0/ac431b420196fea7f9aa2a62356d2221c75065515ba82e4a0bbcddaa66a9a61d93f186e6efde87ca43ddfd043f3503f4459449d0f3f76935707276b87698f0d3
+  checksum: 10c0/28d837680ef9c51aa1a4f43fb8c461dce90281264b2a259bf4ca7929d734bbda9a8ca54bf04d328ca4436c6d64b9cdb5b594717f8840d6d9693d0e637bdd8909
   languageName: node
   linkType: hard
 
@@ -8198,7 +8198,7 @@ __metadata:
     "@rollup/pluginutils": "npm:^5.1.2"
     "@storybook/addon-essentials": "npm:^8.3.6"
     "@storybook/addon-interactions": "npm:^8.3.6"
-    "@storybook/addon-links": "npm:^8.3.5"
+    "@storybook/addon-links": "npm:^8.3.6"
     "@storybook/blocks": "npm:^8.3.6"
     "@storybook/channels": "npm:^8.3.6"
     "@storybook/components": "npm:^8.3.6"
