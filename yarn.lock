@@ -4728,12 +4728,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-refresh@npm:^0.4.9":
-  version: 0.4.12
-  resolution: "eslint-plugin-react-refresh@npm:0.4.12"
+"eslint-plugin-react-refresh@npm:^0.4.13":
+  version: 0.4.13
+  resolution: "eslint-plugin-react-refresh@npm:0.4.13"
   peerDependencies:
     eslint: ">=7"
-  checksum: 10c0/33dd82450f7c5fa884c5c84ffaf9d9a8b363bc155432807dc09904c7db6ba724888fac4562b058268259aa7c9270b622ef411488011b3469a2add275ed5c2273
+  checksum: 10c0/c15a2122c3f092d7a5388e480a033ae054a61b2d0f7da50c896e90ca4616c0cba0d6249c77545b94262c9c9af3b78817e2ace3ead210206ab91c672ac6de4497
   languageName: node
   linkType: hard
 
@@ -8250,7 +8250,7 @@ __metadata:
     eslint: "npm:^9.12.0"
     eslint-plugin-import: "npm:^2.31.0"
     eslint-plugin-react-hooks: "npm:^5.1.0-rc.0"
-    eslint-plugin-react-refresh: "npm:^0.4.9"
+    eslint-plugin-react-refresh: "npm:^0.4.13"
     eslint-plugin-storybook: "npm:0.10.0--canary.156.1435cb8.0"
     estree-walker: "npm:^3.0.3"
     globals: "npm:^15.11.0"
