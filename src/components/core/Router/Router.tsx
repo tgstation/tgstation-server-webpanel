@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { useRelayEnvironment } from "react-relay";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import HomeRoutes from "../../routed/Home/HomeRoutes";
@@ -6,14 +7,9 @@ import HomeRoutes from "../../routed/Home/HomeRoutes";
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import RethrowRouteError from "./RethrowRouteError/RethrowRouteError";
 
+import HomeRouteLoader from "@/components/routed/Home/HomeRouteLoader";
 import Loading from "@/components/utils/Loading/Loading";
-import { ICredentials } from "@/lib/Credentials";
 import devDelay from "@/lib/devDelay";
-
-const Home = lazy(
-    async () =>
-        await devDelay(() => import("@/components/routed/Home/Home"), "Component Load: Home")
-);
 
 const Layout = lazy(
     async () =>
@@ -33,11 +29,9 @@ const NotFound = lazy(
         )
 );
 
-interface IProps {
-    setTemporaryCredentials: (credentials: ICredentials) => void;
-}
-
-const Router = (props: IProps) => {
+const Router = () => {
+    const relayEnviroment = useRelayEnvironment();
+    const homeRoutes = HomeRoutes(relayEnviroment);
     const router = createBrowserRouter([
         {
             path: "/",
@@ -46,17 +40,16 @@ const Router = (props: IProps) => {
             children: [
                 {
                     path: "login",
-                    element: <Login setTemporaryCredentials={props.setTemporaryCredentials} />
+                    element: <Login />
                 },
-                ...HomeRoutes.filter(route => route.unprotected),
+                ...homeRoutes.filter(route => route.unprotected),
                 {
                     element: <ProtectedRoute />,
                     children: [
-                        {
-                            path: "",
-                            element: <Home />
-                        },
-                        ...HomeRoutes.filter(route => !route.unprotected),
+                        HomeRouteLoader(relayEnviroment, {
+                            path: ""
+                        }),
+                        ...homeRoutes.filter(route => !route.unprotected),
                         {
                             path: "*",
                             element: <NotFound />

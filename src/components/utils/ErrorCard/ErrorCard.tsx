@@ -7,6 +7,7 @@ import { ErrorMessageSingleFragment$data } from "@/components/graphql/__generate
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GitHubNetworkErrorPrefix, TgsNetworkErrorPrefix } from "@/lib/NetworkErrorPrefixes";
 
 interface IProps {
     report?: boolean;
@@ -42,9 +43,18 @@ const ErrorCard = (props: IProps) => {
               }
           );
 
+    let errorTitle = "error.somethingwentwrong";
+    if (props.error instanceof TypeError) {
+        if (props.error.message.startsWith(TgsNetworkErrorPrefix)) {
+            errorTitle = "error.tgsnetworkerror";
+        } else if (props.error.message.startsWith(GitHubNetworkErrorPrefix)) {
+            errorTitle = "error.github";
+        }
+    }
+
     const titleMessage = (
         <div className="text-lg">
-            {isErrorMessage ? tgsError.message : <FormattedMessage id="error.somethingwentwrong" />}
+            {isErrorMessage ? tgsError.message : <FormattedMessage id={errorTitle} />}
         </div>
     );
 
