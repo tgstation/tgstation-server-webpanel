@@ -57,7 +57,6 @@ class Router extends Component<IProps, IState> {
             components.set(
                 route.name,
                 //*should* always be a react component
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                 loadable(() => import(`./components/views/${route.file}`), {
                     fallback: LoadSpin(route.name)
                 })

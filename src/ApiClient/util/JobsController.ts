@@ -128,7 +128,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
         ServerClient.on("logout", () => void this.cleanConnection());
 
         InstanceClient.on("instanceChange", () => void this.reset(false));
-        // eslint-disable-next-line @typescript-eslint/require-await
         LoginHooks.addHook(async () => {
             console.log("JobsController resetting due to login");
             await this.reset(true);
@@ -337,7 +336,6 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             this.emit("jobsLoaded");
         });
 
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         localConnection.start().catch(error => {
             if (this.connection != localConnection) {
                 return;
