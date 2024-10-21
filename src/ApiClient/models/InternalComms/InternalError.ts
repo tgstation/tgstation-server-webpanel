@@ -149,9 +149,7 @@ export default class InternalError<T extends ErrorCode = ErrorCode> {
         }
         const stack = new Error().stack;
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (origin?.config.headers["Authorization"]) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             origin.config.headers["Authorization"] = "*********";
         }
 

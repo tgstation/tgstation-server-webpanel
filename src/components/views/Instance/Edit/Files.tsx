@@ -47,7 +47,6 @@ const downloadFileUsingBlob = (fileName: string, fileData: Blob) => {
         document.body.appendChild(a);
         const fileUrl = URL.createObjectURL(fileData);
         a.href = fileUrl;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         a.download = fileName;
         a.click();
         URL.revokeObjectURL(a.href);
