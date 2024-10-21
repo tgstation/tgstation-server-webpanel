@@ -11,6 +11,7 @@ import {
 } from "./OAuthOptions/graphql/__generated__/GetOAuthProvidersQuery.graphql";
 
 import { MockRelayEnvironment, WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
+import SetCredentialsContext from "@/context/credentials/SetCredentialsContext";
 import ErrorsProvider from "@/context/errors/ErrorsProvider";
 import useErrors from "@/context/errors/useErrors";
 import SessionProvider from "@/context/session/SessionProvider";
@@ -96,15 +97,24 @@ const InnerTestComponent = (args: IExtraArgs) => {
         }
     }, [args, errors]);
 
-    return <Login {...args} />;
+    return <Login />;
 };
 
 const TestComponent = (args: IExtraArgs) => {
     return (
         <ErrorsProvider>
-            <SessionProvider setCredentials={() => {}}>
-                <InnerTestComponent {...args} />
-            </SessionProvider>
+            <SetCredentialsContext.Provider
+                value={{
+                    setCredentials: (credentials, temporary) => {
+                        if (temporary) {
+                            args.setTemporaryCredentials(credentials);
+                        }
+                    }
+                }}>
+                <SessionProvider>
+                    <InnerTestComponent {...args} />
+                </SessionProvider>
+            </SetCredentialsContext.Provider>
         </ErrorsProvider>
     );
 };

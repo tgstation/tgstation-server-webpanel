@@ -16,7 +16,7 @@ const TestComponent = (props: IArgs) => {
     const session = {
         currentSession: {
             bearer: "asdf",
-            userId: "fdsa",
+            userID: "fdsa",
             originalCredentials: props.defaultCredentials
                 ? new DefaultUserPasswordCredentials()
                 : new UserPasswordCredentials("asdf", "asdf")
