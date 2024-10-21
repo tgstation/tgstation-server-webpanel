@@ -1,4 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
+import { Suspense } from "react";
+import { loadQuery, useRelayEnvironment } from "react-relay";
 
 import { HomeCardPermissionsQuery } from "./graphql/__generated__/HomeCardPermissionsQuery.graphql";
 import HomeCardPermissions from "./graphql/HomeCardPermissions";
@@ -6,27 +8,40 @@ import Home from "./Home";
 
 import { WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
 import SessionContext from "@/context/session/SessionContext";
-import { DefaultUserPasswordCredentials, UserPasswordCredentials } from "@/lib/Credentials";
+import { UserPasswordCredentials } from "@/lib/Credentials";
 
 interface IArgs {
     defaultCredentials: boolean;
 }
 
+const variables = {
+    userID: "fdsa"
+};
+
 const TestComponent = (props: IArgs) => {
-    const session = {
-        currentSession: {
-            bearer: "asdf",
-            userID: "fdsa",
-            originalCredentials: props.defaultCredentials
-                ? new DefaultUserPasswordCredentials()
-                : new UserPasswordCredentials("asdf", "asdf")
-        },
-        setSession: () => {}
-    };
+    const queryRef = loadQuery<HomeCardPermissionsQuery>(
+        useRelayEnvironment(),
+        HomeCardPermissions,
+        variables
+    );
 
     return (
-        <SessionContext.Provider value={session}>
-            <Home />
+        <SessionContext.Provider
+            value={{
+                currentSession: {
+                    bearer: "asdf",
+                    userID: "fdsa",
+                    originalCredentials: new UserPasswordCredentials(
+                        "asdf",
+                        "asdf",
+                        props.defaultCredentials
+                    )
+                },
+                setSession: () => {}
+            }}>
+            <Suspense>
+                <Home queryRef={queryRef} />
+            </Suspense>
         </SessionContext.Provider>
     );
 };
@@ -48,7 +63,8 @@ const CreateRelay = (fieldsEnabled: boolean): WithRelayParameters<HomeCardPermis
                 canRead: fieldsEnabled
             }
         })
-    }
+    },
+    variables
 });
 
 const config: Meta<typeof TestComponent> = {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { makeDecorator } from "@storybook/preview-api";
 import { RelayEnvironmentProvider } from "react-relay";
-import { GraphQLTaggedNode, OperationType } from "relay-runtime";
+import { GraphQLTaggedNode, OperationType, VariablesOf } from "relay-runtime";
 import { createMockEnvironment, MockPayloadGenerator } from "relay-test-utils";
 import { OperationMockResolver } from "relay-test-utils/lib/RelayModernMockEnvironment";
 import { PartialDeep } from "type-fest";
@@ -45,7 +45,7 @@ export type WithRelayParameters<TQuery extends OperationType, TResolvers = objec
     /**
      * Optional. Variables to pass to the query.
      */
-    variables?: TQuery["variables"];
+    variables?: VariablesOf<TQuery>;
 
     /**
      * Optional. Mock resolver object pass to the relay-test-utils MockPayloadGenerator.generate function.
