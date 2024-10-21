@@ -11,6 +11,7 @@ import PasswordForm from "./PasswordForm/PasswordForm";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
+import useSetCredentials from "@/context/credentials/useSetCredentials";
 import useMutationErrors from "@/context/errors/useMutationErrors";
 import useSession from "@/context/session/useSession";
 import {
@@ -19,13 +20,10 @@ import {
     UserPasswordCredentials
 } from "@/lib/Credentials";
 
-interface IProps {
-    setTemporaryCredentials: (credentials: ICredentials) => void;
-}
-
-const Login = (props: IProps) => {
+const Login = () => {
     const session = useSession();
     const location = useLocation() as Location<ILocationState>;
+    const setCredentialsContext = useSetCredentials();
 
     const [commitLogin, isLoginInFlight] = useMutation<ServerLoginMutation>(ServerLogin);
     const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
@@ -34,14 +32,14 @@ const Login = (props: IProps) => {
 
     const AttemptLogin = useCallback(
         (credentials: ICredentials) => {
-            props.setTemporaryCredentials(credentials);
+            setCredentialsContext.setCredentials(credentials, true);
             commitLogin({
                 variables: {},
                 onCompleted: response => {
                     if (response.login.loginResult) {
                         session.setSession({
                             bearer: response.login.loginResult.bearer,
-                            userId: response.login.loginResult.user.id,
+                            userID: response.login.loginResult.user.id,
                             originalCredentials: credentials
                         });
                     }
@@ -51,7 +49,7 @@ const Login = (props: IProps) => {
                 onError: requestErrorHandler
             });
         },
-        [props, commitLogin, session, requestErrorHandler, payloadErrorsHandler]
+        [commitLogin, session, requestErrorHandler, payloadErrorsHandler, setCredentialsContext]
     );
 
     const KeydownEventHandler = useCallback(
