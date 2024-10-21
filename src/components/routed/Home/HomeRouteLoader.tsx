@@ -9,10 +9,7 @@ import useSession from "@/context/session/useSession";
 import devDelay from "@/lib/devDelay";
 import RouteQueryLoader from "@/lib/RouteQueryLoader";
 
-const Home = lazy(
-    async () =>
-        await devDelay(() => import("@/components/routed/Home/Home"), "Component Load: Home")
-);
+const Home = lazy(async () => await devDelay(() => import("./Home"), "Component Load: Home"));
 
 const HomeRouteLoader = (relayEnvironment: Environment, partialRoute: RouteObject): RouteObject => {
     const session = useSession();
