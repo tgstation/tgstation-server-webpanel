@@ -100,7 +100,7 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.13",
-    "eslint-plugin-storybook": "0.10.0--canary.156.1435cb8.0",
+    "eslint-plugin-storybook": "0.10.1",
     "globals": "^15.11.0",
     "postcss": "^8.4.47",
     "relay-compiler": "^18.1.0",
