@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { useRelayEnvironment } from "react-relay";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -8,7 +8,6 @@ import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import RethrowRouteError from "./RethrowRouteError/RethrowRouteError";
 
 import HomeRouteLoader from "@/components/routed/Home/HomeRouteLoader";
-import Loading from "@/components/utils/Loading/Loading";
 import devDelay from "@/lib/devDelay";
 
 const Layout = lazy(
@@ -60,11 +59,7 @@ const Router = () => {
         }
     ]);
 
-    return (
-        <Suspense fallback={<Loading />}>
-            <RouterProvider router={router}></RouterProvider>
-        </Suspense>
-    );
+    return <RouterProvider router={router}></RouterProvider>;
 };
 
 export default Router;
