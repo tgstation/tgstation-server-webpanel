@@ -1,0 +1,29 @@
+{
+  "src": "./src",
+  "language": "typescript",
+  "schema": "./src/api/github_schema.graphql",
+  "exclude": [
+    "**/node_modules/**",
+    "**/__mocks__/**",
+    "**/__generated__/**",
+    "components/core/**",
+    "components/graphql/**",
+    "components/routed/**"
+  ],
+  "eagerEsModules": true,
+  "customScalarTypes": {
+    "Base64String": "string",
+    "BigInt": "number",
+    "Date": "string",
+    "DateTime": "string",
+    "Float": "number",
+    "GitObjectID": "string",
+    "GitRefname": "string",
+    "GitSSHRemote": "string",
+    "GitTimestamp": "string",
+    "HTML": "string",
+    "PreciseDateTime": "string",
+    "URI": "string",
+    "X509Certificate": "string"
+  }
+}

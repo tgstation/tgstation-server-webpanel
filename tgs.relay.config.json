@@ -1,11 +1,12 @@
 {
   "src": "./src",
   "language": "typescript",
-  "schema": "./src/api/schema.graphql",
+  "schema": "./src/api/tgs_schema.graphql",
   "exclude": [
     "**/node_modules/**",
     "**/__mocks__/**",
-    "**/__generated__/**"
+    "**/__generated__/**",
+    "components/github/**"
   ],
   "eagerEsModules": true,
   "customScalarTypes": {

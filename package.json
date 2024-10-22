@@ -32,8 +32,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "yarn relay-build && npx chromatic",
-    "relay": "yarn grab-api && relay-compiler --watch",
-    "relay-build": "yarn grab-api && relay-compiler",
+    "relay": "yarn grab-api && relay-compiler github.relay.config.json && relay-compiler --watch tgs.relay.config.json",
+    "relay-build": "yarn grab-api && relay-compiler tgs.relay.config.json && relay-compiler github.relay.config.json",
     "grab-api": "node --no-warnings src/api/grab.js"
   },
   "dependencies": {
