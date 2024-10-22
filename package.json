@@ -22,7 +22,7 @@
     "types": "build/lib/App.d.ts",
     "dependencies": {
         "@formatjs/intl-locale": "^4.1.0",
-        "@formatjs/intl-pluralrules": "5.2.16",
+        "@formatjs/intl-pluralrules": "5.2.17",
         "@formatjs/intl-relativetimeformat": "^11.3.0",
         "@fortawesome/fontawesome-svg-core": "^6.6.0",
         "@fortawesome/free-brands-svg-icons": "^6.6.0",
