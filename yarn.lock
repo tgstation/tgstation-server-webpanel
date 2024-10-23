@@ -2954,12 +2954,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.7.8":
-  version: 22.7.8
-  resolution: "@types/node@npm:22.7.8"
+"@types/node@npm:^22.7.9":
+  version: 22.7.9
+  resolution: "@types/node@npm:22.7.9"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10/22a7cb6da6a1cf914016bdcfb1d20399ec549a6220a9fd03253dc995848fa328c9dbeaf291b63bd60b0cf44387044adc80fc8d97401c647711b0b839d0ed4fe5
+  checksum: 10/c68650a1ca3c65cc02e16166fa7daca9958ecea54bd52b0af31009011c44a33f8d559bf467c681b1f06935a10cafb932cc30e5454ecfc89351d361ab669bdba6
   languageName: node
   linkType: hard
 
@@ -11492,7 +11492,7 @@ __metadata:
     "@types/eslint": "npm:^9"
     "@types/jquery": "npm:^3"
     "@types/loadable__component": "npm:^5.13.9"
-    "@types/node": "npm:^22.7.8"
+    "@types/node": "npm:^22.7.9"
     "@types/prop-types": "npm:^15"
     "@types/react": "npm:^17.0.35"
     "@types/react-bootstrap": "npm:^1.0.1"
