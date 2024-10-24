@@ -10,14 +10,10 @@ import Pkg from "@/../package.json";
 import capitalizeFirstLetter from "@/lib/capitalizeFirstLetter";
 
 interface IProps {
-    queryRef: PreloadedQuery<ServerInformationQuery> | null;
+    queryRef: PreloadedQuery<ServerInformationQuery>;
 }
 
 const ServerInfo = (props: IProps) => {
-    if (!props.queryRef) {
-        throw new Error("ServerInformationQuery ref was null");
-    }
-
     const data = usePreloadedQuery<ServerInformationQuery>(ServerInformation, props.queryRef);
     const gatewayInfo = data.swarm.currentNode.gateway.information;
     const activeOAuthProviders = Object.keys(gatewayInfo.oAuthProviderInfos ?? {}).filter(

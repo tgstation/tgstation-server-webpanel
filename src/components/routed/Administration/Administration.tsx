@@ -1,19 +1,20 @@
-import { PreloadedQuery } from "react-relay";
+import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 
 import { UpdateInformationQuery } from "./graphql/__generated__/UpdateInformationQuery.graphql";
+import UpdateInformation from "./graphql/UpdateInformation";
 
 interface IProps {
-    queryRef: PreloadedQuery<UpdateInformationQuery> | null;
+    queryRef: PreloadedQuery<UpdateInformationQuery>;
 }
 
 const Administration = (props: IProps) => {
-    if (!props.queryRef) {
-        throw new Error("UpdateInformationQuery ref was null");
-    }
+    const data = usePreloadedQuery<UpdateInformationQuery>(UpdateInformation, props.queryRef);
 
-    // const data = usePreloadedQuery<UpdateInformationQuery>(UpdateInformation, props.queryRef);
-
-    return <></>;
+    return (
+        <>
+            <h1>Canary {data.swarm.updateInformation.generatedAt}</h1>
+        </>
+    );
 };
 
 export default Administration;

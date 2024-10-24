@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import useSession from "@/context/session/useSession";
 
 interface IProps {
-    queryRef?: PreloadedQuery<HomeCardPermissionsQuery> | null;
+    queryRef: PreloadedQuery<HomeCardPermissionsQuery>;
 }
 
 const Home = (props: IProps) => {
@@ -18,10 +18,6 @@ const Home = (props: IProps) => {
     const relayEnvironment = useRelayEnvironment();
     const usingDefaultCredentials =
         !!session.currentSession?.originalCredentials.defaultCredentials;
-
-    if (!props.queryRef) {
-        throw new Error("HomeCardPermissionsQuery ref was null");
-    }
 
     const data = usePreloadedQuery<HomeCardPermissionsQuery>(HomeCardPermissions, props.queryRef);
 
