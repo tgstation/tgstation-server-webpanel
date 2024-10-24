@@ -101,6 +101,7 @@
     "error.bad_channels_json": "Malformed channels JSON.",
     "error.no_engine_version": "The target engine version does not exist on the server.",
     "error.bad_hub_connection": "Lost connection to the SignalR hub.",
+    "error.githubtokenmissing": "This GitHub component cannot be loaded because you have not configured a GitHub personal access token in your webpanel settings",
     "generic.save": "Save",
     "generic.savetab": "Save Tab",
     "generic.saveall": "Save All",

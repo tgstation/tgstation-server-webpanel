@@ -22,7 +22,7 @@ import { TgsNetworkErrorPrefix } from "./NetworkErrorPrefixes";
 
 import Pkg from "@/../package.json";
 
-const CreateRelayEnvironment = (
+const CreateTgsRelayEnvironment = (
     serverUrl: string
 ): {
     relayEnviroment: Environment;
@@ -80,7 +80,7 @@ const CreateRelayEnvironment = (
             }
 
             return await resp.json();
-        }, "Relay Request");
+        }, "TGS Relay Request");
     };
 
     // We only want to setup subscriptions if we are on the client.
@@ -153,4 +153,4 @@ const CreateRelayEnvironment = (
     };
 };
 
-export default CreateRelayEnvironment;
+export default CreateTgsRelayEnvironment;
