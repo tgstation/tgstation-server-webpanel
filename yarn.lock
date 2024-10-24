@@ -454,21 +454,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chromatic-com/storybook@npm:3.0.0":
-  version: 3.0.0
-  resolution: "@chromatic-com/storybook@npm:3.0.0"
+"@chromatic-com/storybook@npm:3.1.0":
+  version: 3.1.0
+  resolution: "@chromatic-com/storybook@npm:3.1.0"
   dependencies:
     "@storybook/channels": "npm:^8.3.0"
     "@storybook/telemetry": "npm:^8.3.0"
     "@storybook/types": "npm:^8.3.0"
-    chromatic: "npm:^11.4.0"
+    chromatic: "npm:^11.15.0"
     filesize: "npm:^10.0.12"
     jsonfile: "npm:^6.1.0"
     react-confetti: "npm:^6.1.0"
     strip-ansi: "npm:^7.1.0"
   peerDependencies:
     storybook: ^8.3.0
-  checksum: 10c0/0adab1a673c0d9d3b4ba0275e60a31af7796075f292af4ee1ce1283210fcbf2488b8273d2d3a0c6081686c5405eda7651c6b63b5503f2aa2fe938586b6e0a2d6
+  checksum: 10c0/cb9672d828f076e9a6c7277fe08a846d05316fb7d3e625862fc667718f5abc2746ff7cea04507e5cbc0136a4d55950fce88ea91420e8d3c05d84f528050a1dce
   languageName: node
   linkType: hard
 
@@ -3795,25 +3795,6 @@ __metadata:
     chromatic: dist/bin.js
     chromatic-cli: dist/bin.js
   checksum: 10c0/8add464ff39417c402b77d973300806a50bd5e3b8f95eeccd965787536b4273e6bfa6b6e0716417bf342cd5106e82e8f1e0dec4a290a89c00e7862f3833fff10
-  languageName: node
-  linkType: hard
-
-"chromatic@npm:^11.4.0":
-  version: 11.10.4
-  resolution: "chromatic@npm:11.10.4"
-  peerDependencies:
-    "@chromatic-com/cypress": ^0.*.* || ^1.0.0
-    "@chromatic-com/playwright": ^0.*.* || ^1.0.0
-  peerDependenciesMeta:
-    "@chromatic-com/cypress":
-      optional: true
-    "@chromatic-com/playwright":
-      optional: true
-  bin:
-    chroma: dist/bin.js
-    chromatic: dist/bin.js
-    chromatic-cli: dist/bin.js
-  checksum: 10c0/b14b43f7ded1c6536fd2b0edf0d5d2da1a0f36083d14a87ce0c069db83f7c4896b483238164199976343748b5b846640b6914dcf523b9e9e698145fe74f52bcd
   languageName: node
   linkType: hard
 
@@ -8190,7 +8171,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tgstation-server-webpanel@workspace:."
   dependencies:
-    "@chromatic-com/storybook": "npm:3.0.0"
+    "@chromatic-com/storybook": "npm:3.1.0"
     "@eslint/js": "npm:^9.13.0"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
