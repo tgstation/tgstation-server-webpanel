@@ -38,6 +38,10 @@ export interface PullRequest {
     mergeable: boolean | null;
 }
 
+type ExtractArrayType<A> = A extends Array<infer ArrayType> ? ArrayType : never;
+export type ListedGithubPullRequest = ExtractArrayType<
+    RestEndpointMethodTypes["pulls"]["list"]["response"]["data"]
+>;
 export type GithubPullRequest = RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
 
 export interface DirectoryItem {
@@ -224,6 +228,24 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
         };
     }
 
+    private transformPR2(pr: ListedGithubPullRequest): PullRequest {
+        return {
+            number: pr.number,
+            title: pr.title,
+            author: pr.user?.login ?? "ghost",
+            state: pr.merged_at ? "merged" : (pr.state as "open" | "closed"),
+            link: pr.html_url,
+            head: pr.head.sha,
+            tail: pr.base.sha,
+            testmergelabel: pr.labels.some(
+                label =>
+                    label.name?.toLowerCase().includes("testmerge") ||
+                    label.name?.toLowerCase().includes("test merge")
+            ),
+            mergeable: null
+        };
+    }
+
     private async getPR({
         owner,
         repo,
@@ -276,26 +298,44 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
     }): Promise<InternalStatus<PullRequest[], ErrorCode.GITHUB_FAIL>> {
         let payload: PullRequest[] = [];
         try {
-            const visiblePRs = (
-                await this.apiClient.paginate(this.apiClient.pulls.list, {
-                    owner,
-                    repo,
-                    state: "open"
-                })
-            ).map(pr => pr.number);
+            const visiblePRs = await this.apiClient.paginate(this.apiClient.pulls.list, {
+                owner,
+                repo,
+                state: "open"
+            });
 
-            for (const wantedPR of wantedPRs ?? []) {
-                if (!visiblePRs.includes(wantedPR)) {
-                    visiblePRs.push(wantedPR);
+            if (
+                configOptions.githubtoken.value &&
+                (configOptions.githubtoken.value as string).length > 0
+            ) {
+                const prsToGet = visiblePRs.map(pr => pr.number);
+                for (const wantedPR of wantedPRs ?? []) {
+                    if (!prsToGet.includes(wantedPR)) {
+                        prsToGet.push(wantedPR);
+                    }
+                }
+
+                const prPromises = prsToGet.map(wantedPR =>
+                    this.getPRUntilMergeable({ owner, repo, wantedPR })
+                );
+
+                //Fetch them in parallel to not waste extra time with polling
+                payload = await Promise.all(prPromises);
+            } else {
+                payload = visiblePRs.map(this.transformPR2);
+                for (const wantedPR of wantedPRs ?? []) {
+                    if (!payload.find(pr => pr.number == wantedPR)) {
+                        const pr = (
+                            await this.apiClient.pulls.get({
+                                owner,
+                                repo,
+                                pull_number: wantedPR
+                            })
+                        ).data;
+                        payload.push(this.transformPR(pr));
+                    }
                 }
             }
-
-            const prPromises = visiblePRs.map(wantedPR =>
-                this.getPRUntilMergeable({ owner, repo, wantedPR })
-            );
-
-            //Fetch them in parallel to not waste extra time with polling
-            payload = await Promise.all(prPromises);
         } catch (e) {
             console.error(e);
             return new InternalStatus<PullRequest[], ErrorCode.GITHUB_FAIL>({
