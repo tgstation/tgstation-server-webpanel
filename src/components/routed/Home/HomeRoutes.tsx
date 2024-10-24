@@ -10,6 +10,7 @@ import { lazy } from "react";
 import { Environment } from "react-relay";
 import { RouteObject } from "react-router-dom";
 
+import AdministrationRouteLoader from "../Administration/AdministrationRouteLoader";
 import ServerInfoRouteLoader from "../ServerInfo/ServerInfoRouteLoader";
 
 import HomeCardProps from "./HomeCard/HomeCardProps";
@@ -50,16 +51,15 @@ const HomeRoutes = (relayEnviroment: Environment): HomeRoute[] => [
             data.node?.effectivePermissionSet?.administrationRights.canWriteUsers,
         element: <NotFound />
     },
-    {
+    AdministrationRouteLoader(relayEnviroment, {
         path: "admin",
         icon: faTools,
         localeNameId: "routes.admin",
         calculateEnabled: data =>
             data.node?.effectivePermissionSet?.administrationRights.canChangeVersion ||
             data.node?.effectivePermissionSet?.administrationRights.canDownloadLogs ||
-            data.node?.effectivePermissionSet?.administrationRights.canUploadVersion,
-        element: <NotFound />
-    },
+            data.node?.effectivePermissionSet?.administrationRights.canUploadVersion
+    }),
     {
         path: "/users/passwd",
         icon: faKey,
