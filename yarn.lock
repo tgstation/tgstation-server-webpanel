@@ -454,16 +454,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chromatic-com/storybook@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@chromatic-com/storybook@npm:2.0.2"
+"@chromatic-com/storybook@npm:3.0.0":
+  version: 3.0.0
+  resolution: "@chromatic-com/storybook@npm:3.0.0"
   dependencies:
+    "@storybook/channels": "npm:^8.3.0"
+    "@storybook/telemetry": "npm:^8.3.0"
+    "@storybook/types": "npm:^8.3.0"
     chromatic: "npm:^11.4.0"
     filesize: "npm:^10.0.12"
     jsonfile: "npm:^6.1.0"
     react-confetti: "npm:^6.1.0"
     strip-ansi: "npm:^7.1.0"
-  checksum: 10c0/a997e8247168d9c30030966877836839951b6acd65899a4bb683d78d37e549a3285ca14a721893d75bef5b89e075d7090d084023c142680efaef60c9db64e7fa
+  peerDependencies:
+    storybook: ^8.3.0
+  checksum: 10c0/0adab1a673c0d9d3b4ba0275e60a31af7796075f292af4ee1ce1283210fcbf2488b8273d2d3a0c6081686c5405eda7651c6b63b5503f2aa2fe938586b6e0a2d6
   languageName: node
   linkType: hard
 
@@ -2245,7 +2250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/channels@npm:^8.3.6":
+"@storybook/channels@npm:^8.3.0, @storybook/channels@npm:^8.3.6":
   version: 8.3.6
   resolution: "@storybook/channels@npm:8.3.6"
   peerDependencies:
@@ -2433,6 +2438,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/telemetry@npm:^8.3.0":
+  version: 8.3.6
+  resolution: "@storybook/telemetry@npm:8.3.6"
+  peerDependencies:
+    storybook: ^8.3.6
+  checksum: 10c0/b4fd8d0e238335249aa82dea49bde56813e0c771e67dd7110fb9e038d1e2bd64aa03e76ee865ef6a7f0fd5220d02bd7bcf3273bb4c19403e3d527d9dd7a258d4
+  languageName: node
+  linkType: hard
+
 "@storybook/test@npm:8.3.6, @storybook/test@npm:^8.3.6":
   version: 8.3.6
   resolution: "@storybook/test@npm:8.3.6"
@@ -2458,6 +2472,15 @@ __metadata:
   peerDependencies:
     storybook: ^8.3.6
   checksum: 10c0/9e6dc4cb4bb444cbf3ac0f5b42696d462cd4886a5dcd42b4a8aee332ab141a1b745041bbb3fb36ab220820a3ab36ac4edd5f1ef81b66bba4059b4bdaa890006e
+  languageName: node
+  linkType: hard
+
+"@storybook/types@npm:^8.3.0":
+  version: 8.3.6
+  resolution: "@storybook/types@npm:8.3.6"
+  peerDependencies:
+    storybook: ^8.3.6
+  checksum: 10c0/482f55e34877f9eb94a8ff4627a254f3b5442f91f13363e6837e3a9c220a369be1c6ce4652b870b7fa4e522c3365825651f9e04a21bda76b104a6c1f7435e274
   languageName: node
   linkType: hard
 
@@ -8144,7 +8167,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tgstation-server-webpanel@workspace:."
   dependencies:
-    "@chromatic-com/storybook": "npm:2.0.2"
+    "@chromatic-com/storybook": "npm:3.0.0"
     "@eslint/js": "npm:^9.13.0"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"

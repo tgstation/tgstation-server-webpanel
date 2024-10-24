@@ -68,7 +68,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "2.0.2",
+    "@chromatic-com/storybook": "3.0.0",
     "@eslint/js": "^9.13.0",
     "@rollup/pluginutils": "^5.1.2",
     "@storybook/addon-essentials": "^8.3.6",
