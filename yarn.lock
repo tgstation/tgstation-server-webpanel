@@ -3779,9 +3779,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromatic@npm:^11.14.0":
-  version: 11.14.0
-  resolution: "chromatic@npm:11.14.0"
+"chromatic@npm:^11.15.0":
+  version: 11.15.0
+  resolution: "chromatic@npm:11.15.0"
   peerDependencies:
     "@chromatic-com/cypress": ^0.*.* || ^1.0.0
     "@chromatic-com/playwright": ^0.*.* || ^1.0.0
@@ -3794,7 +3794,7 @@ __metadata:
     chroma: dist/bin.js
     chromatic: dist/bin.js
     chromatic-cli: dist/bin.js
-  checksum: 10c0/5faede3d0387058f1a15869984c8350c203092a685f6148fcc4223950743cb9430b35d6ee9227a9ca14a0ecbe41599b313e4ffe51015c79ab849529965457c9f
+  checksum: 10c0/8add464ff39417c402b77d973300806a50bd5e3b8f95eeccd965787536b4273e6bfa6b6e0716417bf342cd5106e82e8f1e0dec4a290a89c00e7862f3833fff10
   languageName: node
   linkType: hard
 
@@ -8228,7 +8228,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:^4.3.3"
     autoprefixer: "npm:^10.4.20"
     babel-plugin-relay: "npm:^18.1.0"
-    chromatic: "npm:^11.14.0"
+    chromatic: "npm:^11.15.0"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
     concurrently: "npm:^9.0.1"
