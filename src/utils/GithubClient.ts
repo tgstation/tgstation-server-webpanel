@@ -210,7 +210,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
         });
     }
 
-    private transformPR(pr: GithubPullRequest): PullRequest {
+    private transformFullPR(pr: GithubPullRequest): PullRequest {
         return {
             number: pr.number,
             title: pr.title,
@@ -228,7 +228,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
         };
     }
 
-    private transformPR2(pr: ListedGithubPullRequest): PullRequest {
+    private transformBasicPR(pr: ListedGithubPullRequest): PullRequest {
         return {
             number: pr.number,
             title: pr.title,
@@ -261,17 +261,19 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
             pull_number: wantedPR
         });
 
-        return this.transformPR(pr.data);
+        return this.transformFullPR(pr.data);
     }
 
     private async getPRUntilMergeable({
         owner,
         repo,
-        wantedPR
+        wantedPR,
+        pollTimer = configOptions.mergeabilitypolltimer.value as number
     }: {
         owner: string;
         repo: string;
         wantedPR: number;
+        pollTimer?: number;
     }) {
         //Retry three times to get the mergeable status
         for (let i = 0; i < 2; i++) {
@@ -281,7 +283,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                 return pr;
             }
 
-            await delay(5000);
+            await delay(pollTimer);
         }
 
         return this.getPR({ owner, repo, wantedPR });
@@ -290,7 +292,7 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
     public async getPRs({
         owner,
         repo,
-        wantedPRs
+        wantedPRs = []
     }: {
         owner: string;
         repo: string;
@@ -298,41 +300,40 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
     }): Promise<InternalStatus<PullRequest[], ErrorCode.GITHUB_FAIL>> {
         let payload: PullRequest[] = [];
         try {
-            const visiblePRs = await this.apiClient.paginate(this.apiClient.pulls.list, {
+            const basicPRInfo = await this.apiClient.paginate(this.apiClient.pulls.list, {
                 owner,
                 repo,
                 state: "open"
             });
 
+            const prsToGet = basicPRInfo.map(pr => pr.number);
+
             if (
                 configOptions.githubtoken.value &&
                 (configOptions.githubtoken.value as string).length > 0
             ) {
-                const prsToGet = visiblePRs.map(pr => pr.number);
-                for (const wantedPR of wantedPRs ?? []) {
+                //Fetch the full PR info for those with tokens
+                for (const wantedPR of wantedPRs) {
                     if (!prsToGet.includes(wantedPR)) {
                         prsToGet.push(wantedPR);
                     }
                 }
 
+                const pollTimer = configOptions.mergeabilitypolltimer.value as number;
                 const prPromises = prsToGet.map(wantedPR =>
-                    this.getPRUntilMergeable({ owner, repo, wantedPR })
+                    this.getPRUntilMergeable({ owner, repo, wantedPR, pollTimer })
                 );
 
                 //Fetch them in parallel to not waste extra time with polling
                 payload = await Promise.all(prPromises);
             } else {
-                payload = visiblePRs.map(this.transformPR2);
-                for (const wantedPR of wantedPRs ?? []) {
-                    if (!payload.find(pr => pr.number == wantedPR)) {
-                        const pr = (
-                            await this.apiClient.pulls.get({
-                                owner,
-                                repo,
-                                pull_number: wantedPR
-                            })
-                        ).data;
-                        payload.push(this.transformPR(pr));
+                //Otherwise just use the basic info
+                payload = basicPRInfo.map(this.transformBasicPR);
+
+                for (const wantedPR of wantedPRs) {
+                    if (!prsToGet.includes(wantedPR)) {
+                        //Don't even poll for mergeability
+                        payload.push(await this.getPR({ owner, repo, wantedPR }));
                     }
                 }
             }

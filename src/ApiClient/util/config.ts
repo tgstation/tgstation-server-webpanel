@@ -126,6 +126,11 @@ const configOptions = asElementTypesConfig({
         id: "config.restjobs2",
         type: "bool",
         value: false
+    },
+    mergeabilitypolltimer: {
+        id: "config.mergeabilitypolltimer",
+        type: "num",
+        value: 5000
     }
 });
 
