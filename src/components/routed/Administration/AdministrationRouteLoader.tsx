@@ -44,9 +44,7 @@ const AdministrationRouteLoader = <TRouteObject extends RouteObject>(
                 RouteQueryLoader<UpdateInformationQuery>(
                     relayEnvironment,
                     UpdateInformation,
-                    () => {
-                        return {};
-                    },
+                    () => ({}),
                     {
                         path: ""
                     },
