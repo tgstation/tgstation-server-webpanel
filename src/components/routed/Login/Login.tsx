@@ -90,7 +90,7 @@ const Login = () => {
                         />
                     </CardContent>
                 </Card>
-                <Suspense fallback={<Loading />}>
+                <Suspense>
                     <OAuthOptions />
                 </Suspense>
             </CardContent>
