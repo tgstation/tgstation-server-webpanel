@@ -38,17 +38,17 @@ const Environment = () => {
     }, [config.GitHubToken.value]);
 
     return (
-        <RelayEnvironmentProvider environment={relayEnviroment}>
-            <SetCredentialsContext.Provider value={{ setCredentials }}>
-                <SessionProvider>
-                    <GitHubRelayContext.Provider value={gitHubRelayEnvironment}>
+        <GitHubRelayContext.Provider value={gitHubRelayEnvironment}>
+            <RelayEnvironmentProvider environment={relayEnviroment}>
+                <SetCredentialsContext.Provider value={{ setCredentials }}>
+                    <SessionProvider>
                         <ErrorsProvider>
                             <Router />
                         </ErrorsProvider>
-                    </GitHubRelayContext.Provider>
-                </SessionProvider>
-            </SetCredentialsContext.Provider>
-        </RelayEnvironmentProvider>
+                    </SessionProvider>
+                </SetCredentialsContext.Provider>
+            </RelayEnvironmentProvider>
+        </GitHubRelayContext.Provider>
     );
 };
 
