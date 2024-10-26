@@ -6,7 +6,6 @@ import useErrors from "./useErrors";
 import { ErrorMessageArrayFragment$key } from "@/components/graphql/__generated__/ErrorMessageArrayFragment.graphql";
 import ErrorMessageArray from "@/components/graphql/ErrorMessageArray";
 
-
 const useMutationErrors = (): [
     (error: Error) => void,
     (errors?: ErrorMessageArrayFragment$key | null) => void
