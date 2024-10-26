@@ -60,7 +60,8 @@ const CreateRelay = (fieldsEnabled: boolean): WithRelayParameters<HomeCardPermis
                 },
                 instanceManagerRights: {
                     canList: fieldsEnabled,
-                    canRead: fieldsEnabled
+                    canRead: fieldsEnabled,
+                    canCreate: fieldsEnabled
                 }
             },
             systemIdentifier: null

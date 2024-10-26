@@ -1,18 +1,18 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { useLazyLoadQuery } from "react-relay";
 
-import { PermissionSetQuery } from "./graphql/__generated__/PermissionSetQuery.graphql";
-import PermissionSet from "./graphql/PermissionSet";
 import PermissionedRoute from "./PermissionedRoute";
 
 import { WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
+import { RoutePermissionsQuery } from "@/components/graphql/__generated__/RoutePermissionsQuery.graphql";
+import RoutePermissions from "@/components/graphql/RoutePermissions";
 import { AdministrationPermissionsFragment$key } from "@/components/routed/Administration/graphql/__generated__/AdministrationPermissionsFragment.graphql";
 import AdministrationPermissions from "@/components/routed/Administration/graphql/AdministrationPermissions";
 
 const variables = {};
 
 const TestComponent = () => {
-    const data = useLazyLoadQuery<PermissionSetQuery>(PermissionSet, variables);
+    const data = useLazyLoadQuery<RoutePermissionsQuery>(RoutePermissions, variables);
 
     return (
         <PermissionedRoute
@@ -26,8 +26,8 @@ const TestComponent = () => {
     );
 };
 
-const CreateRelay = (fieldsEnabled: boolean): WithRelayParameters<PermissionSetQuery> => ({
-    query: PermissionSet,
+const CreateRelay = (fieldsEnabled: boolean): WithRelayParameters<RoutePermissionsQuery> => ({
+    query: RoutePermissions,
     mockResolvers: {
         AdministrationRightsFlags: () => ({
             canChangeVersion: fieldsEnabled,

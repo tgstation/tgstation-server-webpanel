@@ -3,12 +3,12 @@ import { Environment, PreloadedQuery, useFragment, usePreloadedQuery } from "rea
 import { KeyType } from "react-relay/relay-hooks/helpers";
 import { Outlet, RouteObject } from "react-router-dom";
 
-import { PermissionSetQuery } from "./graphql/__generated__/PermissionSetQuery.graphql";
-import PermissionSet from "./graphql/PermissionSet";
 import IRoutePermissionsChecker from "./IRoutePermissionsChecker";
 import IPermissionedRouteInfo from "./PermissionedRouteInfo";
 import IPermissionedRouteProps from "./PermissionedRouteProps";
 
+import { RoutePermissionsQuery } from "@/components/graphql/__generated__/RoutePermissionsQuery.graphql";
+import RoutePermissions from "@/components/graphql/RoutePermissions";
 import devDelay from "@/lib/devDelay";
 import RouteQueryLoader from "@/lib/RouteQueryLoader";
 
@@ -19,13 +19,13 @@ const PermissionedRoute = lazy(
 
 interface IWrappedProps<TFragmentKey extends KeyType>
     extends Omit<IPermissionedRouteProps<TFragmentKey>, "fragmentKey"> {
-    queryRef: PreloadedQuery<PermissionSetQuery>;
+    queryRef: PreloadedQuery<RoutePermissionsQuery>;
 }
 
 const WrapPermissionedRoute = <TFragmentKey extends KeyType>(
     props: IWrappedProps<TFragmentKey>
 ) => {
-    const data = usePreloadedQuery<PermissionSetQuery>(PermissionSet, props.queryRef);
+    const data = usePreloadedQuery<RoutePermissionsQuery>(RoutePermissions, props.queryRef);
     return (
         <PermissionedRoute
             {...props}
@@ -39,9 +39,9 @@ const PermissionedRouteLoader = <TFragmentKey extends KeyType, TRouteObject exte
     permissionedRouteInfo: IPermissionedRouteInfo<TFragmentKey>,
     partialRoute: TRouteObject
 ): TRouteObject & IRoutePermissionsChecker =>
-    RouteQueryLoader<PermissionSetQuery, TRouteObject & IRoutePermissionsChecker>(
+    RouteQueryLoader<RoutePermissionsQuery, TRouteObject & IRoutePermissionsChecker>(
         relayEnvironment,
-        PermissionSet,
+        RoutePermissions,
         () => ({}),
         {
             usePermissionsCheck: () => {

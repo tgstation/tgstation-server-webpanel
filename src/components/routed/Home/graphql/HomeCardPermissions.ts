@@ -8,6 +8,8 @@ const HomeCardPermissions = graphql`
                     id
                     ...AdministrationPermissionsFragment
                     ...ChangePasswordPermissionsFragment
+                    ...InstancesPermissionsFragment
+                    ...UsersPermissionsFragment
                 }
             }
         }

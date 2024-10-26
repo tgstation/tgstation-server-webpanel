@@ -1,17 +1,19 @@
 import { graphql } from "react-relay";
 
-const PermissionSet = graphql`
-    query PermissionSetQuery {
+const RoutePermissions = graphql`
+    query RoutePermissionsQuery {
         swarm {
             users {
                 current {
                     id
                     ...AdministrationPermissionsFragment
                     ...ChangePasswordPermissionsFragment
+                    ...InstancesPermissionsFragment
+                    ...UsersPermissionsFragment
                 }
             }
         }
     }
 `;
 
-export default PermissionSet;
+export default RoutePermissions;

@@ -11,13 +11,14 @@ import { Environment } from "react-relay";
 import { RouteObject } from "react-router-dom";
 
 import AdministrationRouteLoader from "../Administration/AdministrationRouteLoader";
+import InstancesRouteLoader from "../Instances/InstancesRouteLoader";
 import ServerInfoRouteLoader from "../ServerInfo/ServerInfoRouteLoader";
 import ChangePasswordRouteLoader from "../Users/ChangePassword/ChangePasswordRouteLoader";
+import UsersRouteLoader from "../Users/UsersRouteLoader";
 
 import HomeCardProps from "./HomeCard/HomeCardProps";
 import { HomeCardPermissionsQuery$data } from "./graphql/__generated__/HomeCardPermissionsQuery.graphql";
 
-import NotFound from "@/components/core/NotFound/NotFound";
 import devDelay from "@/lib/devDelay";
 
 const Configuration = lazy(
@@ -38,21 +39,27 @@ const HomeRoutes = (
     relayEnviroment: Environment,
     queryData?: HomeCardPermissionsQuery$data
 ): HomeRoute[] => {
-    const effectivePermissionSet = queryData?.swarm.users.current;
+    const currentUser = queryData?.swarm.users.current;
 
     return [
-        {
-            path: "instances",
-            icon: faHdd,
-            localeNameId: "routes.instancelist",
-            element: <NotFound />
-        },
-        {
-            path: "users",
-            icon: faUser,
-            localeNameId: "routes.usermanager",
-            element: <NotFound />
-        },
+        InstancesRouteLoader(
+            relayEnviroment,
+            {
+                path: "instances",
+                icon: faHdd,
+                localeNameId: "routes.instancelist"
+            },
+            currentUser
+        ),
+        UsersRouteLoader(
+            relayEnviroment,
+            {
+                path: "users",
+                icon: faUser,
+                localeNameId: "routes.usermanager"
+            },
+            currentUser
+        ),
         AdministrationRouteLoader(
             relayEnviroment,
             {
@@ -60,7 +67,7 @@ const HomeRoutes = (
                 icon: faTools,
                 localeNameId: "routes.admin"
             },
-            effectivePermissionSet
+            currentUser
         ),
         ChangePasswordRouteLoader(
             relayEnviroment,
@@ -69,7 +76,7 @@ const HomeRoutes = (
                 icon: faKey,
                 localeNameId: "routes.passwd"
             },
-            effectivePermissionSet
+            currentUser
         ),
         {
             path: "/config",
