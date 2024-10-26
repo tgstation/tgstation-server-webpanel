@@ -2,7 +2,7 @@
   "name": "tgstation-server-webpanel",
   "private": true,
   "version": "7.0.0",
-  "tgs_graphql_api_version": "0.3.0",
+  "tgs_graphql_api_version": "0.4.0",
   "tgs_rest_api_version": "10.10.0",
   "homepage": "https://tgstation.github.io/tgstation-server-webpanel",
   "repository": {
@@ -32,8 +32,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "yarn relay-build && npx chromatic",
-    "relay": "yarn grab-api && relay-compiler --watch",
-    "relay-build": "yarn grab-api && relay-compiler",
+    "relay": "yarn grab-api && relay-compiler github.relay.config.json && relay-compiler --watch relay.config.json",
+    "relay-build": "yarn grab-api && relay-compiler relay.config.json && relay-compiler github.relay.config.json",
     "grab-api": "node --no-warnings src/api/grab.js"
   },
   "dependencies": {
@@ -49,6 +49,7 @@
     "@radix-ui/react-navigation-menu": "^1.2.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.1",
+    "@radix-ui/react-toast": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.1.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

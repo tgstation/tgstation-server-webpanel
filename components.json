@@ -15,6 +15,6 @@
     "utils": "@/lib/shadcn/utils",
     "ui": "@/components/ui",
     "lib": "@/lib/shadcn",
-    "hooks": "@/hooks"
+    "hooks": "@/lib/shadcn/hooks"
   }
 }

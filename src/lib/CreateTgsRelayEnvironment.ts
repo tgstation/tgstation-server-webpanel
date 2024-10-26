@@ -19,21 +19,24 @@ import {
 import { ICredentials, OAuthCredentials } from "./Credentials";
 import devDelay from "./devDelay";
 import { TgsNetworkErrorPrefix } from "./NetworkErrorPrefixes";
+import sleep from "./sleep";
 
 import Pkg from "@/../package.json";
 
-const CreateRelayEnvironment = (
+const CreateTgsRelayEnvironment = (
     serverUrl: string
 ): {
     relayEnviroment: Environment;
     setCredentials: (credentials: ICredentials | null, temporary: boolean) => void;
+    blockRequests: (blocker: Promise<unknown>) => void;
 } => {
     const graphQLEndpoint = `${serverUrl}/api/graphql`;
 
     let currentCredentials: ICredentials | null = null;
     let temporaryCredentials: ICredentials | null = null;
+    let requestBlocker: Promise<unknown> | null = null;
     const createAuthHeader = () => {
-        const credentials = currentCredentials ?? temporaryCredentials;
+        const credentials = temporaryCredentials ?? currentCredentials;
         const header = credentials?.createAuthorizationHeader();
 
         if (credentials instanceof OAuthCredentials) {
@@ -44,7 +47,18 @@ const CreateRelayEnvironment = (
         return [header, null];
     };
 
+    const blockOnRequestBlocker = async () => {
+        while (requestBlocker != null) {
+            await requestBlocker;
+        }
+        await sleep(1);
+    };
+
     const fetchFn: FetchFunction = async (request, variables) => {
+        if (!temporaryCredentials) {
+            await blockOnRequestBlocker();
+        }
+
         const [authHeader, oAuthHeader] = createAuthHeader();
         const requestHeaders: HeadersInit = new Headers();
         requestHeaders.set(
@@ -80,7 +94,7 @@ const CreateRelayEnvironment = (
             }
 
             return await resp.json();
-        }, "Relay Request");
+        }, "TGS Relay Request");
     };
 
     // We only want to setup subscriptions if we are on the client.
@@ -149,8 +163,16 @@ const CreateRelayEnvironment = (
             } else {
                 currentCredentials = credentials;
             }
+        },
+        blockRequests: promise => {
+            void (async () => {
+                await blockOnRequestBlocker();
+                requestBlocker = promise;
+                await promise;
+                requestBlocker = null;
+            })();
         }
     };
 };
 
-export default CreateRelayEnvironment;
+export default CreateTgsRelayEnvironment;

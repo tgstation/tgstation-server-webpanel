@@ -6,10 +6,9 @@ import useErrors from "./useErrors";
 import { ErrorMessageArrayFragment$key } from "@/components/graphql/__generated__/ErrorMessageArrayFragment.graphql";
 import ErrorMessageArray from "@/components/graphql/ErrorMessageArray";
 
-
 const useMutationErrors = (): [
     (error: Error) => void,
-    (errors?: ErrorMessageArrayFragment$key | null) => void
+    (errors?: ErrorMessageArrayFragment$key | null) => boolean
 ] => {
     const errors = useErrors();
 
@@ -31,7 +30,10 @@ const useMutationErrors = (): [
     const payloadErrorsHandler = (errors?: ErrorMessageArrayFragment$key | null) => {
         if (errors) {
             setErrorsFragmentRef(errors);
+            return true;
         }
+
+        return false;
     };
 
     return [requestErrorHandler, payloadErrorsHandler];

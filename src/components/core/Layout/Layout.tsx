@@ -6,9 +6,9 @@ import Logo from "../Logo/Logo";
 import Navbar from "../Navbar/Navbar";
 import ReportIssue from "../ReportIssue/ReportIssue";
 
-import Loading from "@/components/utils/Loading/Loading";
+import { Toaster } from "@/components/ui/toaster";
 import ErrorBoundary from "@/components/utils/ErrorBoundary/ErrorBoundary";
-
+import Loading from "@/components/utils/Loading/Loading";
 
 const Layout = () => {
     return (
@@ -26,6 +26,7 @@ const Layout = () => {
             </div>
             <ReportIssue />
             <Logo />
+            <Toaster />
         </>
     );
 };

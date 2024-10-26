@@ -10,11 +10,15 @@ import { lazy } from "react";
 import { Environment } from "react-relay";
 import { RouteObject } from "react-router-dom";
 
+import AdministrationRouteLoader from "../Administration/AdministrationRouteLoader";
+import InstancesRouteLoader from "../Instances/InstancesRouteLoader";
 import ServerInfoRouteLoader from "../ServerInfo/ServerInfoRouteLoader";
+import ChangePasswordRouteLoader from "../Users/ChangePassword/ChangePasswordRouteLoader";
+import UsersRouteLoader from "../Users/UsersRouteLoader";
 
 import HomeCardProps from "./HomeCard/HomeCardProps";
+import { HomeCardPermissionsQuery$data } from "./graphql/__generated__/HomeCardPermissionsQuery.graphql";
 
-import NotFound from "@/components/core/NotFound/NotFound";
 import devDelay from "@/lib/devDelay";
 
 const Configuration = lazy(
@@ -31,55 +35,62 @@ interface IHomeRouteProtected {
 
 type HomeRoute = RouteObject & IHomeRouteProtected & Omit<HomeCardProps, "queryData">;
 
-const HomeRoutes = (relayEnviroment: Environment): HomeRoute[] => [
-    {
-        path: "instances",
-        icon: faHdd,
-        localeNameId: "routes.instancelist",
-        calculateEnabled: data =>
-            data.node?.effectivePermissionSet?.instanceManagerRights.canList ||
-            data.node?.effectivePermissionSet?.instanceManagerRights.canRead,
-        element: <NotFound />
-    },
-    {
-        path: "users",
-        icon: faUser,
-        localeNameId: "routes.usermanager",
-        calculateEnabled: data =>
-            data.node?.effectivePermissionSet?.administrationRights.canReadUsers ||
-            data.node?.effectivePermissionSet?.administrationRights.canWriteUsers,
-        element: <NotFound />
-    },
-    {
-        path: "admin",
-        icon: faTools,
-        localeNameId: "routes.admin",
-        calculateEnabled: data =>
-            data.node?.effectivePermissionSet?.administrationRights.canChangeVersion ||
-            data.node?.effectivePermissionSet?.administrationRights.canDownloadLogs ||
-            data.node?.effectivePermissionSet?.administrationRights.canUploadVersion,
-        element: <NotFound />
-    },
-    {
-        path: "/users/passwd",
-        icon: faKey,
-        localeNameId: "routes.passwd",
-        calculateEnabled: data =>
-            data.node?.effectivePermissionSet?.administrationRights.canEditOwnPassword,
-        element: <NotFound />
-    },
-    {
-        path: "/config",
-        icon: faCogs,
-        localeNameId: "routes.config",
-        element: <Configuration />,
-        unprotected: true
-    },
-    ServerInfoRouteLoader(relayEnviroment, {
-        path: "/info",
-        icon: faInfoCircle,
-        localeNameId: "routes.info"
-    })
-];
+const HomeRoutes = (
+    relayEnviroment: Environment,
+    queryData?: HomeCardPermissionsQuery$data
+): HomeRoute[] => {
+    const currentUser = queryData?.swarm.users.current;
+
+    return [
+        InstancesRouteLoader(
+            relayEnviroment,
+            {
+                path: "instances",
+                icon: faHdd,
+                localeNameId: "routes.instancelist"
+            },
+            currentUser
+        ),
+        UsersRouteLoader(
+            relayEnviroment,
+            {
+                path: "users",
+                icon: faUser,
+                localeNameId: "routes.usermanager"
+            },
+            currentUser
+        ),
+        AdministrationRouteLoader(
+            relayEnviroment,
+            {
+                path: "admin",
+                icon: faTools,
+                localeNameId: "routes.admin"
+            },
+            currentUser
+        ),
+        ChangePasswordRouteLoader(
+            relayEnviroment,
+            {
+                path: "/users/passwd",
+                icon: faKey,
+                localeNameId: "routes.passwd"
+            },
+            currentUser
+        ),
+        {
+            path: "/config",
+            icon: faCogs,
+            localeNameId: "routes.config",
+            element: <Configuration />,
+            unprotected: true
+        },
+        ServerInfoRouteLoader(relayEnviroment, {
+            path: "/info",
+            icon: faInfoCircle,
+            localeNameId: "routes.info"
+        })
+    ];
+};
 
 export default HomeRoutes;

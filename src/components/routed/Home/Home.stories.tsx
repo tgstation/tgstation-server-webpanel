@@ -14,9 +14,7 @@ interface IArgs {
     defaultCredentials: boolean;
 }
 
-const variables = {
-    userID: "fdsa"
-};
+const variables = {};
 
 const TestComponent = (props: IArgs) => {
     const queryRef = loadQuery<HomeCardPermissionsQuery>(
@@ -49,19 +47,24 @@ const TestComponent = (props: IArgs) => {
 const CreateRelay = (fieldsEnabled: boolean): WithRelayParameters<HomeCardPermissionsQuery> => ({
     query: HomeCardPermissions,
     mockResolvers: {
-        PermissionSet: () => ({
-            administrationRights: {
-                canChangeVersion: fieldsEnabled,
-                canDownloadLogs: fieldsEnabled,
-                canEditOwnPassword: fieldsEnabled,
-                canReadUsers: fieldsEnabled,
-                canUploadVersion: fieldsEnabled,
-                canWriteUsers: fieldsEnabled
+        User: () => ({
+            effectivePermissionSet: {
+                administrationRights: {
+                    canChangeVersion: fieldsEnabled,
+                    canDownloadLogs: fieldsEnabled,
+                    canEditOwnPassword: fieldsEnabled,
+                    canReadUsers: fieldsEnabled,
+                    canUploadVersion: fieldsEnabled,
+                    canWriteUsers: fieldsEnabled,
+                    canRestartHost: fieldsEnabled
+                },
+                instanceManagerRights: {
+                    canList: fieldsEnabled,
+                    canRead: fieldsEnabled,
+                    canCreate: fieldsEnabled
+                }
             },
-            instanceManagerRights: {
-                canList: fieldsEnabled,
-                canRead: fieldsEnabled
-            }
+            systemIdentifier: null
         })
     },
     variables

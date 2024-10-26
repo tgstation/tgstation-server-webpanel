@@ -10,7 +10,7 @@ interface ILoaderData<TQuery extends OperationType> {
 }
 
 interface IProps<TQuery extends OperationType> {
-    elementFunc: (queryRef: PreloadedQuery<TQuery> | null) => ReactNode;
+    elementFunc: (queryRef: PreloadedQuery<TQuery>) => ReactNode;
 }
 
 const WrapQueryDisposal = <TQuery extends OperationType>(props: IProps<TQuery>) => {
@@ -27,6 +27,8 @@ const WrapQueryDisposal = <TQuery extends OperationType>(props: IProps<TQuery>) 
         };
     }, [disposeFn]);
 
+    if (!queryRef) return <p>You should NOT be able to see this!</p>;
+
     return props.elementFunc(queryRef);
 };
 
@@ -38,7 +40,7 @@ const RouteQueryLoader = <
     query: GraphQLTaggedNode,
     variablesProvider: (args: LoaderFunctionArgs) => VariablesOf<TQuery> | null,
     partialRoute: TRouteObject,
-    elementFunc: (queryRef: PreloadedQuery<TQuery> | null) => ReactNode
+    elementFunc: (queryRef: PreloadedQuery<TQuery>) => ReactNode
 ): TRouteObject => {
     if (partialRoute.element) {
         throw new Error("Route element should not be set!");

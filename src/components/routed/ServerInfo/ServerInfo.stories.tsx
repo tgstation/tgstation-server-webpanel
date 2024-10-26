@@ -82,7 +82,7 @@ const CreateRelay = (): WithRelayParameters<ServerInformationQuery> => ({
 
 const config: Meta<typeof TestComponent> = {
     component: TestComponent,
-    title: "Routed/ServerInfo"
+    title: "Routed/Server Info"
 };
 
 export default config;

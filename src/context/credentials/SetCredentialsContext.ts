@@ -4,10 +4,12 @@ import { ICredentials } from "@/lib/Credentials";
 
 interface ISetCredentialsContext {
     setCredentials: (credentials: ICredentials, temporary: boolean) => void;
+    clearCredentials: () => void;
 }
 
 const SetCredentialsContext = createContext<ISetCredentialsContext>({
-    setCredentials: () => {}
+    setCredentials: () => {},
+    clearCredentials: () => {}
 });
 
 export default SetCredentialsContext;

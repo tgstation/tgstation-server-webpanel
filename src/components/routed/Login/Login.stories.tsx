@@ -109,9 +109,10 @@ const TestComponent = (args: IExtraArgs) => {
                         if (temporary) {
                             args.setTemporaryCredentials(credentials);
                         }
-                    }
+                    },
+                    clearCredentials: () => {}
                 }}>
-                <SessionProvider>
+                <SessionProvider blockRequests={() => {}}>
                     <InnerTestComponent {...args} />
                 </SessionProvider>
             </SetCredentialsContext.Provider>

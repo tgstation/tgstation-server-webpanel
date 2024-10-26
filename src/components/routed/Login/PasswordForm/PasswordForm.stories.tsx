@@ -14,7 +14,9 @@ export default config;
 
 type Story = StoryObj<typeof config>;
 
-export const Default: Story = {
+export const Default: Story = {};
+
+export const Play: Story = {
     play: async ({ args, canvasElement, step }) => {
         const canvas = within(canvasElement);
 
