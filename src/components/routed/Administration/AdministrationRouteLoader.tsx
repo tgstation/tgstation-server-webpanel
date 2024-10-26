@@ -28,8 +28,8 @@ const AdministrationRouteLoader = <TRouteObject extends RouteObject>(
         relayEnvironment,
         {
             fragmentNode: AdministrationPermissions,
-            permissionEvaluator: permissions => {
-                const adminRights = permissions.administrationRights;
+            permissionEvaluator: user => {
+                const adminRights = user.effectivePermissionSet.administrationRights;
                 return (
                     adminRights.canChangeVersion ||
                     adminRights.canDownloadLogs ||

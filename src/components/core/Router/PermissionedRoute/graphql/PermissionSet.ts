@@ -5,9 +5,8 @@ const PermissionSet = graphql`
         swarm {
             users {
                 current {
-                    effectivePermissionSet {
-                        ...AdministrationPermissionsFragment
-                    }
+                    ...AdministrationPermissionsFragment
+                    ...ChangePasswordPermissionsFragment
                 }
             }
         }

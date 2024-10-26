@@ -12,6 +12,7 @@ import { RouteObject } from "react-router-dom";
 
 import AdministrationRouteLoader from "../Administration/AdministrationRouteLoader";
 import ServerInfoRouteLoader from "../ServerInfo/ServerInfoRouteLoader";
+import ChangePasswordRouteLoader from "../User/ChangePassword/ChangePasswordRouteLoader";
 
 import HomeCardProps from "./HomeCard/HomeCardProps";
 import { HomeCardPermissionsQuery$data } from "./graphql/__generated__/HomeCardPermissionsQuery.graphql";
@@ -37,7 +38,7 @@ const HomeRoutes = (
     relayEnviroment: Environment,
     queryData?: HomeCardPermissionsQuery$data
 ): HomeRoute[] => {
-    const effectivePermissionSet = queryData?.swarm.users.current.effectivePermissionSet;
+    const effectivePermissionSet = queryData?.swarm.users.current;
 
     return [
         {
@@ -61,12 +62,15 @@ const HomeRoutes = (
             },
             effectivePermissionSet
         ),
-        {
-            path: "/users/passwd",
-            icon: faKey,
-            localeNameId: "routes.passwd",
-            element: <NotFound />
-        },
+        ChangePasswordRouteLoader(
+            relayEnviroment,
+            {
+                path: "/users/passwd",
+                icon: faKey,
+                localeNameId: "routes.passwd"
+            },
+            effectivePermissionSet
+        ),
         {
             path: "/config",
             icon: faCogs,

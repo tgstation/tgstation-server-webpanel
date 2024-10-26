@@ -1,12 +1,14 @@
 import { graphql } from "react-relay";
 
 const AdministrationPermissions = graphql`
-    fragment AdministrationPermissionsFragment on PermissionSet {
-        administrationRights {
-            canChangeVersion
-            canDownloadLogs
-            canRestartHost
-            canUploadVersion
+    fragment AdministrationPermissionsFragment on User {
+        effectivePermissionSet {
+            administrationRights {
+                canChangeVersion
+                canDownloadLogs
+                canRestartHost
+                canUploadVersion
+            }
         }
     }
 `;

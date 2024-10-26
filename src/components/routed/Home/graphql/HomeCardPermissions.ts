@@ -5,21 +5,8 @@ const HomeCardPermissions = graphql`
         swarm {
             users {
                 current {
-                    effectivePermissionSet {
-                        ...AdministrationPermissionsFragment
-                        administrationRights {
-                            canChangeVersion
-                            canDownloadLogs
-                            canUploadVersion
-                            canEditOwnPassword
-                            canReadUsers
-                            canWriteUsers
-                        }
-                        instanceManagerRights {
-                            canList
-                            canRead
-                        }
-                    }
+                    ...AdministrationPermissionsFragment
+                    ...ChangePasswordPermissionsFragment
                 }
             }
         }

@@ -26,12 +26,7 @@ const WrapPermissionedRoute = <TFragmentKey extends KeyType>(
     props: IWrappedProps<TFragmentKey>
 ) => {
     const data = usePreloadedQuery<PermissionSetQuery>(PermissionSet, props.queryRef);
-    return (
-        <PermissionedRoute
-            {...props}
-            fragmentKey={data.swarm.users.current.effectivePermissionSet as TFragmentKey}
-        />
-    );
+    return <PermissionedRoute {...props} fragmentKey={data.swarm.users.current as TFragmentKey} />;
 };
 
 const PermissionedRouteLoader = <TFragmentKey extends KeyType, TRouteObject extends RouteObject>(
