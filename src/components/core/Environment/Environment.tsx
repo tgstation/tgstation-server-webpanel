@@ -25,7 +25,7 @@ const Environment = () => {
 
     const config = useConfig();
 
-    const { relayEnviroment, setCredentials } = useMemo(
+    const { relayEnviroment, setCredentials, blockRequests } = useMemo(
         () => CreateTgsRelayEnvironment(config.ApiPath.value),
         [config.ApiPath.value]
     );
@@ -40,8 +40,9 @@ const Environment = () => {
     return (
         <GitHubRelayContext.Provider value={gitHubRelayEnvironment}>
             <RelayEnvironmentProvider environment={relayEnviroment}>
-                <SetCredentialsContext.Provider value={{ setCredentials }}>
-                    <SessionProvider>
+                <SetCredentialsContext.Provider
+                    value={{ setCredentials, clearCredentials: () => setCredentials(null, false) }}>
+                    <SessionProvider blockRequests={blockRequests}>
                         <ErrorsProvider>
                             <Router />
                         </ErrorsProvider>

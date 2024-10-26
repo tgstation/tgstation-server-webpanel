@@ -3,12 +3,13 @@ import { FormattedMessage } from "react-intl";
 import { useMutation } from "react-relay";
 import { Location, Navigate, useLocation } from "react-router-dom";
 
-import { ServerLoginMutation } from "./graphql/__generated__/ServerLoginMutation.graphql";
-import ServerLogin from "./graphql/ServerLogin";
+import ServerLogin from "../../graphql/ServerLogin";
+
 import ILocationState from "./LocationState";
 import OAuthOptions from "./OAuthOptions/OAuthOptions";
 import PasswordForm from "./PasswordForm/PasswordForm";
 
+import { ServerLoginMutation } from "@/components/graphql/__generated__/ServerLoginMutation.graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
 import useSetCredentials from "@/context/credentials/useSetCredentials";
