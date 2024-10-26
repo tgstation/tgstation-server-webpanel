@@ -8,7 +8,8 @@
     "**/__generated__/**",
     "components/core/**",
     "components/graphql/**",
-    "components/routed/**"
+    "components/routed/**",
+    "context/**"
   ],
   "eagerEsModules": true,
   "customScalarTypes": {
