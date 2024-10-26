@@ -13,7 +13,6 @@
     "changepassword.form.passwordConfirm.invalid.mismatch": "Passwords do not match!",
     "changepassword.form.passwordConfirm.placeholder": "Re-enter your new password",
     "changepassword.form.submit": "Change Password",
-    "changepassword.warning.systemuser": "Your user account is based on an OS account and you cannot change your password from here. Contact your system administrator to do so.",
 	"config.apipath": "TGS API Path",
 	"config.apipath.desc": "Sets the API client server's path.",
 	"config.githubtoken": "Github Token",
