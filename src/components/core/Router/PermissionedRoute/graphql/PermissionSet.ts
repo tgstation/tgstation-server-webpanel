@@ -5,6 +5,7 @@ const PermissionSet = graphql`
         swarm {
             users {
                 current {
+                    id
                     ...AdministrationPermissionsFragment
                     ...ChangePasswordPermissionsFragment
                 }

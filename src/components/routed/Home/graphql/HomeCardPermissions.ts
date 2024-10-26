@@ -5,6 +5,7 @@ const HomeCardPermissions = graphql`
         swarm {
             users {
                 current {
+                    id
                     ...AdministrationPermissionsFragment
                     ...ChangePasswordPermissionsFragment
                 }
