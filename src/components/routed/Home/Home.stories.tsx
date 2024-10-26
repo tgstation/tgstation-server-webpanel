@@ -14,9 +14,7 @@ interface IArgs {
     defaultCredentials: boolean;
 }
 
-const variables = {
-    userID: "fdsa"
-};
+const variables = {};
 
 const TestComponent = (props: IArgs) => {
     const queryRef = loadQuery<HomeCardPermissionsQuery>(

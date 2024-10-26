@@ -7,7 +7,7 @@ import IHomeCardProps from "./HomeCardProps";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 const HomeCard = (props: IHomeCardProps) => {
-    const enabled = props.calculateEnabled ? props.calculateEnabled(props.queryData) : true;
+    const enabled = props.usePermissionsCheck ? props.usePermissionsCheck() : true;
     const RenderCard = () => (
         <Card
             className={enabled ? "text-primary hover:text-primary-foreground" : "text-destructive"}>

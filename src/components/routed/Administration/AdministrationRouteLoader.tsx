@@ -17,8 +17,9 @@ const Administration = lazy(
 
 const AdministrationRouteLoader = <TRouteObject extends RouteObject>(
     relayEnvironment: Environment,
-    partialRoute: TRouteObject
-): TRouteObject => {
+    partialRoute: TRouteObject,
+    fragmentKey?: AdministrationPermissionsFragment$key
+) => {
     if (partialRoute.children) {
         throw new Error("AdministrationRouteLoader cannot have children");
     }
@@ -35,7 +36,8 @@ const AdministrationRouteLoader = <TRouteObject extends RouteObject>(
                     adminRights.canRestartHost ||
                     adminRights.canUploadVersion
                 );
-            }
+            },
+            fragmentKey
         },
         {
             children: [

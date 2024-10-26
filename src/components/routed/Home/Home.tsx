@@ -31,7 +31,7 @@ const Home = (props: IProps) => {
                 </Alert>
             ) : null}
             <div className="flex flex-row flex-wrap justify-center">
-                {HomeRoutes(relayEnvironment).map(route => (
+                {HomeRoutes(relayEnvironment, data).map(route => (
                     <div
                         key={route.localeNameId}
                         className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">

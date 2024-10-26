@@ -1,10 +1,11 @@
 import { lazy } from "react";
-import { Environment, PreloadedQuery, usePreloadedQuery } from "react-relay";
+import { Environment, PreloadedQuery, useFragment, usePreloadedQuery } from "react-relay";
 import { KeyType } from "react-relay/relay-hooks/helpers";
 import { Outlet, RouteObject } from "react-router-dom";
 
 import { PermissionSetQuery } from "./graphql/__generated__/PermissionSetQuery.graphql";
 import PermissionSet from "./graphql/PermissionSet";
+import IRoutePermissionsChecker from "./IRoutePermissionsChecker";
 import IPermissionedRouteInfo from "./PermissionedRouteInfo";
 import IPermissionedRouteProps from "./PermissionedRouteProps";
 
@@ -35,18 +36,32 @@ const WrapPermissionedRoute = <TFragmentKey extends KeyType>(
 
 const PermissionedRouteLoader = <TFragmentKey extends KeyType, TRouteObject extends RouteObject>(
     relayEnvironment: Environment,
-    props: IPermissionedRouteInfo<TFragmentKey>,
+    permissionedRouteInfo: IPermissionedRouteInfo<TFragmentKey>,
     partialRoute: TRouteObject
-): TRouteObject =>
-    RouteQueryLoader<PermissionSetQuery, TRouteObject>(
+): TRouteObject & IRoutePermissionsChecker =>
+    RouteQueryLoader<PermissionSetQuery, TRouteObject & IRoutePermissionsChecker>(
         relayEnvironment,
         PermissionSet,
-        () => {
-            return {};
+        () => ({}),
+        {
+            usePermissionsCheck: () => {
+                if (!permissionedRouteInfo.fragmentKey) {
+                    throw new Error(
+                        "Expected IPermissionedRouteInfo<TFragmentKey>.fragmentKey to be set!"
+                    );
+                }
+
+                const fragment = useFragment<TFragmentKey>(
+                    permissionedRouteInfo.fragmentNode,
+                    permissionedRouteInfo.fragmentKey
+                );
+
+                return permissionedRouteInfo.permissionEvaluator(fragment);
+            },
+            ...partialRoute
         },
-        partialRoute,
         queryRef => (
-            <WrapPermissionedRoute queryRef={queryRef} {...props}>
+            <WrapPermissionedRoute queryRef={queryRef} {...permissionedRouteInfo}>
                 <Outlet />
             </WrapPermissionedRoute>
         )
