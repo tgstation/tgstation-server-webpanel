@@ -17,11 +17,10 @@ const TestComponent = () => {
     return (
         <PermissionedRoute
             fragmentNode={AdministrationPermissions}
-            fragmentKey={
-                data.swarm.users.current
-                    .effectivePermissionSet as AdministrationPermissionsFragment$key
-            }
-            permissionEvaluator={permissions => permissions.administrationRights.canChangeVersion}>
+            fragmentKey={data.swarm.users.current as AdministrationPermissionsFragment$key}
+            permissionEvaluator={permissions =>
+                permissions.effectivePermissionSet.administrationRights.canChangeVersion
+            }>
             <div></div>
         </PermissionedRoute>
     );
