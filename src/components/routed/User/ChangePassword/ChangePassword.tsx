@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { PreloadedQuery, useMutation, usePreloadedQuery } from "react-relay";
@@ -40,38 +41,42 @@ const ChangePassword = (props: IProps) => {
     const minimumPasswordLength = data.swarm.currentNode.gateway.information.minimumPasswordLength;
     const canonicalName = data.swarm.users.current.canonicalName;
 
-    const nameMatchRegex = new RegExp(`^((?!${canonicalName}).)*$`, "i");
+    const passwordSchema = useMemo(
+        () =>
+            z
+                .object({
+                    password: z
+                        .string()
+                        .min(
+                            minimumPasswordLength,
+                            intl.formatMessage(
+                                { id: "changepassword.form.password.invalid.too_short" },
+                                { minimumPasswordLength }
+                            )
+                        )
+                        .regex(
+                            new RegExp(`^((?!${canonicalName}).)*$`, "i"),
+                            intl.formatMessage({
+                                id: "changepassword.form.password.invalid.matches_user"
+                            })
+                        ),
+                    passwordConfirm: z.string()
+                })
+                .superRefine((fields, context) => {
+                    if (fields.password !== fields.passwordConfirm) {
+                        const message = intl.formatMessage({
+                            id: "changepassword.form.passwordConfirm.invalid.mismatch"
+                        });
 
-    const passwordSchema = z
-        .object({
-            password: z
-                .string()
-                .min(
-                    minimumPasswordLength,
-                    intl.formatMessage(
-                        { id: "changepassword.form.password.invalid.too_short" },
-                        { minimumPasswordLength }
-                    )
-                )
-                .regex(
-                    nameMatchRegex,
-                    intl.formatMessage({ id: "changepassword.form.password.invalid.matches_user" })
-                ),
-            passwordConfirm: z.string()
-        })
-        .superRefine((fields, context) => {
-            if (fields.password !== fields.passwordConfirm) {
-                const message = intl.formatMessage({
-                    id: "changepassword.form.passwordConfirm.invalid.mismatch"
-                });
-
-                context.addIssue({
-                    code: "custom",
-                    path: [nameof<typeof fields>("passwordConfirm")],
-                    message
-                });
-            }
-        });
+                        context.addIssue({
+                            code: "custom",
+                            path: [nameof<typeof fields>("passwordConfirm")],
+                            message
+                        });
+                    }
+                }),
+        [intl, minimumPasswordLength, canonicalName]
+    );
 
     const form = useForm<z.infer<typeof passwordSchema>>({
         resolver: zodResolver(passwordSchema),

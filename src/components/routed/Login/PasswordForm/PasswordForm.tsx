@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { z } from "zod";
@@ -21,13 +22,20 @@ interface IProps {
 const PasswordForm = (props: IProps) => {
     const intl = useIntl();
 
-    const passwordSchema = z.object({
-        username: z
-            .string()
-            .min(1, intl.formatMessage({ id: "login.form.username.invalid.empty" }))
-            .regex(/^[^:]*$/, intl.formatMessage({ id: "login.form.username.invalid.colon" })),
-        password: z.string()
-    });
+    const passwordSchema = useMemo(
+        () =>
+            z.object({
+                username: z
+                    .string()
+                    .min(1, intl.formatMessage({ id: "login.form.username.invalid.empty" }))
+                    .regex(
+                        /^[^:]*$/,
+                        intl.formatMessage({ id: "login.form.username.invalid.colon" })
+                    ),
+                password: z.string()
+            }),
+        [intl]
+    );
 
     const form = useForm<z.infer<typeof passwordSchema>>({
         resolver: zodResolver(passwordSchema),
