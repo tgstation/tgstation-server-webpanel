@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFragment } from "react-relay";
+import { PayloadError } from "relay-runtime";
 
 import useErrors from "./useErrors";
 
@@ -8,6 +9,7 @@ import ErrorMessageArray from "@/components/graphql/ErrorMessageArray";
 
 const useMutationErrors = (): [
     (error: Error) => void,
+    (payloadErrors: PayloadError[] | null) => boolean,
     (errors?: ErrorMessageArrayFragment$key | null) => boolean
 ] => {
     const errors = useErrors();
@@ -22,21 +24,29 @@ const useMutationErrors = (): [
     useEffect(() => {
         if (errorsData) {
             setErrorsFragmentRef(undefined);
-            errors.removeErrors();
             errors.addErrors(errorsData);
         }
     }, [errorsData, errors]);
 
-    const payloadErrorsHandler = (errors?: ErrorMessageArrayFragment$key | null) => {
-        if (errors) {
-            setErrorsFragmentRef(errors);
+    const payloadErrorsHandler = (payloadErrors?: PayloadError[] | null) => {
+        if (payloadErrors) {
+            errors.addErrors(payloadErrors);
             return true;
         }
 
         return false;
     };
 
-    return [requestErrorHandler, payloadErrorsHandler];
+    const mutationErrorsHandler = (mutationErrors?: ErrorMessageArrayFragment$key | null) => {
+        if (mutationErrors) {
+            setErrorsFragmentRef(mutationErrors);
+            return true;
+        }
+
+        return false;
+    };
+
+    return [requestErrorHandler, payloadErrorsHandler, mutationErrorsHandler];
 };
 
 export default useMutationErrors;

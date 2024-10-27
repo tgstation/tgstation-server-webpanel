@@ -1,5 +1,5 @@
 import ErrorCard from "@/components/utils/ErrorCard/ErrorCard";
-import useErrors from "@/context/errors/useErrors";
+import useErrors from "@/contexts/errors/useErrors";
 
 const ErrorViewer = () => {
     const context = useErrors();

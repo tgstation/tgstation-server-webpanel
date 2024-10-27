@@ -10,8 +10,8 @@ export type Primitive = null | undefined | string | number | boolean | symbol | 
 type ResolverReturnType<T> = T extends { resolve: infer U }
     ? ResolverReturnType<U>
     : T extends (...args: any[]) => infer U
-    ? U
-    : never;
+      ? U
+      : never;
 
 type InferMockResolverFieldReturnType<T> = {
     [K in keyof T]: ResolverReturnType<T[K]> extends infer FieldResolverReturnType
@@ -26,13 +26,13 @@ type InferMockResolvers<T> = T extends object
         ? U extends (...args: any[]) => any
             ? never
             : U extends object
-            ? {
-                  [K in keyof U]?: (
-                      context: MockPayloadGenerator.MockResolverContext,
-                      generateId: () => string
-                  ) => InferMockResolverFieldReturnType<U[K]>;
-              }
-            : never
+              ? {
+                    [K in keyof U]?: (
+                        context: MockPayloadGenerator.MockResolverContext,
+                        generateId: () => string
+                    ) => InferMockResolverFieldReturnType<U[K]>;
+                }
+              : never
         : never
     : never;
 

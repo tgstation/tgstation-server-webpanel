@@ -3,13 +3,14 @@ import { useIntl } from "react-intl";
 import { RelayEnvironmentProvider } from "react-relay";
 
 import Router from "../Router/Router";
+import SessionSubscriptions from "../SessionSubscriptions/SessionSubscriptions";
 
 import Pkg from "@/../package.json";
-import useConfig from "@/context/config/useConfig";
-import SetCredentialsContext from "@/context/credentials/SetCredentialsContext";
-import ErrorsProvider from "@/context/errors/ErrorsProvider";
-import GitHubRelayContext from "@/context/github-relay/GitHubRelayContext";
-import SessionProvider from "@/context/session/SessionProvider";
+import useConfig from "@/contexts/config/useConfig";
+import SetCredentialsContext from "@/contexts/credentials/SetCredentialsContext";
+import ErrorsProvider from "@/contexts/errors/ErrorsProvider";
+import GitHubRelayContext from "@/contexts/github-relay/GitHubRelayContext";
+import SessionProvider from "@/contexts/session/SessionProvider";
 import CreateGitHubRelayEnvironment from "@/lib/CreateGitHubRelayEnvironment";
 import CreateTgsRelayEnvironment from "@/lib/CreateTgsRelayEnvironment";
 import { BearerCredentials } from "@/lib/Credentials";
@@ -42,7 +43,8 @@ const Environment = () => {
             <RelayEnvironmentProvider environment={relayEnviroment}>
                 <SetCredentialsContext.Provider
                     value={{ setCredentials, clearCredentials: () => setCredentials(null, false) }}>
-                    <SessionProvider blockRequests={blockRequests}>
+                    <SessionProvider
+                        renderOnSession={<SessionSubscriptions blockRequests={blockRequests} />}>
                         <ErrorsProvider>
                             <Router />
                         </ErrorsProvider>

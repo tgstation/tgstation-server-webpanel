@@ -12,9 +12,9 @@ import PasswordForm from "./PasswordForm/PasswordForm";
 import { ServerLoginMutation } from "@/components/graphql/__generated__/ServerLoginMutation.graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
-import useSetCredentials from "@/context/credentials/useSetCredentials";
-import useMutationErrors from "@/context/errors/useMutationErrors";
-import useSession from "@/context/session/useSession";
+import useSetCredentials from "@/contexts/credentials/useSetCredentials";
+import useMutationErrors from "@/contexts/errors/useMutationErrors";
+import useSession from "@/contexts/session/useSession";
 import {
     DefaultUserPasswordCredentials,
     ICredentials,
@@ -27,7 +27,7 @@ const Login = () => {
     const setCredentialsContext = useSetCredentials();
 
     const [commitLogin, isLoginInFlight] = useMutation<ServerLoginMutation>(ServerLogin);
-    const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
+    const [requestErrorHandler, payloadErrorsHandler, mutationErrorsHandler] = useMutationErrors();
 
     const showCard = !isLoginInFlight;
 
@@ -36,7 +36,7 @@ const Login = () => {
             setCredentialsContext.setCredentials(credentials, true);
             commitLogin({
                 variables: {},
-                onCompleted: response => {
+                onCompleted: (response, errors) => {
                     if (response.login.loginResult) {
                         session.setSession({
                             bearer: response.login.loginResult.bearer,
@@ -45,12 +45,20 @@ const Login = () => {
                         });
                     }
 
-                    payloadErrorsHandler(response.login.errors);
+                    payloadErrorsHandler(errors);
+                    mutationErrorsHandler(response.login.errors);
                 },
                 onError: requestErrorHandler
             });
         },
-        [commitLogin, session, requestErrorHandler, payloadErrorsHandler, setCredentialsContext]
+        [
+            commitLogin,
+            session,
+            requestErrorHandler,
+            payloadErrorsHandler,
+            setCredentialsContext,
+            mutationErrorsHandler
+        ]
     );
 
     const KeydownEventHandler = useCallback(

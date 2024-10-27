@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { ErrorInfo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
+import { PayloadError } from "relay-runtime";
 
 import Pkg from "@/../package.json";
 import { ErrorMessageSingleFragment$data } from "@/components/graphql/__generated__/ErrorMessageSingleFragment.graphql";
@@ -11,7 +12,7 @@ import { GitHubNetworkErrorPrefix, TgsNetworkErrorPrefix } from "@/lib/NetworkEr
 
 interface IProps {
     report?: boolean;
-    error: Error | ErrorMessageSingleFragment$data;
+    error: Error | ErrorMessageSingleFragment$data | PayloadError;
     errorInfo?: ErrorInfo;
     onClose?: () => void;
 }
@@ -33,15 +34,15 @@ const ErrorCard = (props: IProps) => {
               }
           )
         : isErrorMessage
-        ? tgsError.additionalData || null
-        : intl.formatMessage(
-              {
-                  id: "error.withoutstacktrace"
-              },
-              {
-                  version: Pkg.version
-              }
-          );
+          ? tgsError.additionalData || null
+          : intl.formatMessage(
+                {
+                    id: "error.withoutstacktrace"
+                },
+                {
+                    version: Pkg.version
+                }
+            );
 
     let errorTitle = "error.somethingwentwrong";
     if (props.error instanceof TypeError) {

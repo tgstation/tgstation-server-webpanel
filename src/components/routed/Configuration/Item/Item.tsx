@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 
 import InputGroup from "@/components/utils/InputGroup/InputGroup";
-import IConfigItem from "@/context/config/IConfigItem";
+import IConfigItem from "@/contexts/config/IConfigItem";
 
 interface IProps<TConfig> {
     configItem: IConfigItem<TConfig>;

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { IntlProvider } from "react-intl";
 
-import ConfigProvider from "../context/config/ConfigProvider";
+import ConfigProvider from "../contexts/config/ConfigProvider";
 import devDelay from "../lib/devDelay";
 import ITranslation from "../lib/translations/ITranslation";
 import ITranslationFactory from "../lib/translations/ITranslationFactory";
@@ -52,9 +52,8 @@ const App = (props: IProps) => {
                         )}. Falling back to ${FallbackLocale}.`
                     );
 
-                    loadedTranslation = await props.translationFactory.loadTranslation(
-                        FallbackLocale
-                    );
+                    loadedTranslation =
+                        await props.translationFactory.loadTranslation(FallbackLocale);
                 }
             } catch (error) {
                 alert(

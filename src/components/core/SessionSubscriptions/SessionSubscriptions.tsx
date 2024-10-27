@@ -3,15 +3,16 @@ import { useIntl } from "react-intl";
 import { useMutation, useSubscription } from "react-relay";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 
+import { CurrentUserUpdateSubscription } from "./graphql/__generated__/CurrentUserUpdateSubscription.graphql";
+import { SessionInvalidationSubscription } from "./graphql/__generated__/SessionInvalidationSubscription.graphql";
+
+import CurrentUserUpdate from "@/components/core/SessionSubscriptions/graphql/CurrentUserUpdate";
+import SessionInvalidation from "@/components/core/SessionSubscriptions/graphql/SessionInvalidation";
 import { ServerLoginMutation } from "@/components/graphql/__generated__/ServerLoginMutation.graphql";
 import ServerLogin from "@/components/graphql/ServerLogin";
-import useSetCredentials from "@/context/credentials/useSetCredentials";
-import useMutationErrors from "@/context/errors/useMutationErrors";
-import { CurrentUserUpdateSubscription } from "@/context/session/graphql/__generated__/CurrentUserUpdateSubscription.graphql";
-import { SessionInvalidationSubscription } from "@/context/session/graphql/__generated__/SessionInvalidationSubscription.graphql";
-import CurrentUserUpdate from "@/context/session/graphql/CurrentUserUpdate";
-import SessionInvalidation from "@/context/session/graphql/SessionInvalidation";
-import useSession from "@/context/session/useSession";
+import useSetCredentials from "@/contexts/credentials/useSetCredentials";
+import useMutationErrors from "@/contexts/errors/useMutationErrors";
+import useSession from "@/contexts/session/useSession";
 import { ICredentials } from "@/lib/Credentials";
 import { useToast } from "@/lib/shadcn/hooks/use-toast";
 import sleep from "@/lib/sleep";
@@ -26,7 +27,7 @@ const SessionSubscriptions = (props: IProps) => {
     const setCredentialsContext = useSetCredentials();
     const sessionContext = useSession();
     const [commitLogin] = useMutation<ServerLoginMutation>(ServerLogin);
-    const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
+    const [requestErrorHandler, payloadErrorsHandler, mutationErrorsHandler] = useMutationErrors();
 
     const tryToRestablishSession = useCallback(
         async (delaySeconds: number, toastMessageId: string, originalCredentials: ICredentials) => {
@@ -57,7 +58,7 @@ const SessionSubscriptions = (props: IProps) => {
                         setCredentialsContext.setCredentials(originalCredentials, true);
                         commitLogin({
                             variables: {},
-                            onCompleted: response => {
+                            onCompleted: (response, errors) => {
                                 if (response.login.loginResult) {
                                     sessionContext.setSession({
                                         bearer: response.login.loginResult.bearer,
@@ -76,7 +77,10 @@ const SessionSubscriptions = (props: IProps) => {
                                     });
                                 }
 
-                                if (payloadErrorsHandler(response.login.errors)) {
+                                if (
+                                    payloadErrorsHandler(errors) ||
+                                    mutationErrorsHandler(response.login.errors)
+                                ) {
                                     failUpdate();
                                 }
 
@@ -96,11 +100,12 @@ const SessionSubscriptions = (props: IProps) => {
         [
             intl,
             toast,
-            setCredentialsContext,
             props,
+            sessionContext,
+            setCredentialsContext,
             commitLogin,
             payloadErrorsHandler,
-            sessionContext,
+            mutationErrorsHandler,
             requestErrorHandler
         ]
     );

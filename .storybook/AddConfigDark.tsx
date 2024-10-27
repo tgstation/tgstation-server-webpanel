@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 
-import ConfigProvider from "../src/context/config/ConfigProvider";
+import ConfigProvider from "../src/contexts/config/ConfigProvider";
 
 const AddConfigDark = (Story: FC) => {
     return (

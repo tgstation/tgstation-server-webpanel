@@ -11,11 +11,11 @@ import {
 } from "./OAuthOptions/graphql/__generated__/GetOAuthProvidersQuery.graphql";
 
 import { MockRelayEnvironment, WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
-import SetCredentialsContext from "@/context/credentials/SetCredentialsContext";
-import ErrorsProvider from "@/context/errors/ErrorsProvider";
-import useErrors from "@/context/errors/useErrors";
-import SessionProvider from "@/context/session/SessionProvider";
-import useSession from "@/context/session/useSession";
+import SetCredentialsContext from "@/contexts/credentials/SetCredentialsContext";
+import ErrorsProvider from "@/contexts/errors/ErrorsProvider";
+import useErrors from "@/contexts/errors/useErrors";
+import SessionProvider from "@/contexts/session/SessionProvider";
+import useSession from "@/contexts/session/useSession";
 import { ICredentials } from "@/lib/Credentials";
 import sleep from "@/lib/sleep";
 
@@ -112,7 +112,7 @@ const TestComponent = (args: IExtraArgs) => {
                     },
                     clearCredentials: () => {}
                 }}>
-                <SessionProvider blockRequests={() => {}}>
+                <SessionProvider renderOnSession={<></>}>
                     <InnerTestComponent {...args} />
                 </SessionProvider>
             </SetCredentialsContext.Provider>

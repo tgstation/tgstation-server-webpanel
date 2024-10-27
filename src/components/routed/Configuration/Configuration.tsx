@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import EnumDropdown from "@/components/utils/EnumDropdown/EnumDropdown";
-import { JobsWidgetOptions } from "@/context/config/CreateConfig";
-import Theme from "@/context/config/Theme";
-import useConfig from "@/context/config/useConfig";
+import { JobsWidgetOptions } from "@/contexts/config/CreateConfig";
+import Theme from "@/contexts/config/Theme";
+import useConfig from "@/contexts/config/useConfig";
 
 const List = () => {
     const config = useConfig();
