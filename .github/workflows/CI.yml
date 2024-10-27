@@ -122,3 +122,6 @@ jobs:
 
           - name: Run ESLint
             run: yarn eslint "**/*.{js,jsx,ts,tsx}"
+
+          - name: Run Prettier
+            run: yarn prettier -c .

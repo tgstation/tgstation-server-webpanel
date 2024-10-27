@@ -104,6 +104,7 @@
     "eslint-plugin-storybook": "0.10.1",
     "globals": "^15.11.0",
     "postcss": "^8.4.47",
+    "prettier": "^3.3.3",
     "relay-compiler": "^18.1.0",
     "relay-test-utils": "^18.1.0",
     "rollup-plugin-jsx-remove-attributes": "^2.0.3",
