@@ -27,7 +27,7 @@ const Login = () => {
     const setCredentialsContext = useSetCredentials();
 
     const [commitLogin, isLoginInFlight] = useMutation<ServerLoginMutation>(ServerLogin);
-    const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
+    const [requestErrorHandler, payloadErrorsHandler, mutationErrorsHandler] = useMutationErrors();
 
     const showCard = !isLoginInFlight;
 
@@ -36,7 +36,7 @@ const Login = () => {
             setCredentialsContext.setCredentials(credentials, true);
             commitLogin({
                 variables: {},
-                onCompleted: response => {
+                onCompleted: (response, errors) => {
                     if (response.login.loginResult) {
                         session.setSession({
                             bearer: response.login.loginResult.bearer,
@@ -45,12 +45,20 @@ const Login = () => {
                         });
                     }
 
-                    payloadErrorsHandler(response.login.errors);
+                    payloadErrorsHandler(errors);
+                    mutationErrorsHandler(response.login.errors);
                 },
                 onError: requestErrorHandler
             });
         },
-        [commitLogin, session, requestErrorHandler, payloadErrorsHandler, setCredentialsContext]
+        [
+            commitLogin,
+            session,
+            requestErrorHandler,
+            payloadErrorsHandler,
+            setCredentialsContext,
+            mutationErrorsHandler
+        ]
     );
 
     const KeydownEventHandler = useCallback(

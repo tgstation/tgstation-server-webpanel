@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import { PayloadError } from "relay-runtime";
 
 import IErrorRecord from "./ErrorRecord";
 
@@ -10,6 +11,7 @@ export interface IErrorsContext {
     addErrors: (
         errors:
             | ErrorMessageArrayFragment$data
+            | PayloadError[]
             | ReadonlyArray<Error | ErrorMessageSingleFragment$data>
     ) => void;
     removeErrors: (keys?: ReadonlyArray<string>) => void;

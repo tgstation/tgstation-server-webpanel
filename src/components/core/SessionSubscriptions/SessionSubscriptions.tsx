@@ -27,7 +27,7 @@ const SessionSubscriptions = (props: IProps) => {
     const setCredentialsContext = useSetCredentials();
     const sessionContext = useSession();
     const [commitLogin] = useMutation<ServerLoginMutation>(ServerLogin);
-    const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
+    const [requestErrorHandler, payloadErrorsHandler, mutationErrorsHandler] = useMutationErrors();
 
     const tryToRestablishSession = useCallback(
         async (delaySeconds: number, toastMessageId: string, originalCredentials: ICredentials) => {
@@ -58,7 +58,7 @@ const SessionSubscriptions = (props: IProps) => {
                         setCredentialsContext.setCredentials(originalCredentials, true);
                         commitLogin({
                             variables: {},
-                            onCompleted: response => {
+                            onCompleted: (response, errors) => {
                                 if (response.login.loginResult) {
                                     sessionContext.setSession({
                                         bearer: response.login.loginResult.bearer,
@@ -77,7 +77,10 @@ const SessionSubscriptions = (props: IProps) => {
                                     });
                                 }
 
-                                if (payloadErrorsHandler(response.login.errors)) {
+                                if (
+                                    payloadErrorsHandler(errors) ||
+                                    mutationErrorsHandler(response.login.errors)
+                                ) {
                                     failUpdate();
                                 }
 
@@ -97,11 +100,12 @@ const SessionSubscriptions = (props: IProps) => {
         [
             intl,
             toast,
-            setCredentialsContext,
             props,
+            sessionContext,
+            setCredentialsContext,
             commitLogin,
             payloadErrorsHandler,
-            sessionContext,
+            mutationErrorsHandler,
             requestErrorHandler
         ]
     );

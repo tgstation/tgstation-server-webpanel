@@ -2,8 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import { PreloadedQuery, useMutation, usePreloadedQuery } from "react-relay";
-import { useNavigate } from "react-router-dom";
+import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { z } from "zod";
 
 import { ChangePasswordPreflightQuery } from "./graphql/__generated__/ChangePasswordPreflightQuery.graphql";
@@ -22,8 +21,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Loading from "@/components/utils/Loading/Loading";
-import useMutationErrors from "@/contexts/errors/useMutationErrors";
 import nameof from "@/lib/nameof";
+import useStandardMutation from "@/lib/useStandardMutation";
 
 interface IProps {
     queryRef: PreloadedQuery<ChangePasswordPreflightQuery>;
@@ -87,10 +86,10 @@ const ChangePassword = (props: IProps) => {
     });
 
     const [commitPasswordChange, isPasswordChangeInFlight] =
-        useMutation<ExecuteChangePasswordMutation>(ExecuteChangePassword);
-    const [requestErrorHandler, payloadErrorsHandler] = useMutationErrors();
-
-    const navigate = useNavigate();
+        useStandardMutation<ExecuteChangePasswordMutation>(
+            ExecuteChangePassword,
+            response => response.setCurrentUserPassword.errors
+        );
 
     const onSubmit = (result: z.infer<typeof passwordSchema>) => {
         if (props.submitCallback) {
@@ -100,13 +99,7 @@ const ChangePassword = (props: IProps) => {
         commitPasswordChange({
             variables: {
                 newPassword: result.password
-            },
-            onCompleted: response => {
-                if (!payloadErrorsHandler(response.setCurrentUserPassword.errors)) {
-                    navigate(-1);
-                }
-            },
-            onError: requestErrorHandler
+            }
         });
     };
 
