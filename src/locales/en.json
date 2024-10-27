@@ -357,6 +357,7 @@
     "loading.userlist": "Loading user list...",
     "loading.version": "Loading versions...",
     "login.form.password": "Password",
+    "login.form.password.invalid.empty": "Password cannot be empty!",
     "login.form.password.placeholder": "Password",
     "login.form.submit": "Login",
     "login.form.username": "Username",

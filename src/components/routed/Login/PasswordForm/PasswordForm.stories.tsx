@@ -37,17 +37,17 @@ export const Play: Story = {
         });
 
         await userEvent.clear(usernameField);
-        await step("With user submit", async () => {
+        await step("With user only submit", async () => {
             await userEvent.type(usernameField, "test username");
             await userEvent.click(submitButton);
-            await waitFor(() => expect(args.onSubmit).toHaveBeenCalledWith("test username", ""));
+            await waitFor(() => expect(args.onSubmit).not.toHaveBeenCalled());
         });
 
         await userEvent.clear(usernameField);
         await step("With password only submit", async () => {
             await userEvent.type(passwordField, "some password");
             await userEvent.click(submitButton);
-            await waitFor(() => expect(args.onSubmit).toBeCalledTimes(1));
+            await waitFor(() => expect(args.onSubmit).not.toHaveBeenCalled());
         });
 
         await userEvent.clear(passwordField);
@@ -56,7 +56,7 @@ export const Play: Story = {
             await userEvent.type(passwordField, "some password");
             await userEvent.click(submitButton);
             await waitFor(() => {
-                expect(args.onSubmit).toBeCalledTimes(2);
+                expect(args.onSubmit).toBeCalledTimes(1);
                 expect(args.onSubmit).toHaveBeenCalledWith("test username", "some password");
             });
         });

@@ -32,7 +32,9 @@ const PasswordForm = (props: IProps) => {
                         /^[^:]*$/,
                         intl.formatMessage({ id: "login.form.username.invalid.colon" })
                     ),
-                password: z.string()
+                password: z
+                    .string()
+                    .min(1, intl.formatMessage({ id: "login.form.password.invalid.empty" }))
             }),
         [intl]
     );
