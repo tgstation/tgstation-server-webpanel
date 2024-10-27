@@ -16,7 +16,7 @@ import {
     faHashtag,
     faMinus,
     faUnlock,
-    faUpload,
+    faUpload
 } from "@fortawesome/free-solid-svg-icons";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";

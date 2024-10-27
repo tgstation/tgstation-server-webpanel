@@ -14,15 +14,13 @@ const CreateTypedConfigItem = <TConfig>(
 ): IConfigItem<TConfig> => {
     const fullStorageKey = `${RootConfigStorageKey}.${storageKey}`;
     const loader = () =>
-        deserializer(
-            localStorage.getItem(fullStorageKey) || serializer(defaultValue)
-        );
+        deserializer(localStorage.getItem(fullStorageKey) || serializer(defaultValue));
 
     if (forContext) {
         return {
             value: defaultValue,
             setValue: () => null,
-            localizationId: fullStorageKey,
+            localizationId: fullStorageKey
         };
     }
 
@@ -38,7 +36,7 @@ const CreateTypedConfigItem = <TConfig>(
 
     return {
         value,
-        setValue: (newValue) => {
+        setValue: newValue => {
             const storageValue = serializer(newValue);
             if (storageValue) {
                 localStorage.setItem(fullStorageKey, storageValue);
@@ -48,7 +46,7 @@ const CreateTypedConfigItem = <TConfig>(
 
             setValue(newValue);
         },
-        localizationId: fullStorageKey,
+        localizationId: fullStorageKey
     };
 };
 
@@ -59,8 +57,8 @@ export const CreateStringConfigItem = (
 ) =>
     CreateTypedConfigItem<string>(
         forContext,
-        (configValue) => configValue,
-        (runtimeValue) => runtimeValue,
+        configValue => configValue,
+        runtimeValue => runtimeValue,
         defaultValue,
         storageKey
     );

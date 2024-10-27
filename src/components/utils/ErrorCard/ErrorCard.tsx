@@ -33,15 +33,15 @@ const ErrorCard = (props: IProps) => {
               }
           )
         : isErrorMessage
-        ? tgsError.additionalData || null
-        : intl.formatMessage(
-              {
-                  id: "error.withoutstacktrace"
-              },
-              {
-                  version: Pkg.version
-              }
-          );
+          ? tgsError.additionalData || null
+          : intl.formatMessage(
+                {
+                    id: "error.withoutstacktrace"
+                },
+                {
+                    version: Pkg.version
+                }
+            );
 
     let errorTitle = "error.somethingwentwrong";
     if (props.error instanceof TypeError) {

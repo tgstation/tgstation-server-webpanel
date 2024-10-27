@@ -1,60 +1,60 @@
 name: "Chromatic"
 
 on:
-  push:
-    branches:
-      - next
-      - graphql
-  workflow_call:
-    inputs:
-      pull_request_number:
-        description: Pull Request Number
-        required: true
-        type: string
+    push:
+        branches:
+            - next
+            - graphql
+    workflow_call:
+        inputs:
+            pull_request_number:
+                description: Pull Request Number
+                required: true
+                type: string
 
 jobs:
-  chromatic:
-    name: Run Chromatic
-    runs-on: ubuntu-latest
-    strategy:
-        matrix:
-            node-version: [20.x]
-    steps:
-        - name: Checkout
-          if: github.event_name == 'push'
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
+    chromatic:
+        name: Run Chromatic
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [20.x]
+        steps:
+            - name: Checkout
+              if: github.event_name == 'push'
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
-        - name: Checkout (PR)
-          if: github.event_name != 'push'
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
-            ref: refs/pull/${{ inputs.pull_request_number }}/head
+            - name: Checkout (PR)
+              if: github.event_name != 'push'
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  ref: refs/pull/${{ inputs.pull_request_number }}/head
 
-        - name: Restore Yarn cache
-          uses: actions/cache@v4
-          with:
-              path: .yarn/cache
-              key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+            - name: Restore Yarn cache
+              uses: actions/cache@v4
+              with:
+                  path: .yarn/cache
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
 
-        - name: Use Node.js ${{ matrix.node-version }}
-          uses: actions/setup-node@v4
-          with:
-              node-version: ${{ matrix.node-version }}
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
 
-        - name: Setup Yarn
-          run: corepack enable
+            - name: Setup Yarn
+              run: corepack enable
 
-        - name: Install Dependencies
-          run: yarn install --immutable
+            - name: Install Dependencies
+              run: yarn install --immutable
 
-        - name: Run Relay
-          run: yarn relay-build
+            - name: Run Relay
+              run: yarn relay-build
 
-        - name: Run Chromatic
-          uses: chromaui/action@latest
-          with:
-            projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-            exitOnceUploaded: true
+            - name: Run Chromatic
+              uses: chromaui/action@latest
+              with:
+                  projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+                  exitOnceUploaded: true

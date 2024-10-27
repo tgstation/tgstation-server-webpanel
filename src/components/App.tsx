@@ -52,9 +52,8 @@ const App = (props: IProps) => {
                         )}. Falling back to ${FallbackLocale}.`
                     );
 
-                    loadedTranslation = await props.translationFactory.loadTranslation(
-                        FallbackLocale
-                    );
+                    loadedTranslation =
+                        await props.translationFactory.loadTranslation(FallbackLocale);
                 }
             } catch (error) {
                 alert(
