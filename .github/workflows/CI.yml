@@ -42,42 +42,6 @@ jobs:
             run: corepack enable
 
           - name: Install Yarn Dependencies
-            run:  yarn install --immutable
-
-          - name: Build
-            run: yarn build
-
-  strict-build:
-      name: Strict Build
-      runs-on: ubuntu-latest
-      strategy:
-          matrix:
-              node-version: [20.x]
-      steps:
-            # expect used for unbuffer
-          - name: Install Native Dependencies
-            run: |
-              sudo apt-get update
-              sudo apt-get install expect
-
-          - name: Checkout
-            uses: actions/checkout@v4
-
-          - name: Restore Yarn cache
-            uses: actions/cache@v4
-            with:
-                path: .yarn/cache
-                key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-
-          - name: Use Node.js ${{ matrix.node-version }}
-            uses: actions/setup-node@v4
-            with:
-                node-version: ${{ matrix.node-version }}
-
-          - name: Setup Yarn
-            run: corepack enable
-
-          - name: Install Yarn Dependencies
             run: |
                 unbuffer yarn install --immutable | tee yarn_output.log
                 if cat yarn_output.log | grep YN0060; then
