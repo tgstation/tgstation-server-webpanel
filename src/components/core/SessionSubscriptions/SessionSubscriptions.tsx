@@ -3,14 +3,15 @@ import { useIntl } from "react-intl";
 import { useMutation, useSubscription } from "react-relay";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 
+import { CurrentUserUpdateSubscription } from "./graphql/__generated__/CurrentUserUpdateSubscription.graphql";
+import { SessionInvalidationSubscription } from "./graphql/__generated__/SessionInvalidationSubscription.graphql";
+
+import CurrentUserUpdate from "@/components/core/SessionSubscriptions/graphql/CurrentUserUpdate";
+import SessionInvalidation from "@/components/core/SessionSubscriptions/graphql/SessionInvalidation";
 import { ServerLoginMutation } from "@/components/graphql/__generated__/ServerLoginMutation.graphql";
 import ServerLogin from "@/components/graphql/ServerLogin";
 import useSetCredentials from "@/contexts/credentials/useSetCredentials";
 import useMutationErrors from "@/contexts/errors/useMutationErrors";
-import { CurrentUserUpdateSubscription } from "@/contexts/session/graphql/__generated__/CurrentUserUpdateSubscription.graphql";
-import { SessionInvalidationSubscription } from "@/contexts/session/graphql/__generated__/SessionInvalidationSubscription.graphql";
-import CurrentUserUpdate from "@/contexts/session/graphql/CurrentUserUpdate";
-import SessionInvalidation from "@/contexts/session/graphql/SessionInvalidation";
 import useSession from "@/contexts/session/useSession";
 import { ICredentials } from "@/lib/Credentials";
 import { useToast } from "@/lib/shadcn/hooks/use-toast";
