@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { lazy, useMemo } from "react";
 import { useRelayEnvironment } from "react-relay";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -30,34 +30,36 @@ const NotFound = lazy(
 
 const Router = () => {
     const relayEnviroment = useRelayEnvironment();
-    const homeRoutes = HomeRoutes(relayEnviroment);
-    const router = createBrowserRouter([
-        {
-            path: "/",
-            element: <Layout />,
-            errorElement: <RethrowRouteError />,
-            children: [
-                {
-                    path: "login",
-                    element: <Login />
-                },
-                ...homeRoutes.filter(route => route.unprotected),
-                {
-                    element: <ProtectedRoute />,
-                    children: [
-                        HomeRouteLoader(relayEnviroment, {
-                            path: ""
-                        }),
-                        ...homeRoutes.filter(route => !route.unprotected),
-                        {
-                            path: "*",
-                            element: <NotFound />
-                        }
-                    ]
-                }
-            ]
-        }
-    ]);
+    const router = useMemo(() => {
+        const homeRoutes = HomeRoutes(relayEnviroment);
+        return createBrowserRouter([
+            {
+                path: "/",
+                element: <Layout />,
+                errorElement: <RethrowRouteError />,
+                children: [
+                    {
+                        path: "login",
+                        element: <Login />
+                    },
+                    ...homeRoutes.filter(route => route.unprotected),
+                    {
+                        element: <ProtectedRoute />,
+                        children: [
+                            HomeRouteLoader(relayEnviroment, {
+                                path: ""
+                            }),
+                            ...homeRoutes.filter(route => !route.unprotected),
+                            {
+                                path: "*",
+                                element: <NotFound />
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]);
+    }, [relayEnviroment]);
 
     return <RouterProvider router={router}></RouterProvider>;
 };
