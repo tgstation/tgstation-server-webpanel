@@ -112,7 +112,7 @@ const TestComponent = (args: IExtraArgs) => {
                     },
                     clearCredentials: () => {}
                 }}>
-                <SessionProvider blockRequests={() => {}}>
+                <SessionProvider renderOnSession={<></>}>
                     <InnerTestComponent {...args} />
                 </SessionProvider>
             </SetCredentialsContext.Provider>
