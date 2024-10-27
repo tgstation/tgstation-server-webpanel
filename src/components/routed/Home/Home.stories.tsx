@@ -7,7 +7,7 @@ import HomeCardPermissions from "./graphql/HomeCardPermissions";
 import Home from "./Home";
 
 import { WithRelayParameters } from "@/../.storybook/MockRelayEnvironment";
-import SessionContext from "@/context/session/SessionContext";
+import SessionContext from "@/contexts/session/SessionContext";
 import { UserPasswordCredentials } from "@/lib/Credentials";
 
 interface IArgs {

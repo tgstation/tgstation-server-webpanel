@@ -9,7 +9,7 @@
         "components/core/**",
         "components/graphql/**",
         "components/routed/**",
-        "context/**"
+        "contexts/**"
     ],
     "eagerEsModules": true,
     "customScalarTypes": {

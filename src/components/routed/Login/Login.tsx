@@ -12,9 +12,9 @@ import PasswordForm from "./PasswordForm/PasswordForm";
 import { ServerLoginMutation } from "@/components/graphql/__generated__/ServerLoginMutation.graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loading from "@/components/utils/Loading/Loading";
-import useSetCredentials from "@/context/credentials/useSetCredentials";
-import useMutationErrors from "@/context/errors/useMutationErrors";
-import useSession from "@/context/session/useSession";
+import useSetCredentials from "@/contexts/credentials/useSetCredentials";
+import useMutationErrors from "@/contexts/errors/useMutationErrors";
+import useSession from "@/contexts/session/useSession";
 import {
     DefaultUserPasswordCredentials,
     ICredentials,

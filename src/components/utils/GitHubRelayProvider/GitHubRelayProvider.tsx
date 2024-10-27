@@ -5,7 +5,7 @@ import { RelayEnvironmentProvider } from "react-relay";
 import ErrorBoundary from "../ErrorBoundary/ErrorBoundary";
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import useGitHubRelay from "@/context/github-relay/useGitHubRelay";
+import useGitHubRelay from "@/contexts/github-relay/useGitHubRelay";
 
 interface IProps {
     children: ReactNode;

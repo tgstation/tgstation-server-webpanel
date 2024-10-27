@@ -7,7 +7,7 @@ import HomeCard from "./HomeCard/HomeCard";
 import HomeRoutes from "./HomeRoutes";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import useSession from "@/context/session/useSession";
+import useSession from "@/contexts/session/useSession";
 
 interface IProps {
     queryRef: PreloadedQuery<HomeCardPermissionsQuery>;

@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Loading from "@/components/utils/Loading/Loading";
-import useMutationErrors from "@/context/errors/useMutationErrors";
+import useMutationErrors from "@/contexts/errors/useMutationErrors";
 import nameof from "@/lib/nameof";
 
 interface IProps {
