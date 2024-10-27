@@ -632,6 +632,7 @@
     "view.admin.update.wait": "Please take the time to read the release notes before proceeding",
     "view.admin.version.current": "Current Version: ",
     "view.admin.version.latest": "Latest Version: ",
+    "view.admin.version.unknown": "(Unable to fetch)",
     "view.info.client": "Client Info",
     "view.info.controller": "[CONTROLLER]",
     "view.info.dmapiversion": "DM API Version: ",

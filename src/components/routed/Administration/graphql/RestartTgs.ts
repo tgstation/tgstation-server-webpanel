@@ -4,11 +4,7 @@ const RestartTgs = graphql`
     mutation RestartTgsMutation {
         restartServerNode {
             errors {
-                ... on ErrorMessageError {
-                    additionalData
-                    errorCode
-                    message
-                }
+                ...ErrorMessageArrayFragment
             }
         }
     }

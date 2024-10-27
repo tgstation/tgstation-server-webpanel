@@ -5,8 +5,10 @@ import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { Link } from "react-router-dom";
 import { lt } from "semver";
 
-import UpdateInformation from "./graphql/UpdateInformation";
+import { RestartTgsMutation } from "./graphql/__generated__/RestartTgsMutation.graphql";
 import { UpdateInformationQuery } from "./graphql/__generated__/UpdateInformationQuery.graphql";
+import RestartTgs from "./graphql/RestartTgs";
+import UpdateInformation from "./graphql/UpdateInformation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +20,8 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
+import Loading from "@/components/utils/Loading/Loading";
+import useStandardMutation from "@/lib/useStandardMutation";
 
 interface IProps {
     queryRef: PreloadedQuery<UpdateInformationQuery>;
@@ -31,8 +35,17 @@ const Administration = (props: IProps) => {
 
     const outOfDate = updateInfo.latestVersion && lt(gatewayInfo.version, updateInfo.latestVersion);
 
+    const [commitRestart, restartInFlight] = useStandardMutation<RestartTgsMutation>(
+        RestartTgs,
+        response => response.restartServerNode.errors
+    );
+
     const handleRestart = () => {
-        throw new Error("TODO: Handle Restarting");
+        if (!restartInFlight) {
+            commitRestart({
+                variables: {}
+            });
+        }
     };
 
     return (
@@ -45,35 +58,50 @@ const Administration = (props: IProps) => {
                         icon={gatewayInfo.windowsHost ? faWindows : faLinux}
                     />
                 </h3>
-                {updateInfo.trackedRepositoryUrl && (
-                    <h5>
-                        <FormattedMessage id="view.admin.remote" />
+                <h5>
+                    <FormattedMessage id="view.admin.remote" />
+                    {updateInfo.trackedRepositoryUrl ? (
                         <Link to={updateInfo.trackedRepositoryUrl}>
                             {updateInfo.trackedRepositoryUrl}
                         </Link>
-                    </h5>
-                )}
+                    ) : (
+                        <div className="text-destructive">
+                            <FormattedMessage id="view.admin.version.unknown" />
+                        </div>
+                    )}
+                </h5>
                 <h3>
                     <FormattedMessage id="view.admin.version.current" />
                     <span className={outOfDate ? "text-warning" : ""}>{gatewayInfo.version}</span>
                 </h3>
                 <h3>
                     <FormattedMessage id="view.admin.version.latest" />
-                    <span className={outOfDate ? "text-warning" : ""}>
+                    <span
+                        className={
+                            outOfDate
+                                ? "text-warning"
+                                : updateInfo.latestVersion
+                                  ? ""
+                                  : "text-destructive"
+                        }>
                         {updateInfo.latestVersion ?? (
-                            <FormattedMessage id="view.admin.version.latest.unknown" />
+                            <FormattedMessage id="view.admin.version.unknown" />
                         )}
                     </span>
                 </h3>
                 <hr className="mt-2 mb-2" />
                 <Dialog>
-                    <DialogTrigger asChild>
-                        <Button
-                            className="mr-2 text-destructive-foreground bg-destructive"
-                            disabled={!adminRights.canRestartHost}>
-                            <FormattedMessage id="view.admin.reboot.button" />
-                        </Button>
-                    </DialogTrigger>
+                    {restartInFlight ? (
+                        <Loading />
+                    ) : (
+                        <DialogTrigger asChild>
+                            <Button
+                                className="mr-2 text-destructive-foreground bg-destructive"
+                                disabled={!adminRights.canRestartHost}>
+                                <FormattedMessage id="view.admin.reboot.button" />
+                            </Button>
+                        </DialogTrigger>
+                    )}
                     <Button
                         asChild
                         className="mr-2 bg-primary"

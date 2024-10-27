@@ -24,7 +24,7 @@ const TestComponent = () => {
     );
 };
 
-const CreateRelay = (): WithRelayParameters<UpdateInformationQuery> => ({
+const CreateRelay = (showLatestVersion: boolean): WithRelayParameters<UpdateInformationQuery> => ({
     query: UpdateInformation,
     mockResolvers: {
         Query: () => ({
@@ -38,8 +38,10 @@ const CreateRelay = (): WithRelayParameters<UpdateInformationQuery> => ({
                     }
                 },
                 updateInformation: {
-                    trackedRepositoryUrl: "https://github.com/tgstation/tgstation-server",
-                    latestVersion: "420.69.9001"
+                    trackedRepositoryUrl: showLatestVersion
+                        ? "https://github.com/tgstation/tgstation-server"
+                        : null,
+                    latestVersion: showLatestVersion ? "420.69.9001" : null
                 }
             }
         })
@@ -58,6 +60,12 @@ type Story = StoryObj<typeof config>;
 
 export const Default: Story = {
     parameters: {
-        relay: CreateRelay()
+        relay: CreateRelay(true)
+    }
+};
+
+export const FailedVersionRetrieval: Story = {
+    parameters: {
+        relay: CreateRelay(false)
     }
 };
