@@ -2881,6 +2881,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/semver@npm:^7":
+  version: 7.5.8
+  resolution: "@types/semver@npm:7.5.8"
+  checksum: 10c0/8663ff927234d1c5fcc04b33062cb2b9fcfbe0f5f351ed26c4d1e1581657deebd506b41ff7fdf89e787e3d33ce05854bc01686379b89e9c49b564c4cfa988efa
+  languageName: node
+  linkType: hard
+
 "@types/send@npm:*":
   version: 0.17.4
   resolution: "@types/send@npm:0.17.4"
@@ -7727,7 +7734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.6.0, semver@npm:^7.6.2":
+"semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.6.0, semver@npm:^7.6.2, semver@npm:^7.6.3":
   version: 7.6.3
   resolution: "semver@npm:7.6.3"
   bin:
@@ -8245,6 +8252,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.1"
     "@types/react-relay": "npm:^16.0.6"
     "@types/relay-test-utils": "npm:^18.0.0"
+    "@types/semver": "npm:^7"
     "@types/uuid": "npm:^10"
     "@vitejs/plugin-react": "npm:^4.3.3"
     autoprefixer: "npm:^10.4.20"
@@ -8275,6 +8283,7 @@ __metadata:
     relay-compiler: "npm:^18.1.0"
     relay-test-utils: "npm:^18.1.0"
     rollup-plugin-jsx-remove-attributes: "npm:^2.0.3"
+    semver: "npm:^7.6.3"
     storybook: "npm:^8.3.6"
     storybook-addon-remix-react-router: "npm:^3.0.1"
     tailwind-merge: "npm:^2.5.4"

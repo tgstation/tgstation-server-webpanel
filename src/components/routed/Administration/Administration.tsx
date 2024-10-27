@@ -1,9 +1,9 @@
 import { faLinux, faWindows } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {} from "@radix-ui/react-dialog";
 import { FormattedMessage } from "react-intl";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { Link } from "react-router-dom";
+import { lt } from "semver";
 
 import UpdateInformation from "./graphql/UpdateInformation";
 import { UpdateInformationQuery } from "./graphql/__generated__/UpdateInformationQuery.graphql";
@@ -29,6 +29,8 @@ const Administration = (props: IProps) => {
     const updateInfo = data.swarm.updateInformation;
     const adminRights = data.swarm.users.current.effectivePermissionSet.administrationRights;
 
+    const outOfDate = updateInfo.latestVersion && lt(gatewayInfo.version, updateInfo.latestVersion);
+
     const handleRestart = () => {
         throw new Error("TODO: Handle Restarting");
     };
@@ -53,25 +55,11 @@ const Administration = (props: IProps) => {
                 )}
                 <h3>
                     <FormattedMessage id="view.admin.version.current" />
-                    <span
-                        className={
-                            updateInfo.latestVersion &&
-                            gatewayInfo.version < updateInfo.latestVersion
-                                ? "text-danger"
-                                : ""
-                        }>
-                        {gatewayInfo.version}
-                    </span>
+                    <span className={outOfDate ? "text-warning" : ""}>{gatewayInfo.version}</span>
                 </h3>
                 <h3>
                     <FormattedMessage id="view.admin.version.latest" />
-                    <span
-                        className={
-                            updateInfo.latestVersion &&
-                            gatewayInfo.version < updateInfo.latestVersion
-                                ? "text-danger"
-                                : ""
-                        }>
+                    <span className={outOfDate ? "text-warning" : ""}>
                         {updateInfo.latestVersion ?? (
                             <FormattedMessage id="view.admin.version.latest.unknown" />
                         )}
