@@ -5,12 +5,11 @@ import useSetCredentials from "../credentials/useSetCredentials";
 import ISession from "./Session";
 import SessionContext from "./SessionContext";
 
-import SessionSubscriptions from "@/components/core/SessionSubscriptions/SessionSubscriptions";
 import { BearerCredentials } from "@/lib/Credentials";
 
 interface IProps {
     children: ReactNode;
-    blockRequests: (blocker: Promise<unknown>) => void;
+    renderOnSession: ReactNode;
 }
 
 const SessionProvider = (props: IProps) => {
@@ -35,7 +34,7 @@ const SessionProvider = (props: IProps) => {
     return (
         <SessionContext.Provider value={sessionContext}>
             {props.children}
-            {session && <SessionSubscriptions blockRequests={props.blockRequests} />}
+            {session && props.renderOnSession}
         </SessionContext.Provider>
     );
 };

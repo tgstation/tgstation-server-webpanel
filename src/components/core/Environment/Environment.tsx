@@ -3,6 +3,7 @@ import { useIntl } from "react-intl";
 import { RelayEnvironmentProvider } from "react-relay";
 
 import Router from "../Router/Router";
+import SessionSubscriptions from "../SessionSubscriptions/SessionSubscriptions";
 
 import Pkg from "@/../package.json";
 import useConfig from "@/contexts/config/useConfig";
@@ -42,7 +43,8 @@ const Environment = () => {
             <RelayEnvironmentProvider environment={relayEnviroment}>
                 <SetCredentialsContext.Provider
                     value={{ setCredentials, clearCredentials: () => setCredentials(null, false) }}>
-                    <SessionProvider blockRequests={blockRequests}>
+                    <SessionProvider
+                        renderOnSession={<SessionSubscriptions blockRequests={blockRequests} />}>
                         <ErrorsProvider>
                             <Router />
                         </ErrorsProvider>
