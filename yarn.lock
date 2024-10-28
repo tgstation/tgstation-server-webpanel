@@ -1413,9 +1413,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:^7.25.9":
-  version: 7.25.9
-  resolution: "@babel/preset-typescript@npm:7.25.9"
+"@babel/preset-typescript@npm:^7.26.0":
+  version: 7.26.0
+  resolution: "@babel/preset-typescript@npm:7.26.0"
   dependencies:
     "@babel/helper-plugin-utils": "npm:^7.25.9"
     "@babel/helper-validator-option": "npm:^7.25.9"
@@ -1424,7 +1424,7 @@ __metadata:
     "@babel/plugin-transform-typescript": "npm:^7.25.9"
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 10/bcb730ffc777e941eb34ade5052815b7091a0f1c49c6ae9515ebc3ffbfb52b2195dff3d289498b767e9ee898fc30ed100496f4f336a8be51725f2b4a73d7227a
+  checksum: 10/81a60826160163a3daae017709f42147744757b725b50c9024ef3ee5a402ee45fd2e93eaecdaaa22c81be91f7940916249cfb7711366431cfcacc69c95878c03
   languageName: node
   linkType: hard
 
@@ -11274,7 +11274,7 @@ __metadata:
     "@babel/plugin-transform-runtime": "npm:^7.25.9"
     "@babel/preset-env": "npm:^7.25.9"
     "@babel/preset-react": "npm:^7.25.9"
-    "@babel/preset-typescript": "npm:^7.25.9"
+    "@babel/preset-typescript": "npm:^7.26.0"
     "@eslint/compat": "npm:^1.2.1"
     "@eslint/eslintrc": "npm:^3.1.0"
     "@eslint/js": "npm:^9.13.0"
