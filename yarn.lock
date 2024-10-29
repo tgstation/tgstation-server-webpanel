@@ -454,9 +454,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chromatic-com/storybook@npm:3.1.0":
-  version: 3.1.0
-  resolution: "@chromatic-com/storybook@npm:3.1.0"
+"@chromatic-com/storybook@npm:3.2.0":
+  version: 3.2.0
+  resolution: "@chromatic-com/storybook@npm:3.2.0"
   dependencies:
     "@storybook/channels": "npm:^8.3.0"
     "@storybook/telemetry": "npm:^8.3.0"
@@ -467,8 +467,8 @@ __metadata:
     react-confetti: "npm:^6.1.0"
     strip-ansi: "npm:^7.1.0"
   peerDependencies:
-    storybook: ^8.3.0
-  checksum: 10c0/cb9672d828f076e9a6c7277fe08a846d05316fb7d3e625862fc667718f5abc2746ff7cea04507e5cbc0136a4d55950fce88ea91420e8d3c05d84f528050a1dce
+    storybook: "*"
+  checksum: 10c0/59485e69a55df6b1998e19bf0e129fa1f9a86d3ae541f4dcb6f6dd945e7b9a6258ce75e244aaa73821039cef8c57424402a3c0bf63a66b4511a2ac0b5611103b
   languageName: node
   linkType: hard
 
@@ -8236,7 +8236,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tgstation-server-webpanel@workspace:."
   dependencies:
-    "@chromatic-com/storybook": "npm:3.1.0"
+    "@chromatic-com/storybook": "npm:3.2.0"
     "@eslint/js": "npm:^9.13.0"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
