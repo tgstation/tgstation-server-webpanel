@@ -45,7 +45,7 @@ const HomeRoutes = (
         InstancesRouteLoader(
             relayEnviroment,
             {
-                path: "instances",
+                path: "/instances",
                 icon: faHdd,
                 localeNameId: "routes.instancelist"
             },
@@ -54,7 +54,7 @@ const HomeRoutes = (
         UsersRouteLoader(
             relayEnviroment,
             {
-                path: "users",
+                path: "/users",
                 icon: faUser,
                 localeNameId: "routes.usermanager"
             },
@@ -63,7 +63,7 @@ const HomeRoutes = (
         AdministrationRouteLoader(
             relayEnviroment,
             {
-                path: "admin",
+                path: "/admin",
                 icon: faTools,
                 localeNameId: "routes.admin"
             },
