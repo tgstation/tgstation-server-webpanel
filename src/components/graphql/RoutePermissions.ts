@@ -10,6 +10,7 @@ const RoutePermissions = graphql`
                     ...ChangePasswordPermissionsFragment
                     ...InstancesPermissionsFragment
                     ...UsersPermissionsFragment
+                    ...UpdatePermissionsFragment
                 }
             }
         }
