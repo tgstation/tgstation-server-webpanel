@@ -2409,6 +2409,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/preview-api@npm:^8.4.1":
+  version: 8.4.1
+  resolution: "@storybook/preview-api@npm:8.4.1"
+  peerDependencies:
+    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+  checksum: 10c0/537b4370ae5c9993ad034bb21f19c70ff284860d1185d6706dfe2fd1ae38dfcc92d063c8a97b8e84a5a067efd49e189a70b76cb75c592c61df26141f1b31ee9b
+  languageName: node
+  linkType: hard
+
 "@storybook/react-dom-shim@npm:8.3.6":
   version: 8.3.6
   resolution: "@storybook/react-dom-shim@npm:8.3.6"
@@ -8240,7 +8249,7 @@ __metadata:
     "@storybook/components": "npm:^8.3.6"
     "@storybook/core-events": "npm:^8.3.6"
     "@storybook/manager-api": "npm:^8.3.6"
-    "@storybook/preview-api": "npm:^8.3.6"
+    "@storybook/preview-api": "npm:^8.4.1"
     "@storybook/react": "npm:^8.3.6"
     "@storybook/react-vite": "npm:^8.3.6"
     "@storybook/test": "npm:^8.3.6"
