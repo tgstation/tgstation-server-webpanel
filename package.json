@@ -118,7 +118,7 @@
         "swagger-typescript-api": "^13.0.22",
         "tiny-typed-emitter": "^2.1.0",
         "typescript": "^5.6.3",
-        "webpack": "^5.95.0",
+        "webpack": "^5.96.0",
         "webpack-bundle-analyzer": "^4.10.2",
         "webpack-cli": "^5.1.4",
         "webpack-dev-server": "^5.1.0"

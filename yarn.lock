@@ -2635,13 +2635,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/estree@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "@types/estree@npm:1.0.5"
-  checksum: 10/7de6d928dd4010b0e20c6919e1a6c27b61f8d4567befa89252055fad503d587ecb9a1e3eab1b1901f923964d7019796db810b7fd6430acb26c32866d126fd408
-  languageName: node
-  linkType: hard
-
 "@types/estree@npm:^1.0.6":
   version: 1.0.6
   resolution: "@types/estree@npm:1.0.6"
@@ -3435,15 +3428,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-import-attributes@npm:^1.9.5":
-  version: 1.9.5
-  resolution: "acorn-import-attributes@npm:1.9.5"
-  peerDependencies:
-    acorn: ^8
-  checksum: 10/8bfbfbb6e2467b9b47abb4d095df717ab64fce2525da65eabee073e85e7975fb3a176b6c8bba17c99a7d8ede283a10a590272304eb54a93c4aa1af9790d47a8b
-  languageName: node
-  linkType: hard
-
 "acorn-jsx@npm:^5.3.2":
   version: 5.3.2
   resolution: "acorn-jsx@npm:5.3.2"
@@ -3480,12 +3464,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.7.1":
-  version: 8.8.2
-  resolution: "acorn@npm:8.8.2"
+"acorn@npm:^8.14.0":
+  version: 8.14.0
+  resolution: "acorn@npm:8.14.0"
   bin:
     acorn: bin/acorn
-  checksum: 10/b4e77d56d24d3e11a45d9ac8ae661b4e14a4af04ae33edbf1e6bf910887e5bb352cc60e9ea06a0944880e6b658f58c095d3b54e88e1921cb9319608b51085dd7
+  checksum: 10/6df29c35556782ca9e632db461a7f97947772c6c1d5438a81f0c873a3da3a792487e83e404d1c6c25f70513e91aa18745f6eafb1fcc3a43ecd1920b21dd173d2
   languageName: node
   linkType: hard
 
@@ -4074,7 +4058,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.21.10, browserslist@npm:^4.23.3":
+"browserslist@npm:^4.23.3":
   version: 4.23.3
   resolution: "browserslist@npm:4.23.3"
   dependencies:
@@ -11442,7 +11426,7 @@ __metadata:
     tiny-typed-emitter: "npm:^2.1.0"
     typescript: "npm:^5.6.3"
     util: "npm:^0.12.5"
-    webpack: "npm:^5.95.0"
+    webpack: "npm:^5.96.0"
     webpack-bundle-analyzer: "npm:^4.10.2"
     webpack-cli: "npm:^5.1.4"
     webpack-dev-server: "npm:^5.1.0"
@@ -12229,17 +12213,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.95.0":
-  version: 5.95.0
-  resolution: "webpack@npm:5.95.0"
+"webpack@npm:^5.96.0":
+  version: 5.96.0
+  resolution: "webpack@npm:5.96.0"
   dependencies:
-    "@types/estree": "npm:^1.0.5"
+    "@types/estree": "npm:^1.0.6"
     "@webassemblyjs/ast": "npm:^1.12.1"
     "@webassemblyjs/wasm-edit": "npm:^1.12.1"
     "@webassemblyjs/wasm-parser": "npm:^1.12.1"
-    acorn: "npm:^8.7.1"
-    acorn-import-attributes: "npm:^1.9.5"
-    browserslist: "npm:^4.21.10"
+    acorn: "npm:^8.14.0"
+    browserslist: "npm:^4.24.0"
     chrome-trace-event: "npm:^1.0.2"
     enhanced-resolve: "npm:^5.17.1"
     es-module-lexer: "npm:^1.2.1"
@@ -12261,7 +12244,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 10/0377ad3a550b041f26237c96fb55754625b0ce6bae83c1c2447e3262ad056b0b0ad770dcbb92b59f188e9a2bd56155ce910add17dcf023cfbe78bdec774380c1
+  checksum: 10/b9a34539450c51d069d37fed89569f8115516d731326153251a636b25811c3860f972b4d14a4bb1b887be2a41812d4c2a15f3f269bbf9420810e9d5402c3551f
   languageName: node
   linkType: hard
 
