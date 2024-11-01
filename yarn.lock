@@ -2314,12 +2314,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/core-events@npm:^8.3.6":
-  version: 8.3.6
-  resolution: "@storybook/core-events@npm:8.3.6"
+"@storybook/core-events@npm:^8.4.0":
+  version: 8.4.0
+  resolution: "@storybook/core-events@npm:8.4.0"
   peerDependencies:
-    storybook: ^8.3.6
-  checksum: 10c0/247f1896fb18d9957f7d2ab653329df1af60da63a07da3737c5af8f407e110ebf2efc6516e44606726efb413826e6b9d101e676adcb36a9cbcd54fb7152ceb03
+    storybook: ^8.4.0
+  checksum: 10c0/6a8fff50f70d6c6bb6cae2d05a1cce1888e62c656c3926a53674cf23fa8af29c3993e1f6cc3faa8e9fee730bab8c00d33cc9879c6e05002002cb7ce96fb93e18
   languageName: node
   linkType: hard
 
@@ -8259,7 +8259,7 @@ __metadata:
     "@storybook/blocks": "npm:^8.3.6"
     "@storybook/channels": "npm:^8.3.6"
     "@storybook/components": "npm:^8.3.6"
-    "@storybook/core-events": "npm:^8.3.6"
+    "@storybook/core-events": "npm:^8.4.0"
     "@storybook/manager-api": "npm:^8.3.6"
     "@storybook/preview-api": "npm:^8.3.6"
     "@storybook/react": "npm:^8.3.6"
