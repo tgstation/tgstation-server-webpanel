@@ -17,6 +17,7 @@ const Update = (props: IProps) => {
                 <FormattedMessage id="view.admin.update.selectversion" />
             </h1>
             <hr />
+            {data.swarm.updateInformation.latestVersion}
         </div>
     );
 };
