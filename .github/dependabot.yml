@@ -18,8 +18,8 @@ updates:
           interval: daily
       open-pull-requests-limit: 100
       groups:
-        storybook:
-          applies-to: version-updates
-          patterns:
-            - "storybook"
-            - "@storybook/*"
+          storybook:
+              applies-to: version-updates
+              patterns:
+                  - "storybook"
+                  - "@storybook/*"
