@@ -2400,6 +2400,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/manager-api@npm:^8.4.1":
+  version: 8.4.1
+  resolution: "@storybook/manager-api@npm:8.4.1"
+  peerDependencies:
+    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+  checksum: 10c0/46f2c0f12089fbcb8de5021bcd423f6e8cbff07b873b62ed3f8dbdcdb0acef140c65ca655dcaa235c68418a655a2922fed5eda63b9d5d1a5fcee2d567adf437e
+  languageName: node
+  linkType: hard
+
 "@storybook/preview-api@npm:^8.3.6":
   version: 8.3.6
   resolution: "@storybook/preview-api@npm:8.3.6"
@@ -8239,7 +8248,7 @@ __metadata:
     "@storybook/channels": "npm:^8.3.6"
     "@storybook/components": "npm:^8.3.6"
     "@storybook/core-events": "npm:^8.3.6"
-    "@storybook/manager-api": "npm:^8.3.6"
+    "@storybook/manager-api": "npm:^8.4.1"
     "@storybook/preview-api": "npm:^8.3.6"
     "@storybook/react": "npm:^8.3.6"
     "@storybook/react-vite": "npm:^8.3.6"
