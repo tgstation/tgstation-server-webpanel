@@ -110,7 +110,7 @@
         "relay-compiler": "^18.1.0",
         "relay-test-utils": "^18.1.0",
         "rollup-plugin-jsx-remove-attributes": "^2.0.3",
-        "storybook": "^8.3.6",
+        "storybook": "^8.4.0",
         "storybook-addon-remix-react-router": "^3.0.1",
         "tailwindcss": "^3.4.14",
         "type-fest": "^4.26.1",
