@@ -7,6 +7,7 @@ import HomeRoutes from "../../routed/Home/HomeRoutes";
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import RethrowRouteError from "./RethrowRouteError/RethrowRouteError";
 
+import UpdateRouteLoader from "@/components/routed/Administration/Update/UpdateRouteLoader";
 import HomeRouteLoader from "@/components/routed/Home/HomeRouteLoader";
 import devDelay from "@/lib/devDelay";
 
@@ -48,6 +49,9 @@ const Router = () => {
                         children: [
                             HomeRouteLoader(relayEnviroment, {
                                 path: ""
+                            }),
+                            UpdateRouteLoader(relayEnviroment, {
+                                path: "/admin/update"
                             }),
                             ...homeRoutes.filter(route => !route.unprotected),
                             {
