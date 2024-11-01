@@ -78,7 +78,7 @@
         "@storybook/addon-links": "^8.3.6",
         "@storybook/blocks": "^8.3.6",
         "@storybook/channels": "^8.3.6",
-        "@storybook/components": "^8.3.6",
+        "@storybook/components": "^8.4.1",
         "@storybook/core-events": "^8.3.6",
         "@storybook/manager-api": "^8.3.6",
         "@storybook/preview-api": "^8.3.6",
