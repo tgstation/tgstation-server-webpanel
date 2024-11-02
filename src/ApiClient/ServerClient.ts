@@ -7,10 +7,11 @@ import {
     Api,
     ErrorMessageResponse,
     HttpClient,
+    OAuthGatewayResponse,
     ServerInformationResponse,
     TokenResponse
 } from "./generatedcode/generated";
-import { CredentialsType, ICredentials } from "./models/ICredentials";
+import { CredentialsType, ICredentials, IOAuthCredentials } from "./models/ICredentials";
 import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
 import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
 import { ServerClientRequestConfig } from "./ServerClientRequestConfig";
@@ -45,6 +46,8 @@ export type LoginErrors =
     | ErrorCode.LOGIN_BAD_OAUTH
     | ErrorCode.LOGIN_RATELIMIT;
 
+export type OAuthGatewayErrors = GenericErrors | ErrorCode.LOGIN_FAIL | ErrorCode.LOGIN_BAD_OAUTH;
+
 export type ServerInfoErrors = GenericErrors;
 
 export default new (class ServerClient extends ApiClient<IEvents> {
@@ -68,7 +71,15 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             //This applies the authorization header, it will wait however long it needs until
             // theres a token available. It obviously won't wait for a token before sending the request
             // if its currently sending a request to the login endpoint...
-            if (value.overrideTokenDetection || !(value.url === "/api" || value.url === "/api/")) {
+            if (
+                value.overrideTokenDetection ||
+                !(
+                    value.url === "/api" ||
+                    value.url === "/api/" ||
+                    value.url === "/api/oauth_gateway" ||
+                    value.url === "/api/oauth_gateway"
+                )
+            ) {
                 const tok = await this.wait4Token();
                 (value.headers as { [key: string]: string })["Authorization"] = `Bearer ${
                     tok.bearer || ""
@@ -522,6 +533,68 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     )
                 });
                 this.emit("loadLoginInfo", res);
+                return res;
+            }
+        }
+    }
+
+    public async oAuthGateway(
+        creds: IOAuthCredentials
+    ): Promise<InternalStatus<OAuthGatewayResponse, OAuthGatewayErrors>> {
+        //Shouldn't really happen edge cases
+        await this.wait4Init();
+
+        console.log("Attempting OAuth gateway login");
+
+        let response;
+        try {
+            response = await this.apiClient!.api.apiRootControllerCreateOAuthGatewayToken({
+                headers: new AxiosHeaders({
+                    OAuthProvider: creds.provider,
+                    Authorization: `OAuth ${creds.token}`
+                })
+            });
+        } catch (stat) {
+            const res = new InternalStatus<OAuthGatewayResponse, GenericErrors>({
+                code: StatusCode.ERROR,
+                error: stat as InternalError<GenericErrors>
+            });
+            return res;
+        }
+
+        switch (response.status) {
+            case 200: {
+                console.log("OAuth gateway success");
+                const res = new InternalStatus<OAuthGatewayResponse, ErrorCode.OK>({
+                    code: StatusCode.OK,
+                    payload: response.data as OAuthGatewayResponse
+                });
+
+                return res;
+            }
+            case 401: {
+                console.log("Failed to use OAuth Gateway");
+                const res = new InternalStatus<OAuthGatewayResponse, ErrorCode.LOGIN_FAIL>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.LOGIN_FAIL,
+                        {
+                            void: true
+                        },
+                        response
+                    )
+                });
+                return res;
+            }
+            default: {
+                const res = new InternalStatus<OAuthGatewayResponse, ErrorCode.UNHANDLED_RESPONSE>({
+                    code: StatusCode.ERROR,
+                    error: new InternalError(
+                        ErrorCode.UNHANDLED_RESPONSE,
+                        { axiosResponse: response },
+                        response
+                    )
+                });
                 return res;
             }
         }

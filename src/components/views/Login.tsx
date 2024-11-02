@@ -11,11 +11,12 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
-import { OAuthProvider } from "../../ApiClient/generatedcode/generated";
+import { OAuthProvider, OAuthProviderInfo } from "../../ApiClient/generatedcode/generated";
 import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "../../ApiClient/ServerClient";
+import configOptions from "../../ApiClient/util/config";
 import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 import { GeneralContext, UnsafeGeneralContext } from "../../contexts/GeneralContext";
 import { MODE } from "../../definitions/constants";
@@ -37,8 +38,25 @@ interface IState {
     redirectSetup?: boolean;
 }
 
-export type StoredOAuthData = { provider: OAuthProvider; url: string };
+export interface StoredOAuthData {
+    provider: OAuthProvider;
+    url: string;
+    gateway: boolean;
+}
 export type OAuthStateStorage = Record<string, StoredOAuthData>;
+
+interface OAuthProviderInfosSchema {
+    /** Public information about a given Tgstation.Server.Api.Models.OAuthProvider. */
+    GitHub: OAuthProviderInfo;
+    /** Public information about a given Tgstation.Server.Api.Models.OAuthProvider. */
+    Discord: OAuthProviderInfo;
+    /** Public information about a given Tgstation.Server.Api.Models.OAuthProvider. */
+    TGForums: OAuthProviderInfo;
+    /** Public information about a given Tgstation.Server.Api.Models.OAuthProvider. */
+    Keycloak: OAuthProviderInfo;
+    /** Public information about a given Tgstation.Server.Api.Models.OAuthProvider. */
+    InvisionCommunity: OAuthProviderInfo;
+}
 
 class Login extends React.Component<IProps, IState> {
     public declare context: UnsafeGeneralContext;
@@ -92,6 +110,35 @@ class Login extends React.Component<IProps, IState> {
         });
     }
 
+    private renderGitHubGateway(): ReactNode {
+        if (
+            (configOptions.githubtoken.value &&
+                (configOptions.githubtoken.value as string).length > 0) ||
+            !this.context.serverInfo?.oAuthProviderInfos.GitHub ||
+            this.context.serverInfo.oAuthProviderInfos.GitHub.gatewayOnly === null ||
+            this.context.serverInfo.oAuthProviderInfos.GitHub.gatewayOnly === undefined
+        ) {
+            return null;
+        }
+
+        return (
+            <>
+                <Card body>
+                    <Card.Title className="text-center">
+                        <FormattedMessage id="login.gateway.recommended" />
+                    </Card.Title>
+                    <Button block onClick={() => void this.startOAuth(OAuthProvider.GitHub, true)}>
+                        <FontAwesomeIcon icon={faGithub} style={{ width: "1.2em" }} />
+                        <span className="ml-1">
+                            <FormattedMessage id="login.gateway.run" />
+                        </span>
+                    </Button>
+                </Card>
+                <hr />
+            </>
+        );
+    }
+
     public render(): ReactNode {
         const handleUsrInput = (event: ChangeEvent<HTMLInputElement>) =>
             this.setState({ username: event.target.value });
@@ -128,6 +175,15 @@ class Login extends React.Component<IProps, IState> {
             InvisionCommunity: undefined
         };
 
+        const providerEnabled = (
+            providerSelector: (
+                providers: OAuthProviderInfosSchema | undefined
+            ) => OAuthProviderInfo | undefined
+        ) => {
+            const provider = providerSelector(this.context.serverInfo?.oAuthProviderInfos);
+            return provider && provider.gatewayOnly !== true;
+        };
+
         return (
             <Col className="mx-auto" lg={5} md={8}>
                 {this.state.errors.map((err, index) => {
@@ -148,6 +204,7 @@ class Login extends React.Component<IProps, IState> {
                         />
                     );
                 })}
+                {this.renderGitHubGateway()}
                 <Card body>
                     <Card.Title>
                         <FormattedMessage id="login.header" />
@@ -186,11 +243,11 @@ class Login extends React.Component<IProps, IState> {
                             </Button>
                         </Form>
                     </Card>
-                    {(this.context.serverInfo?.oAuthProviderInfos?.Discord ||
-                        this.context.serverInfo?.oAuthProviderInfos?.GitHub ||
-                        this.context.serverInfo?.oAuthProviderInfos?.Keycloak ||
-                        this.context.serverInfo?.oAuthProviderInfos?.TGForums ||
-                        this.context.serverInfo?.oAuthProviderInfos?.InvisionCommunity) && (
+                    {(providerEnabled(x => x?.Discord) ||
+                        providerEnabled(x => x?.GitHub) ||
+                        providerEnabled(x => x?.Keycloak) ||
+                        providerEnabled(x => x?.InvisionCommunity) ||
+                        providerEnabled(x => x?.TGForums)) && (
                         <>
                             <hr />
                             <Card body>
@@ -199,6 +256,14 @@ class Login extends React.Component<IProps, IState> {
                                 </Card.Title>
                                 {Object.keys(this.context.serverInfo.oAuthProviderInfos ?? {}).map(
                                     provider => {
+                                        if (
+                                            !providerEnabled(x =>
+                                                x ? x[provider as OAuthProvider] : undefined
+                                            )
+                                        ) {
+                                            return null;
+                                        }
+
                                         const ptheme = providersTheme[provider as OAuthProvider];
                                         return (
                                             <Button
@@ -206,7 +271,10 @@ class Login extends React.Component<IProps, IState> {
                                                 block
                                                 style={ptheme ? { background: ptheme } : undefined}
                                                 onClick={() =>
-                                                    void this.startOAuth(provider as OAuthProvider)
+                                                    void this.startOAuth(
+                                                        provider as OAuthProvider,
+                                                        false
+                                                    )
                                                 }>
                                                 {providers[provider as OAuthProvider]}
                                                 <span className="ml-1">
@@ -227,7 +295,7 @@ class Login extends React.Component<IProps, IState> {
         );
     }
 
-    private async startOAuth(provider: OAuthProvider): Promise<void> {
+    private async startOAuth(provider: OAuthProvider, gateway: boolean): Promise<void> {
         if (!this.context.serverInfo) {
             this.addError(
                 new InternalError(ErrorCode.APP_FAIL, {
@@ -265,7 +333,7 @@ class Login extends React.Component<IProps, IState> {
                     this.context.serverInfo.oAuthProviderInfos.GitHub.clientId
                 )}&redirect_uri=${e(
                     this.context.serverInfo.oAuthProviderInfos.GitHub.redirectUri
-                )}&state=${e(state)}&allow_signup=false`;
+                )}&state=${e(state)}&allow_signup=${e(gateway ? "true" : "false")}`;
                 break;
             }
             case OAuthProvider.Keycloak: {
@@ -301,7 +369,8 @@ class Login extends React.Component<IProps, IState> {
         ) as OAuthStateStorage;
         oauthdata[state] = {
             provider: provider,
-            url: this.props.location.pathname
+            url: this.props.location.pathname,
+            gateway
         };
 
         window.sessionStorage.setItem("oauth", JSON.stringify(oauthdata));

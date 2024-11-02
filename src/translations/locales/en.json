@@ -20,6 +20,8 @@
     "login.type.generic": "Password Login",
     "login.type.oauth": "OAuth Login",
     "login.oauth": "Sign in with {provider}",
+    "login.gateway.recommended": "HIGHLY Recommended",
+    "login.gateway.run": "Authorize webpanel to access GitHub",
     "login.submit": "Login",
     "login.password": "Password",
     "login.password.repeat": "Confirm Password",

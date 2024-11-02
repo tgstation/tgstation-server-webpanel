@@ -10,6 +10,7 @@ import { CredentialsType } from "./ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "./ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
 import ServerClient from "./ApiClient/ServerClient";
+import ConfigController from "./ApiClient/util/ConfigController";
 import AccessDenied from "./components/utils/AccessDenied";
 import ErrorAlert from "./components/utils/ErrorAlert";
 import ErrorBoundary from "./components/utils/ErrorBoundary";
@@ -121,21 +122,45 @@ class Router extends Component<IProps, IState> {
         this.props.history.replace(oauthstate.url);
 
         void (async () => {
-            const response = await ServerClient.login({
-                type: CredentialsType.OAuth,
-                provider: oauthstate.provider,
-                token: code
-            });
+            if (oauthstate.gateway) {
+                const response = await ServerClient.oAuthGateway({
+                    type: CredentialsType.OAuth,
+                    provider: oauthstate.provider,
+                    token: code
+                });
+
+                if (response.code === StatusCode.OK) {
+                    ConfigController.saveconfig({
+                        githubtoken: {
+                            id: "config.githubtoken",
+                            type: "pwd",
+                            value: response.payload.accessCode
+                        }
+                    });
+
+                    this.setState({
+                        loading: false
+                    });
+                } else {
+                    this.setErrorAndEnd(response.error);
+                }
+            } else {
+                const response = await ServerClient.login({
+                    type: CredentialsType.OAuth,
+                    provider: oauthstate.provider,
+                    token: code
+                });
+
+                if (response.code === StatusCode.OK) {
+                    this.setState({
+                        loading: false
+                    });
+                } else {
+                    this.setErrorAndEnd(response.error);
+                }
+            }
 
             window.sessionStorage.removeItem("oauth");
-
-            if (response.code === StatusCode.OK) {
-                this.setState({
-                    loading: false
-                });
-            } else {
-                this.setErrorAndEnd(response.error);
-            }
         })();
     }
 
