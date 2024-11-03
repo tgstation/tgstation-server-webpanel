@@ -18,7 +18,7 @@ import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasInstanceManagerRight, resolvePermissionSet } from "../../../../utils/misc";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import { FieldType } from "../../../utils/InputField";
-import InputForm from "../../../utils/InputForm";
+import InputForm, { InputFormField } from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 
@@ -153,10 +153,25 @@ class InstanceSettings extends React.Component<IProps, IState> {
             },
             autoUpdateInterval: {
                 name: "fields.instance.autoupdate",
+                tooltip: "fields.instance.autoupdate.tip",
                 type: FieldType.Number as FieldType.Number,
                 min: 0,
                 defaultValue: this.context.instance.autoUpdateInterval,
                 disabled: !checkIMFlag(InstanceManagerRights.SetAutoUpdate)
+            },
+            autoStartCron: {
+                name: "fields.instance.autostart",
+                tooltip: "fields.instance.autostart.tip",
+                type: FieldType.String as FieldType.String,
+                defaultValue: this.context.instance.autoStartCron,
+                disabled: !checkIMFlag(InstanceManagerRights.SetAutoStart)
+            },
+            autoStopCron: {
+                name: "fields.instance.autostop",
+                tooltip: "fields.instance.autostop.tip",
+                type: FieldType.String as FieldType.String,
+                defaultValue: this.context.instance.autoStopCron,
+                disabled: !checkIMFlag(InstanceManagerRights.SetAutoStop)
             },
             configurationType: {
                 name: "fields.instance.filemode",
