@@ -1891,14 +1891,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-relativetimeformat@npm:^11.4.1":
-  version: 11.4.1
-  resolution: "@formatjs/intl-relativetimeformat@npm:11.4.1"
+"@formatjs/intl-relativetimeformat@npm:^11.4.3":
+  version: 11.4.3
+  resolution: "@formatjs/intl-relativetimeformat@npm:11.4.3"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:2.2.1"
-    "@formatjs/intl-localematcher": "npm:0.5.6"
+    "@formatjs/ecma402-abstract": "npm:2.2.3"
+    "@formatjs/intl-localematcher": "npm:0.5.7"
     tslib: "npm:2"
-  checksum: 10/80817403301baed257fbd8c793b9ed077a2e6dd0414a6895b5bfde3619aebc818f30535da9b560a6186fac783cf09561c495d2c6568a980bd635736194655af5
+  checksum: 10/7c7548ba133031873683a37566d646e4e3f50ea979773de199b41769df23648be2b44b53975809bd53f97a95d1d44038c0a09b1c031e05f0de6f7bba843b1aad
   languageName: node
   linkType: hard
 
@@ -11427,7 +11427,7 @@ __metadata:
     "@eslint/js": "npm:^9.13.0"
     "@formatjs/intl-locale": "npm:^4.2.3"
     "@formatjs/intl-pluralrules": "npm:5.3.1"
-    "@formatjs/intl-relativetimeformat": "npm:^11.4.1"
+    "@formatjs/intl-relativetimeformat": "npm:^11.4.3"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
