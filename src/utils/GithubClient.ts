@@ -30,7 +30,7 @@ export interface PullRequest {
     number: number;
     title: string;
     author: string;
-    state: "open" | "closed" | "merged";
+    state: "open" | "closed" | "merged" | "draft";
     link: string;
     head: string;
     tail: string;
@@ -215,7 +215,13 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
             number: pr.number,
             title: pr.title,
             author: pr.user?.login ?? "ghost",
-            state: pr.merged_at ? "merged" : pr.state,
+            state: pr.merged_at
+                ? "merged"
+                : pr.state == "closed"
+                  ? "closed"
+                  : pr.draft
+                    ? "draft"
+                    : "open",
             link: pr.html_url,
             head: pr.head.sha,
             tail: pr.base.sha,
@@ -233,7 +239,13 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
             number: pr.number,
             title: pr.title,
             author: pr.user?.login ?? "ghost",
-            state: pr.merged_at ? "merged" : (pr.state as "open" | "closed"),
+            state: pr.merged_at
+                ? "merged"
+                : pr.state == "closed"
+                  ? "closed"
+                  : pr.draft
+                    ? "draft"
+                    : "open",
             link: pr.html_url,
             head: pr.head.sha,
             tail: pr.base.sha,

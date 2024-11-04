@@ -97,7 +97,8 @@ export default function TestMergeRow({
     const colorMap: Record<typeof pr.state, string> = {
         closed: "#c93c37",
         merged: "#8256d0",
-        open: "#347d39"
+        open: "#347d39",
+        draft: "#656c76"
     };
     let activeCommit: Commit | undefined = undefined;
     if (testmergeinfo) {
