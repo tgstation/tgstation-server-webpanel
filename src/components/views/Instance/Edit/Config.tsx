@@ -18,7 +18,7 @@ import { InstanceEditContext } from "../../../../contexts/InstanceEditContext";
 import { hasInstanceManagerRight, resolvePermissionSet } from "../../../../utils/misc";
 import ErrorAlert from "../../../utils/ErrorAlert";
 import { FieldType } from "../../../utils/InputField";
-import InputForm, { InputFormField } from "../../../utils/InputForm";
+import InputForm from "../../../utils/InputForm";
 import { DebugJsonViewer } from "../../../utils/JsonViewer";
 import Loading from "../../../utils/Loading";
 
