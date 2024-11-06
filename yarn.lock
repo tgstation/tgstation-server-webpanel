@@ -2287,9 +2287,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/core@npm:8.4.1":
-  version: 8.4.1
-  resolution: "@storybook/core@npm:8.4.1"
+"@storybook/core@npm:8.4.2":
+  version: 8.4.2
+  resolution: "@storybook/core@npm:8.4.2"
   dependencies:
     "@storybook/csf": "npm:^0.1.11"
     better-opn: "npm:^3.0.2"
@@ -2307,7 +2307,7 @@ __metadata:
   peerDependenciesMeta:
     prettier:
       optional: true
-  checksum: 10c0/fd392f47ae7cba7314bfe2f6d7ec847aa092f3c7730d1577c62a2a4b7365c1cd2188e90b454ebf3ebf9cbbb70b43b662bb4e429f35bb4bab38e8de8f7a26e4ec
+  checksum: 10c0/75a9a9e00d98bb77d171a2738fdc0e9ab1cfbd760410b95c286368c7f25bbb756b61bd23b89d512707a02e450b81ecbdc72bf05e63fb18ea35509a2a806b0e21
   languageName: node
   linkType: hard
 
@@ -7148,11 +7148,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:^8.4.1":
-  version: 8.4.1
-  resolution: "storybook@npm:8.4.1"
+"storybook@npm:^8.4.2":
+  version: 8.4.2
+  resolution: "storybook@npm:8.4.2"
   dependencies:
-    "@storybook/core": "npm:8.4.1"
+    "@storybook/core": "npm:8.4.2"
   peerDependencies:
     prettier: ^2 || ^3
   peerDependenciesMeta:
@@ -7162,7 +7162,7 @@ __metadata:
     getstorybook: ./bin/index.cjs
     sb: ./bin/index.cjs
     storybook: ./bin/index.cjs
-  checksum: 10c0/b3d17a8b98490a119806d924fc10e2320181b8456aaaa0639638ba55dfe14c0d7fb81b592eb6be91f70eb0eb80affebe9ed541ef42567c41ec2d13c8317207f8
+  checksum: 10c0/54791f44de53d465a74c44ec16255ebe5248156eee54b768fdcc12a7556e1b6e2a23c9c5c5eec0c3fcc71c3820398999ede5042f711a851b0ca9c71e65c8ab19
   languageName: node
   linkType: hard
 
@@ -7465,7 +7465,7 @@ __metadata:
     relay-test-utils: "npm:^18.1.0"
     rollup-plugin-jsx-remove-attributes: "npm:^2.0.3"
     semver: "npm:^7.6.3"
-    storybook: "npm:^8.4.1"
+    storybook: "npm:^8.4.2"
     storybook-addon-remix-react-router: "npm:^3.0.1"
     tailwind-merge: "npm:^2.5.4"
     tailwindcss: "npm:^3.4.14"
