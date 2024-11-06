@@ -1844,14 +1844,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-relativetimeformat@npm:^11.4.3":
-  version: 11.4.3
-  resolution: "@formatjs/intl-relativetimeformat@npm:11.4.3"
+"@formatjs/intl-relativetimeformat@npm:^11.4.4":
+  version: 11.4.4
+  resolution: "@formatjs/intl-relativetimeformat@npm:11.4.4"
   dependencies:
     "@formatjs/ecma402-abstract": "npm:2.2.3"
     "@formatjs/intl-localematcher": "npm:0.5.7"
     tslib: "npm:2"
-  checksum: 10/7c7548ba133031873683a37566d646e4e3f50ea979773de199b41769df23648be2b44b53975809bd53f97a95d1d44038c0a09b1c031e05f0de6f7bba843b1aad
+  checksum: 10/185c488602fbe7f70073273fcca8dbb0736af5481277a8a18c710290026f6d3488ff49ead9cc411b4402ce973a0779fe427b52c63e82b8cfbbac622320205fe2
   languageName: node
   linkType: hard
 
@@ -11380,7 +11380,7 @@ __metadata:
     "@eslint/js": "npm:^9.14.0"
     "@formatjs/intl-locale": "npm:^4.2.3"
     "@formatjs/intl-pluralrules": "npm:5.3.3"
-    "@formatjs/intl-relativetimeformat": "npm:^11.4.3"
+    "@formatjs/intl-relativetimeformat": "npm:^11.4.4"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
