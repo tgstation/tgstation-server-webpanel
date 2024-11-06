@@ -1812,15 +1812,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-locale@npm:^4.2.3":
-  version: 4.2.3
-  resolution: "@formatjs/intl-locale@npm:4.2.3"
+"@formatjs/intl-locale@npm:^4.2.4":
+  version: 4.2.4
+  resolution: "@formatjs/intl-locale@npm:4.2.4"
   dependencies:
     "@formatjs/ecma402-abstract": "npm:2.2.3"
     "@formatjs/intl-enumerator": "npm:1.8.3"
     "@formatjs/intl-getcanonicallocales": "npm:2.5.2"
     tslib: "npm:2"
-  checksum: 10/dab4090653e62f1c3453c074c3047d0e22ee6a3d33ac00afa45f1541b8686b453c671755e8faeeb1253b61131071c02506b56c094941efd6195d40163007182e
+  checksum: 10/7c25b83151426164de3d94c168c87c61fc3f3587ee452d1b668dbd51c12b884f41c434891748bbad85955a1de18e69300988409931f7cfc7eb80b4f6df9c8cbb
   languageName: node
   linkType: hard
 
@@ -11378,7 +11378,7 @@ __metadata:
     "@eslint/compat": "npm:^1.2.2"
     "@eslint/eslintrc": "npm:^3.1.0"
     "@eslint/js": "npm:^9.14.0"
-    "@formatjs/intl-locale": "npm:^4.2.3"
+    "@formatjs/intl-locale": "npm:^4.2.4"
     "@formatjs/intl-pluralrules": "npm:5.3.3"
     "@formatjs/intl-relativetimeformat": "npm:^11.4.4"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
