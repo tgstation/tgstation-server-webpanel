@@ -115,7 +115,7 @@
         "sass": "^1.80.7",
         "source-map-loader": "^5.0.0",
         "svg-loader": "^0.0.2",
-        "swagger-typescript-api": "^13.0.22",
+        "swagger-typescript-api": "^13.0.23",
         "tiny-typed-emitter": "^2.1.0",
         "typescript": "^5.6.3",
         "webpack": "^5.96.1",
