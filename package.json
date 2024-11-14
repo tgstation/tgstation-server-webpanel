@@ -40,7 +40,7 @@
         "axios": "^1.7.7",
         "bootstrap": "^4.6.1",
         "buffer": "^6.0.3",
-        "client-zip": "^2.4.5",
+        "client-zip": "^2.4.6",
         "https-browserify": "^1.0.0",
         "jquery": "^3.7.1",
         "jwt-decode": "^4.0.0",

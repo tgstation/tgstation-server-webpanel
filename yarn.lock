@@ -4392,10 +4392,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"client-zip@npm:^2.4.5":
-  version: 2.4.5
-  resolution: "client-zip@npm:2.4.5"
-  checksum: 10/279baa27efc7eee056b5a341d3344ef93d2c73001f52ab678d7e45e814dae0975cac13e6858ef9047fe8366e0fd15ff2a4336c93ee407cddc95bf8c9cbc84552
+"client-zip@npm:^2.4.6":
+  version: 2.4.6
+  resolution: "client-zip@npm:2.4.6"
+  checksum: 10/b482d8d705f06585dbede027d8a408a6e12373b42fd4acd244a47633f9258694894bfe72c493578ee7b130880da45baed07eeb4f3baabcd2123f435f1f037647
   languageName: node
   linkType: hard
 
@@ -11415,7 +11415,7 @@ __metadata:
     babel-loader: "npm:^9.2.1"
     bootstrap: "npm:^4.6.1"
     buffer: "npm:^6.0.3"
-    client-zip: "npm:^2.4.5"
+    client-zip: "npm:^2.4.6"
     copy-webpack-plugin: "npm:^12.0.2"
     css-loader: "npm:^7.1.2"
     css-minimizer-webpack-plugin: "npm:^7.0.0"
