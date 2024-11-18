@@ -9809,9 +9809,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-intl@npm:^6.8.7":
-  version: 6.8.7
-  resolution: "react-intl@npm:6.8.7"
+"react-intl@npm:^6.8.8":
+  version: 6.8.8
+  resolution: "react-intl@npm:6.8.8"
   dependencies:
     "@formatjs/ecma402-abstract": "npm:2.2.3"
     "@formatjs/icu-messageformat-parser": "npm:2.9.3"
@@ -9829,7 +9829,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/98edcf1e7e3937817c3f7fab2136650f2cb6a0d1a55c2a55c5166988747d1a06d991a997b1d886e993ad8d3590e62a53185852766a0195477817183787b2760b
+  checksum: 10/c3852a329f62076caeed19b7655963e56f3421cb79da74e33727307fe0d1c7f4031325c3c5345757b3c0a612e760d6cd930fac1bf5fc038c6dfc8a92a7e89cb6
   languageName: node
   linkType: hard
 
@@ -11445,7 +11445,7 @@ __metadata:
     react: "npm:^17.0.2"
     react-bootstrap: "npm:^1.6.4"
     react-dom: "npm:^17.0.2"
-    react-intl: "npm:^6.8.7"
+    react-intl: "npm:^6.8.8"
     react-json-view: "npm:^1.21.3"
     react-markdown: "npm:^5.0.3"
     react-refresh: "npm:^0.14.2"
