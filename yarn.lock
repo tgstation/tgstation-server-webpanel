@@ -1018,12 +1018,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/fontawesome-svg-core@npm:^6.6.0":
-  version: 6.6.0
-  resolution: "@fortawesome/fontawesome-svg-core@npm:6.6.0"
+"@fortawesome/fontawesome-common-types@npm:6.7.0":
+  version: 6.7.0
+  resolution: "@fortawesome/fontawesome-common-types@npm:6.7.0"
+  checksum: 10c0/c1834f9c7fae906dc7519b3e0e101c5772a35e0e087e7f9f24383bd8007b024a874ec800f0ff8ce761923e989135079d55713dd2fe1613791e8254b99377130f
+  languageName: node
+  linkType: hard
+
+"@fortawesome/fontawesome-svg-core@npm:^6.7.0":
+  version: 6.7.0
+  resolution: "@fortawesome/fontawesome-svg-core@npm:6.7.0"
   dependencies:
-    "@fortawesome/fontawesome-common-types": "npm:6.6.0"
-  checksum: 10c0/38e2840791711524a3c57d9ea48a5a2e99da6fa3c657ba6beaad7ec3b8da31489a9e38f42b23d70584c75b579dc1ff8c67e075bc9789032278e4da54bb86ecfe
+    "@fortawesome/fontawesome-common-types": "npm:6.7.0"
+  checksum: 10c0/4c49c6e7c1e2aba312cd0bbb77840af86612dd5c773d62fac45f13419fc81a67c083845d2ace2e92c4d8c7e1efbb4f1467869668948011583a4491b09a7c5792
   languageName: node
   linkType: hard
 
@@ -7425,7 +7432,7 @@ __metadata:
   dependencies:
     "@chromatic-com/storybook": "npm:3.2.2"
     "@eslint/js": "npm:^9.15.0"
-    "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
+    "@fortawesome/fontawesome-svg-core": "npm:^6.7.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
     "@fortawesome/react-fontawesome": "npm:^0.2.2"
