@@ -1730,17 +1730,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/ecma402-abstract@npm:2.2.3":
-  version: 2.2.3
-  resolution: "@formatjs/ecma402-abstract@npm:2.2.3"
-  dependencies:
-    "@formatjs/fast-memoize": "npm:2.2.3"
-    "@formatjs/intl-localematcher": "npm:0.5.7"
-    tslib: "npm:2"
-  checksum: 10/d39e9f0d36c296a635f52aa35e07a67b6aa90383a30a046a0508e5d730676399fd0e67188eff463fe2a4d5febc9f567af45788fdf881e070910be7eb9294dd8c
-  languageName: node
-  linkType: hard
-
 "@formatjs/ecma402-abstract@npm:2.2.4":
   version: 2.2.4
   resolution: "@formatjs/ecma402-abstract@npm:2.2.4"
@@ -1813,15 +1802,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-localematcher@npm:0.5.7":
-  version: 0.5.7
-  resolution: "@formatjs/intl-localematcher@npm:0.5.7"
-  dependencies:
-    tslib: "npm:2"
-  checksum: 10/52201f12212e7e9cba1a4f99020da587b13e44e06e03c4ccd4e5ac0829b411e73dfe0904a9039ef81eeabeea04ed8cfae9e727e6791acd0230745b7bd3ad059e
-  languageName: node
-  linkType: hard
-
 "@formatjs/intl-localematcher@npm:0.5.8":
   version: 0.5.8
   resolution: "@formatjs/intl-localematcher@npm:0.5.8"
@@ -1842,14 +1822,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-relativetimeformat@npm:^11.4.4":
-  version: 11.4.4
-  resolution: "@formatjs/intl-relativetimeformat@npm:11.4.4"
+"@formatjs/intl-relativetimeformat@npm:^11.4.5":
+  version: 11.4.5
+  resolution: "@formatjs/intl-relativetimeformat@npm:11.4.5"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:2.2.3"
-    "@formatjs/intl-localematcher": "npm:0.5.7"
+    "@formatjs/ecma402-abstract": "npm:2.2.4"
+    "@formatjs/intl-localematcher": "npm:0.5.8"
     tslib: "npm:2"
-  checksum: 10/185c488602fbe7f70073273fcca8dbb0736af5481277a8a18c710290026f6d3488ff49ead9cc411b4402ce973a0779fe427b52c63e82b8cfbbac622320205fe2
+  checksum: 10/a1426acad7751f352ab733d0c72ed868b310bd193841fd9aa8f4097b42a6200b243aebf648990fa2fd3fa4755a55184bb3c6801be4d6a14747e55300c74d8144
   languageName: node
   linkType: hard
 
@@ -11380,7 +11360,7 @@ __metadata:
     "@eslint/js": "npm:^9.15.0"
     "@formatjs/intl-locale": "npm:^4.2.5"
     "@formatjs/intl-pluralrules": "npm:5.3.5"
-    "@formatjs/intl-relativetimeformat": "npm:^11.4.4"
+    "@formatjs/intl-relativetimeformat": "npm:^11.4.5"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
