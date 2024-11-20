@@ -21,7 +21,7 @@
     "main": "build/lib/App.js",
     "types": "build/lib/App.d.ts",
     "dependencies": {
-        "@formatjs/intl-locale": "^4.2.4",
+        "@formatjs/intl-locale": "^4.2.5",
         "@formatjs/intl-pluralrules": "5.3.5",
         "@formatjs/intl-relativetimeformat": "^11.4.4",
         "@fortawesome/fontawesome-svg-core": "^6.6.0",
