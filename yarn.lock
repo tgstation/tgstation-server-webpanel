@@ -1806,34 +1806,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-enumerator@npm:1.8.3":
-  version: 1.8.3
-  resolution: "@formatjs/intl-enumerator@npm:1.8.3"
+"@formatjs/intl-enumerator@npm:1.8.4":
+  version: 1.8.4
+  resolution: "@formatjs/intl-enumerator@npm:1.8.4"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:2.2.3"
+    "@formatjs/ecma402-abstract": "npm:2.2.4"
     tslib: "npm:2"
-  checksum: 10/a51ed7e15835cc1612282de46139d0f49553f004439a728a9118d1b9b15a3d05916e8aad4001e18c4909a3d4287fc07c921540c5ba8f32499f3243ac50d68a42
+  checksum: 10/fc9b8495bdab13c4c5e69c7a1c85c6444294fd848729e02a78a9af383d306e5c3321a82aa5550e3dda1f429efbb9825dc5646c47b985d9a698c287fcab5c862e
   languageName: node
   linkType: hard
 
-"@formatjs/intl-getcanonicallocales@npm:2.5.2":
-  version: 2.5.2
-  resolution: "@formatjs/intl-getcanonicallocales@npm:2.5.2"
+"@formatjs/intl-getcanonicallocales@npm:2.5.3":
+  version: 2.5.3
+  resolution: "@formatjs/intl-getcanonicallocales@npm:2.5.3"
   dependencies:
     tslib: "npm:2"
-  checksum: 10/0d1738181911635d91d4a788d663fadd1aa045f40f0f05ac8b04adc06cd4f5ee3c50aa7c3a50c63ba7572f23e336720340c8240d6070d899e56adf25d0388f1b
+  checksum: 10/af1529e474e8479e839ac7768e4d4fd140aee61e090888b0f82280645c883612e6d9c711ef52b6d2bb63bb15dd77e194ce54da57dbc1454c6a142aa150aee893
   languageName: node
   linkType: hard
 
-"@formatjs/intl-locale@npm:^4.2.4":
-  version: 4.2.4
-  resolution: "@formatjs/intl-locale@npm:4.2.4"
+"@formatjs/intl-locale@npm:^4.2.5":
+  version: 4.2.5
+  resolution: "@formatjs/intl-locale@npm:4.2.5"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:2.2.3"
-    "@formatjs/intl-enumerator": "npm:1.8.3"
-    "@formatjs/intl-getcanonicallocales": "npm:2.5.2"
+    "@formatjs/ecma402-abstract": "npm:2.2.4"
+    "@formatjs/intl-enumerator": "npm:1.8.4"
+    "@formatjs/intl-getcanonicallocales": "npm:2.5.3"
     tslib: "npm:2"
-  checksum: 10/7c25b83151426164de3d94c168c87c61fc3f3587ee452d1b668dbd51c12b884f41c434891748bbad85955a1de18e69300988409931f7cfc7eb80b4f6df9c8cbb
+  checksum: 10/6be4c4afeba117095538f193e66055c8ff17c18968a3e4c45e54a579fb0bdd177afa84adba38dbf27725dc3136a44e453ac17edc8e988c63cad61c98be8e7d93
   languageName: node
   linkType: hard
 
@@ -11399,7 +11399,7 @@ __metadata:
     "@eslint/compat": "npm:^1.2.3"
     "@eslint/eslintrc": "npm:^3.2.0"
     "@eslint/js": "npm:^9.15.0"
-    "@formatjs/intl-locale": "npm:^4.2.4"
+    "@formatjs/intl-locale": "npm:^4.2.5"
     "@formatjs/intl-pluralrules": "npm:5.3.5"
     "@formatjs/intl-relativetimeformat": "npm:^11.4.4"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
