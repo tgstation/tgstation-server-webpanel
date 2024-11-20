@@ -1855,14 +1855,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-pluralrules@npm:5.3.4":
-  version: 5.3.4
-  resolution: "@formatjs/intl-pluralrules@npm:5.3.4"
+"@formatjs/intl-pluralrules@npm:5.3.5":
+  version: 5.3.5
+  resolution: "@formatjs/intl-pluralrules@npm:5.3.5"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:2.2.3"
-    "@formatjs/intl-localematcher": "npm:0.5.7"
+    "@formatjs/ecma402-abstract": "npm:2.2.4"
+    "@formatjs/intl-localematcher": "npm:0.5.8"
     tslib: "npm:2"
-  checksum: 10/c15de59f1e1376dc4d9df9975b0ec9717ca1dcf435566c72f0b7d11efd740c2d87223c28b024f2aecefa985a057ac6f941b2ef04a0a45f79795b5016060f6c4e
+  checksum: 10/9e9db2be8cd40a9bf05b5cd6b3792c021a1f59d3682faf1b7c0878bd51937d7e9861be2e2ede631c76f23e97c089de82fb6ce0c978a25798da3a51dc8b9ce236
   languageName: node
   linkType: hard
 
@@ -11400,7 +11400,7 @@ __metadata:
     "@eslint/eslintrc": "npm:^3.2.0"
     "@eslint/js": "npm:^9.15.0"
     "@formatjs/intl-locale": "npm:^4.2.4"
-    "@formatjs/intl-pluralrules": "npm:5.3.4"
+    "@formatjs/intl-pluralrules": "npm:5.3.5"
     "@formatjs/intl-relativetimeformat": "npm:^11.4.4"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
