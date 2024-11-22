@@ -6591,18 +6591,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-relay@npm:^18.1.0":
-  version: 18.1.0
-  resolution: "react-relay@npm:18.1.0"
+"react-relay@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "react-relay@npm:18.2.0"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
     nullthrows: "npm:^1.1.1"
-    relay-runtime: "npm:18.1.0"
+    relay-runtime: "npm:18.2.0"
   peerDependencies:
     react: ^16.9.0 || ^17 || ^18
-  checksum: 10c0/d074092360ade1f202586c9023934e63c1d6f491a65eefa5a37ef31d243097fc7835683a91656a4f9c5e8493c08156a9c277a7e22f1e12530c95fa6ff3d05818
+  checksum: 10c0/f753212408fe5b6e5bedac116f3ac94414d3c94efb3cc4a3de4f32336a80f2d1f54db472b89b5777fcb6149df0f4ad13df28a0f8acf6fd7c005a9028dc7d4a54
   languageName: node
   linkType: hard
 
@@ -6768,6 +6768,17 @@ __metadata:
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
   checksum: 10c0/d3d75a211828dba972578a1692dc7f2ef41f7ca563a3b75791d4bfcf545bcc67cfd452abc0abbabef06cdbf392a53a9e3f041323bdba0730fb36402dfec7cdb1
+  languageName: node
+  linkType: hard
+
+"relay-runtime@npm:18.2.0":
+  version: 18.2.0
+  resolution: "relay-runtime@npm:18.2.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.0"
+    fbjs: "npm:^3.0.2"
+    invariant: "npm:^2.2.4"
+  checksum: 10c0/497ec7139a56e0834e5a21d3b86af1800dd10f56b4cc730d2265d94a581910a7768ae469edb38ac9538411255c2ea6864a468dd29fec21610971cb98d3b48f0a
   languageName: node
   linkType: hard
 
@@ -7464,7 +7475,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-hook-form: "npm:^7.53.2"
     react-intl: "npm:^7.0.1"
-    react-relay: "npm:^18.1.0"
+    react-relay: "npm:^18.2.0"
     react-router-dom: "npm:^6.28.0"
     relay-compiler: "npm:^18.1.0"
     relay-test-utils: "npm:^18.1.0"
