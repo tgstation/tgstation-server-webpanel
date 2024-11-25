@@ -117,7 +117,7 @@
         "svg-loader": "^0.0.2",
         "swagger-typescript-api": "^13.0.23",
         "tiny-typed-emitter": "^2.1.0",
-        "typescript": "^5.6.3",
+        "typescript": "^5.7.2",
         "webpack": "^5.96.1",
         "webpack-bundle-analyzer": "^4.10.2",
         "webpack-cli": "^5.1.4",
