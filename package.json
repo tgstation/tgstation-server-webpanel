@@ -73,7 +73,7 @@
         "@eslint/compat": "^1.2.3",
         "@eslint/eslintrc": "^3.2.0",
         "@eslint/js": "^9.15.0",
-        "@octokit/types": "^13.6.1",
+        "@octokit/types": "^13.6.2",
         "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
         "@types/eslint": "^9",
         "@types/jquery": "^3",
