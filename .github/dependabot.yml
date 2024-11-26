@@ -34,3 +34,10 @@ updates:
               patterns:
                   - "storybook"
                   - "@storybook/*"
+          relay:
+              applies-to: version-updates
+              patterns:
+                  - "relay-compiler"
+                  - "relay-test-utils"
+                  - "react-relay"
+                  - "babel-plugin-relay"
