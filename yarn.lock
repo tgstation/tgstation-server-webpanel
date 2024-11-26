@@ -6764,15 +6764,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"relay-test-utils@npm:^18.1.0":
-  version: 18.1.0
-  resolution: "relay-test-utils@npm:18.1.0"
+"relay-runtime@npm:18.2.0":
+  version: 18.2.0
+  resolution: "relay-runtime@npm:18.2.0"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
-    relay-runtime: "npm:18.1.0"
-  checksum: 10c0/8d56b96cf3e65fc2f1fccc6fab5615e806cfe4d6852df39e62df0e74c4b38ba2aba4c58a6df70748ec4f9f3550c0ca3355405ecfadee0c9a4f45c46dc65151a4
+  checksum: 10c0/497ec7139a56e0834e5a21d3b86af1800dd10f56b4cc730d2265d94a581910a7768ae469edb38ac9538411255c2ea6864a468dd29fec21610971cb98d3b48f0a
+  languageName: node
+  linkType: hard
+
+"relay-test-utils@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "relay-test-utils@npm:18.2.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.0"
+    fbjs: "npm:^3.0.2"
+    invariant: "npm:^2.2.4"
+    relay-runtime: "npm:18.2.0"
+  checksum: 10c0/b5c27fbe567ec1a1bbf76c143dcf712730023d6be879f35a075105f11df7ef90f82541d96dd1e2ee543377bafaeab60dc460bb409173f245382fb9ec15d6ec4f
   languageName: node
   linkType: hard
 
@@ -7460,7 +7471,7 @@ __metadata:
     react-relay: "npm:^18.1.0"
     react-router-dom: "npm:^6.28.0"
     relay-compiler: "npm:^18.1.0"
-    relay-test-utils: "npm:^18.1.0"
+    relay-test-utils: "npm:^18.2.0"
     rollup-plugin-jsx-remove-attributes: "npm:^2.0.3"
     semver: "npm:^7.6.3"
     storybook: "npm:^8.4.5"
