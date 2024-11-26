@@ -93,7 +93,7 @@
         "@types/relay-test-utils": "^18.0.0",
         "@types/semver": "^7",
         "@types/uuid": "^10",
-        "@vitejs/plugin-react": "^4.3.3",
+        "@vitejs/plugin-react": "^4.3.4",
         "autoprefixer": "^10.4.20",
         "babel-plugin-relay": "^18.2.0",
         "chromatic": "^11.18.1",
