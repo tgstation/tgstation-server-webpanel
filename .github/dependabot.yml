@@ -1,22 +1,12 @@
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 version: 2
 updates:
-    - package-ecosystem: npm
-      directory: /
-      schedule:
-          interval: daily
-      open-pull-requests-limit: 100
     - package-ecosystem: github-actions
+      target-branch: graphql
       directory: /
       schedule:
           interval: daily
       open-pull-requests-limit: 100
-      groups:
-          formatjs:
-              applies-to: version-updates
-              patterns:
-                  - "@formatjs/*"
-                  - "react-intl"
     - package-ecosystem: npm
       directory: /
       target-branch: graphql
