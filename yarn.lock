@@ -6744,12 +6744,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"relay-compiler@npm:^18.1.0":
-  version: 18.1.0
-  resolution: "relay-compiler@npm:18.1.0"
+"relay-compiler@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "relay-compiler@npm:18.2.0"
   bin:
     relay-compiler: cli.js
-  checksum: 10c0/c274538d9102f8d8eb8d7f09dfa4fd59c03e92866114cf46f9afb004984bb25f053d17f35056b5f8d1902ac15327381698574f5ee6df1faa2a3e50eb303bcaf7
+  checksum: 10c0/3249b9def1cf152813a9f7814e708c9a918ec1b87434188d4a710742b11be0a973d6f49b8935a28708e74e628fc326f72072b0c9da58c2824cd8afbcd3c94643
   languageName: node
   linkType: hard
 
@@ -7459,7 +7459,7 @@ __metadata:
     react-intl: "npm:^7.0.1"
     react-relay: "npm:^18.1.0"
     react-router-dom: "npm:^6.28.0"
-    relay-compiler: "npm:^18.1.0"
+    relay-compiler: "npm:^18.2.0"
     relay-test-utils: "npm:^18.1.0"
     rollup-plugin-jsx-remove-attributes: "npm:^2.0.3"
     semver: "npm:^7.6.3"
