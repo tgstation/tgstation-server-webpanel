@@ -3275,14 +3275,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-relay@npm:^18.1.0":
-  version: 18.1.0
-  resolution: "babel-plugin-relay@npm:18.1.0"
+"babel-plugin-relay@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "babel-plugin-relay@npm:18.2.0"
   dependencies:
     babel-plugin-macros: "npm:^2.0.0"
     cosmiconfig: "npm:^5.0.5"
     graphql: "npm:15.3.0"
-  checksum: 10c0/e1c653f6a4eb5df2f43c0eb67d8c21bc83e4d8ed7b9c8aa08d652cfb9804234044de60e6351ecb9829b63d8ad9dfde3d7cefbbef90f7b82488dc455cb69b1a79
+  checksum: 10c0/d4401de1c9d889bbebbd66dcacec74c4f466905d80b13aa62dc58df6576c890a61fdfd5b2e012b40924b8ea9a38d049489d07b6401b612cf16ada10c5885c6e6
   languageName: node
   linkType: hard
 
@@ -7435,7 +7435,7 @@ __metadata:
     "@types/uuid": "npm:^10"
     "@vitejs/plugin-react": "npm:^4.3.3"
     autoprefixer: "npm:^10.4.20"
-    babel-plugin-relay: "npm:^18.1.0"
+    babel-plugin-relay: "npm:^18.2.0"
     chromatic: "npm:^11.18.1"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
