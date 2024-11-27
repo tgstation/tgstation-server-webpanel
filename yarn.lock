@@ -7098,9 +7098,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook-addon-remix-react-router@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "storybook-addon-remix-react-router@npm:3.0.1"
+"storybook-addon-remix-react-router@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "storybook-addon-remix-react-router@npm:3.0.2"
   dependencies:
     compare-versions: "npm:^6.0.0"
     react-inspector: "npm:6.0.2"
@@ -7114,13 +7114,13 @@ __metadata:
     "@storybook/theming": ^8.0.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.4.0
+    react-router-dom: ^6.4.0 || ^7.0.0
   peerDependenciesMeta:
     react:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/4f756e244ee336f2105c31c9c2a28b5d3b4d894131e83f4646d22e2cf80fbdd7c8458933999524d6964efb2600884c22b234699409d31cac13255fb6db4817f6
+  checksum: 10c0/2a47bca50868be40affce1c81b463c2fa42ab946a2f7c60fe1139a4b8ecd55d9694c43331e52331503d95d87cbef6057d61efff56498bebbb9d0fdaa8fd84edc
   languageName: node
   linkType: hard
 
@@ -7435,7 +7435,7 @@ __metadata:
     rollup-plugin-jsx-remove-attributes: "npm:^2.0.3"
     semver: "npm:^7.6.3"
     storybook: "npm:^8.4.5"
-    storybook-addon-remix-react-router: "npm:^3.0.1"
+    storybook-addon-remix-react-router: "npm:^3.0.2"
     tailwind-merge: "npm:^2.5.5"
     tailwindcss: "npm:^3.4.15"
     tailwindcss-animate: "npm:^1.0.7"
