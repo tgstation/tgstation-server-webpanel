@@ -2614,13 +2614,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-relay@npm:*, @types/react-relay@npm:^16.0.6":
+"@types/react-relay@npm:*":
   version: 16.0.6
   resolution: "@types/react-relay@npm:16.0.6"
   dependencies:
     "@types/react": "npm:*"
     "@types/relay-runtime": "npm:*"
   checksum: 10c0/91a7b2e3e95610dc5ba4a994e847dd250cb6b95c5757a15662d36ab601abaddef970dd09f104333c43416b5ef0901101b55d0507fd999af60873ed849c4e9d76
+  languageName: node
+  linkType: hard
+
+"@types/react-relay@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "@types/react-relay@npm:18.2.0"
+  dependencies:
+    "@types/react": "npm:*"
+    "@types/relay-runtime": "npm:*"
+  checksum: 10c0/0809ad0e7e9c73d02a84b3c66947a1b925e44206595951e84a30f29a6ba9bfb49309c6d490906db81762d86627b42a437a4a8b036c803b95baa76abbcd54af2b
   languageName: node
   linkType: hard
 
@@ -7420,7 +7430,7 @@ __metadata:
     "@types/node": "npm:^22.10.1"
     "@types/react": "npm:^18"
     "@types/react-dom": "npm:^18.3.1"
-    "@types/react-relay": "npm:^16.0.6"
+    "@types/react-relay": "npm:^18.2.0"
     "@types/relay-test-utils": "npm:^18.0.0"
     "@types/semver": "npm:^7"
     "@types/uuid": "npm:^10"
