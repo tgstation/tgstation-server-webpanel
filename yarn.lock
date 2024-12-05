@@ -5664,12 +5664,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.462.0":
-  version: 0.462.0
-  resolution: "lucide-react@npm:0.462.0"
+"lucide-react@npm:^0.465.0":
+  version: 0.465.0
+  resolution: "lucide-react@npm:0.465.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
-  checksum: 10c0/684477fcd130036c89535ea21a1a35d95fc3e45e41cb5cdcc56702cdb28aa7c8b9f5cfba12123229949d79f6dc19eac27b1d1452a14803a81424d461477c37cf
+  checksum: 10c0/2b2deb458927793b415f874fa3e0ca3a896e2bdab8e5900dfb37bc0d57e8f30562ad20339f21ec2e9598ccd05f2ee2ca62f015fc0af08139cf06b02c9a08f3ad
   languageName: node
   linkType: hard
 
@@ -7441,7 +7441,7 @@ __metadata:
     globals: "npm:^15.12.0"
     graphql: "npm:16.x"
     graphql-sse: "npm:^2.5.3"
-    lucide-react: "npm:^0.462.0"
+    lucide-react: "npm:^0.465.0"
     postcss: "npm:^8.4.49"
     prettier: "npm:^3.4.1"
     react: "npm:^18.3.1"
