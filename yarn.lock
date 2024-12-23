@@ -6520,15 +6520,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-jsx-remove-attributes@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "rollup-plugin-jsx-remove-attributes@npm:2.0.3"
+"rollup-plugin-jsx-remove-attributes@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "rollup-plugin-jsx-remove-attributes@npm:2.1.0"
   peerDependencies:
     "@rollup/pluginutils": 5.1 - 5.2
     escodegen: 2.1 - 2.2
     estree-walker: 3.x - 4
-    vite: 5.2 - 6
-  checksum: 10c0/b83593646848f4a1f614a8f6ddcc155728cd3d90d55c915708ac6a5e006e4cbd12341a5584f01e6719fc186323268210eaabf5c57ce4abb0fbe8374ec772fc06
+    vite: 6 - 7
+  checksum: 10c0/ccb6c7ccb664c8c1a11f10ad24ca2b297d10938918ed6f008021c6e2c1f7a25227fd07298a1661c5bcd653f57bc42d66975b8f094793e07d7e776a3241887cad
   languageName: node
   linkType: hard
 
@@ -7160,7 +7160,7 @@ __metadata:
     react-router-dom: "npm:^7.0.2"
     relay-compiler: "npm:^18.2.0"
     relay-test-utils: "npm:^18.2.0"
-    rollup-plugin-jsx-remove-attributes: "npm:^2.0.3"
+    rollup-plugin-jsx-remove-attributes: "npm:^2.1.0"
     semver: "npm:^7.6.3"
     storybook: "npm:^8.4.7"
     storybook-addon-remix-react-router: "npm:^3.0.2"
