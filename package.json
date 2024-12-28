@@ -64,7 +64,7 @@
         "react-relay": "^18.2.0",
         "react-router-dom": "^7.1.1",
         "semver": "^7.6.3",
-        "tailwind-merge": "^2.5.5",
+        "tailwind-merge": "^2.6.0",
         "tailwindcss-animate": "^1.0.7",
         "uuid": "^11.0.3",
         "zod": "^3.24.1"
