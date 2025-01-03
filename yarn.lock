@@ -1150,6 +1150,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mjackson/form-data-parser@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@mjackson/form-data-parser@npm:0.4.0"
+  dependencies:
+    "@mjackson/multipart-parser": "npm:^0.6.1"
+  checksum: 10c0/044f255162301b033688aa5cf7af84fed197fe11592c070d874f90f2848d7f082cd2cf53068ccd4e2f9485a6cbb46cfe60c2aa1f1082f84ff36df0325be1b3f9
+  languageName: node
+  linkType: hard
+
+"@mjackson/headers@npm:^0.5.0":
+  version: 0.5.1
+  resolution: "@mjackson/headers@npm:0.5.1"
+  checksum: 10c0/f235188ec7c2b0937c9d5c24f9872ff8244f95a64cb3c4c3ee7da866c2247af6d8397782fd2aeb3960b17e708fb40d77884b5bf3268b13127b9f53656b1664e9
+  languageName: node
+  linkType: hard
+
+"@mjackson/multipart-parser@npm:^0.6.1":
+  version: 0.6.3
+  resolution: "@mjackson/multipart-parser@npm:0.6.3"
+  dependencies:
+    "@mjackson/headers": "npm:^0.5.0"
+  checksum: 10c0/00555916127b62c4a47be3f818cc9e45b55ba78203e106ff645ef5aef0460c338f4cdf2e7c129fa1fd1eee95321a2a5db6770c082c8969ca63eb8ecb3d1dd30e
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -2422,7 +2447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/theming@npm:8.4.7, @storybook/theming@npm:^8.4.7":
+"@storybook/theming@npm:8.4.7, @storybook/theming@npm:^8.0.0, @storybook/theming@npm:^8.4.7":
   version: 8.4.7
   resolution: "@storybook/theming@npm:8.4.7"
   peerDependencies:
@@ -7075,10 +7100,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook-addon-remix-react-router@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "storybook-addon-remix-react-router@npm:3.0.2"
+"storybook-addon-remix-react-router@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "storybook-addon-remix-react-router@npm:4.0.0"
   dependencies:
+    "@mjackson/form-data-parser": "npm:^0.4.0"
+    "@storybook/theming": "npm:^8.0.0"
     compare-versions: "npm:^6.0.0"
     react-inspector: "npm:6.0.2"
   peerDependencies:
@@ -7089,15 +7116,15 @@ __metadata:
     "@storybook/manager-api": ^8.0.0
     "@storybook/preview-api": ^8.0.0
     "@storybook/theming": ^8.0.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.4.0 || ^7.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-router: ^7.0.2
   peerDependenciesMeta:
     react:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/2a47bca50868be40affce1c81b463c2fa42ab946a2f7c60fe1139a4b8ecd55d9694c43331e52331503d95d87cbef6057d61efff56498bebbb9d0fdaa8fd84edc
+  checksum: 10c0/39aae3cfd4f26911860f4850431d4a2fa4cad48a1e841dc2454e760c8cd6cec05bada59619645b66c2b0ff7ea82848b570f771b43120bcceea3f0ba7f72bb2b0
   languageName: node
   linkType: hard
 
@@ -7412,7 +7439,7 @@ __metadata:
     rollup-plugin-jsx-remove-attributes: "npm:^2.1.0"
     semver: "npm:^7.6.3"
     storybook: "npm:^8.4.7"
-    storybook-addon-remix-react-router: "npm:^3.0.2"
+    storybook-addon-remix-react-router: "npm:^4.0.0"
     tailwind-merge: "npm:^2.6.0"
     tailwindcss: "npm:^3.4.17"
     tailwindcss-animate: "npm:^1.0.7"
