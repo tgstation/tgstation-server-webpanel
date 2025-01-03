@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { Environment } from "react-relay";
-import { RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router";
 
 import { UsersPermissionsFragment$key } from "./graphql/__generated__/UsersPermissionsFragment.graphql";
 import UsersPermissions from "./graphql/UsersPermissions";

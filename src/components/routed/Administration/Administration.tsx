@@ -2,7 +2,7 @@ import { faLinux, faWindows } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormattedMessage } from "react-intl";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { lt } from "semver";
 
 import { RestartTgsMutation } from "./graphql/__generated__/RestartTgsMutation.graphql";

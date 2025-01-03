@@ -1,6 +1,6 @@
 import { lazy, useMemo } from "react";
 import { useRelayEnvironment } from "react-relay";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router";
 
 import HomeRoutes from "../../routed/Home/HomeRoutes";
 

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Environment, loadQuery, PreloadedQuery } from "react-relay";
-import { LoaderFunctionArgs, RouteObject, useLoaderData } from "react-router-dom";
+import { LoaderFunctionArgs, RouteObject, useLoaderData } from "react-router";
 import { GraphQLTaggedNode, OperationType, VariablesOf } from "relay-runtime";
 
 import { useOnMountUnsafe } from "./useOnMountUnsafe";

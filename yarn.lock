@@ -6556,19 +6556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "react-router-dom@npm:7.1.1"
-  dependencies:
-    react-router: "npm:7.1.1"
-  peerDependencies:
-    react: ">=18"
-    react-dom: ">=18"
-  checksum: 10c0/2dc5b231dd21aab21378c615b1e373149007d173e90db984e6f708b5ee4b28923b3cf88ce7d6f727be927829b37ba37c01436f9f7abeb84ba3d1bfc9ecd4bc72
-  languageName: node
-  linkType: hard
-
-"react-router@npm:7.1.1":
+"react-router@npm:^7.1.1":
   version: 7.1.1
   resolution: "react-router@npm:7.1.1"
   dependencies:
@@ -7418,7 +7406,7 @@ __metadata:
     react-hook-form: "npm:^7.54.2"
     react-intl: "npm:^7.0.4"
     react-relay: "npm:^18.2.0"
-    react-router-dom: "npm:^7.1.1"
+    react-router: "npm:^7.1.1"
     relay-compiler: "npm:^18.2.0"
     relay-test-utils: "npm:^18.2.0"
     rollup-plugin-jsx-remove-attributes: "npm:^2.1.0"

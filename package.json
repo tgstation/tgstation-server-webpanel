@@ -62,7 +62,7 @@
         "react-hook-form": "^7.54.2",
         "react-intl": "^7.0.4",
         "react-relay": "^18.2.0",
-        "react-router-dom": "^7.1.1",
+        "react-router": "^7.1.1",
         "semver": "^7.6.3",
         "tailwind-merge": "^2.6.0",
         "tailwindcss-animate": "^1.0.7",
