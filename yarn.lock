@@ -2648,7 +2648,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^18":
+"@types/react@npm:*":
   version: 18.3.12
   resolution: "@types/react@npm:18.3.12"
   dependencies:
@@ -2665,6 +2665,15 @@ __metadata:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
   checksum: 10c0/8fb2b00672072135d0858dc9db07873ea107cc238b6228aaa2a9afd1ef7a64a7074078250db38afbeb19064be8ea6af5eac32d404efdd5f45e093cc4829d87f8
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^19":
+  version: 19.0.2
+  resolution: "@types/react@npm:19.0.2"
+  dependencies:
+    csstype: "npm:^3.0.2"
+  checksum: 10c0/8992f39701fcf1bf893ef8f94a56196445667baf08fe4f6050a14e229a17aad3265ad3efc01595ff3b4d5d5c69da885f9aa4ff80f164a613018734efcff1eb8f
   languageName: node
   linkType: hard
 
@@ -6633,12 +6642,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react@npm:^18.3.1":
+"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 10c0/283e8c5efcf37802c9d1ce767f302dd569dd97a70d9bb8c7be79a789b9902451e0d16334b05d73299b20f048cbc3c7d288bbbde10b701fa194e2089c237dbea3
+  languageName: node
+  linkType: hard
+
+"react@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "react@npm:19.0.0"
+  checksum: 10c0/9cad8f103e8e3a16d15cb18a0d8115d8bd9f9e1ce3420310aea381eb42aa0a4f812cf047bb5441349257a05fba8a291515691e3cb51267279b2d2c3253f38471
   languageName: node
   linkType: hard
 
@@ -7403,7 +7419,7 @@ __metadata:
     "@storybook/test": "npm:^8.4.7"
     "@storybook/theming": "npm:^8.4.7"
     "@types/node": "npm:^22.10.4"
-    "@types/react": "npm:^18"
+    "@types/react": "npm:^19"
     "@types/react-dom": "npm:^18.3.1"
     "@types/react-relay": "npm:^18.2.0"
     "@types/relay-test-utils": "npm:^18.0.0"
@@ -7429,7 +7445,7 @@ __metadata:
     lucide-react: "npm:0.469.0"
     postcss: "npm:^8.4.49"
     prettier: "npm:^3.4.2"
-    react: "npm:^18.3.1"
+    react: "npm:^19.0.0"
     react-dom: "npm:^18.3.1"
     react-hook-form: "npm:^7.54.2"
     react-intl: "npm:^7.1.0"
