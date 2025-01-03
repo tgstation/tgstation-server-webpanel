@@ -1,7 +1,7 @@
 import { Suspense, useCallback, useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import { useMutation } from "react-relay";
-import { Location, Navigate, useLocation } from "react-router-dom";
+import { Location, Navigate, useLocation } from "react-router";
 
 import ServerLogin from "../../graphql/ServerLogin";
 

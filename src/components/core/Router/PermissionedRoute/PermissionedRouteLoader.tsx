@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { Environment, PreloadedQuery, useFragment, usePreloadedQuery } from "react-relay";
 import { KeyType } from "react-relay/relay-hooks/helpers";
-import { Outlet, RouteObject } from "react-router-dom";
+import { Outlet, RouteObject } from "react-router";
 
 import IRoutePermissionsChecker from "./IRoutePermissionsChecker";
 import IPermissionedRouteInfo from "./PermissionedRouteInfo";

@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { Environment } from "react-relay";
-import { RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router";
 
 import { ServerInformationQuery } from "./graphql/__generated__/ServerInformationQuery.graphql";
 import ServerInformation from "./graphql/ServerInformation";

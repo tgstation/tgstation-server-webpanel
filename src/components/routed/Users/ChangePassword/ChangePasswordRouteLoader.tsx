@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { Environment } from "react-relay";
-import { RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router";
 
 import { ChangePasswordPermissionsFragment$key } from "./graphql/__generated__/ChangePasswordPermissionsFragment.graphql";
 import { ChangePasswordPreflightQuery } from "./graphql/__generated__/ChangePasswordPreflightQuery.graphql";

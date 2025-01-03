@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { lazy } from "react";
 import { Environment } from "react-relay";
-import { RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router";
 
 import AdministrationRouteLoader from "../Administration/AdministrationRouteLoader";
 import InstancesRouteLoader from "../Instances/InstancesRouteLoader";

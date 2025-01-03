@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { Environment } from "react-relay";
-import { RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router";
 
 import { UpdatePermissionsFragment$key } from "./graphql/__generated__/UpdatePermissionsFragment.graphql";
 import { UpdatePreflightQuery } from "./graphql/__generated__/UpdatePreflightQuery.graphql";
