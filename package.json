@@ -119,7 +119,7 @@
         "vite": "^6.0.7",
         "vite-plugin-relay": "^2.1.0"
     },
-    "packageManager": "yarn@4.5.3",
+    "packageManager": "yarn@4.6.0",
     "eslintConfig": {
         "extends": [
             "plugin:storybook/recommended"
