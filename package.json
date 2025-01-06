@@ -111,7 +111,7 @@
         "relay-test-utils": "^18.2.0",
         "rollup-plugin-jsx-remove-attributes": "^2.1.0",
         "storybook": "^8.4.7",
-        "storybook-addon-remix-react-router": "^4.0.0",
+        "storybook-addon-remix-react-router": "^4.0.1",
         "tailwindcss": "^3.4.17",
         "type-fest": "^4.31.0",
         "typescript": "^5.7.2",
