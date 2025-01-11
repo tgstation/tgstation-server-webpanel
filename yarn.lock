@@ -7101,9 +7101,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook-addon-remix-react-router@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "storybook-addon-remix-react-router@npm:4.0.0"
+"storybook-addon-remix-react-router@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "storybook-addon-remix-react-router@npm:4.0.1"
   dependencies:
     "@mjackson/form-data-parser": "npm:^0.4.0"
     "@storybook/theming": "npm:^8.0.0"
@@ -7125,7 +7125,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/39aae3cfd4f26911860f4850431d4a2fa4cad48a1e841dc2454e760c8cd6cec05bada59619645b66c2b0ff7ea82848b570f771b43120bcceea3f0ba7f72bb2b0
+  checksum: 10c0/474562b516d81c0106ea7f5f5bb3c31c769485a6cc2b449b708a963d5a49be123823b63c355fffadaf1c160d08055f0cecb37837d19e34580d5cea09a54efcf4
   languageName: node
   linkType: hard
 
@@ -7440,7 +7440,7 @@ __metadata:
     rollup-plugin-jsx-remove-attributes: "npm:^2.1.0"
     semver: "npm:^7.6.3"
     storybook: "npm:^8.4.7"
-    storybook-addon-remix-react-router: "npm:^4.0.0"
+    storybook-addon-remix-react-router: "npm:^4.0.1"
     tailwind-merge: "npm:^2.6.0"
     tailwindcss: "npm:^3.4.17"
     tailwindcss-animate: "npm:^1.0.7"
