@@ -925,14 +925,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/icu-messageformat-parser@npm:2.9.8":
-  version: 2.9.8
-  resolution: "@formatjs/icu-messageformat-parser@npm:2.9.8"
+"@formatjs/icu-messageformat-parser@npm:2.11.0":
+  version: 2.11.0
+  resolution: "@formatjs/icu-messageformat-parser@npm:2.11.0"
   dependencies:
     "@formatjs/ecma402-abstract": "npm:2.3.2"
     "@formatjs/icu-skeleton-parser": "npm:1.8.12"
     tslib: "npm:2"
-  checksum: 10c0/df97c7f24fbeb8ef49ae1371f9498ad90f231f88211bf1effb7b2e8ac3531bec67c5d9147ddcb1add0ba697e8d089729add44a9a9c5015e0e8d61e7a43f062d9
+  checksum: 10c0/9ad43847cb4a5c13895af606c634dcf2ec034d484cbbce6566746b60920643f33cbc5e2e3fd1efe21bcfdb555e1ee527e4518768001c3b36bf2e76c171e4049f
   languageName: node
   linkType: hard
 
@@ -955,21 +955,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl@npm:3.1.0":
-  version: 3.1.0
-  resolution: "@formatjs/intl@npm:3.1.0"
+"@formatjs/intl@npm:3.1.3":
+  version: 3.1.3
+  resolution: "@formatjs/intl@npm:3.1.3"
   dependencies:
     "@formatjs/ecma402-abstract": "npm:2.3.2"
     "@formatjs/fast-memoize": "npm:2.2.6"
-    "@formatjs/icu-messageformat-parser": "npm:2.9.8"
-    intl-messageformat: "npm:10.7.11"
+    "@formatjs/icu-messageformat-parser": "npm:2.11.0"
+    intl-messageformat: "npm:10.7.14"
     tslib: "npm:2"
   peerDependencies:
     typescript: 5
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/a073768fffc51696eb7bd25fe1f0afdda1a0e38db3e2dd9b2fc3138ea799f00ef522f3d3083626ad3acbf913593254cfd728a6c6b08ef4f167dd132626a7e9fc
+  checksum: 10c0/1f9fce896b69dd3ff84221d2d18fbd57f8968c1d0691e44d33ac949d3d6f4e86f9c3075e4da870fb0b189d4952ec5e8bc7375558fa85c37bcb76a73aeb6f9f52
   languageName: node
   linkType: hard
 
@@ -5119,15 +5119,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"intl-messageformat@npm:10.7.11":
-  version: 10.7.11
-  resolution: "intl-messageformat@npm:10.7.11"
+"intl-messageformat@npm:10.7.14":
+  version: 10.7.14
+  resolution: "intl-messageformat@npm:10.7.14"
   dependencies:
     "@formatjs/ecma402-abstract": "npm:2.3.2"
     "@formatjs/fast-memoize": "npm:2.2.6"
-    "@formatjs/icu-messageformat-parser": "npm:2.9.8"
+    "@formatjs/icu-messageformat-parser": "npm:2.11.0"
     tslib: "npm:2"
-  checksum: 10c0/7ccd972277cc6798038af876c830203084db6552becfa99c3706541fd67838552013f57f8ed0ed3aed03d4fba436591a83a25f913365d66ad04ee9332eee7b73
+  checksum: 10c0/914c11118c47bb7d0163a7d54afebf52ae4fe9b250bba609b5db4c802a34f8bf758edbbc8c58094203205faf76948c7112399addb32e9b36e40483c4cf7c1cb7
   languageName: node
   linkType: hard
 
@@ -6489,17 +6489,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-intl@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "react-intl@npm:7.1.0"
+"react-intl@npm:^7.1.3":
+  version: 7.1.3
+  resolution: "react-intl@npm:7.1.3"
   dependencies:
     "@formatjs/ecma402-abstract": "npm:2.3.2"
-    "@formatjs/icu-messageformat-parser": "npm:2.9.8"
-    "@formatjs/intl": "npm:3.1.0"
+    "@formatjs/icu-messageformat-parser": "npm:2.11.0"
+    "@formatjs/intl": "npm:3.1.3"
     "@types/hoist-non-react-statics": "npm:3"
     "@types/react": "npm:16 || 17 || 18"
     hoist-non-react-statics: "npm:3"
-    intl-messageformat: "npm:10.7.11"
+    intl-messageformat: "npm:10.7.14"
     tslib: "npm:2"
   peerDependencies:
     react: ^16.6.0 || 17 || 18
@@ -6507,7 +6507,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/9d69e316a5f5c6d31fa77f136b595079db2f75f63398cf8253d407878246dd5bcf0cc2eb4d7d4aa0646530ee58b16ce9a8c3876a5c2f0dc38fdda7e4f8c07615
+  checksum: 10c0/64d635819f4bdd09325ca4f7479c7b0254b45da76cc1cb70c4b51a404bf1cf2976125d4df5874fe34527e84813703ac6ff707e06e0e96616951fae1f20f9d246
   languageName: node
   linkType: hard
 
@@ -7432,7 +7432,7 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-hook-form: "npm:^7.54.2"
-    react-intl: "npm:^7.1.0"
+    react-intl: "npm:^7.1.3"
     react-relay: "npm:^18.2.0"
     react-router: "npm:^7.1.1"
     relay-compiler: "npm:^18.2.0"
