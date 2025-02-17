@@ -2262,16 +2262,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/request-error@npm:^6.0.0, @octokit/request-error@npm:^6.0.1":
-  version: 6.1.4
-  resolution: "@octokit/request-error@npm:6.1.4"
-  dependencies:
-    "@octokit/types": "npm:^13.0.0"
-  checksum: 10/e4e475ec50cef8e271f39e69667d0f8eaccb2367aa56b81638c629b5bbfa2b697b40207301e5c797a63051a82d8698e7c792b4050b84e383c54300a49a01304a
-  languageName: node
-  linkType: hard
-
-"@octokit/request-error@npm:^6.1.7":
+"@octokit/request-error@npm:^6.0.0, @octokit/request-error@npm:^6.0.1, @octokit/request-error@npm:^6.1.7":
   version: 6.1.7
   resolution: "@octokit/request-error@npm:6.1.7"
   dependencies:
@@ -11396,7 +11387,6 @@ __metadata:
     "@octokit/plugin-paginate-rest": "npm:^11.3.5"
     "@octokit/plugin-retry": "npm:^7.1.2"
     "@octokit/plugin-throttling": "npm:^9.3.2"
-    "@octokit/request-error": "npm:^6.1.7"
     "@octokit/rest": "npm:^21.0.2"
     "@octokit/types": "npm:^13.6.1"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.5.15"
