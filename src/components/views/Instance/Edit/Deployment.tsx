@@ -31,6 +31,7 @@ export function Deployment(): JSX.Element {
     const [isLoading, setIsLoading] = useState(true);
     const [deployInfo, setDeployInfo] = useState<DreamMakerResponse | null>(null);
     const [compileJobs, setCompileJobs] = useState<CompileJobResponse[] | null>(null);
+    const [prevCompileJob, setPrevCompileJob] = useState<CompileJobResponse | null>(null);
     const [compileJobsPage, setCompileJobsPage] = useState<number>(1);
     const [compileJobsTotalPages, setCompileJobsTotalPages] = useState<number>(0);
 
@@ -82,6 +83,24 @@ export function Deployment(): JSX.Element {
             setCompileJobsTotalPages(response.payload.totalPages);
             setCompileJobsPage(page);
             setCompileJobs(response.payload.content);
+
+            // also grab the job on the next page if possible
+            if (
+                response.payload.content.length == compileJobsPageSize &&
+                response.payload.content[response.payload.content.length - 1].id > 1
+            ) {
+                const extraResponse = await DreamMakerClient.getCompileJob(
+                    instanceEditContext.instance.id,
+                    response.payload.content[response.payload.content.length - 1].id - 1
+                );
+                if (extraResponse.code === StatusCode.OK) {
+                    setPrevCompileJob(extraResponse.payload);
+                } else {
+                    setPrevCompileJob(null);
+                }
+            } else {
+                setPrevCompileJob(null);
+            }
         } else {
             addError(errorState, response.error);
         }
@@ -189,6 +208,7 @@ export function Deployment(): JSX.Element {
         deploymentViewData = {
             viewDataType: ViewDataType.CompileJobs,
             compileJobs,
+            prevCompileJob,
             paging
         };
     }

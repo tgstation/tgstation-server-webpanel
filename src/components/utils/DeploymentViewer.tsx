@@ -9,7 +9,11 @@ import { Badge, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 import { lt as SemverLessThan } from "semver";
 
-import { CompileJobResponse, DreamDaemonSecurity } from "../../ApiClient/generatedcode/generated";
+import {
+    CompileJobResponse,
+    DreamDaemonSecurity,
+    TestMerge
+} from "../../ApiClient/generatedcode/generated";
 import { InstanceEditContext } from "../../contexts/InstanceEditContext";
 import Engine from "../views/Instance/Edit/Engine";
 import { DebugJsonViewer } from "./JsonViewer";
@@ -31,6 +35,7 @@ export interface CompileJobsPaging {
 export interface DeploymentsData {
     viewDataType: ViewDataType;
     compileJobs?: CompileJobResponse[];
+    prevCompileJob?: CompileJobResponse | null;
     paging: CompileJobsPaging;
 }
 
@@ -198,12 +203,19 @@ class DeploymentViewer extends React.Component<IProps, IState> {
             </React.Fragment>
         );
     }
+
     private renderDeployments(viewData: DeploymentsData): React.ReactNode {
         return (
             <React.Fragment>
                 {this.renderTable(
                     <React.Fragment>
-                        {viewData.compileJobs!.map(compileJob => this.renderCompileJob(compileJob))}
+                        {viewData.compileJobs!.map((compileJob, i, jobs) => {
+                            if (i < jobs.length - 1) {
+                                return this.renderCompileJob(compileJob, jobs[i + 1]);
+                            } else {
+                                return this.renderCompileJob(compileJob, viewData.prevCompileJob);
+                            }
+                        })}
                     </React.Fragment>
                 )}
                 <PageHelper
@@ -216,7 +228,32 @@ class DeploymentViewer extends React.Component<IProps, IState> {
         );
     }
 
-    private renderCompileJob(compileJob: CompileJobResponse) {
+    private getTestMergeDiffStatus(
+        testMerge: TestMerge,
+        previousCompileJob?: CompileJobResponse | null
+    ) {
+        const oldTestMerges = previousCompileJob?.revisionInformation?.activeTestMerges;
+        if (!oldTestMerges || oldTestMerges.length == 0) {
+            return <FormattedMessage id="view.utils.deployment_viewer.table.pr.tm_diff.tm_added" />;
+        }
+        for (let index = 0; index < oldTestMerges.length; index++) {
+            const oldTestMerge = oldTestMerges[index];
+            if (oldTestMerge.number == testMerge.number) {
+                if (oldTestMerge.targetCommitSha != testMerge.targetCommitSha) {
+                    return (
+                        <FormattedMessage id="view.utils.deployment_viewer.table.pr.tm_diff.tm_updated" />
+                    );
+                }
+                return "";
+            }
+        }
+        return <FormattedMessage id="view.utils.deployment_viewer.table.pr.tm_diff.tm_added" />;
+    }
+
+    private renderCompileJob(
+        compileJob: CompileJobResponse,
+        previousCompileJob?: CompileJobResponse | null
+    ) {
         const engineVersion = Engine.friendlyVersion(compileJob.engineVersion);
 
         // we use en-GB so we get the fucking SANE DD/MM/YYYY
@@ -355,6 +392,9 @@ class DeploymentViewer extends React.Component<IProps, IState> {
                                         <FormattedMessage id="view.utils.deployment_viewer.table.pr.number" />
                                     </th>
                                     <th>
+                                        <FormattedMessage id="view.utils.deployment_viewer.table.pr.tm_diff" />
+                                    </th>
+                                    <th>
                                         <FormattedMessage id="view.utils.deployment_viewer.table.pr.title" />
                                     </th>
                                     <th>
@@ -377,6 +417,12 @@ class DeploymentViewer extends React.Component<IProps, IState> {
                                                 key={`test-merge-#${testMerge.number}-cj-${compileJob.id}`}>
                                                 <td>
                                                     <a href={testMerge.url}>#{testMerge.number}</a>
+                                                </td>
+                                                <td>
+                                                    {this.getTestMergeDiffStatus(
+                                                        testMerge,
+                                                        previousCompileJob
+                                                    )}
                                                 </td>
                                                 <td>
                                                     <a href={testMerge.url}>
