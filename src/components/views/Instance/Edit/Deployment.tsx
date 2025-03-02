@@ -92,8 +92,8 @@ export function Deployment(): JSX.Element {
                 const extraResponse = await DreamMakerClient.listCompileJobs(
                     instanceEditContext.instance.id,
                     {
-                        page: page + 1,
-                        pageSize: compileJobsPageSize
+                        page: compileJobsPageSize * page + 1,
+                        pageSize: 1
                     }
                 );
                 if (
