@@ -87,14 +87,20 @@ export function Deployment(): JSX.Element {
             // also grab the job on the next page if possible
             if (
                 response.payload.content.length == compileJobsPageSize &&
-                response.payload.content[response.payload.content.length - 1].id > 1
+                response.payload.totalPages > page
             ) {
-                const extraResponse = await DreamMakerClient.getCompileJob(
+                const extraResponse = await DreamMakerClient.listCompileJobs(
                     instanceEditContext.instance.id,
-                    response.payload.content[response.payload.content.length - 1].id - 1
+                    {
+                        page: page + 1,
+                        pageSize: compileJobsPageSize
+                    }
                 );
-                if (extraResponse.code === StatusCode.OK) {
-                    setPrevCompileJob(extraResponse.payload);
+                if (
+                    extraResponse.code === StatusCode.OK &&
+                    extraResponse.payload.content.length > 0
+                ) {
+                    setPrevCompileJob(extraResponse.payload.content[0]);
                 } else {
                     setPrevCompileJob(null);
                 }
