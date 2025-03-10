@@ -447,6 +447,8 @@
     "view.info.userlimit": "User Limit: ",
     "view.info.grouplimit": "Group Limit: ",
     "view.info.oauth": "OAuth Support: ",
+    "view.info.oidc": "OIDC Support: ",
+    "view.info.oidc.strict": "OIDC Strict Mode: ",
     "view.meme_0": "Toxic Gamers' Sanctuary",
     "view.meme_1": "The Great Spaceman",
     "view.meme_2": "The Griefers' Stronghold",

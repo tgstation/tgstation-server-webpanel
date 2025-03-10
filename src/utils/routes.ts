@@ -32,6 +32,8 @@ export interface AppRoute {
     //result of isAuthorized() after RouteController runs it, can be used by components but only set by RouteController
     cachedAuth?: boolean;
 
+    disallowInOidcStrictMode?: boolean;
+
     ///Visibility
     //if this shows up on the navbar
     visibleNavbar: boolean;
@@ -275,6 +277,8 @@ const AppRoutes = asElementTypesAppRoute({
 
         loose: true,
         navbarLoose: true,
+
+        disallowInOidcStrictMode: true,
 
         isAuthorized: adminRight(AdministrationRights.EditOwnPassword),
 
