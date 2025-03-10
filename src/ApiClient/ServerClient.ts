@@ -383,6 +383,17 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         });
     }
 
+    public async loginOidc(token: string): Promise<void> {
+        CredentialsProvider.credentials = undefined;
+        await this.setToken(
+            {
+                bearer: token
+            },
+            false,
+            false
+        );
+    }
+
     public async login(
         newCreds?: ICredentials
     ): Promise<InternalStatus<TokenResponse, LoginErrors>> {

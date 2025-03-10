@@ -135,7 +135,8 @@
         "generate-api": "node scripts/api_build.js"
     },
     "schema_gen": {
-        "type": "version"
+        "type": "url",
+        "value": "http://localhost:5000/api/doc/tgs_api.json"
     },
     "schema_gen_example_version": {
         "desc": "Fetches a tgs api version from github using the tag name. References the \"tgs_api_version\" field in package.json.",

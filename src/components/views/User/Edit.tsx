@@ -23,6 +23,7 @@ import {
     InstanceManagerRights,
     OAuthConnection,
     OAuthProvider,
+    OidcConnection,
     PermissionSet,
     UserGroup,
     UserGroupResponse,
@@ -47,6 +48,7 @@ interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     user?: UserResponse;
     newOAuthConnections: OAuthConnection[];
+    newOidcConnections: OidcConnection[];
     loading: boolean;
     saving: boolean;
     permsadmin: { [key: string]: Permission };
@@ -86,7 +88,8 @@ class UserEdit extends React.Component<IProps, IState> {
             renameGroup: null,
             renameGroupName: null,
             createGroupName: "",
-            newOAuthConnections: []
+            newOAuthConnections: [],
+            newOidcConnections: []
         };
 
         RouteData.selecteduserid = parseInt(props.match.params.id);
@@ -117,12 +120,12 @@ class UserEdit extends React.Component<IProps, IState> {
         );
     }
 
-    private get canEditOwnOAuth() {
+    private get canEditOwnServiceConnections() {
         const userid = parseInt(this.props.match.params.id);
         return (
             !!(
                 resolvePermissionSet(this.context.user).administrationRights &
-                AdministrationRights.EditOwnOAuthConnections
+                AdministrationRights.EditOwnServiceConnections
             ) && this.context.user.id === userid
         );
     }
@@ -184,7 +187,8 @@ class UserEdit extends React.Component<IProps, IState> {
     private loadUser(user: UserResponse) {
         this.setState({
             user,
-            newOAuthConnections: user.oAuthConnections ? Array.from(user.oAuthConnections) : []
+            newOAuthConnections: user.oAuthConnections ? Array.from(user.oAuthConnections) : [],
+            newOidcConnections: user.oidcConnections ? Array.from(user.oidcConnections) : []
         });
         this.loadEnums();
     }
@@ -418,59 +422,70 @@ class UserEdit extends React.Component<IProps, IState> {
                                             )}
                                         </OverlayTrigger>
                                     </Row>
-                                    <div className="text-center mt-3">
-                                        {this.canEdit || this.canEditOwnPassword ? (
-                                            <Button
-                                                className="mr-2"
-                                                as={Link}
-                                                to={
-                                                    (AppRoutes.passwd.link ??
-                                                        AppRoutes.passwd.route) +
-                                                    this.state.user.id.toString()
-                                                }>
-                                                <FormattedMessage id="routes.passwd" />
-                                            </Button>
-                                        ) : (
-                                            ""
-                                        )}
-                                        {this.canEdit ? (
-                                            <Button
-                                                variant={
-                                                    this.state.user.enabled ? "danger" : "success"
-                                                }
-                                                onClick={() =>
-                                                    void (async () => {
-                                                        this.setState({
-                                                            saving: true
-                                                        });
-
-                                                        const response = await UserClient.editUser({
-                                                            enabled: !this.state.user!.enabled,
-                                                            id: this.state.user!.id
-                                                        });
-                                                        if (response.code == StatusCode.OK) {
-                                                            this.loadUser(response.payload);
-                                                        } else {
-                                                            this.addError(response.error);
+                                    {!this.context.serverInfo.oidcStrictMode ? (
+                                        <>
+                                            <div className="text-center mt-3">
+                                                {this.canEdit || this.canEditOwnPassword ? (
+                                                    <Button
+                                                        className="mr-2"
+                                                        as={Link}
+                                                        to={
+                                                            (AppRoutes.passwd.link ??
+                                                                AppRoutes.passwd.route) +
+                                                            this.state.user.id.toString()
+                                                        }>
+                                                        <FormattedMessage id="routes.passwd" />
+                                                    </Button>
+                                                ) : (
+                                                    ""
+                                                )}
+                                                {this.canEdit ? (
+                                                    <Button
+                                                        variant={
+                                                            this.state.user.enabled
+                                                                ? "danger"
+                                                                : "success"
                                                         }
+                                                        onClick={() =>
+                                                            void (async () => {
+                                                                this.setState({
+                                                                    saving: true
+                                                                });
 
-                                                        this.setState({
-                                                            saving: false
-                                                        });
-                                                    })()
-                                                }>
-                                                <FormattedMessage
-                                                    id={
-                                                        this.state.user.enabled
-                                                            ? "generic.disable"
-                                                            : "generic.enable"
-                                                    }
-                                                />
-                                            </Button>
-                                        ) : (
-                                            ""
-                                        )}
-                                    </div>
+                                                                const response =
+                                                                    await UserClient.editUser({
+                                                                        enabled:
+                                                                            !this.state.user!
+                                                                                .enabled,
+                                                                        id: this.state.user!.id
+                                                                    });
+                                                                if (
+                                                                    response.code == StatusCode.OK
+                                                                ) {
+                                                                    this.loadUser(response.payload);
+                                                                } else {
+                                                                    this.addError(response.error);
+                                                                }
+
+                                                                this.setState({
+                                                                    saving: false
+                                                                });
+                                                            })()
+                                                        }>
+                                                        <FormattedMessage
+                                                            id={
+                                                                this.state.user.enabled
+                                                                    ? "generic.disable"
+                                                                    : "generic.enable"
+                                                            }
+                                                        />
+                                                    </Button>
+                                                ) : (
+                                                    ""
+                                                )}
+                                            </div>
+                                        </>
+                                    ) : null}
                                 </Col>
                             </Tab>
                             <Tab
@@ -486,7 +501,12 @@ class UserEdit extends React.Component<IProps, IState> {
                             <Tab eventKey="group" title={<FormattedMessage id="perms.group" />}>
                                 {this.renderGroups()}
                             </Tab>
-                            {this.renderOAuth()}
+                            {!this.context.serverInfo.oidcStrictMode ? (
+                                <>
+                                    {this.renderOAuth()}
+                                    {this.renderOidc()}
+                                </>
+                            ) : null}
                         </Tabs>
                     </React.Fragment>
                 ) : (
@@ -537,7 +557,7 @@ class UserEdit extends React.Component<IProps, IState> {
             });
         };
 
-        const canEditOauth = this.canEdit || this.canEditOwnOAuth;
+        const canEditOauth = this.canEdit || this.canEditOwnServiceConnections;
         const filteredConnections = this.state.newOAuthConnections.filter(
             oAuthConnection => !!oAuthProviderInfos[oAuthConnection.provider]
         );
@@ -687,6 +707,196 @@ class UserEdit extends React.Component<IProps, IState> {
                                 ) &&
                                     this.state.newOAuthConnections.length ===
                                         this.state.user?.oAuthConnections?.length)
+                            }>
+                            <FormattedMessage id="generic.savetab" />
+                        </Button>
+                    </div>
+                ) : (
+                    ""
+                )}
+            </Tab>
+        );
+    }
+
+    private renderOidc(): React.ReactNode {
+        const providers = this.context.serverInfo.oidcProviderInfos;
+        const currentOidcConnections =
+            this.state.newOidcConnections ?? this.state.user?.oidcConnections;
+        if (
+            this.state.user?.name.toLowerCase() === "admin" || // admin user can't have OAuthConnections
+            currentOidcConnections == null ||
+            !providers ||
+            !Object.keys(providers).length
+        )
+            return null;
+
+        const save = async () => {
+            this.setState({
+                saving: true
+            });
+
+            if (!this.state.user) {
+                this.addError(
+                    new InternalError(ErrorCode.APP_FAIL, {
+                        jsError: Error("this.state.user is null in user edit save")
+                    })
+                );
+                return;
+            }
+
+            const response = await UserClient.editUser({
+                id: this.state.user.id,
+                oidcConnections: this.state.newOidcConnections
+            });
+            if (response.code == StatusCode.OK) {
+                this.loadUser(response.payload);
+            } else {
+                this.addError(response.error);
+            }
+
+            this.setState({
+                saving: false
+            });
+        };
+
+        const canEditOidc = this.canEdit || this.canEditOwnServiceConnections;
+        const filteredConnections = [...this.state.newOidcConnections];
+
+        return (
+            <Tab eventKey="oidc" title={<FormattedMessage id="view.user.edit.oidc.connections" />}>
+                <h3 className="mb-3">
+                    <FormattedMessage id="view.user.edit.oidc.connections" />
+                </h3>
+                <div>
+                    {filteredConnections.map((oidcConnection, idx) => (
+                        <div className="justify-content-center d-flex" key={idx}>
+                            <InputGroup className="w-75 mb-1">
+                                <InputGroup.Prepend>
+                                    <InputGroup.Text>
+                                        <span>
+                                            <FormattedMessage id="view.user.edit.oauth.provider" />
+                                        </span>
+                                    </InputGroup.Text>
+                                </InputGroup.Prepend>
+                                <Form.Control
+                                    className="flex-grow-1 flex-md-grow-0 w-50 w-md-auto "
+                                    as="select"
+                                    custom
+                                    disabled={!canEditOidc}
+                                    onChange={event => {
+                                        const schemeKey = event.target.value;
+                                        this.setState(prev => {
+                                            return {
+                                                newOidcConnections: prev.newOidcConnections.map(
+                                                    (val, idx2) => {
+                                                        if (idx2 !== idx) return val;
+                                                        return {
+                                                            ...val,
+                                                            schemeKey
+                                                        };
+                                                    }
+                                                )
+                                            };
+                                        });
+                                    }}>
+                                    {providers.map(oidcProvider => {
+                                        return (
+                                            <option
+                                                value={oidcProvider.schemeKey}
+                                                selected={
+                                                    oidcConnection.schemeKey ===
+                                                    oidcProvider.schemeKey
+                                                }>
+                                                {oidcProvider.friendlyName}
+                                            </option>
+                                        );
+                                    })}
+                                </Form.Control>
+                                <InputGroup.Text className="rounded-0">
+                                    <FormattedMessage id="view.user.edit.oauth.id" />
+                                </InputGroup.Text>
+                                <FormControl
+                                    className=""
+                                    value={oidcConnection.externalUserId}
+                                    onChange={event => {
+                                        const externalUserId = event.target.value;
+                                        this.setState(prev => {
+                                            return {
+                                                newOidcConnections: prev.newOidcConnections.map(
+                                                    (val, idx2) => {
+                                                        if (idx2 !== idx) return val;
+                                                        return {
+                                                            ...val,
+                                                            externalUserId: externalUserId
+                                                        };
+                                                    }
+                                                )
+                                            };
+                                        });
+                                    }}
+                                    disabled={!canEditOidc}
+                                />
+                                <InputGroup.Append className="">
+                                    <Button
+                                        variant="danger"
+                                        className="text-darker"
+                                        hidden={!canEditOidc}
+                                        onClick={() => {
+                                            this.setState(prev => {
+                                                return {
+                                                    newOAuthConnections:
+                                                        prev.newOAuthConnections.filter(
+                                                            (val, idx2) => idx !== idx2
+                                                        )
+                                                };
+                                            });
+                                        }}>
+                                        <div>
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </div>
+                                    </Button>
+                                </InputGroup.Append>
+                            </InputGroup>
+                        </div>
+                    ))}
+                </div>
+                {canEditOidc ? (
+                    <div className="text-center mt-3">
+                        <Button
+                            className="mr-2"
+                            onClick={() => {
+                                this.setState(prev => {
+                                    return {
+                                        newOidcConnections: [
+                                            ...prev.newOidcConnections,
+                                            {
+                                                schemeKey: providers[0].schemeKey,
+                                                externalUserId: ""
+                                            }
+                                        ]
+                                    };
+                                });
+                            }}>
+                            <FormattedMessage id="view.user.edit.oauth.add" />
+                        </Button>
+                        <Button
+                            onClick={() => void save()}
+                            variant="success"
+                            disabled={
+                                this.state.newOidcConnections.some(
+                                    x => x.externalUserId.trim().length === 0
+                                ) ||
+                                //If all values match up, and the lenght is the same, there has been no change, disable the button
+                                (this.state.newOidcConnections.every(
+                                    (val, idx) =>
+                                        val.externalUserId ===
+                                            (this.state.user?.oidcConnections ?? [])[idx]
+                                                ?.externalUserId &&
+                                        val.schemeKey ===
+                                            (this.state.user?.oidcConnections ?? [])[idx]?.schemeKey
+                                ) &&
+                                    this.state.newOidcConnections.length ===
+                                        this.state.user?.oidcConnections?.length)
                             }>
                             <FormattedMessage id="generic.savetab" />
                         </Button>
