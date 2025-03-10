@@ -1,7 +1,7 @@
 {
     "name": "tgstation-server-control-panel",
     "version": "6.7.7",
-    "tgs_api_version": "10.12.1",
+    "tgs_api_version": "10.13.0",
     "private": true,
     "homepage": "https://tgstation.github.io/tgstation-server-control-panel",
     "repository": "github:tgstation/tgstation-server-control-panel",
@@ -135,8 +135,7 @@
         "generate-api": "node scripts/api_build.js"
     },
     "schema_gen": {
-        "type": "url",
-        "value": "http://localhost:5000/api/doc/tgs_api.json"
+        "type": "version"
     },
     "schema_gen_example_version": {
         "desc": "Fetches a tgs api version from github using the tag name. References the \"tgs_api_version\" field in package.json.",
