@@ -501,12 +501,8 @@ class UserEdit extends React.Component<IProps, IState> {
                             <Tab eventKey="group" title={<FormattedMessage id="perms.group" />}>
                                 {this.renderGroups()}
                             </Tab>
-                            {!this.context.serverInfo.oidcStrictMode ? (
-                                <>
-                                    {this.renderOAuth()}
-                                    {this.renderOidc()}
-                                </>
-                            ) : null}
+                            {this.renderOAuth()}
+                            {this.renderOidc()}
                         </Tabs>
                     </React.Fragment>
                 ) : (
@@ -524,7 +520,8 @@ class UserEdit extends React.Component<IProps, IState> {
             this.state.user?.name.toLowerCase() === "admin" || // admin user can't have OAuthConnections
             currentOAuthConnections == null ||
             !oAuthProviderInfos ||
-            !Object.keys(oAuthProviderInfos).length
+            !Object.keys(oAuthProviderInfos).length ||
+            this.context.serverInfo.oidcStrictMode
         )
             return null;
 
@@ -726,7 +723,8 @@ class UserEdit extends React.Component<IProps, IState> {
             this.state.user?.name.toLowerCase() === "admin" || // admin user can't have OAuthConnections
             currentOidcConnections == null ||
             !providers ||
-            !Object.keys(providers).length
+            !Object.keys(providers).length ||
+            this.context.serverInfo.oidcStrictMode
         )
             return null;
 
