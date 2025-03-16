@@ -802,6 +802,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                     {providers.map(oidcProvider => {
                                         return (
                                             <option
+                                                key={oidcProvider.schemeKey}
                                                 value={oidcProvider.schemeKey}
                                                 selected={
                                                     oidcConnection.schemeKey ===
