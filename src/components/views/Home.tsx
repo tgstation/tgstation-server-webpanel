@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 
 import ServerClient from "../../ApiClient/ServerClient";
 import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
+import { GeneralContext } from "../../contexts/GeneralContext";
 import RouteController from "../../utils/RouteController";
 import { AppRoute, AppRoutes } from "../../utils/routes";
 
@@ -18,7 +19,8 @@ interface IState {
     usingDefaultCreds: boolean;
 }
 
-export default class Home extends React.Component<IProps, IState> {
+class Home extends React.Component<IProps, IState> {
+    public declare context: GeneralContext;
     public static readonly Route: string = "/";
 
     public constructor(props: IProps) {
@@ -73,6 +75,9 @@ export default class Home extends React.Component<IProps, IState> {
                         //this means it shouldnt be displayed on the home screen
                         if (!val.homeIcon) return;
 
+                        if (val.disallowInOidcStrictMode && this.context.serverInfo.oidcStrictMode)
+                            return;
+
                         if (val === AppRoutes.home) return;
 
                         return (
@@ -111,3 +116,6 @@ export default class Home extends React.Component<IProps, IState> {
         );
     }
 }
+
+Home.contextType = GeneralContext;
+export default Home;

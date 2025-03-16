@@ -11,7 +11,11 @@ import { FormattedMessage } from "react-intl";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 
-import { OAuthProvider, OAuthProviderInfo } from "../../ApiClient/generatedcode/generated";
+import {
+    OAuthProvider,
+    OAuthProviderInfo,
+    OidcProviderInfo
+} from "../../ApiClient/generatedcode/generated";
 import { CredentialsType } from "../../ApiClient/models/ICredentials";
 import InternalError, { ErrorCode } from "../../ApiClient/models/InternalComms/InternalError";
 import { StatusCode } from "../../ApiClient/models/InternalComms/InternalStatus";
@@ -21,7 +25,6 @@ import CredentialsProvider from "../../ApiClient/util/CredentialsProvider";
 import { GeneralContext, UnsafeGeneralContext } from "../../contexts/GeneralContext";
 import { MODE } from "../../definitions/constants";
 import KeycloakLogo from "../../images/keycloak_icon_64px.png";
-import TGLogo from "../../images/tglogo-white.svg";
 import { RouteData } from "../../utils/routes";
 import ErrorAlert from "../utils/ErrorAlert";
 import Loading from "../utils/Loading";
@@ -39,7 +42,7 @@ interface IState {
 }
 
 export interface StoredOAuthData {
-    provider: OAuthProvider;
+    provider?: OAuthProvider;
     url: string;
     gateway: boolean;
 }
@@ -158,8 +161,8 @@ class Login extends React.Component<IProps, IState> {
             [OAuthProvider.Discord]: (
                 <FontAwesomeIcon icon={faDiscord} style={{ width: "1.2em" }} />
             ),
-            [OAuthProvider.TGForums]: <img src={TGLogo} alt="tglogo" style={{ width: "1.2em" }} />,
-            [OAuthProvider.Keycloak]: (
+            [OAuthProvider.DEPRECATEDTGForums]: null,
+            [OAuthProvider.DEPRECATEDKeycloak]: (
                 <img src={KeycloakLogo} alt="keycloaklogo" style={{ width: "1.2em" }} />
             ),
             [OAuthProvider.InvisionCommunity]: (
@@ -184,6 +187,8 @@ class Login extends React.Component<IProps, IState> {
             return provider && provider.gatewayOnly !== true;
         };
 
+        const oidcProviders = this.context.serverInfo.oidcProviderInfos ?? [];
+
         return (
             <Col className="mx-auto" lg={5} md={8}>
                 {this.state.errors.map((err, index) => {
@@ -206,87 +211,140 @@ class Login extends React.Component<IProps, IState> {
                 })}
                 {this.renderGitHubGateway()}
                 <Card body>
-                    <Card.Title>
-                        <FormattedMessage id="login.header" />
-                    </Card.Title>
-                    <Card body>
-                        <Card.Title>
-                            <FormattedMessage id="login.type.generic" />
-                        </Card.Title>
-                        <Form validated={this.state.validated} onSubmit={e => void this.submit(e)}>
-                            <Form.Group controlId="username">
-                                <Form.Label>
-                                    <FormattedMessage id="login.username" />
-                                </Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Enter username"
-                                    onChange={handleUsrInput}
-                                    value={this.state.username}
-                                    required
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="password">
-                                <Form.Label>
-                                    <FormattedMessage id="login.password" />
-                                </Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    placeholder="Password"
-                                    onChange={handlePwdInput}
-                                    value={this.state.password}
-                                    required
-                                />
-                            </Form.Group>
-                            <Button type="submit" block>
-                                <FormattedMessage id="login.submit" />
-                            </Button>
-                        </Form>
-                    </Card>
-                    {(providerEnabled(x => x?.Discord) ||
-                        providerEnabled(x => x?.GitHub) ||
-                        providerEnabled(x => x?.Keycloak) ||
-                        providerEnabled(x => x?.InvisionCommunity) ||
-                        providerEnabled(x => x?.TGForums)) && (
+                    {!this.context.serverInfo.oidcStrictMode ? (
                         <>
-                            <hr />
+                            <Card.Title>
+                                <FormattedMessage id="login.header" />
+                            </Card.Title>
                             <Card body>
                                 <Card.Title>
-                                    <FormattedMessage id="login.type.oauth" />
+                                    <FormattedMessage id="login.type.generic" />
                                 </Card.Title>
-                                {Object.keys(this.context.serverInfo.oAuthProviderInfos ?? {}).map(
-                                    provider => {
-                                        if (
-                                            !providerEnabled(x =>
-                                                x ? x[provider as OAuthProvider] : undefined
-                                            )
-                                        ) {
-                                            return null;
-                                        }
+                                <Form
+                                    validated={this.state.validated}
+                                    onSubmit={e => void this.submit(e)}>
+                                    <Form.Group controlId="username">
+                                        <Form.Label>
+                                            <FormattedMessage id="login.username" />
+                                        </Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Enter username"
+                                            onChange={handleUsrInput}
+                                            value={this.state.username}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group controlId="password">
+                                        <Form.Label>
+                                            <FormattedMessage id="login.password" />
+                                        </Form.Label>
+                                        <Form.Control
+                                            type="password"
+                                            placeholder="Password"
+                                            onChange={handlePwdInput}
+                                            value={this.state.password}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Button type="submit" block>
+                                        <FormattedMessage id="login.submit" />
+                                    </Button>
+                                </Form>
+                            </Card>
+                        </>
+                    ) : null}
+                    {(providerEnabled(x => x?.Discord) ||
+                        providerEnabled(x => x?.GitHub) ||
+                        oidcProviders.length > 0) && (
+                        <>
+                            {!this.context.serverInfo.oidcStrictMode &&
+                            (providerEnabled(x => x?.Discord) ||
+                                providerEnabled(x => x?.GitHub)) ? (
+                                <>
+                                    <hr />
+                                    <Card body>
+                                        <Card.Title>
+                                            <FormattedMessage id="login.type.oauth" />
+                                        </Card.Title>
+                                        {Object.keys(
+                                            this.context.serverInfo.oAuthProviderInfos ?? {}
+                                        ).map(provider => {
+                                            if (
+                                                !providerEnabled(x =>
+                                                    x ? x[provider as OAuthProvider] : undefined
+                                                )
+                                            ) {
+                                                return null;
+                                            }
 
-                                        const ptheme = providersTheme[provider as OAuthProvider];
-                                        return (
-                                            <Button
-                                                key={provider}
-                                                block
-                                                style={ptheme ? { background: ptheme } : undefined}
-                                                onClick={() =>
-                                                    void this.startOAuth(
-                                                        provider as OAuthProvider,
-                                                        false
-                                                    )
-                                                }>
-                                                {providers[provider as OAuthProvider]}
-                                                <span className="ml-1">
-                                                    <FormattedMessage
-                                                        id="login.oauth"
-                                                        values={{ provider }}
-                                                    />
-                                                </span>
-                                            </Button>
+                                            const ptheme =
+                                                providersTheme[provider as OAuthProvider];
+                                            return (
+                                                <Button
+                                                    key={provider}
+                                                    block
+                                                    style={
+                                                        ptheme ? { background: ptheme } : undefined
+                                                    }
+                                                    onClick={() =>
+                                                        this.startOAuth(
+                                                            provider as OAuthProvider,
+                                                            false
+                                                        )
+                                                    }>
+                                                    {providers[provider as OAuthProvider]}
+                                                    <span className="ml-1">
+                                                        <FormattedMessage
+                                                            id="login.oauth"
+                                                            values={{ provider }}
+                                                        />
+                                                    </span>
+                                                </Button>
+                                            );
+                                        })}
+                                    </Card>
+                                </>
+                            ) : null}
+                            {!this.context.serverInfo.oidcStrictMode ? <hr /> : null}
+                            <Card body>
+                                <Card.Title>
+                                    <FormattedMessage id="login.type.oidc" />
+                                </Card.Title>
+                                {oidcProviders.map(provider => {
+                                    let ptheme;
+                                    if (provider.themeIconUrl) {
+                                        ptheme = (
+                                            <img
+                                                src={KeycloakLogo}
+                                                alt="keycloaklogo"
+                                                style={{ width: "1.2em" }}
+                                            />
                                         );
+                                    } else {
+                                        ptheme = null;
                                     }
-                                )}
+
+                                    return (
+                                        <Button
+                                            key={provider.schemeKey}
+                                            block
+                                            style={
+                                                provider.themeColour
+                                                    ? { background: provider.themeColour }
+                                                    : undefined
+                                            }
+                                            onClick={() => this.startOidc(provider)}>
+                                            {ptheme}
+                                            <span className="ml-1">
+                                                <FormattedMessage
+                                                    id="login.oauth"
+                                                    values={{ provider: provider.friendlyName }}
+                                                />
+                                            </span>
+                                        </Button>
+                                    );
+                                })}
                             </Card>
                         </>
                     )}
@@ -295,7 +353,32 @@ class Login extends React.Component<IProps, IState> {
         );
     }
 
-    private async startOAuth(provider: OAuthProvider, gateway: boolean): Promise<void> {
+    private startOidc(providerInfo: OidcProviderInfo): void {
+        if (!this.context.serverInfo) {
+            this.addError(
+                new InternalError(ErrorCode.APP_FAIL, {
+                    jsError: Error("serverInfo is null in startOidc")
+                })
+            );
+            return;
+        }
+
+        const state = `oidc.${providerInfo.schemeKey}`;
+
+        const oauthdata = JSON.parse(
+            window.sessionStorage.getItem("oauth") ?? "{}"
+        ) as OAuthStateStorage;
+        oauthdata[state] = {
+            url: this.props.location.pathname,
+            gateway: false
+        };
+
+        window.sessionStorage.setItem("oauth", JSON.stringify(oauthdata));
+
+        window.location.href = `${configOptions.apipath.value}oidc/${providerInfo.schemeKey}/signin`;
+    }
+
+    private startOAuth(provider: OAuthProvider, gateway: boolean): void {
         if (!this.context.serverInfo) {
             this.addError(
                 new InternalError(ErrorCode.APP_FAIL, {
@@ -336,31 +419,13 @@ class Login extends React.Component<IProps, IState> {
                 )}&state=${e(state)}&allow_signup=${e(gateway ? "true" : "false")}`;
                 break;
             }
-            case OAuthProvider.Keycloak: {
-                url = `${this.context.serverInfo.oAuthProviderInfos.Keycloak
-                    .serverUrl!}/protocol/openid-connect/auth?response_type=code&client_id=${e(
-                    this.context.serverInfo.oAuthProviderInfos.Keycloak.clientId
-                )}&scope=openid&state=${e(state)}&redirect_uri=${e(
-                    this.context.serverInfo.oAuthProviderInfos.Keycloak.redirectUri
-                )}`;
-                break;
-            }
-            case OAuthProvider.TGForums: {
-                url = `https://tgstation13.org/phpBB/app.php/tgapi/oauth/auth?scope=user&client_id=${e(
-                    this.context.serverInfo.oAuthProviderInfos.TGForums.clientId
-                )}&state=${e(state)}&redirect_uri=${e(
-                    this.context.serverInfo.oAuthProviderInfos.TGForums.redirectUri
-                )}`;
-                break;
-            }
-            case OAuthProvider.InvisionCommunity: {
-                url = `${this.context.serverInfo.oAuthProviderInfos.InvisionCommunity
-                    .serverUrl!}/oauth/authorize/?response_type=code&client_id=${e(
-                    this.context.serverInfo.oAuthProviderInfos.InvisionCommunity.clientId
-                )}&scope=profile&state=${e(state)}&redirect_uri=${e(
-                    this.context.serverInfo.oAuthProviderInfos.InvisionCommunity.redirectUri
-                )}`;
-                break;
+            default: {
+                this.addError(
+                    new InternalError(ErrorCode.APP_FAIL, {
+                        jsError: Error("Unsupported OAuth Provider")
+                    })
+                );
+                return;
             }
         }
 
@@ -376,8 +441,6 @@ class Login extends React.Component<IProps, IState> {
         window.sessionStorage.setItem("oauth", JSON.stringify(oauthdata));
 
         window.location.href = url;
-
-        return new Promise(resolve => resolve());
     }
 
     private async submit(event: FormEvent<HTMLFormElement>) {

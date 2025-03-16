@@ -130,20 +130,54 @@ class Info extends React.Component<IProps, IState> {
                                             <h4>{this.context.serverInfo.userGroupLimit}</h4>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>
-                                            <h4 className="mr-3">
-                                                <FormattedMessage id="view.info.oauth" />
-                                            </h4>
-                                        </td>
-                                        <td>
-                                            <h4>
-                                                {Object.keys(
-                                                    this.context.serverInfo.oAuthProviderInfos ?? {}
-                                                ).join(", ")}
-                                            </h4>
-                                        </td>
-                                    </tr>
+                                    {Object.keys(this.context.serverInfo.oAuthProviderInfos ?? {})
+                                        .length > 0 ? (
+                                        <tr>
+                                            <td>
+                                                <h4 className="mr-3">
+                                                    <FormattedMessage id="view.info.oauth" />
+                                                </h4>
+                                            </td>
+                                            <td>
+                                                <h4>
+                                                    {Object.keys(
+                                                        this.context.serverInfo
+                                                            .oAuthProviderInfos ?? {}
+                                                    ).join(", ")}
+                                                </h4>
+                                            </td>
+                                        </tr>
+                                    ) : null}
+                                    {this.context.serverInfo.oidcProviderInfos.length > 0 ? (
+                                        <>
+                                            <tr>
+                                                <td>
+                                                    <h4 className="mr-3">
+                                                        <FormattedMessage id="view.info.oidc" />
+                                                    </h4>
+                                                </td>
+                                                <td>
+                                                    <h4>
+                                                        {this.context.serverInfo.oidcProviderInfos
+                                                            .map(provider => provider.friendlyName)
+                                                            .join(", ")}
+                                                    </h4>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <h4 className="mr-3">
+                                                        <FormattedMessage id="view.info.oidc.strict" />
+                                                    </h4>
+                                                </td>
+                                                <td>
+                                                    <h4 className="text-capitalize">
+                                                        {this.context.serverInfo.oidcStrictMode.toString()}
+                                                    </h4>
+                                                </td>
+                                            </tr>
+                                        </>
+                                    ) : null}
                                 </tbody>
                             </table>
                         </div>

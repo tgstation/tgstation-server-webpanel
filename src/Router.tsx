@@ -113,6 +113,15 @@ class Router extends Component<IProps, IState> {
 
         const code = URLSearch.get("code");
         if (!code) {
+            const error = URLSearch.get("error");
+            if (error) {
+                return this.setErrorAndEnd(
+                    new InternalError(ErrorCode.LOGIN_FAIL, {
+                        jsError: Error(error)
+                    })
+                );
+            }
+
             return this.setErrorAndEnd(
                 new InternalError(ErrorCode.LOGIN_BAD_OAUTH, {
                     jsError: Error(`Code not found.`)
@@ -122,42 +131,49 @@ class Router extends Component<IProps, IState> {
         this.props.history.replace(oauthstate.url);
 
         void (async () => {
-            if (oauthstate.gateway) {
-                const response = await ServerClient.oAuthGateway({
-                    type: CredentialsType.OAuth,
-                    provider: oauthstate.provider,
-                    token: code
-                });
-
-                if (response.code === StatusCode.OK) {
-                    ConfigController.saveconfig({
-                        githubtoken: {
-                            id: "config.githubtoken",
-                            type: "pwd",
-                            value: response.payload.accessCode
-                        }
+            if (oauthstate.provider) {
+                if (oauthstate.gateway) {
+                    const response = await ServerClient.oAuthGateway({
+                        type: CredentialsType.OAuth,
+                        provider: oauthstate.provider,
+                        token: code
                     });
 
-                    this.setState({
-                        loading: false
-                    });
+                    if (response.code === StatusCode.OK) {
+                        ConfigController.saveconfig({
+                            githubtoken: {
+                                id: "config.githubtoken",
+                                type: "pwd",
+                                value: response.payload.accessCode
+                            }
+                        });
+
+                        this.setState({
+                            loading: false
+                        });
+                    } else {
+                        this.setErrorAndEnd(response.error);
+                    }
                 } else {
-                    this.setErrorAndEnd(response.error);
+                    const response = await ServerClient.login({
+                        type: CredentialsType.OAuth,
+                        provider: oauthstate.provider,
+                        token: code
+                    });
+
+                    if (response.code === StatusCode.OK) {
+                        this.setState({
+                            loading: false
+                        });
+                    } else {
+                        this.setErrorAndEnd(response.error);
+                    }
                 }
             } else {
-                const response = await ServerClient.login({
-                    type: CredentialsType.OAuth,
-                    provider: oauthstate.provider,
-                    token: code
+                await ServerClient.loginOidc(code);
+                this.setState({
+                    loading: false
                 });
-
-                if (response.code === StatusCode.OK) {
-                    this.setState({
-                        loading: false
-                    });
-                } else {
-                    this.setErrorAndEnd(response.error);
-                }
             }
 
             window.sessionStorage.removeItem("oauth");
