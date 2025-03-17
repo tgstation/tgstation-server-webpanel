@@ -810,6 +810,13 @@ class UserEdit extends React.Component<IProps, IState> {
                                             </option>
                                         );
                                     })}
+                                    {!providers.some(
+                                        provider => provider.schemeKey == oidcConnection.schemeKey
+                                    ) ? (
+                                        <option value={oidcConnection.schemeKey} selected>
+                                            {oidcConnection.schemeKey}
+                                        </option>
+                                    ) : null}
                                 </Form.Control>
                                 <InputGroup.Text className="rounded-0">
                                     <FormattedMessage id="view.user.edit.oauth.id" />
