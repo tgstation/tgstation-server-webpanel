@@ -316,8 +316,7 @@ class Login extends React.Component<IProps, IState> {
                                     if (provider.themeIconUrl) {
                                         ptheme = (
                                             <img
-                                                src={KeycloakLogo}
-                                                alt="keycloaklogo"
+                                                src={provider.themeIconUrl}
                                                 style={{ width: "1.2em" }}
                                             />
                                         );
