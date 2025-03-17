@@ -843,8 +843,8 @@ class UserEdit extends React.Component<IProps, IState> {
                                         onClick={() => {
                                             this.setState(prev => {
                                                 return {
-                                                    newOAuthConnections:
-                                                        prev.newOAuthConnections.filter(
+                                                    newOidcConnections:
+                                                        prev.newOidcConnections.filter(
                                                             (val, idx2) => idx !== idx2
                                                         )
                                                 };
