@@ -319,7 +319,10 @@ class Repository extends React.Component<IProps, IState> {
                     const deployinterval = setInterval(() => {
                         const targetJob = JobsController.jobs.get(jobId);
                         if (typeof targetJob?.progress === "number" || targetJob?.stoppedAt) {
-                            if (targetJob.errorCode === undefined && targetJob.exceptionDetails === undefined) {
+                            if (
+                                targetJob.errorCode === undefined &&
+                                targetJob.exceptionDetails === undefined
+                            ) {
                                 void DreamMakerClient.startCompile(this.context.instance.id).then(
                                     response => {
                                         if (response.code === StatusCode.ERROR) {
