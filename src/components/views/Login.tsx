@@ -256,10 +256,12 @@ class Login extends React.Component<IProps, IState> {
                     ) : null}
                     {(providerEnabled(x => x?.Discord) ||
                         providerEnabled(x => x?.GitHub) ||
+                        providerEnabled(x => x?.Keycloak) ||
                         oidcProviders.length > 0) && (
                         <>
                             {!this.context.serverInfo.oidcStrictMode &&
                             (providerEnabled(x => x?.Discord) ||
+                                providerEnabled(x => x?.Keycloak) ||
                                 providerEnabled(x => x?.GitHub)) ? (
                                 <>
                                     <hr />
@@ -416,6 +418,27 @@ class Login extends React.Component<IProps, IState> {
                 )}&redirect_uri=${e(
                     this.context.serverInfo.oAuthProviderInfos.GitHub.redirectUri
                 )}&state=${e(state)}&allow_signup=${e(gateway ? "true" : "false")}`;
+                break;
+            }
+
+            case OAuthProvider.DEPRECATEDKeycloak: {
+                url = `${this.context.serverInfo.oAuthProviderInfos.Keycloak
+                    .serverUrl!}/protocol/openid-connect/auth?response_type=code&client_id=${e(
+                    this.context.serverInfo.oAuthProviderInfos.Keycloak.clientId
+                )}&scope=openid&state=${e(state)}&redirect_uri=${e(
+                    this.context.serverInfo.oAuthProviderInfos.Keycloak.redirectUri
+                )}`;
+
+                break;
+            }
+            case OAuthProvider.InvisionCommunity: {
+                url = `${this.context.serverInfo.oAuthProviderInfos.InvisionCommunity
+                    .serverUrl!}/oauth/authorize/?response_type=code&client_id=${e(
+                    this.context.serverInfo.oAuthProviderInfos.InvisionCommunity.clientId
+                )}&scope=profile&state=${e(state)}&redirect_uri=${e(
+                    this.context.serverInfo.oAuthProviderInfos.InvisionCommunity.redirectUri
+                )}`;
+
                 break;
             }
             default: {
