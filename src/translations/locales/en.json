@@ -295,7 +295,7 @@
     "view.instance.engine.current_and_list_denied": "This user does not have the permission to access information about BYOND versions",
     "view.instance.engine.list_denied": "This user does not have the permission to list all installed BYOND versions",
     "view.instance.engine.current_denied": "This user does not have the permission to see the active BYOND version",
-    "view.instance.engine.current_version": "Active Version: {version}",
+    "view.instance.engine.current_version": "Active Version: {engine} {version}",
     "view.instance.chat": "Chat Bots",
     "view.instance.chat.create": "Add Bot",
     "view.instance.chat.create.invalid.discord": "Invalid Discord channel ID!",

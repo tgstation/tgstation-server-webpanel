@@ -407,7 +407,15 @@ class Engine extends React.Component<IProps, IState> {
                         <GenericAlert title="view.instance.engine.list_denied" />
                         <FormattedMessage
                             id="view.instance.engine.current_version"
-                            values={{ version: this.state.activeVersion }}
+                            values={{
+                                engine:
+                                    this.state.activeVersion?.engine == EngineType.Byond
+                                        ? "BYOND"
+                                        : "OpenDream",
+                                version:
+                                    this.state.activeVersion?.version ??
+                                    this.state.activeVersion?.sourceSHA
+                            }}
                         />
                     </>
                 ) : (
