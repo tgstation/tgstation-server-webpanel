@@ -126,7 +126,7 @@
     "scripts": {
         "start": "webpack serve --mode development",
         "build": "webpack --mode production",
-        "msbuild": "bun run build && node scripts/msbuild.js",
+        "msbuild": "bun run build && bun scripts/msbuild.js",
         "build-dev": "webpack --mode development",
         "lint": "tsc && eslint src --ext \".js,.cjs,.ts,.tsx\" --max-warnings=0",
         "lint-fix": "eslint src --ext \".js,.cjs,.ts,.tsx\" --max-warnings=0 --fix",
