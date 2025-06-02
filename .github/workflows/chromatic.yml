@@ -18,7 +18,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [20.x]
+                bun-version: [1.2.15]
         steps:
             - name: Checkout
               if: github.event_name == 'push'
@@ -33,25 +33,16 @@ jobs:
                   fetch-depth: 0
                   ref: refs/pull/${{ inputs.pull_request_number }}/head
 
-            - name: Restore Yarn cache
-              uses: actions/cache@v4
+            - name: Use Bun ${{ matrix.bun-version }}
+              uses: oven-sh/setup-bun@v2
               with:
-                  path: .yarn/cache
-                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ matrix.node-version }}
-
-            - name: Setup Yarn
-              run: corepack enable
+                  bun-version: ${{ matrix.bun-version }}
 
             - name: Install Dependencies
-              run: yarn install --immutable
+              run: bun install --frozen-lockfile
 
             - name: Run Relay
-              run: yarn relay-build
+              run: bun run relay-build
 
             - name: Run Chromatic
               uses: chromaui/action@latest

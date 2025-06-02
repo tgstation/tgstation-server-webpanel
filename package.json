@@ -26,15 +26,15 @@
     "scripts": {
         "dev": "concurrently --kill-others \"npm:dev-server\" \"npm:storybook\" \"npm:relay\"",
         "dev-server": "vite",
-        "build": "yarn relay-build && tsc -b && vite build",
+        "build": "relay-build && tsc -b && vite build",
         "lint": "eslint .",
         "preview": "vite preview",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
-        "chromatic": "yarn relay-build && npx chromatic",
-        "relay": "yarn grab-api && relay-compiler github.relay.config.json && relay-compiler --watch relay.config.json",
-        "relay-build": "yarn grab-api && relay-compiler relay.config.json && relay-compiler github.relay.config.json",
-        "grab-api": "node --no-warnings src/api/grab.js"
+        "chromatic": "relay-build && npx chromatic",
+        "relay": "bun run grab-api && relay-compiler github.relay.config.json && relay-compiler --watch relay.config.json",
+        "relay-build": "bun run grab-api && relay-compiler relay.config.json && relay-compiler github.relay.config.json",
+        "grab-api": "bun src/api/grab.js"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -119,7 +119,7 @@
         "vite": "^6.0.7",
         "vite-plugin-relay": "^2.1.0"
     },
-    "packageManager": "yarn@4.6.0",
+    "packageManager": "bun@1.2.15",
     "eslintConfig": {
         "extends": [
             "plugin:storybook/recommended"
