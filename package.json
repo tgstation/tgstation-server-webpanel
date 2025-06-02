@@ -124,15 +124,15 @@
         "webpack-dev-server": "^5.1.0"
     },
     "scripts": {
-        "start": "yarn webpack serve --mode development",
-        "build": "yarn webpack --mode production",
-        "msbuild": "yarn run build && node scripts/msbuild.js",
-        "build-dev": "yarn webpack --mode development",
-        "lint": "yarn tsc && yarn eslint src --ext \".js,.cjs,.ts,.tsx\" --max-warnings=0",
-        "lint-fix": "yarn eslint src --ext \".js,.cjs,.ts,.tsx\" --max-warnings=0 --fix",
-        "test": "yarn run lint && yarn run build",
-        "postinstall": "yarn run generate-api",
-        "generate-api": "node scripts/api_build.js"
+        "start": "webpack serve --mode development",
+        "build": "webpack --mode production",
+        "msbuild": "bun run build && node scripts/msbuild.js",
+        "build-dev": "webpack --mode development",
+        "lint": "tsc && eslint src --ext \".js,.cjs,.ts,.tsx\" --max-warnings=0",
+        "lint-fix": "eslint src --ext \".js,.cjs,.ts,.tsx\" --max-warnings=0 --fix",
+        "test": "bun run lint && bun run build",
+        "postinstall": "bun run generate-api",
+        "generate-api": "bun scripts/api_build.js"
     },
     "schema_gen": {
         "type": "version"
@@ -168,5 +168,5 @@
             "last 3 safari version"
         ]
     },
-    "packageManager": "yarn@4.7.0"
+    "packageManager": "bun@1.2.15"
 }

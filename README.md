@@ -16,16 +16,15 @@ last 3 safari version
 
 ## Install
 
-1. Install Node.JS from <https://nodejs.org/en>
-2. Install yarn by `corepack enable`
-3. Clone this repository
-4. Run `yarn` or `yarn install` on the cloned repository
+1. Install [Bun](https://bun.sh/)
+2. Clone the repository
+3. Run `bun install` to install dependencies
 
 ## Development
 
-To run a test server, make sure you have ran `yarn` or `yarn install` beforehand to install dependencies then simply run `yarn start`, the first build may take anywhere from a dozen of seconds to 2 minutes depending on your machine but subsequent changes to the file system will get picked up by the dev server and those will usually be built much faster. The app will hot swap components.
+To run a test server, make sure you have ran `bun install` beforehand to install dependencies then simply run `bun start`, the first build may take anywhere from a dozen of seconds to 2 minutes depending on your machine but subsequent changes to the file system will get picked up by the dev server and those will usually be built much faster. The app will hot swap components.
 
-Make sure to run `yarn` or `yarn install` again if you pull in new changes from the repo
+Make sure to run `bun install` again if you pull in new changes from the repo
 
 ## Scripts
 
