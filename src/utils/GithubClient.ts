@@ -35,6 +35,7 @@ export interface PullRequest {
     head: string;
     tail: string;
     testmergelabel: boolean;
+    antitestmergelabel: boolean;
     mergeable: boolean | null;
 }
 
@@ -230,6 +231,11 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                     label.name?.toLowerCase().includes("testmerge") ||
                     label.name?.toLowerCase().includes("test merge")
             ),
+            antitestmergelabel: pr.labels.some(
+                label =>
+                    label.name?.toLowerCase().includes("do not testmerge") ||
+                    label.name?.toLowerCase().includes("do not test merge")
+            ),
             mergeable: pr.mergeable
         };
     }
@@ -253,6 +259,11 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
                 label =>
                     label.name?.toLowerCase().includes("testmerge") ||
                     label.name?.toLowerCase().includes("test merge")
+            ),
+            antitestmergelabel: pr.labels.some(
+                label =>
+                    label.name?.toLowerCase().includes("do not testmerge") ||
+                    label.name?.toLowerCase().includes("do not test merge")
             ),
             mergeable: null
         };

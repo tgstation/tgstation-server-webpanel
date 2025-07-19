@@ -157,9 +157,14 @@ export default function TestMergeRow({
                         style={{ backgroundColor: colorMap[pr.state] }}>
                         {pr.state}
                     </Badge>
-                    {pr.testmergelabel ? (
+                    {pr.testmergelabel && !pr.antitestmergelabel ? (
                         <Badge pill className="text-white text-capitalize mr-2" variant="primary">
                             <FormattedMessage id="view.instance.repo.testmergelabel" />
+                        </Badge>
+                    ) : null}
+                    {pr.antitestmergelabel ? (
+                        <Badge pill className="text-white text-capitalize mr-2" variant="danger">
+                            <FormattedMessage id="view.instance.repo.antitestmergelabel" />
                         </Badge>
                     ) : null}
                     {pr.mergeable === false ? (
