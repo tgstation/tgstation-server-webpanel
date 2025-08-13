@@ -960,6 +960,9 @@ class Repository extends React.Component<IProps, IState> {
                 if (a.testmergelabel !== b.testmergelabel) {
                     return a.testmergelabel ? -1 : 1;
                 }
+                if (a.antitestmergelabel !== b.antitestmergelabel) {
+                    return a.antitestmergelabel ? -1 : 1;
+                }
                 if (a.mergeable !== b.mergeable) {
                     return a.mergeable ? -1 : 1;
                 }
