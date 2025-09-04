@@ -60,6 +60,13 @@ export default new (class ServerClient extends ApiClient<IEvents> {
 
     public apiRequestInterceptor = {
         onFulfilled: async (value: ServerClientRequestConfig) => {
+            // TGS API has a couple of semantic violations where empty put requests are sent off.
+            //  We add content-length 0 to help with server compatibility.
+            //  Technically this should also include POST requests, but they've been abused enough that the internet doesn't seem to care.
+            if (["PUT", "PATCH"].includes(value.method?.toUpperCase() ?? "")) {
+                value.headers["Content-Length"] = value.headers["Content-Length"] ?? "0";
+            }
+
             //Meta value that means theres no value, used in the github deployed version
             if (configOptions.apipath.value === "https://example.org:5000") {
                 const errorobj = new InternalError(ErrorCode.NO_APIPATH, {
