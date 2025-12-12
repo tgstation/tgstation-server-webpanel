@@ -897,7 +897,7 @@
     "fields.instance.deploy.compilerargs": "Additional Compiler Arguments",
     "fields.instance.deploy.compilerargs.desc": "These are added to compiler command lines right before the path to the .dme",
     "fields.instance.deploy.timeout": "Job timeout (in minutes)",
-    "fields.instance.deploy.timeout.desc": "Time before a compile job is abandonned and cancelled",
+    "fields.instance.deploy.timeout.desc": "Time before a compile job is abandoned and cancelled",
     "fields.instance.deploy.apiport": "DMAPI port (0 for auto)",
     "fields.instance.deploy.apiport.desc": "This port should not be public",
     "fields.instance.deploy.seclevel": "DMAPI validation security level",
