@@ -438,7 +438,6 @@ function Server(props: WrappedComponentProps): JSX.Element {
                             <FormattedMessage id="view.instance.server.status.iteration" />
                             :&nbsp;
                             {worldIteration + 1}
-                            GB
                         </div>
                     </Badge>
                 ) : null}
