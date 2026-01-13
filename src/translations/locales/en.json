@@ -356,6 +356,7 @@
     "view.instance.server.status.client_count.cant": "Update your DMAPI and enable health checks to get client count",
     "view.instance.server.status.cpu": "CPU",
     "view.instance.server.status.ram": "RAM",
+    "view.instance.server.status.iteration": "World Iteration",
     "view.instance.server.status.Offline": "Offline",
     "view.instance.server.status.Restoring": "Restoring",
     "view.instance.server.status.Online": "Online",
