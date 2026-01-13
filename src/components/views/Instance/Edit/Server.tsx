@@ -432,12 +432,12 @@ function Server(props: WrappedComponentProps): JSX.Element {
                         </div>
                     </Badge>
                 ) : null}
-                {worldIteration ? (
+                {worldIteration != null ? (
                     <Badge className="status-badge" pill variant="success">
                         <div>
                             <FormattedMessage id="view.instance.server.status.iteration" />
                             :&nbsp;
-                            {worldIteration}
+                            {worldIteration + 1}
                             GB
                         </div>
                     </Badge>
