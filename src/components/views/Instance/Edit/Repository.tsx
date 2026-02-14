@@ -68,14 +68,17 @@ interface IState {
     unableToHookClone: boolean;
     loadingPRs: boolean;
     gitHubPRs: PullRequest[] | null;
-    manualPRs: Set<number>;
+    manualPRs: TestMergeParameters[];
     resetType: ResetType;
-    desiredState: Map<number, [current: boolean, sha: string, comment: string | null] | null>;
+    desiredState: Map<string, [current: boolean, sha: string, comment: string | null] | null>;
     showDeleteModal: boolean;
     showRecloneModal: boolean;
     manualPR: number;
+    manualRepo: string;
     lastManualPR: number;
+    lastManualRepo: string;
     deployAfter: boolean;
+    viewedRepo: string;
 }
 
 interface IWritableCredentials {
@@ -99,19 +102,22 @@ class Repository extends React.Component<IProps, IState> {
             cloning: false,
             unableToHookClone: false,
             gitHubPRs: null,
-            manualPRs: new Set<number>(),
+            manualPRs: [],
             resetType: ResetType.Remote,
             desiredState: new Map<
-                number,
+                string,
                 [current: boolean, sha: string, comment: string | null] | null
             >(),
             showDeleteModal: false,
             showRecloneModal: false,
             manualPR: 0,
+            manualRepo: "",
             lastManualPR: 0,
+            lastManualRepo: "",
             deployAfter: false,
             repoBusy: false,
-            loadingPRs: false
+            loadingPRs: false,
+            viewedRepo: ""
         };
 
         this.fetchRepositoryInfo = this.fetchRepositoryInfo.bind(this);
@@ -125,6 +131,10 @@ class Repository extends React.Component<IProps, IState> {
                 errors
             };
         });
+    }
+
+    private getTestMergeKey(prNumber: number, sourceRepository?: string | null): string {
+        return sourceRepository ? `${sourceRepository}#${prNumber}` : `${prNumber}`;
     }
 
     public componentDidMount(): void {
@@ -227,24 +237,47 @@ class Repository extends React.Component<IProps, IState> {
             this.setState({
                 loadingPRs: true
             });
-            GithubClient.getPRs({
-                repo: repositoryInfo.remoteRepositoryName,
-                owner: repositoryInfo.remoteRepositoryOwner,
-                wantedPRs: repositoryInfo.revisionInformation?.activeTestMerges.map(tm => tm.number)
-            })
-                .then(prs => {
+
+            const reposToFetch = new Map<string, number[]>();
+            const primaryRepo = `${repositoryInfo.remoteRepositoryOwner}/${repositoryInfo.remoteRepositoryName}`;
+            reposToFetch.set(primaryRepo, []);
+
+            repositoryInfo.revisionInformation?.activeTestMerges.forEach(tm => {
+                const repo = tm.sourceRepository ?? primaryRepo;
+                const prs = reposToFetch.get(repo) ?? [];
+                prs.push(tm.number);
+                reposToFetch.set(repo, prs);
+            });
+
+            const fetchPromises = Array.from(reposToFetch.entries()).map(([repoPath, wantedPRs]) => {
+                const [owner, repo] = repoPath.split("/");
+                return GithubClient.getPRs({
+                    owner,
+                    repo,
+                    wantedPRs
+                });
+            });
+
+            Promise.all(fetchPromises)
+                .then(results => {
                     this.setState({
                         loadingPRs: false
                     });
-                    if (prs.code === StatusCode.ERROR) {
-                        this.addError(prs.error);
-                    } else {
-                        this.setState({
-                            gitHubPRs: prs.payload
-                        });
-                        if (resetDesiredState)
-                            this.reloadDesiredState(repositoryInfo, true, false, prs.payload);
+
+                    const allPRs: PullRequest[] = [];
+                    for (const res of results) {
+                        if (res.code === StatusCode.ERROR) {
+                            this.addError(res.error);
+                        } else {
+                            allPRs.push(...res.payload);
+                        }
                     }
+
+                    this.setState({
+                        gitHubPRs: allPRs
+                    });
+                    if (resetDesiredState)
+                        this.reloadDesiredState(repositoryInfo, true, false, allPRs);
                 })
                 .catch(e => {
                     this.setState({
@@ -269,14 +302,19 @@ class Repository extends React.Component<IProps, IState> {
 
         if (repositoryInfo && repositoryInfo?.remoteGitProvider === RemoteGitProvider.GitHub) {
             const testMergeArray: TestMergeParameters[] = [];
-            [...this.state.desiredState.entries()].forEach(([number, prDesiredState]) => {
+            [...this.state.desiredState.entries()].forEach(([key, prDesiredState]) => {
                 if (!prDesiredState) return;
                 const [current, commit, comment] = prDesiredState;
                 //If we aren't resetting, ignore PRs we didn't touch
                 if (current && !(willReset || noBranch)) return;
 
+                const parts = key.split("#");
+                const number = parseInt(parts[parts.length - 1]);
+                const sourceRepository = parts.length > 1 ? parts[0] : undefined;
+
                 testMergeArray.push({
                     number: number,
+                    sourceRepository: sourceRepository,
                     targetCommitSha: commit,
                     comment
                 });
@@ -284,11 +322,7 @@ class Repository extends React.Component<IProps, IState> {
             if (testMergeArray.length) editOptions.newTestMerges = testMergeArray;
         }
         const testMergeArray = editOptions.newTestMerges ?? [];
-        this.state.manualPRs.forEach(pr =>
-            testMergeArray.push({
-                number: pr
-            })
-        );
+        this.state.manualPRs.forEach(pr => testMergeArray.push(pr));
         if (testMergeArray.length) editOptions.newTestMerges = testMergeArray;
 
         this.setState({
@@ -351,7 +385,7 @@ class Repository extends React.Component<IProps, IState> {
             this.setState(prevState => {
                 return {
                     resetType: harderReset ? ResetType.None : prevState.resetType,
-                    manualPRs: new Set<number>()
+                    manualPRs: []
                 };
             });
         }
@@ -364,7 +398,8 @@ class Repository extends React.Component<IProps, IState> {
             let updatingTMs = false;
             const regularReset = reset && !harderReset;
             repoinfo.revisionInformation?.activeTestMerges.forEach(pr => {
-                const currentDesiredState = newDesiredState.get(pr.number);
+                const key = this.getTestMergeKey(pr.number, pr.sourceRepository);
+                const currentDesiredState = newDesiredState.get(key);
                 if (!reset) {
                     //We want the PR gone, don't retestmerge it
                     if (!currentDesiredState) return;
@@ -373,19 +408,21 @@ class Repository extends React.Component<IProps, IState> {
                 }
 
                 const gitHubPR = gitHubPRs?.find(
-                    potentialGitHubPR => pr.number === potentialGitHubPR.number
+                    potentialGitHubPR =>
+                        pr.number === potentialGitHubPR.number &&
+                        (pr.sourceRepository ?? "") === (potentialGitHubPR.sourceRepository ?? "")
                 );
 
                 const defaultDesiredState = gitHubPR?.state === "merged" ? false : true;
                 if (regularReset && !defaultDesiredState) {
-                    newDesiredState.set(pr.number, null);
+                    newDesiredState.set(key, null);
                     updatingTMs = true;
                 } else {
                     const newHead = (regularReset ? gitHubPR?.head : null) ?? pr.targetCommitSha;
                     if (regularReset && newHead !== pr.targetCommitSha) {
                         updatingTMs = true;
                     }
-                    newDesiredState.set(pr.number, [true, newHead, pr.comment ?? ""]);
+                    newDesiredState.set(key, [true, newHead, pr.comment ?? ""]);
                 }
             });
 
@@ -946,22 +983,29 @@ class Repository extends React.Component<IProps, IState> {
             hasRepoRight(this.context.instancePermissionSet, RepositoryRights.Read) &&
             hasRepoRight(this.context.instancePermissionSet, RepositoryRights.UpdateBranch);
 
-        const testmergedPRs = new Map<number, TestMerge>();
+        const testmergedPRs = new Map<string, TestMerge>();
         if (repositoryInfo) {
             repositoryInfo.revisionInformation?.activeTestMerges.forEach(pr =>
-                testmergedPRs.set(pr.number, pr)
+                testmergedPRs.set(this.getTestMergeKey(pr.number, pr.sourceRepository), pr)
             );
         }
         const sortedPRs =
-            this.state.gitHubPRs?.sort((a, b) => {
-                if (testmergedPRs.has(a.number) !== testmergedPRs.has(b.number)) {
-                    return testmergedPRs.has(a.number) ? -1 : 1;
+            (this.state.gitHubPRs ?? [])
+                .filter(pr => {
+                    const viewedRepo =
+                        this.state.viewedRepo ||
+                        `${repositoryInfo?.remoteRepositoryOwner}/${repositoryInfo?.remoteRepositoryName}`;
+                    const prRepo = pr.sourceRepository;
+                    return prRepo === viewedRepo || testmergedPRs.has(this.getTestMergeKey(pr.number, pr.sourceRepository));
+                })
+                .sort((a, b) => {
+                const aKey = this.getTestMergeKey(a.number, a.sourceRepository);
+                const bKey = this.getTestMergeKey(b.number, b.sourceRepository);
+                if (testmergedPRs.has(aKey) !== testmergedPRs.has(bKey)) {
+                    return testmergedPRs.has(aKey) ? -1 : 1;
                 }
                 if (a.testmergelabel !== b.testmergelabel) {
                     return a.testmergelabel ? -1 : 1;
-                }
-                if (a.antitestmergelabel !== b.antitestmergelabel) {
-                    return a.antitestmergelabel ? -1 : 1;
                 }
                 if (a.mergeable !== b.mergeable) {
                     return a.mergeable ? -1 : 1;
@@ -970,11 +1014,14 @@ class Repository extends React.Component<IProps, IState> {
             }) ?? [];
         const filteredPendingActions = sortedPRs
             .map(pr => {
-                const desiredPRState = this.state.desiredState.get(pr.number);
+                const key = this.getTestMergeKey(pr.number, pr.sourceRepository);
+                const desiredPRState = this.state.desiredState.get(key);
                 const tmInfo = !repositoryInfo
                     ? undefined
                     : repositoryInfo?.revisionInformation?.activeTestMerges.find(
-                          activePR => activePR.number === pr.number
+                          activePR =>
+                              activePR.number === pr.number &&
+                              (activePR.sourceRepository ?? "") === (pr.sourceRepository ?? "")
                       );
 
                 if (desiredPRState) {
@@ -988,7 +1035,7 @@ class Repository extends React.Component<IProps, IState> {
                         return [PRState.reapply, pr];
                     }
                 }
-                if (!this.state.desiredState.get(pr.number)) {
+                if (!this.state.desiredState.get(key)) {
                     if (!tmInfo) return null;
 
                     return [PRState.removed, pr];
@@ -1018,7 +1065,7 @@ class Repository extends React.Component<IProps, IState> {
         const noPendingChanges =
             filteredPendingActions.filter(([state]) => state !== PRState.reapply).length === 0 &&
             this.state.resetType === ResetType.None &&
-            !this.state.manualPRs.size;
+            !this.state.manualPRs.length;
 
         if (repositoryInfo && repositoryInfo.remoteGitProvider == RemoteGitProvider.Unknown)
             return <GenericAlert title="view.instance.repo.testmerges.badprovider" />;
@@ -1061,8 +1108,12 @@ class Repository extends React.Component<IProps, IState> {
                                     {repositoryInfo &&
                                     repositoryInfo.remoteGitProvider === RemoteGitProvider.GitHub
                                         ? sortedPendingActions.map(([state, pr]) => {
+                                              const key = this.getTestMergeKey(
+                                                  pr.number,
+                                                  pr.sourceRepository
+                                              );
                                               const prDesiredState = this.state.desiredState.get(
-                                                  pr.number
+                                                  key
                                               );
 
                                               if (
@@ -1104,12 +1155,16 @@ class Repository extends React.Component<IProps, IState> {
                                               );
                                           })
                                         : null}
-                                    {[...this.state.manualPRs.values()].map(pr => (
-                                        <li key={pr}>
+                                    {this.state.manualPRs.map(pr => (
+                                        <li
+                                            key={this.getTestMergeKey(
+                                                pr.number,
+                                                pr.sourceRepository
+                                            )}>
                                             <FormattedMessage
                                                 id={`view.instance.repo.pending.added.manual`}
                                                 values={{
-                                                    number: pr
+                                                    number: pr.number
                                                 }}
                                             />
                                         </li>
@@ -1165,7 +1220,7 @@ class Repository extends React.Component<IProps, IState> {
                         </ButtonGroup>
                         {(configOptions.manualpr.value as boolean) ||
                         !repositoryInfo ||
-                        !this.state.gitHubPRs ||
+                        repositoryInfo.remoteGitProvider === RemoteGitProvider.GitHub ||
                         repositoryInfo.remoteGitProvider === RemoteGitProvider.GitLab ? (
                             <div className="d-flex mt-5">
                                 <InputField
@@ -1177,23 +1232,69 @@ class Repository extends React.Component<IProps, IState> {
                                     onChange={newPR => this.setState({ manualPR: newPR })}
                                     disabled={!canAdd}
                                 />
+                                <InputField
+                                    name="view.instance.repo.manual.repo"
+                                    tooltip="view.instance.repo.manual.repo.desc"
+                                    type={FieldType.String}
+                                    defaultValue={this.state.lastManualRepo}
+                                    onChange={newRepo => {
+                                        this.setState({ manualRepo: newRepo });
+                                        if (
+                                            newRepo &&
+                                            newRepo.includes("/") &&
+                                            newRepo !==
+                                                `${repositoryInfo?.remoteRepositoryOwner}/${repositoryInfo?.remoteRepositoryName}`
+                                        ) {
+                                            const [owner, repo] = newRepo.split("/");
+                                            if (owner && repo) {
+                                                GithubClient.getPRs({ owner, repo }).then(prs => {
+                                                    if (prs.code === StatusCode.OK) {
+                                                        this.setState(prevState => ({
+                                                            gitHubPRs: [
+                                                                ...(prevState.gitHubPRs ?? []),
+                                                                ...prs.payload.filter(
+                                                                    p =>
+                                                                        !prevState.gitHubPRs?.some(
+                                                                            ep =>
+                                                                                ep.number ===
+                                                                                    p.number &&
+                                                                                ep.sourceRepository ===
+                                                                                    p.sourceRepository
+                                                                        )
+                                                                )
+                                                            ]
+                                                        }));
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canAdd}
+                                />
                                 <SimpleToolTip
                                     tooltipid="generic.no_perm"
                                     show={canAdd ? false : undefined}>
                                     <Button
                                         className="nowrap ml-3"
                                         disabled={
-                                            this.state.manualPR === this.state.lastManualPR ||
+                                            (this.state.manualPR === this.state.lastManualPR &&
+                                                this.state.manualRepo ===
+                                                    this.state.lastManualRepo) ||
                                             !canAdd
                                         }
                                         onClick={() => {
                                             this.setState(prevState => {
                                                 return {
-                                                    manualPRs: new Set<number>([
-                                                        ...prevState.manualPRs.values(),
-                                                        this.state.manualPR
-                                                    ]),
-                                                    lastManualPR: this.state.manualPR
+                                                    manualPRs: [
+                                                        ...prevState.manualPRs,
+                                                        {
+                                                            number: this.state.manualPR,
+                                                            sourceRepository:
+                                                                this.state.manualRepo || undefined
+                                                        }
+                                                    ],
+                                                    lastManualPR: this.state.manualPR,
+                                                    lastManualRepo: this.state.manualRepo
                                                 };
                                             });
                                         }}>
@@ -1227,7 +1328,7 @@ class Repository extends React.Component<IProps, IState> {
                         </Button>
                     </Card.Footer>
                 </Card>
-                {this.state.loadingPRs ? (
+                        {this.state.loadingPRs ? (
                     <Loading text="loading.repo.prs" />
                 ) : !repositoryInfo ? (
                     <GenericAlert title="view.instance.repo.noautomerge" />
@@ -1237,51 +1338,113 @@ class Repository extends React.Component<IProps, IState> {
                         <h3>
                             <FormattedMessage id="view.instance.repo.testmerges" />
                         </h3>
+                        <div className="d-flex justify-content-center align-items-center mb-3">
+                            <span className="mr-2">
+                                <FormattedMessage id="view.instance.repo.viewing" />:
+                            </span>
+                            <select
+                                className="form-control w-auto"
+                                value={
+                                    this.state.viewedRepo ||
+                                    `${repositoryInfo.remoteRepositoryOwner}/${repositoryInfo.remoteRepositoryName}`
+                                }
+                                onChange={e => {
+                                    const newRepo = e.target.value;
+                                    this.setState({ viewedRepo: newRepo });
+                                    const [owner, repo] = newRepo.split("/");
+                                    if (
+                                        !this.state.gitHubPRs?.some(
+                                            p => p.sourceRepository === newRepo
+                                        )
+                                    ) {
+                                        this.setState({ loadingPRs: true });
+                                        GithubClient.getPRs({ owner, repo }).then(prs => {
+                                            this.setState({ loadingPRs: false });
+                                            if (prs.code === StatusCode.OK) {
+                                                this.setState(prevState => ({
+                                                    gitHubPRs: [
+                                                        ...(prevState.gitHubPRs ?? []),
+                                                        ...prs.payload.filter(
+                                                            p =>
+                                                                !prevState.gitHubPRs?.some(
+                                                                    ep =>
+                                                                        ep.number === p.number &&
+                                                                        ep.sourceRepository ===
+                                                                            p.sourceRepository
+                                                                )
+                                                        )
+                                                    ]
+                                                }));
+                                            } else {
+                                                this.addError(prs.error);
+                                            }
+                                        });
+                                    }
+                                }}>
+                                {[
+                                    `${repositoryInfo.remoteRepositoryOwner}/${repositoryInfo.remoteRepositoryName}`,
+                                    ...new Set(
+                                        this.state.gitHubPRs
+                                            ?.map(pr => pr.sourceRepository)
+                                            .filter(r => r) as string[]
+                                    )
+                                ]
+                                    .sort()
+                                    .map(repo => (
+                                        <option key={repo} value={repo}>
+                                            {repo}
+                                        </option>
+                                    ))}
+                            </select>
+                        </div>
                         <br />
                         <Table variant="dark" striped hover className="text-left">
                             <tbody>
-                                {sortedPRs.map(pr => (
-                                    <TestMergeRow
-                                        key={pr.number}
-                                        testmergeinfo={testmergedPRs.get(pr.number)}
-                                        pr={pr}
-                                        repoInfo={repositoryInfo}
-                                        finalState={
-                                            this.state.desiredState.get(pr.number)
-                                                ? ((
-                                                      this.state.desiredState.get(pr.number) as [
-                                                          boolean,
-                                                          string,
-                                                          string
-                                                      ]
-                                                  ).slice(1) as [string, string])
-                                                : false
-                                        }
-                                        onRemove={() =>
-                                            this.setState(prevState => {
-                                                return {
-                                                    resetType:
-                                                        prevState.resetType === ResetType.None
-                                                            ? ResetType.Remote
-                                                            : prevState.resetType,
-                                                    desiredState: new Map(
-                                                        prevState.desiredState
-                                                    ).set(pr.number, null)
-                                                };
-                                            })
-                                        }
-                                        onSelectCommit={(commit, comment) =>
-                                            this.setState(prevState => {
-                                                return {
-                                                    desiredState: new Map(
-                                                        prevState.desiredState
-                                                    ).set(pr.number, [false, commit, comment])
-                                                };
-                                            })
-                                        }
-                                        onError={error => this.addError(error)}
-                                    />
-                                ))}
+                                {sortedPRs.map(pr => {
+                                    const key = this.getTestMergeKey(pr.number, pr.sourceRepository);
+                                    return (
+                                        <TestMergeRow
+                                            key={key}
+                                            testmergeinfo={testmergedPRs.get(key)}
+                                            pr={pr}
+                                            repoInfo={repositoryInfo}
+                                            finalState={
+                                                this.state.desiredState.get(key)
+                                                    ? ((
+                                                          this.state.desiredState.get(key) as [
+                                                              boolean,
+                                                              string,
+                                                              string
+                                                          ]
+                                                      ).slice(1) as [string, string])
+                                                    : false
+                                            }
+                                            onRemove={() =>
+                                                this.setState(prevState => {
+                                                    return {
+                                                        resetType:
+                                                            prevState.resetType === ResetType.None
+                                                                ? ResetType.Remote
+                                                                : prevState.resetType,
+                                                        desiredState: new Map(
+                                                            prevState.desiredState
+                                                        ).set(key, null)
+                                                    };
+                                                })
+                                            }
+                                            onSelectCommit={(commit, comment) =>
+                                                this.setState(prevState => {
+                                                    return {
+                                                        desiredState: new Map(
+                                                            prevState.desiredState
+                                                        ).set(key, [false, commit, comment])
+                                                    };
+                                                })
+                                            }
+                                            onError={error => this.addError(error)}
+                                        />
+                                    );
+                                })}
                             </tbody>
                         </Table>
                     </React.Fragment>

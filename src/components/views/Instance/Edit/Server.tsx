@@ -363,7 +363,6 @@ function Server(props: WrappedComponentProps): JSX.Element {
 
     const OneGibibyte = 1073741824;
     const ramUsage = watchdogSettings?.immediateMemoryUsage;
-    const worldIteration = watchdogSettings?.worldIteration;
     const clientCount = watchdogSettings?.clientCount;
     const hasClientCount = clientCount != null;
     let cantHaveClientCount =
@@ -429,15 +428,6 @@ function Server(props: WrappedComponentProps): JSX.Element {
                             :&nbsp;
                             {Math.round((ramUsage / OneGibibyte) * 100) / 100}
                             GB
-                        </div>
-                    </Badge>
-                ) : null}
-                {worldIteration != null ? (
-                    <Badge className="status-badge" pill variant="success">
-                        <div>
-                            <FormattedMessage id="view.instance.server.status.iteration" />
-                            :&nbsp;
-                            {worldIteration + 1}
                         </div>
                     </Badge>
                 ) : null}

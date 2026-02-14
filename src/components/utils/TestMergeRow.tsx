@@ -64,10 +64,13 @@ export default function TestMergeRow({
         async (force?: boolean) => {
             if (commits && !force) return;
 
+            const [owner, repo] = pr.sourceRepository?.split("/") ?? [
+                repoInfo.remoteRepositoryOwner!,
+                repoInfo.remoteRepositoryName!
+            ];
             const response = await GithubClient.getPRCommits({
-                //Repo info should be set if we are here
-                owner: repoInfo.remoteRepositoryOwner!,
-                repo: repoInfo.remoteRepositoryName!,
+                owner,
+                repo,
                 pr: pr,
                 wantedCommit: testmergeinfo?.targetCommitSha
             });
@@ -85,6 +88,7 @@ export default function TestMergeRow({
             repoInfo.remoteRepositoryOwner,
             repoInfo.remoteRepositoryName,
             pr.head,
+            pr.sourceRepository,
             testmergeinfo?.targetCommitSha
         ]
     );
@@ -157,14 +161,9 @@ export default function TestMergeRow({
                         style={{ backgroundColor: colorMap[pr.state] }}>
                         {pr.state}
                     </Badge>
-                    {pr.testmergelabel && !pr.antitestmergelabel ? (
+                    {pr.testmergelabel ? (
                         <Badge pill className="text-white text-capitalize mr-2" variant="primary">
                             <FormattedMessage id="view.instance.repo.testmergelabel" />
-                        </Badge>
-                    ) : null}
-                    {pr.antitestmergelabel ? (
-                        <Badge pill className="text-white text-capitalize mr-2" variant="danger">
-                            <FormattedMessage id="view.instance.repo.antitestmergelabel" />
                         </Badge>
                     ) : null}
                     {pr.mergeable === false ? (
