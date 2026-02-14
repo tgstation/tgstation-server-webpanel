@@ -257,14 +257,12 @@ class Login extends React.Component<IProps, IState> {
                     {(providerEnabled(x => x?.Discord) ||
                         providerEnabled(x => x?.GitHub) ||
                         providerEnabled(x => x?.Keycloak) ||
-                        providerEnabled(x => x?.InvisionCommunity) ||
                         oidcProviders.length > 0) && (
                         <>
                             {!this.context.serverInfo.oidcStrictMode &&
                             (providerEnabled(x => x?.Discord) ||
                                 providerEnabled(x => x?.Keycloak) ||
-                                providerEnabled(x => x?.GitHub) ||
-                                providerEnabled(x => x?.InvisionCommunity)) ? (
+                                providerEnabled(x => x?.GitHub)) ? (
                                 <>
                                     <hr />
                                     <Card body>
@@ -310,49 +308,45 @@ class Login extends React.Component<IProps, IState> {
                                     </Card>
                                 </>
                             ) : null}
-                            {oidcProviders.length > 0 && !this.context.serverInfo.oidcStrictMode ? (
-                                <hr />
-                            ) : null}
-                            {oidcProviders.length > 0 ? (
-                                <Card body>
-                                    <Card.Title>
-                                        <FormattedMessage id="login.type.oidc" />
-                                    </Card.Title>
-                                    {oidcProviders.map(provider => {
-                                        let ptheme;
-                                        if (provider.themeIconUrl) {
-                                            ptheme = (
-                                                <img
-                                                    src={provider.themeIconUrl}
-                                                    style={{ width: "1.2em" }}
-                                                />
-                                            );
-                                        } else {
-                                            ptheme = null;
-                                        }
-
-                                        return (
-                                            <Button
-                                                key={provider.schemeKey}
-                                                block
-                                                style={
-                                                    provider.themeColour
-                                                        ? { background: provider.themeColour }
-                                                        : undefined
-                                                }
-                                                onClick={() => this.startOidc(provider)}>
-                                                {ptheme}
-                                                <span className="ml-1">
-                                                    <FormattedMessage
-                                                        id="login.oauth"
-                                                        values={{ provider: provider.friendlyName }}
-                                                    />
-                                                </span>
-                                            </Button>
+                            {!this.context.serverInfo.oidcStrictMode ? <hr /> : null}
+                            <Card body>
+                                <Card.Title>
+                                    <FormattedMessage id="login.type.oidc" />
+                                </Card.Title>
+                                {oidcProviders.map(provider => {
+                                    let ptheme;
+                                    if (provider.themeIconUrl) {
+                                        ptheme = (
+                                            <img
+                                                src={provider.themeIconUrl}
+                                                style={{ width: "1.2em" }}
+                                            />
                                         );
-                                    })}
-                                </Card>
-                            ) : null}
+                                    } else {
+                                        ptheme = null;
+                                    }
+
+                                    return (
+                                        <Button
+                                            key={provider.schemeKey}
+                                            block
+                                            style={
+                                                provider.themeColour
+                                                    ? { background: provider.themeColour }
+                                                    : undefined
+                                            }
+                                            onClick={() => this.startOidc(provider)}>
+                                            {ptheme}
+                                            <span className="ml-1">
+                                                <FormattedMessage
+                                                    id="login.oauth"
+                                                    values={{ provider: provider.friendlyName }}
+                                                />
+                                            </span>
+                                        </Button>
+                                    );
+                                })}
+                            </Card>
                         </>
                     )}
                 </Card>
