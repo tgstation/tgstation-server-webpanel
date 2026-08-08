@@ -191,6 +191,7 @@
     "view.admin.update.major_warn.body": "You are attempting to switch the major version of TGS from {currentMajor} to {targetMajor}! READ THE RELEASE NOTES CAREFULLY! Most TGS major upgrades constitute a change in the required .NET runtime. If this runtime is not installed PRIOR to updating, TGS will FAIL to restart after upgrading until it is! There also may be REQUIRED configuration changes that, if not made, may also result in a failure to restart!",
     "view.admin.logs.button": "TGS Logs",
     "view.user.list.cantlist": "This user does not have the permission to list users, only the current user is listed/editable.",
+    "view.user.list.showdisabled": "Show disabled users",
     "view.user.edit.cantedit": "This user does not have the permission to edit users.",
     "view.user.edit.oauth.connections": "OAuth Connections",
     "view.user.edit.oauth.current": "OAuth 2.0 Connections",
