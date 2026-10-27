@@ -8,7 +8,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FormattedMessage } from "react-intl";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { satisfies as SemverSatisfies } from "semver";
 
 import {
@@ -27,6 +27,7 @@ import ErrorAlert from "../../utils/ErrorAlert";
 import { DebugJsonViewer } from "../../utils/JsonViewer";
 import Loading from "../../utils/Loading";
 import PageHelper from "../../utils/PageHelper";
+import { InstanceListNext } from "./ListNext";
 
 type Instance = InstanceResponse & {
     canAccess: boolean;
@@ -307,9 +308,7 @@ class InstanceList extends React.Component<IProps, IState> {
                                                         id={`grant-tooltop-${value.id}`}
                                                         {...props}>
                                                         <FormattedMessage
-                                                            id={`view.instance.list.grant${
-                                                                !canGrant ? ".deny" : ""
-                                                            }`}
+                                                            id={`view.instance.list.grant${!canGrant ? ".deny" : ""}`}
                                                         />
                                                     </Tooltip>
                                                 )}>
@@ -346,9 +345,7 @@ class InstanceList extends React.Component<IProps, IState> {
                                             onClick={() => void this.setOnline(value)}
                                             disabled={!canOnline}>
                                             <FormattedMessage
-                                                id={`view.instance.list.set.${
-                                                    value.online ? "offline" : "online"
-                                                }`}
+                                                id={`view.instance.list.set.${value.online ? "offline" : "online"}`}
                                             />
                                         </Button>
                                         {!value.online ? (
@@ -423,4 +420,4 @@ class InstanceList extends React.Component<IProps, IState> {
     }
 }
 InstanceList.contextType = GeneralContext;
-export default withRouter(InstanceList);
+export default InstanceListNext;
