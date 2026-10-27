@@ -321,45 +321,27 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
         repo: string;
         wantedPRs?: number[];
     }): Promise<InternalStatus<PullRequest[], ErrorCode.GITHUB_FAIL>> {
-        let payload: PullRequest[] = [];
+        let payload: PullRequest[];
         try {
             const basicPRInfo = await this.apiClient.paginate(this.apiClient.pulls.list, {
                 owner,
                 repo,
-                state: "open"
+                state: "open",
+                per_page: 100
             });
 
-            const prsToGet = basicPRInfo.map(pr => pr.number);
+            payload = basicPRInfo.map(this.transformBasicPR);
 
-            if (
-                configOptions.githubtoken.value &&
-                (configOptions.githubtoken.value as string).length > 0
-            ) {
-                //Fetch the full PR info for those with tokens
-                for (const wantedPR of wantedPRs) {
-                    if (!prsToGet.includes(wantedPR)) {
-                        prsToGet.push(wantedPR);
-                    }
-                }
-
-                const pollTimer = configOptions.mergeabilitypolltimer.value as number;
-                const prPromises = prsToGet.map(wantedPR =>
-                    this.getPRUntilMergeable({ owner, repo, wantedPR, pollTimer })
-                );
-
-                //Fetch them in parallel to not waste extra time with polling
-                payload = await Promise.all(prPromises);
-            } else {
-                //Otherwise just use the basic info
-                payload = basicPRInfo.map(this.transformBasicPR);
-
-                for (const wantedPR of wantedPRs) {
-                    if (!prsToGet.includes(wantedPR)) {
-                        //Don't even poll for mergeability
-                        payload.push(await this.getPR({ owner, repo, wantedPR }));
-                    }
-                }
-            }
+            //Test merged PRs that got closed aren't in the open list. Don't poll these,
+            //getPRMergeability does that later
+            const missingPRs = wantedPRs.filter(
+                wantedPR => !payload.some(pr => pr.number === wantedPR)
+            );
+            payload.push(
+                ...(await Promise.all(
+                    missingPRs.map(wantedPR => this.getPR({ owner, repo, wantedPR }))
+                ))
+            );
         } catch (e) {
             console.error(e);
             return new InternalStatus<PullRequest[], ErrorCode.GITHUB_FAIL>({
@@ -373,6 +355,33 @@ const e = new (class GithubClient extends TypedEmitter<IEvents> {
             code: StatusCode.OK,
             payload
         });
+    }
+
+    //The list endpoint has no mergeability, so this costs a request (or three) per PR.
+    //Token only, unauthenticated users would speedrun burning their 60 requests per hour
+    public async getPRMergeability({
+        owner,
+        repo,
+        prs
+    }: {
+        owner: string;
+        repo: string;
+        prs: PullRequest[];
+    }): Promise<PullRequest[]> {
+        if (!configOptions.githubtoken.value) return prs;
+
+        return Promise.all(
+            prs.map(pr => {
+                //github always says null for merged PRs, don't bother
+                if (pr.mergeable !== null || pr.state === "merged") {
+                    return pr;
+                }
+                return this.getPRUntilMergeable({ owner, repo, wantedPR: pr.number }).catch(e => {
+                    console.error(e);
+                    return pr;
+                });
+            })
+        );
     }
 
     public async getPRCommits({
