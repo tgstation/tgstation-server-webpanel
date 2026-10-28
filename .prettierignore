@@ -1,0 +1,9 @@
+dist
+node_modules
+
+*.js
+*.ts
+*.tsx
+*.css
+*.jsx
+*.json
