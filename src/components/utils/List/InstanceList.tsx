@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */ // shut up eslint im replacing you with biome
 import { faEllipsis, faGear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, {
@@ -247,10 +248,15 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                     setIsTryingToDetatch(false);
                 }}>
                 <Modal.Header>
-                    <Modal.Title>Delete Instance</Modal.Title>
+                    <Modal.Title>Detatch Instance</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Are you sure you want to delete instance: <b>{isR.name}</b>?
+                    <p>Are you sure you want to detach the instance "{isR.name}"?</p>
+                    <small>
+                        Once detached, the instance will no longer be managed by TGS and you can
+                        delete the files manually or reattach it by creating a new instance at the
+                        existing path.
+                    </small>
                 </Modal.Body>
                 <Modal.Footer className="justify-content-between">
                     <Button
@@ -388,7 +394,7 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                             setIsTryingToDetatch(true);
                         }}
                         style={{ color: "var(--red-ish)" }}>
-                        Delete
+                        Detatch
                     </Dropdown.Item>
                 </DropdownButtonWithAPortal>
             </th>
