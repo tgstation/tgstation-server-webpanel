@@ -1778,15 +1778,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/react-fontawesome@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@fortawesome/react-fontawesome@npm:0.2.2"
+"@fortawesome/react-fontawesome@npm:^0.2.6":
+  version: 0.2.6
+  resolution: "@fortawesome/react-fontawesome@npm:0.2.6"
   dependencies:
     prop-types: "npm:^15.8.1"
   peerDependencies:
-    "@fortawesome/fontawesome-svg-core": ~1 || ~6
-    react: ">=16.3"
-  checksum: 10/05537fd7c34d43e0d8823df0195cb6fd935ff78e296e2d362e668bcf75f13d71c70c7fd6d596dff4e37b5f27e0ae43b98cb4732e0d91570f30b8a5581bbe2704
+    "@fortawesome/fontawesome-svg-core": ~1 || ~6 || ~7
+    react: ^16.3 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/e1660d528e3b76eb7e8080a6179188adb9a9eb6ec76a3d18443a8a30bb4a12515fdec456c5c23ae805cdff75c8bae636249863d587f66745a889f3df630d05a4
   languageName: node
   linkType: hard
 
@@ -2448,10 +2448,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@popperjs/core@npm:^2.8.6":
-  version: 2.11.2
-  resolution: "@popperjs/core@npm:2.11.2"
-  checksum: 10/88796d399a2464cc7b8636326c5454f32114d47f3d50e31ec34c6ab9df82c9e345f9dd71e9a33516dcd196106272399cf6d77d319795687b09feb3a70241956d
+"@popperjs/core@npm:^2.11.6":
+  version: 2.11.8
+  resolution: "@popperjs/core@npm:2.11.8"
+  checksum: 10/ddd16090cde777aaf102940f05d0274602079a95ad9805bd20bc55dcc7c3a2ba1b99dd5c73e5cc2753c3d31250ca52a67d58059459d7d27debb983a9f552936c
   languageName: node
   linkType: hard
 
@@ -2464,14 +2464,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@restart/hooks@npm:^0.3.26":
-  version: 0.3.27
-  resolution: "@restart/hooks@npm:0.3.27"
+"@restart/hooks@npm:^0.4.7":
+  version: 0.4.16
+  resolution: "@restart/hooks@npm:0.4.16"
   dependencies:
-    dequal: "npm:^2.0.2"
+    dequal: "npm:^2.0.3"
   peerDependencies:
     react: ">=16.8.0"
-  checksum: 10/58a520606f288bcc6ac278c92667ace3d7c55dd489d72b054dd31f81f330e74b0eb141617b2efe0828685404dcbddbadf81720245f493a0459bd17196e61dade
+  checksum: 10/b9eac9f2d2af14dfc13fe16dee0703ab1e083f78b8612d4ba792dd252998c7bb1eb6a8e49f237b65f3e58a6d13b5693815f45095830960cb80fd117e7d5a1525
   languageName: node
   linkType: hard
 
@@ -5118,10 +5118,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dequal@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "dequal@npm:2.0.2"
-  checksum: 10/5509bc2a0a0c99e8eea453ada8da5d10a52bde1717fa18fa4406db2139c852ee7c8778cceb03241fe8f66350c55bd235f0ffa8d9d8bf58569c8bc38474a8a85c
+"dequal@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "dequal@npm:2.0.3"
+  checksum: 10/6ff05a7561f33603df87c45e389c9ac0a95e3c056be3da1a0c4702149e3a7f6fe5ffbb294478687ba51a9e95f3a60e8b6b9005993acd79c292c7d15f71964b6b
   languageName: node
   linkType: hard
 
@@ -9795,13 +9795,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-bootstrap@npm:^1.6.4":
-  version: 1.6.4
-  resolution: "react-bootstrap@npm:1.6.4"
+"react-bootstrap@npm:^1.6.8":
+  version: 1.6.8
+  resolution: "react-bootstrap@npm:1.6.8"
   dependencies:
     "@babel/runtime": "npm:^7.14.0"
     "@restart/context": "npm:^2.1.4"
-    "@restart/hooks": "npm:^0.3.26"
+    "@restart/hooks": "npm:^0.4.7"
     "@types/invariant": "npm:^2.2.33"
     "@types/prop-types": "npm:^15.7.3"
     "@types/react": "npm:>=16.14.8"
@@ -9812,14 +9812,14 @@ __metadata:
     invariant: "npm:^2.2.4"
     prop-types: "npm:^15.7.2"
     prop-types-extra: "npm:^1.1.0"
-    react-overlays: "npm:^5.1.1"
+    react-overlays: "npm:^5.1.2"
     react-transition-group: "npm:^4.4.1"
     uncontrollable: "npm:^7.2.1"
     warning: "npm:^4.0.3"
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 10/23a93ab072617a89bf3838ada9e52fd4ebdf1c95e245b32b468af0c808f45ae1d0e7824f848bab3d4be68fbdadf60e5b8326c04e06ddacf925fae242555495ce
+  checksum: 10/a1fbf0975d484687ae74f92e57d9946f5b7fe6a28f3081626801c54667292c455178003d69e41d1915caf4086fad7faefff9b6ba479b27125fab6568ec8d4557
   languageName: node
   linkType: hard
 
@@ -9921,13 +9921,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-overlays@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "react-overlays@npm:5.1.1"
+"react-overlays@npm:^5.1.2":
+  version: 5.2.1
+  resolution: "react-overlays@npm:5.2.1"
   dependencies:
     "@babel/runtime": "npm:^7.13.8"
-    "@popperjs/core": "npm:^2.8.6"
-    "@restart/hooks": "npm:^0.3.26"
+    "@popperjs/core": "npm:^2.11.6"
+    "@restart/hooks": "npm:^0.4.7"
     "@types/warning": "npm:^3.0.0"
     dom-helpers: "npm:^5.2.0"
     prop-types: "npm:^15.7.2"
@@ -9936,7 +9936,7 @@ __metadata:
   peerDependencies:
     react: ">=16.3.0"
     react-dom: ">=16.3.0"
-  checksum: 10/a8fbeb4414abbbcdae932ebf0270f9dc91d17688832c44231009bc1fd509d21e82987ce2a40dd38cd12dfacc9ba4d1fc2b3024e7d5a5a0113b17ee036b0007eb
+  checksum: 10/89aebeef9917f8a9edd25f3dab18bd82cf67872a8648246c9e62fb6e4ea5af8ac22d93b63df81253f3d2c3bbac3eeb74c830cb7519f746447cdfccf9a4f370c3
   languageName: node
   linkType: hard
 
@@ -11433,7 +11433,7 @@ __metadata:
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.6.0"
-    "@fortawesome/react-fontawesome": "npm:^0.2.2"
+    "@fortawesome/react-fontawesome": "npm:^0.2.6"
     "@loadable/component": "npm:^5.16.7"
     "@mapbox/react-click-to-select": "npm:^2.2.1"
     "@microsoft/signalr": "npm:^8.0.7"
@@ -11492,7 +11492,7 @@ __metadata:
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
     react: "npm:^17.0.2"
-    react-bootstrap: "npm:^1.6.4"
+    react-bootstrap: "npm:^1.6.8"
     react-dom: "npm:^17.0.2"
     react-intl: "npm:^7.1.14"
     react-json-view: "npm:^1.21.3"
