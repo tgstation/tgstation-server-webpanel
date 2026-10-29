@@ -259,7 +259,7 @@ export default function InputField(props: InputFieldProps): JSX.Element {
     const basicControls: {
         [Property in typeof props.type]: Property extends FieldType.Enum | FieldType.Number
             ? undefined
-            : React.FC<ControlProps>;
+            : React.FC<React.PropsWithChildren<ControlProps>>;
     } = {
         string: StringControl,
         password: PasswordControl,
