@@ -219,17 +219,15 @@ class Repository extends React.Component<IProps, IState> {
     }
 
     private reloadPRs(repositoryInfo: RepositoryResponse, resetDesiredState?: boolean) {
-        if (
-            repositoryInfo.remoteGitProvider === RemoteGitProvider.GitHub &&
-            repositoryInfo.remoteRepositoryName &&
-            repositoryInfo.remoteRepositoryOwner
-        ) {
+        const repo = repositoryInfo.remoteRepositoryName;
+        const owner = repositoryInfo.remoteRepositoryOwner;
+        if (repositoryInfo.remoteGitProvider === RemoteGitProvider.GitHub && repo && owner) {
             this.setState({
                 loadingPRs: true
             });
             GithubClient.getPRs({
-                repo: repositoryInfo.remoteRepositoryName,
-                owner: repositoryInfo.remoteRepositoryOwner,
+                repo,
+                owner,
                 wantedPRs: repositoryInfo.revisionInformation?.activeTestMerges.map(tm => tm.number)
             })
                 .then(prs => {
@@ -244,6 +242,15 @@ class Repository extends React.Component<IProps, IState> {
                         });
                         if (resetDesiredState)
                             this.reloadDesiredState(repositoryInfo, true, false, prs.payload);
+
+                        void GithubClient.getPRMergeability({ repo, owner, prs: prs.payload }).then(
+                            fullPRs =>
+                                this.setState(prevState =>
+                                    prevState.gitHubPRs === prs.payload
+                                        ? { gitHubPRs: fullPRs }
+                                        : null
+                                )
+                        );
                     }
                 })
                 .catch(e => {
