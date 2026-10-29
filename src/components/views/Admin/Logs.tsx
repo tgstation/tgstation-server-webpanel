@@ -236,6 +236,7 @@ export default withRouter(
                             <h3>{this.props.match.params.name}</h3>
                             <Button
                                 className="mr-1"
+                                // @ts-expect-error: Old react router types fucked!
                                 as={Link}
                                 to={AppRoutes.admin_logs.link ?? AppRoutes.admin_logs.route}>
                                 <FormattedMessage id="generic.goback" />
