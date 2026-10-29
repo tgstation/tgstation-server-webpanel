@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Pagination as RBSPage } from "react-bootstrap";
+import RBSPage from "react-bootstrap/esm/Pagination";
 
 export type PaginationProps = {
     onPageChange?: React.Dispatch<React.SetStateAction<number>>;

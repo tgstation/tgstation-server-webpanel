@@ -1,5 +1,6 @@
 import React, { forwardRef } from "react";
-import { Dropdown, DropdownButtonProps } from "react-bootstrap";
+import Dropdown from "react-bootstrap/esm/Dropdown";
+import { type DropdownButtonProps } from "react-bootstrap/esm/DropdownButton";
 import DropdownMenu from "react-bootstrap/esm/DropdownMenu";
 import DropdownToggle from "react-bootstrap/esm/DropdownToggle";
 import { createPortal } from "react-dom";
