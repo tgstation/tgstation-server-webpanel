@@ -1,6 +1,7 @@
 import React from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -25,6 +26,7 @@ interface IState {
     errors: Array<InternalError<ErrorCode> | undefined>;
     users: UserResponse[];
     loading: boolean;
+    showDisabled: boolean;
     canList: boolean;
     page: number;
     maxPage?: number;
@@ -39,6 +41,7 @@ export default withRouter(
                 errors: [],
                 users: [],
                 loading: true,
+                showDisabled: false,
                 canList: false,
                 page: RouteData.userlistpage ?? 1
             };
@@ -133,151 +136,176 @@ export default withRouter(
                 return <Loading text="loading.userlist" />;
             }
             return (
-                <div className="text-center">
+                <div>
                     <DebugJsonViewer obj={this.state.users} />
-                    {!this.state.canList ? (
-                        <Alert className="clearfix" variant="error">
-                            <FormattedMessage id="view.user.list.cantlist" />
-                        </Alert>
-                    ) : (
-                        ""
-                    )}
-                    {this.state.errors.map((err, index) => {
-                        if (!err) return;
-                        return (
-                            <ErrorAlert
-                                key={index}
-                                error={err}
-                                onClose={() =>
-                                    this.setState(prev => {
-                                        const newarr = Array.from(prev.errors);
-                                        newarr[index] = undefined;
-                                        return {
-                                            errors: newarr
-                                        };
-                                    })
-                                }
+                    <div className="d-flex mt-1 mb-1">
+                        <FormattedMessage id="view.user.list.showdisabled" />
+                        <div className="ml-2 align-contents-center justify-contents-center">
+                            <Form.Check
+                                inline
+                                onChange={() => {
+                                    this.setState({
+                                        showDisabled: !this.state.showDisabled
+                                    });
+                                }}
                             />
-                        );
-                    })}
-                    <Table striped bordered hover variant="dark" responsive>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>
-                                    <FormattedMessage id="generic.name" />
-                                </th>
-                                <th>
-                                    <FormattedMessage id="generic.details" />
-                                </th>
-                                <th>
-                                    <FormattedMessage id="generic.group" />
-                                </th>
-                                <th>
-                                    <FormattedMessage id="generic.created" />
-                                </th>
-                                <th>
-                                    <FormattedMessage id="generic.createdby" />
-                                </th>
-                                <th>
-                                    <FormattedMessage id="generic.action" />
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.users.map(value => {
-                                const createddate = new Date(value.createdAt);
-                                const createddiff = (createddate.getTime() - Date.now()) / 1000;
+                        </div>
+                    </div>
+                    <div className="text-center">
+                        {!this.state.canList ? (
+                            <Alert className="clearfix" variant="error">
+                                <FormattedMessage id="view.user.list.cantlist" />
+                            </Alert>
+                        ) : (
+                            ""
+                        )}
+                        {this.state.errors.map((err, index) => {
+                            if (!err) return;
+                            return (
+                                <ErrorAlert
+                                    key={index}
+                                    error={err}
+                                    onClose={() =>
+                                        this.setState(prev => {
+                                            const newarr = Array.from(prev.errors);
+                                            newarr[index] = undefined;
+                                            return {
+                                                errors: newarr
+                                            };
+                                        })
+                                    }
+                                />
+                            );
+                        })}
+                        <Table striped bordered hover variant="dark" responsive>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>
+                                        <FormattedMessage id="generic.name" />
+                                    </th>
+                                    <th>
+                                        <FormattedMessage id="generic.details" />
+                                    </th>
+                                    <th>
+                                        <FormattedMessage id="generic.group" />
+                                    </th>
+                                    <th>
+                                        <FormattedMessage id="generic.created" />
+                                    </th>
+                                    <th>
+                                        <FormattedMessage id="generic.createdby" />
+                                    </th>
+                                    <th>
+                                        <FormattedMessage id="generic.action" />
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.users.map(value => {
+                                    const createddate = new Date(value.createdAt);
+                                    const createddiff = (createddate.getTime() - Date.now()) / 1000;
 
-                                return (
-                                    <tr key={value.id}>
-                                        <td>{value.id}</td>
-                                        <td>{value.name}</td>
-                                        <td>
-                                            <UserBadges user={value} />
-                                        </td>
-                                        {value.group ? (
+                                    if (!this.state.showDisabled && !value.enabled) {
+                                        return;
+                                    }
+
+                                    return (
+                                        <tr key={value.id}>
+                                            <td>{value.id}</td>
+                                            <td>{value.name}</td>
+                                            <td>
+                                                <UserBadges user={value} />
+                                            </td>
+                                            {value.group ? (
+                                                <OverlayTrigger
+                                                    overlay={
+                                                        <Tooltip id={`${value.name}-tooltip-group`}>
+                                                            <FormattedMessage
+                                                                id="generic.groupid"
+                                                                values={{ id: value.group.id }}
+                                                            />
+                                                        </Tooltip>
+                                                    }>
+                                                    {({ ref, ...triggerHandler }) => (
+                                                        <td {...triggerHandler}>
+                                                            <span
+                                                                ref={
+                                                                    ref as React.Ref<HTMLSpanElement>
+                                                                }>
+                                                                {value.group!.name}
+                                                            </span>
+                                                        </td>
+                                                    )}
+                                                </OverlayTrigger>
+                                            ) : (
+                                                <td />
+                                            )}
                                             <OverlayTrigger
                                                 overlay={
-                                                    <Tooltip id={`${value.name}-tooltip-group`}>
-                                                        <FormattedMessage
-                                                            id="generic.groupid"
-                                                            values={{ id: value.group.id }}
-                                                        />
+                                                    <Tooltip id={`${value.name}-tooltip`}>
+                                                        {createddate.toLocaleString()}
                                                     </Tooltip>
                                                 }>
                                                 {({ ref, ...triggerHandler }) => (
                                                     <td {...triggerHandler}>
                                                         <span
                                                             ref={ref as React.Ref<HTMLSpanElement>}>
-                                                            {value.group!.name}
+                                                            <FormattedRelativeTime
+                                                                value={createddiff}
+                                                                numeric="auto"
+                                                                updateIntervalInSeconds={1}
+                                                            />
                                                         </span>
                                                     </td>
                                                 )}
                                             </OverlayTrigger>
-                                        ) : (
-                                            <td />
-                                        )}
-                                        <OverlayTrigger
-                                            overlay={
-                                                <Tooltip id={`${value.name}-tooltip`}>
-                                                    {createddate.toLocaleString()}
-                                                </Tooltip>
-                                            }>
-                                            {({ ref, ...triggerHandler }) => (
-                                                <td {...triggerHandler}>
-                                                    <span ref={ref as React.Ref<HTMLSpanElement>}>
-                                                        <FormattedRelativeTime
-                                                            value={createddiff}
-                                                            numeric="auto"
-                                                            updateIntervalInSeconds={1}
-                                                        />
-                                                    </span>
-                                                </td>
-                                            )}
-                                        </OverlayTrigger>
-                                        <OverlayTrigger
-                                            overlay={
-                                                <Tooltip id={`${value.name}-tooltip-createdby`}>
-                                                    <FormattedMessage id="generic.userid" />
-                                                    {value.createdBy.id}
-                                                </Tooltip>
-                                            }>
-                                            {({ ref, ...triggerHandler }) => (
-                                                <td {...triggerHandler}>
-                                                    <span ref={ref as React.Ref<HTMLSpanElement>}>
-                                                        {value.createdBy.name}
-                                                    </span>
-                                                </td>
-                                            )}
-                                        </OverlayTrigger>
-                                        <td className="align-middle p-0">
-                                            <Button
-                                                onClick={() => {
-                                                    RouteData.selecteduserid = value.id;
-                                                    this.props.history.push(
-                                                        AppRoutes.useredit.link ??
-                                                            AppRoutes.useredit.route
-                                                    );
-                                                }}>
-                                                <FormattedMessage id="generic.edit" />
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </Table>
+                                            <OverlayTrigger
+                                                overlay={
+                                                    <Tooltip id={`${value.name}-tooltip-createdby`}>
+                                                        <FormattedMessage id="generic.userid" />
+                                                        {value.createdBy.id}
+                                                    </Tooltip>
+                                                }>
+                                                {({ ref, ...triggerHandler }) => (
+                                                    <td {...triggerHandler}>
+                                                        <span
+                                                            ref={ref as React.Ref<HTMLSpanElement>}>
+                                                            {value.createdBy.name}
+                                                        </span>
+                                                    </td>
+                                                )}
+                                            </OverlayTrigger>
+                                            <td className="align-middle p-0">
+                                                <Button
+                                                    onClick={() => {
+                                                        RouteData.selecteduserid = value.id;
+                                                        this.props.history.push(
+                                                            AppRoutes.useredit.link ??
+                                                                AppRoutes.useredit.route
+                                                        );
+                                                    }}>
+                                                    <FormattedMessage id="generic.edit" />
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </Table>
 
-                    <PageHelper
-                        selectPage={newPage => this.setState({ page: newPage })}
-                        totalPages={this.state.maxPage ?? 1}
-                        currentPage={this.state.page}
-                    />
+                        <PageHelper
+                            selectPage={newPage => this.setState({ page: newPage })}
+                            totalPages={this.state.maxPage ?? 1}
+                            currentPage={this.state.page}
+                        />
 
-                    <Button as={Link} to={AppRoutes.usercreate.link ?? AppRoutes.usercreate.route}>
-                        <FormattedMessage id="routes.usercreate" />
-                    </Button>
+                        <Button
+                            as={Link}
+                            to={AppRoutes.usercreate.link ?? AppRoutes.usercreate.route}>
+                            <FormattedMessage id="routes.usercreate" />
+                        </Button>
+                    </div>
                 </div>
             );
         }
