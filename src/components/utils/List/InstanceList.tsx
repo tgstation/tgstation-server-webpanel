@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */ // shut up eslint im replacing you with biome
+// shut up eslint im replacing you with biome
 /* eslint-disable import/no-cycle */
 import { faEllipsis, faGear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -103,8 +103,7 @@ export const InstanceListLoading = () => {
                                 <FormattedMessage id="generic.configmode" />
                             </th>
                             <th>
-                                {/* <FormattedMessage id="generic.online" /> */}
-                                Status
+                                <FormattedMessage id="generic.status" />
                             </th>
                             <th>
                                 <div className="d-flex justify-content-center">
@@ -176,8 +175,7 @@ export const InstanceListRaw = (props: InstanceListRawProps) => {
                                 <FormattedMessage id="generic.configmode" />
                             </th>
                             <th>
-                                {/* <FormattedMessage id="generic.online" /> */}
-                                Status
+                                <FormattedMessage id="generic.status" />
                             </th>
                             <th>
                                 <div className="d-flex justify-content-center">
@@ -254,14 +252,19 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                     setIsTryingToDetatch(false);
                 }}>
                 <Modal.Header>
-                    <Modal.Title>Detatch Instance</Modal.Title>
+                    <Modal.Title>
+                        <FormattedMessage id="view.instance.list.detatch" />
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Are you sure you want to detach the instance "{isR.name}"?</p>
+                    <p>
+                        <FormattedMessage
+                            id="view.instance.list.detatch.header"
+                            values={{ name: isR.name }}
+                        />
+                    </p>
                     <small>
-                        Once detached, the instance will no longer be managed by TGS and you can
-                        delete the files manually or reattach it by creating a new instance at the
-                        existing path.
+                        <FormattedMessage id="view.instance.list.detatch.footer" />
                     </small>
                 </Modal.Body>
                 <Modal.Footer className="justify-content-between">
@@ -270,7 +273,7 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                         onClick={() => {
                             setIsTryingToDetatch(false);
                         }}>
-                        Cancel
+                        <FormattedMessage id="generic.cancel" />
                     </Button>
                     <Button
                         variant="danger"
@@ -293,7 +296,7 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                                     setIsTryingToDetatch(false);
                                 });
                         }}>
-                        Delete
+                        <FormattedMessage id="generic.detatch" />
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -344,7 +347,7 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                                 AppRoutes.instanceedit.link ?? AppRoutes.instanceedit.route
                             );
                         }}>
-                        Access
+                        <FormattedMessage id="generic.access" />
                     </Dropdown.Item>
                     <Dropdown.Item
                         onClick={() => {
@@ -368,7 +371,11 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                                 });
                         }}
                         disabled={!canOnline || isDoingPowerOp}>
-                        {isR.online ? "Disable" : "Enable"}
+                        {isR.online ? (
+                            <FormattedMessage id="generic.disable" />
+                        ) : (
+                            <FormattedMessage id="generic.enable" />
+                        )}
                     </Dropdown.Item>
                     <Dropdown.Item
                         onClick={() => {
@@ -391,7 +398,7 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                                 });
                         }}
                         disabled={!isR.online || canAccess || !canGrant || isDoingPowerOp}>
-                        Grant Full Access
+                        <FormattedMessage id="view.instance.list.all_access" />
                     </Dropdown.Item>
                     <Dropdown.Divider />
                     <Dropdown.Item
@@ -400,7 +407,7 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                             setIsTryingToDetatch(true);
                         }}
                         style={{ color: "var(--red-ish)" }}>
-                        Detatch
+                        <FormattedMessage id="generic.detatch" />
                     </Dropdown.Item>
                 </DropdownButtonWithAPortal>
             </th>
