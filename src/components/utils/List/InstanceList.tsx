@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */ // shut up eslint im replacing you with biome
+/* eslint-disable import/no-cycle */
 import { faEllipsis, faGear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, {
@@ -17,6 +18,7 @@ import Modal from "react-bootstrap/esm/Modal";
 import Table from "react-bootstrap/esm/Table";
 import { FormattedMessage } from "react-intl";
 import { useHistory } from "react-router-dom";
+import { satisfies } from "semver";
 
 import {
     InstanceManagerRights,
@@ -198,7 +200,7 @@ export const InstanceListRaw = (props: InstanceListRawProps) => {
 
 const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
     const { setInstanceList, list } = useInstanceList();
-    const { user } = useContext(GeneralContext);
+    const { user, serverInfo } = useContext(GeneralContext);
     const history = useHistory();
 
     const [isR, setisR] = useState<InstanceResponse>(instance); // inline instance response if not being nuked
@@ -211,6 +213,10 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
     }, [instance]);
 
     useEffect(() => {
+        if (satisfies(serverInfo.apiVersion, "<9.1.0")) {
+            setCanAccess(isR.online && isR.accessible);
+            return;
+        }
         InstancePermissionSetClient.getCurrentInstancePermissionSet(isR.id, true)
             .then(r => {
                 setCanAccess(r.code === StatusCode.OK);
@@ -218,7 +224,7 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
             .catch(e => {
                 console.log(e);
             });
-    }, [isR]);
+    }, [isR, serverInfo]);
 
     const canOnline = useMemo(
         () =>
