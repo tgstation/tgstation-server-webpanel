@@ -9,10 +9,10 @@ on:
 
 jobs:
     deploy:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         strategy:
             matrix:
-                node-version: [20.x]
+                node-version: [22.x]
         steps:
             - name: Install Native Dependencies
               run: |
@@ -20,7 +20,7 @@ jobs:
                   sudo apt-get install -y expect-dev
 
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
               with:
                   fetch-depth: 0
 
@@ -36,15 +36,16 @@ jobs:
                   fi
 
             - name: Restore Yarn cache
-              uses: actions/cache@v4
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # 6.1.0
               with:
                   path: .yarn/cache
                   key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
 
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # 7.1.0
               with:
                   node-version: ${{ matrix.node-version }}
+                  package-manager-cache: false
 
             - name: Setup Yarn
               run: corepack enable
