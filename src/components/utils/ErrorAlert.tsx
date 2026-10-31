@@ -1,4 +1,3 @@
-import ClickToSelect from "@mapbox/react-click-to-select";
 import React, { Component, ReactNode } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
@@ -10,6 +9,7 @@ import InternalError, {
     ErrorCode
 } from "../../ApiClient/models/InternalComms/InternalError";
 import { API_VERSION, MODE, VERSION } from "../../definitions/constants";
+import { ClickToSelect } from "./ClickToSelect";
 
 interface IProps {
     error: InternalError<ErrorCode> | undefined;

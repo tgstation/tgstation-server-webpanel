@@ -1,4 +1,3 @@
-import ClickToSelect from "@mapbox/react-click-to-select";
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -6,6 +5,7 @@ import { FormattedMessage } from "react-intl";
 
 import { ErrorCode as TGSErrorCode } from "../../ApiClient/generatedcode/generated";
 import { TGSJobResponse } from "../../ApiClient/JobsClient";
+import { ClickToSelect } from "./ClickToSelect";
 
 interface IProps {
     job: TGSJobResponse;
