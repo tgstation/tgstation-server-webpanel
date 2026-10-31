@@ -99,3 +99,14 @@ jobs:
 
             - name: Run ESLint
               run: yarn eslint "**/*.{js,jsx,ts,tsx}"
+
+    completion_gate: # Serves as a non-moving target for branch rulesets
+        if: always() && !cancelled()
+        name: Completion Gate
+        needs: [build, lint]
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Decide whether the needed jobs succeeded or failed
+              uses: re-actors/alls-green@release/v1
+              with:
+                  jobs: ${{ toJSON(needs) }}
