@@ -17,7 +17,7 @@ const createBabelConfig = options => {
                     allowDeclareFields: true
                 }
             ],
-            require.resolve("@babel/preset-react"),
+            require.resolve("@babel/preset-react", { runtime: 'automatic' }),
             ...presets
         ],
         plugins: [

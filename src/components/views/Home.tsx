@@ -83,8 +83,8 @@ class Home extends React.Component<IProps, IState> {
                         return (
                             <Col key={val.link ?? val.route} className="mb-1 home">
                                 <Card
+                                    // @ts-expect-error: Old react router types fucked!
                                     as={val.cachedAuth ? Link : "div"}
-                                    //@ts-expect-error //dont really know how to fix this so uhhhhhhh, this will do for now
                                     to={val.link ?? val.route}
                                     className={`text-decoration-none m-1 h-75 ${
                                         val.cachedAuth

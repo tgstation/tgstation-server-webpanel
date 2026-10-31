@@ -110,8 +110,9 @@ class InstanceEdit extends React.Component<IProps, IState> {
             generalContext: GeneralContext
         ) => boolean,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ComponentType<any>?
+        ComponentType<React.PropsWithChildren<any>>?
     ][] = [
+        // @ts-expect-error: Old react router types fucked!
         ["info", "info", () => true, Config],
         [
             "repository",
@@ -152,6 +153,7 @@ class InstanceEdit extends React.Component<IProps, IState> {
                 !!(instancePermissionSet.configurationRights & minimumFilePerms),
             Files
         ],
+        // @ts-expect-error: Old react router types fucked!
         ["users", "users", () => true, InstancePermissions],
         ["jobs", "stream", () => true, JobHistory]
     ];

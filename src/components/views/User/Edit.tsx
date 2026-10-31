@@ -318,6 +318,7 @@ class UserEdit extends React.Component<IProps, IState> {
                         )}
                         <UserBadges user={this.state.user} />
                         <h3 className="text-capitalize">{this.state.user.name}</h3>
+                        {/* @ts-expect-error: Old react router types fucked! */}
                         <Button as={Link} to={AppRoutes.userlist.link ?? AppRoutes.userlist.route}>
                             <FormattedMessage id="generic.goback" />
                         </Button>
@@ -428,6 +429,7 @@ class UserEdit extends React.Component<IProps, IState> {
                                                 {this.canEdit || this.canEditOwnPassword ? (
                                                     <Button
                                                         className="mr-2"
+                                                        // @ts-expect-error: Old react router types fucked!
                                                         as={Link}
                                                         to={
                                                             (AppRoutes.passwd.link ??

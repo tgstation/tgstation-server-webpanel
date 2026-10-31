@@ -273,6 +273,7 @@ class Router extends Component<IProps, IState> {
                             <Container className="mt-5 mb-5">
                                 <Route key="notfound">
                                     {this.props.loggedIn ? (
+                                        // @ts-expect-error: Old react types fucked! no JSX.ElementType on this react type version
                                         <NotFound />
                                     ) : (
                                         <Login loggedOut={this.props.loggedOut} />
