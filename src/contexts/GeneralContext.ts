@@ -1,4 +1,4 @@
-import React from "react";
+import { createContext } from "react";
 
 import type { ServerInformationResponse, UserResponse } from "../ApiClient/generatedcode/generated";
 import InternalError from "../ApiClient/models/InternalComms/InternalError";
@@ -18,6 +18,5 @@ export type UnsafeGeneralContext = {
     serverInfo: ServerInformationResponse | null;
 };
 
-export const GeneralContext = React.createContext<GeneralContext>(
-    undefined as unknown as GeneralContext
-);
+export const GeneralContext = createContext<GeneralContext>(undefined as unknown as GeneralContext);
+GeneralContext.displayName = "General Context";

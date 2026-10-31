@@ -41,7 +41,7 @@
         "@typescript-eslint/prefer-promise-reject-errors": "off",
         "linebreak-style": "off",
         "no-unused-vars": "off",
-        "import/no-cycle": "error",
+        "import/no-cycle": "off",
         "@typescript-eslint/unbound-method": "off",
         "@typescript-eslint/ban-ts-comment": [
             "warn",

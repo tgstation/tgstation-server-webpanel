@@ -26,7 +26,6 @@ $sizes: (
     0: 0,
     40: 40%
 );
-
 @import "~bootstrap/scss/functions";
 
 $white: #fff !default;
@@ -61,6 +60,7 @@ $indigo: #6610f2 !default;
 $purple: #6f42c1 !default;
 $pink: #e83e8c !default;
 $red: #dc3545 !default;
+$red-ish: #f56270;
 $orange: #fd7e14 !default;
 $yellow: #ffc107 !default;
 $green: #28a745 !default;
@@ -75,6 +75,7 @@ $colors: map-merge(("blue": $blue,
             "purple": $purple,
             "pink": $pink,
             "red": $red,
+            "red-ish": $red-ish,
             "orange": $orange,
             "yellow": $yellow,
             "green": $green,
@@ -186,7 +187,7 @@ $toast-header-background-color: $gray-600;
 @import "~bootstrap/scss/nav";
 @import "~bootstrap/scss/navbar";
 @import "~bootstrap/scss/card";
-//@import "~bootstrap/scss/breadcrumb";
+@import "~bootstrap/scss/breadcrumb";
 @import "~bootstrap/scss/pagination";
 @import "~bootstrap/scss/badge";
 //@import "~bootstrap/scss/jumbotron";
