@@ -15,6 +15,11 @@ jobs:
               with:
                   fetch-depth: 0
 
+            - name: Enable corepack
+              run: |
+                  corepack enable
+                  corepack prepare --active
+
             - parallel:
                   - name: Install Native Dependencies
                     run: |
@@ -37,11 +42,6 @@ jobs:
                   else
                     echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
                   fi
-
-            - name: Enable corepack
-              run: |
-                  corepack enable
-                  corepack prepare --active
 
             - name: Install Yarn Dependencies
               run: |
