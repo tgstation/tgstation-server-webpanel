@@ -19,29 +19,32 @@ jobs:
     build:
         name: Build
         runs-on: ubuntu-24.04
+        timeout-minutes: 5
+
         strategy:
             matrix:
                 node-version: [20.x, 22.x, 24.x, 26.x]
+
         steps:
-            - name: Install Native Dependencies
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y expect-dev
+            - uses: actions/checkout@v7
 
-            - name: Checkout
-              uses: actions/checkout@v7
+            - parallel:
+                  - name: Install Native Dependencies
+                    run: |
+                        sudo apt-get update
+                        sudo apt-get install -y expect-dev
 
-            - name: Restore Yarn cache
-              uses: actions/cache@v6
-              with:
-                  path: .yarn/cache
-                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+                  - name: Restore Yarn cache
+                    uses: actions/cache@v6
+                    with:
+                        path: .yarn/cache
+                        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
 
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v7
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  package-manager-cache: false
+                  - name: Use Node.js ${{ matrix.node-version }}
+                    uses: actions/setup-node@v7
+                    with:
+                        node-version: ${{ matrix.node-version }}
+                        package-manager-cache: false
 
             - name: Setup Yarn
               run: corepack enable
@@ -60,31 +63,32 @@ jobs:
     lint:
         name: Run Linter
         runs-on: ubuntu-24.04
+        timeout-minutes: 5
 
         strategy:
             matrix:
                 node-version: [20.x, 22.x, 24.x, 26.x]
 
         steps:
-            - name: Install Native Dependencies
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y expect-dev
+            - uses: actions/checkout@v7
 
-            - name: Checkout
-              uses: actions/checkout@v7
+            - parallel:
+                  - name: Install Native Dependencies
+                    run: |
+                        sudo apt-get update
+                        sudo apt-get install -y expect-dev
 
-            - name: Restore Yarn cache
-              uses: actions/cache@v6
-              with:
-                  path: .yarn/cache
-                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+                  - name: Restore Yarn cache
+                    uses: actions/cache@v6
+                    with:
+                        path: .yarn/cache
+                        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
 
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v7
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  package-manager-cache: false
+                  - name: Use Node.js ${{ matrix.node-version }}
+                    uses: actions/setup-node@v7
+                    with:
+                        node-version: ${{ matrix.node-version }}
+                        package-manager-cache: false
 
             - name: Setup Yarn
               run: corepack enable
