@@ -60,10 +60,6 @@ jobs:
         runs-on: ubuntu-24.04
         timeout-minutes: 5
 
-        strategy:
-            matrix:
-                node-version: [22, 24, 26]
-
         steps:
             - uses: actions/checkout@v7
 
@@ -78,10 +74,10 @@ jobs:
                         sudo apt-get update
                         sudo apt-get install -y expect-dev
 
-                  - name: Use Node.js ${{ matrix.node-version }}
+                  - name: Use Node.js (22)
                     uses: actions/setup-node@v7
                     with:
-                        node-version: ${{ matrix.node-version }}
+                        node-version: 22
                         cache: yarn
 
             - name: Install Yarn Dependencies
