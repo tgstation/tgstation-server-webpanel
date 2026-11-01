@@ -1,4 +1,5 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Card } from "react-bootstrap";
@@ -15,6 +16,7 @@ import { StatusCode } from "../../../ApiClient/models/InternalComms/InternalStat
 import { GeneralContext } from "../../../contexts/GeneralContext";
 import { resolvePermissionSet } from "../../../utils/misc";
 import { AppRoutes } from "../../../utils/routes";
+import { Empty } from "../../utils/Empty";
 import { InstanceList, InstanceListLoading } from "../../utils/List";
 
 export const InstanceListPage = () => {
@@ -22,9 +24,11 @@ export const InstanceListPage = () => {
     const { user } = useContext(GeneralContext);
 
     const [instanceList, setInstanceList] = useState<PaginatedInstanceResponse | undefined>();
+    const [instanceLoading, setInstanceLoad] = useState(true); // we dont have use for proper delay :(
     const [page, setPage] = useState(1);
 
     useEffect(() => {
+        setInstanceLoad(true);
         // is the err handler here really needed? axios error trigger blocks this already >:(
         InstanceClient.listInstances({ page })
             .then(r => {
@@ -38,6 +42,9 @@ export const InstanceListPage = () => {
             .catch(e => {
                 // TODO error handler
                 console.error(e);
+            })
+            .finally(() => {
+                setInstanceLoad(false);
             });
     }, [page]);
 
@@ -45,6 +52,18 @@ export const InstanceListPage = () => {
         () => !!(resolvePermissionSet(user).instanceManagerRights & InstanceManagerRights.Create),
         [user]
     );
+
+    const canList = useMemo(
+        () => !!(resolvePermissionSet(user).instanceManagerRights & InstanceManagerRights.List),
+        [user]
+    );
+
+    const canRead = useMemo(
+        () => !!(resolvePermissionSet(user).instanceManagerRights & InstanceManagerRights.Read),
+        [user]
+    );
+
+    const canListOrRead = useMemo(() => canList || canRead, [canList, canRead]);
 
     return (
         <div className="d-flex flex-column" style={{ gap: "1rem" }}>
@@ -74,17 +93,34 @@ export const InstanceListPage = () => {
                 </div>
             </div>
             <Card body>
-                {instanceList ? (
-                    <InstanceList
-                        instances={instanceList?.content || []}
-                        pagination
-                        onPageChange={setPage}
-                        maxPage={instanceList?.totalPages}
-                        pageSize={instanceList?.pageSize}
-                        totalItems={instanceList?.totalItems}
-                    />
+                {canListOrRead ? (
+                    !instanceLoading ? (
+                        instanceList?.content.length ? (
+                            <InstanceList
+                                instances={instanceList?.content || []}
+                                pagination
+                                onPageChange={setPage}
+                                page={page}
+                                maxPage={instanceList?.totalPages}
+                                pageSize={instanceList?.pageSize}
+                                totalItems={instanceList?.totalItems}
+                            />
+                        ) : (
+                            <Empty
+                                icon={<FontAwesomeIcon icon={faLock} size="4x" />}
+                                title={`No instances${canList ? "" : " with permission"}`}
+                                description={`You do not have instances assigned to your account.${canCreate ? " However you may create an instance." : ""}`}
+                            />
+                        )
+                    ) : (
+                        <InstanceListLoading />
+                    )
                 ) : (
-                    <InstanceListLoading />
+                    <Empty
+                        icon={<FontAwesomeIcon icon={faLock} size="4x" />}
+                        title="Access Denied"
+                        description="You do not have permission to read instances"
+                    />
                 )}
             </Card>
         </div>
