@@ -21,17 +21,11 @@ jobs:
                         sudo apt-get update
                         sudo apt-get install -y expect-dev
 
-                  - name: Restore Yarn cache
-                    uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # 6.1.0
-                    with:
-                        path: .yarn/cache
-                        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-
-                  - name: Use Node.js (22.x)
+                  - name: Use Node.js (22)
                     uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # 7.1.0
                     with:
-                        node-version: 22.x
-                        package-manager-cache: false
+                        node-version: 22
+                        cache: yarn
 
             - name: Check if version is tagged
               id: get-tag
@@ -44,8 +38,10 @@ jobs:
                     echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
                   fi
 
-            - name: Setup Yarn
-              run: corepack enable
+            - name: Enable corepack
+              run: |
+                  corepack enable
+                  corepack prepare --active
 
             - name: Install Yarn Dependencies
               run: |

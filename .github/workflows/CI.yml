@@ -23,7 +23,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [22.x, 24.x, 26.x]
+                node-version: [22, 24, 26]
         steps:
             - uses: actions/checkout@v7
 
@@ -33,20 +33,16 @@ jobs:
                         sudo apt-get update
                         sudo apt-get install -y expect-dev
 
-                  - name: Restore Yarn cache
-                    uses: actions/cache@v6
-                    with:
-                        path: .yarn/cache
-                        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-
                   - name: Use Node.js ${{ matrix.node-version }}
                     uses: actions/setup-node@v7
                     with:
                         node-version: ${{ matrix.node-version }}
-                        package-manager-cache: false
+                        cache: yarn
 
-            - name: Setup Yarn
-              run: corepack enable
+            - name: Enable corepack
+              run: |
+                  corepack enable
+                  corepack prepare --active
 
             - name: Install Yarn Dependencies
               run: |
@@ -66,7 +62,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [22.x, 24.x, 26.x]
+                node-version: [22, 24, 26]
 
         steps:
             - uses: actions/checkout@v7
@@ -77,20 +73,16 @@ jobs:
                         sudo apt-get update
                         sudo apt-get install -y expect-dev
 
-                  - name: Restore Yarn cache
-                    uses: actions/cache@v6
-                    with:
-                        path: .yarn/cache
-                        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-
                   - name: Use Node.js ${{ matrix.node-version }}
                     uses: actions/setup-node@v7
                     with:
                         node-version: ${{ matrix.node-version }}
-                        package-manager-cache: false
+                        cache: yarn
 
-            - name: Setup Yarn
-              run: corepack enable
+            - name: Enable corepack
+              run: |
+                  corepack enable
+                  corepack prepare --active
 
             - name: Install Yarn Dependencies
               run: |
