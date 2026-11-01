@@ -9,6 +9,9 @@ on:
 
 jobs:
     deploy:
+        permissions:
+            contents: write
+            pull-requests: read
         runs-on: ubuntu-24.04
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
@@ -80,12 +83,34 @@ jobs:
                   cd $HOME/webpanellive/api
                   ln -s ../webpanel/$WEBPANEL_VERSION $API_VERSION
 
+            - name: Get bot token
+              uses: actions/create-github-app-token@v3
+              if: steps.get-tag.outputs.deploy_tag != 'FAILED' && env.APP_PRIVATE_KEY != '' && env.APP_ID != ''
+              id: app-token
+              with:
+                  client-id: ${{ secrets.APP_ID }}
+                  private-key: ${{ secrets.APP_PRIVATE_KEY }}
+                  permission-contents: write
+              env:
+                  APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+                  APP_ID: ${{ secrets.APP_ID }}
+
+            - name: Set user
+              if: steps.get-tag.outputs.deploy_tag != 'FAILED'
+              run: |
+                  git config --local user.name "tgstation-server-ci[bot]"
+                  git config --local user.email "161980869+tgstation-server-ci[bot]@users.noreply.github.com
+
+            - name: Authenticate user
+              if: steps.get-tag.outputs.deploy_tag != 'FAILED' && env.GH_TOKEN != ''
+              run: gh auth setup-git
+              env:
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
             - name: Deploy to Github
               if: steps.get-tag.outputs.deploy_tag != 'FAILED'
               run: |
                   cd $HOME/webpanellive
-                  git config --local user.email "161980869+tgstation-server-ci[bot]@users.noreply.github.com"
-                  git config --local user.name "tgstation-server-ci[bot]"
                   git add *
                   git commit -m "Update webpanel"
                   git pull --rebase origin live
