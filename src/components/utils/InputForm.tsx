@@ -75,7 +75,7 @@ export default function InputForm<
     fieldStateIds.set(id, field);
     fieldValueStates.set(
       field,
-      // props.fields never changes, it will be
+      // biome-ignore lint/correctness/useHookAtTopLevel: props.fields never changes, it will be
       useState<InputFieldTypes>(
         field.defaultValue ?? defaultValues[field.type],
       ),

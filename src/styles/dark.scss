@@ -13,17 +13,19 @@ $enable-gradients: true;
 
 $theme-colors: (
   //02549a
-  "primary": #02549a,
-  "secondary": #2576bc,
-  "transparent": transparent,
-  "background": #212529,
-  "darker": darken(#212529, 5%),
+  'primary': #02549a,
+  'secondary': #2576bc,
+  'transparent': transparent,
+  'background': #212529,
+  'darker': darken(#212529, 5%)
 );
 $theme-colors: map-merge(
   $theme-colors,
   (
-    "darkblue":
-      rgba(scale-color(map-get($theme-colors, "primary"), $lightness: -20%), 1),
+    'darkblue': rgba(
+        scale-color(map-get($theme-colors, 'primary'), $lightness: -20%),
+        1
+      ),
   )
 );
 
@@ -31,7 +33,7 @@ $sizes: (
   0: 0,
   40: 40%,
 );
-@import "~bootstrap/scss/functions";
+@import '~bootstrap/scss/functions';
 
 $white: #fff !default;
 $gray-100: #f8f9fa !default;
@@ -49,15 +51,15 @@ $grays: () !default;
 // stylelint-disable-next-line scss/dollar-variable-default
 $grays: map-merge(
   (
-    "100": $gray-100,
-    "200": $gray-200,
-    "300": $gray-300,
-    "400": $gray-400,
-    "500": $gray-500,
-    "600": $gray-600,
-    "700": $gray-700,
-    "800": $gray-800,
-    "900": $gray-900,
+    '100': $gray-100,
+    '200': $gray-200,
+    '300': $gray-300,
+    '400': $gray-400,
+    '500': $gray-500,
+    '600': $gray-600,
+    '700': $gray-700,
+    '800': $gray-800,
+    '900': $gray-900,
   ),
   $grays
 );
@@ -78,20 +80,20 @@ $colors: () !default;
 // stylelint-disable-next-line scss/dollar-variable-default
 $colors: map-merge(
   (
-    "blue": $blue,
-    "indigo": $indigo,
-    "purple": $purple,
-    "pink": $pink,
-    "red": $red,
-    "red-ish": $red-ish,
-    "orange": $orange,
-    "yellow": $yellow,
-    "green": $green,
-    "teal": $teal,
-    "cyan": $cyan,
-    "white": $white,
-    "gray": $gray-600,
-    "gray-dark": $gray-800,
+    'blue': $blue,
+    'indigo': $indigo,
+    'purple': $purple,
+    'pink': $pink,
+    'red': $red,
+    'red-ish': $red-ish,
+    'orange': $orange,
+    'yellow': $yellow,
+    'green': $green,
+    'teal': $teal,
+    'cyan': $cyan,
+    'white': $white,
+    'gray': $gray-600,
+    'gray-dark': $gray-800,
   ),
   $colors
 );
@@ -109,14 +111,14 @@ $theme-colors: () !default;
 // stylelint-disable-next-line scss/dollar-variable-default
 $theme-colors: map-merge(
   (
-    "primary": $primary,
-    "secondary": $secondary,
-    "success": $success,
-    "info": $info,
-    "warning": $warning,
-    "danger": $danger,
-    "light": $light,
-    "dark": $dark,
+    'primary': $primary,
+    'secondary': $secondary,
+    'success': $success,
+    'info': $info,
+    'warning': $warning,
+    'danger': $danger,
+    'light': $light,
+    'dark': $dark,
   ),
   $theme-colors
 );
@@ -148,7 +150,7 @@ $dropdown-link-hover-bg: darken($dropdown-bg, 5%);
 
 $hr-border-color: rgba($white, 0.2);
 
-$link-color: scale-color(theme-color("secondary"), $lightness: 50%);
+$link-color: scale-color(map-get($theme-colors, 'secondary'), $lightness: 50%);
 $link-decoration: underline;
 
 $modal-content-bg: $dark;
@@ -161,7 +163,7 @@ $navbar-dark-color: rgba($white, 0.75);
 
 $nav-tabs-border-color: $gray-700;
 $nav-tabs-link-hover-border-color: $gray-700 $gray-700 $nav-tabs-border-color;
-$nav-tabs-link-active-color: theme-color("secondary"); //$gray-200;
+$nav-tabs-link-active-color: map-get($theme-colors, 'secondary'); //$gray-200;
 $nav-tabs-link-active-bg: $body-bg;
 $nav-tabs-link-active-border-color: $gray-500 $gray-500 $nav-tabs-link-active-bg;
 
@@ -177,43 +179,43 @@ $toast-background-color: $gray-700;
 $toast-header-color: $toast-color;
 $toast-header-background-color: $gray-600;
 
-@import "~bootstrap/scss/variables";
+@import '~bootstrap/scss/variables';
 
-@import "~bootstrap/scss/mixins";
-@import "~bootstrap/scss/root";
-@import "~bootstrap/scss/reboot";
-@import "~bootstrap/scss/type";
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/root';
+@import '~bootstrap/scss/reboot';
+@import '~bootstrap/scss/type';
 
 //@import "~bootstrap/scss/images";
-@import "~bootstrap/scss/code";
-@import "~bootstrap/scss/grid";
-@import "~bootstrap/scss/tables";
-@import "~bootstrap/scss/forms";
-@import "~bootstrap/scss/buttons";
-@import "~bootstrap/scss/transitions";
-@import "~bootstrap/scss/dropdown";
+@import '~bootstrap/scss/code';
+@import '~bootstrap/scss/grid';
+@import '~bootstrap/scss/tables';
+@import '~bootstrap/scss/forms';
+@import '~bootstrap/scss/buttons';
+@import '~bootstrap/scss/transitions';
+@import '~bootstrap/scss/dropdown';
 //@import "~bootstrap/scss/button-group";
-@import "~bootstrap/scss/input-group";
-@import "~bootstrap/scss/custom-forms";
-@import "~bootstrap/scss/nav";
-@import "~bootstrap/scss/navbar";
-@import "~bootstrap/scss/card";
-@import "~bootstrap/scss/breadcrumb";
-@import "~bootstrap/scss/pagination";
-@import "~bootstrap/scss/badge";
+@import '~bootstrap/scss/input-group';
+@import '~bootstrap/scss/custom-forms';
+@import '~bootstrap/scss/nav';
+@import '~bootstrap/scss/navbar';
+@import '~bootstrap/scss/card';
+@import '~bootstrap/scss/breadcrumb';
+@import '~bootstrap/scss/pagination';
+@import '~bootstrap/scss/badge';
 //@import "~bootstrap/scss/jumbotron";
-@import "~bootstrap/scss/alert";
-@import "~bootstrap/scss/progress";
+@import '~bootstrap/scss/alert';
+@import '~bootstrap/scss/progress';
 //@import "~bootstrap/scss/media";
 //@import "~bootstrap/scss/list-group";
-@import "~bootstrap/scss/close";
-@import "~bootstrap/scss/toasts";
-@import "~bootstrap/scss/modal";
-@import "~bootstrap/scss/tooltip";
-@import "~bootstrap/scss/popover";
+@import '~bootstrap/scss/close';
+@import '~bootstrap/scss/toasts';
+@import '~bootstrap/scss/modal';
+@import '~bootstrap/scss/tooltip';
+@import '~bootstrap/scss/popover';
 //@import "~bootstrap/scss/carousel";
-@import "~bootstrap/scss/spinners";
-@import "~bootstrap/scss/utilities";
+@import '~bootstrap/scss/spinners';
+@import '~bootstrap/scss/utilities';
 //@import "~bootstrap/scss/print";
 
 .text-secondary {
@@ -231,7 +233,7 @@ $toast-header-background-color: $gray-600;
   margin-left: 0.1rem;
 }
 
-@include media-breakpoint-down("sm") {
+@include media-breakpoint-down('sm') {
   .nav-tabs .nav-link {
     margin-bottom: 0;
   }
@@ -260,6 +262,7 @@ $toast-header-background-color: $gray-600;
 
 @each $breakpoint in map-keys($grid-breakpoints) {
   @include media-breakpoint-up($breakpoint) {
+    /* biome-ignore lint/correctness/noUnknownFunction: biome drunk */
     $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
 
     @each $prop, $abbrev in (width: w, height: h) {
@@ -274,6 +277,7 @@ $toast-header-background-color: $gray-600;
 
 @each $breakpoint in map-keys($grid-breakpoints) {
   @include media-breakpoint-down($breakpoint) {
+    /* biome-ignore lint/correctness/noUnknownFunction: biome drunk */
     $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
 
     .text#{$infix}-break {
@@ -413,11 +417,11 @@ $toast-header-background-color: $gray-600;
 
 //instanceedittab
 .instanceedittab {
-  background-color: theme-color("primary");
+  background-color: map-get($theme-colors, 'primary');
   color: white;
 
   &.no-access {
-    background-color: theme-color("danger");
+    background-color: map-get($theme-colors, 'danger');
   }
 
   &:hover {
@@ -425,10 +429,10 @@ $toast-header-background-color: $gray-600;
   }
 
   &.active {
-    background-color: darken(theme-color("primary"), 12);
+    background-color: darken(map-get($theme-colors, 'primary'), 12);
 
     &.no-access {
-      background-color: darken(theme-color("danger"), 12);
+      background-color: darken(map-get($theme-colors, 'danger'), 12);
       color: white;
     }
 
@@ -439,9 +443,11 @@ $toast-header-background-color: $gray-600;
 }
 
 .hover-bar:not(.pin-open) .tab-text {
-  transition: max-width 1s, padding 1s;
+  transition:
+    max-width 1s,
+    padding 1s;
 
-  @include media-breakpoint-up("lg") {
+  @include media-breakpoint-up('lg') {
     max-width: 0;
   }
 
@@ -450,7 +456,7 @@ $toast-header-background-color: $gray-600;
   overflow: clip;
 }
 
-@include media-breakpoint-up("lg") {
+@include media-breakpoint-up('lg') {
   .hover-bar:not(.pin-close):hover {
     & .tab-text {
       max-width: 300px;
@@ -523,7 +529,7 @@ $toast-header-background-color: $gray-600;
   }
 }
 
-@import "./select.scss";
+@import './select.scss';
 
 .status-badge {
   margin-left: 5px;
