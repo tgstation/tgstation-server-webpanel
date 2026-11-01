@@ -27,6 +27,11 @@ jobs:
         steps:
             - uses: actions/checkout@v7
 
+            - name: Enable corepack
+              run: |
+                  corepack enable
+                  corepack prepare
+
             - parallel:
                   - name: Install Native Dependencies
                     run: |
@@ -38,11 +43,6 @@ jobs:
                     with:
                         node-version: ${{ matrix.node-version }}
                         cache: yarn
-
-            - name: Enable corepack
-              run: |
-                  corepack enable
-                  corepack prepare --active
 
             - name: Install Yarn Dependencies
               run: |
@@ -70,7 +70,7 @@ jobs:
             - name: Enable corepack
               run: |
                   corepack enable
-                  corepack prepare --active
+                  corepack prepare
 
             - parallel:
                   - name: Install Native Dependencies

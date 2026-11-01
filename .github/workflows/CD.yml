@@ -18,7 +18,7 @@ jobs:
             - name: Enable corepack
               run: |
                   corepack enable
-                  corepack prepare --active
+                  corepack prepare
 
             - parallel:
                   - name: Install Native Dependencies
