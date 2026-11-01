@@ -55,7 +55,7 @@ jobs:
           fi
 
       - name: Compile
-        run: yarn build
+        run: yarn run build
 
   lint:
     name: Run Linter
@@ -97,8 +97,8 @@ jobs:
             exit 1
           fi
 
-      - name: Run ESLint
-        run: yarn eslint "**/*.{js,jsx,ts,tsx}"
+      - name: Run linter
+        run: yarn run lint
 
   completion_gate: # Serves as a non-moving target for branch rulesets
     if: always() && !cancelled()
