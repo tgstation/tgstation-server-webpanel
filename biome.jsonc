@@ -1,81 +1,97 @@
 {
-    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-    "assist": {
-        "actions": {
-            "source": {
-                "organizeImports": "on"
-            }
-        },
-        "enabled": true
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
     },
-    "css": {
-        "formatter": {
-            "quoteStyle": "double"
-        }
-    },
-    "files": {
-        "ignoreUnknown": false,
-        "includes": ["**", "!**/node_modules", "!**/.yarn", "!**/dist", "!**/static"]
-    },
+    "enabled": true
+  },
+  "css": {
     "formatter": {
-        "enabled": true,
-        "indentStyle": "space",
-        "lineEnding": "lf"
-    },
-    "javascript": {
-        "formatter": {
-            "quoteStyle": "single"
-        }
-    },
-    "linter": {
-        "enabled": true,
-        "rules": {
-            "preset": "recommended",
-            "a11y": "off",
-            "correctness": {
-                "noUnusedImports": "error",
-                "noUnusedVariables": "warn",
-                "useExhaustiveDependencies": "off",
-                "noUnusedFunctionParameters": "off"
-            },
-            "suspicious": {
-                "noArrayIndexKey": "warn",
-                "noExplicitAny": "off",
-                "noImplicitAnyLet": "off",
-                "noVar": "error"
-            }
-        }
-    },
-    // Overrides for tests
-    "overrides": [
-        {
-            "includes": ["**/*.{test,spec}.{ts,tsx}"],
-            "linter": {
-                "rules": {
-                    "suspicious": {
-                        "noAssignInExpressions": "off"
-                    },
-                    "style": {
-                        "noNonNullAssertion": "off"
-                    }
-                }
-            }
-        },
-        {
-            "includes": ["**/*.stories.{tsx,jsx}"],
-            "linter": {
-                "rules": {
-                    "correctness": {
-                        // Neccessary for explicitly setting children to undefined when we need to.
-                        "noChildrenProp": "off"
-                    }
-                }
-            }
-        }
-    ],
-    "vcs": {
-        "clientKind": "git",
-        "enabled": false,
-        "useIgnoreFile": true
+      "quoteStyle": "double"
     }
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/.yarn",
+      "!**/dist",
+      "!**/build",
+      "!**/src/index.html",
+      "!**/src/ApiClient/generatedcode",
+      // inkscape-font-specification
+      "!**/src/images/logo.svg"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "lineEnding": "lf"
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "a11y": "off",
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "warn",
+        "useExhaustiveDependencies": "off",
+        "noUnusedFunctionParameters": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "warn",
+        "noExplicitAny": "off",
+        "noImplicitAnyLet": "off",
+        "noVar": "error",
+        // i simply do not want to fix this yet
+        "useIterableCallbackReturn": "warn",
+        "noNonNullAssertedOptionalChain": "info"
+      }
+    }
+  },
+  // Overrides for tests
+  "overrides": [
+    {
+      "includes": ["**/*.{test,spec}.{ts,tsx}"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noAssignInExpressions": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.stories.{tsx,jsx}"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            // Neccessary for explicitly setting children to undefined when we need to.
+            "noChildrenProp": "off"
+          }
+        }
+      }
+    }
+  ],
+  "vcs": {
+    "clientKind": "git",
+    "enabled": false,
+    "useIgnoreFile": true
+  }
 }
