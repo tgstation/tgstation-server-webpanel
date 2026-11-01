@@ -1,5 +1,5 @@
-import type { LogFileResponse } from "../generatedcode/generated";
+import type { LogFileResponse } from '../generatedcode/generated';
 
 export type DownloadedLog = LogFileResponse & {
-    content: string;
+  content: string;
 };

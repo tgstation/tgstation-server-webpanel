@@ -1,14 +1,14 @@
-import React, { Suspense } from "react";
+import React, { Suspense } from 'react';
 
-const AppLoading = React.lazy(async () => import("./AppLoading"));
+const AppLoading = React.lazy(async () => import('./AppLoading'));
 
 export const RootLoading = (
-    <React.Fragment>
-        <React.StrictMode>
-            <Suspense
-                fallback={
-                    <React.Fragment>
-                        <style type="text/css">{`
+  <React.Fragment>
+    <React.StrictMode>
+      <Suspense
+        fallback={
+          <React.Fragment>
+            <style type="text/css">{`
                         body {
                             background: #212529;
                             color: #FFFFFF;
@@ -18,11 +18,12 @@ export const RootLoading = (
                             text-align: center;
                         }
                     `}</style>
-                        <p>Loading styles...</p>
-                    </React.Fragment>
-                }>
-                <AppLoading />
-            </Suspense>
-        </React.StrictMode>
-    </React.Fragment>
+            <p>Loading styles...</p>
+          </React.Fragment>
+        }
+      >
+        <AppLoading />
+      </Suspense>
+    </React.StrictMode>
+  </React.Fragment>
 );

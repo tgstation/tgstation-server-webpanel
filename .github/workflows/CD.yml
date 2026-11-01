@@ -1,99 +1,99 @@
 name: Deploy code
 
 on:
-    push:
-        branches:
-            - next
-            - back-patch
-    workflow_dispatch:
+  push:
+    branches:
+      - next
+      - back-patch
+  workflow_dispatch:
 
 jobs:
-    deploy:
-        runs-on: ubuntu-24.04
-        strategy:
-            matrix:
-                node-version: [22.x]
-        steps:
-            - name: Install Native Dependencies
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y expect-dev
+  deploy:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        node-version: [22.x]
+    steps:
+      - name: Install Native Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y expect-dev
 
-            - name: Checkout
-              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
-              with:
-                  fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
+        with:
+          fetch-depth: 0
 
-            - name: Check if version is tagged
-              id: get-tag
-              run: |
-                  set +ea
-                  git describe --exact-match HEAD
-                  if [ $? -eq 0 ]; then
-                    echo "deploy_tag=$(git describe --exact-match HEAD)" >> $GITHUB_OUTPUT
-                  else
-                    echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
-                  fi
+      - name: Check if version is tagged
+        id: get-tag
+        run: |
+          set +ea
+          git describe --exact-match HEAD
+          if [ $? -eq 0 ]; then
+            echo "deploy_tag=$(git describe --exact-match HEAD)" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
+          fi
 
-            - name: Restore Yarn cache
-              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # 6.1.0
-              with:
-                  path: .yarn/cache
-                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+      - name: Restore Yarn cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # 6.1.0
+        with:
+          path: .yarn/cache
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
 
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # 7.1.0
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  package-manager-cache: false
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # 7.1.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          package-manager-cache: false
 
-            - name: Setup Yarn
-              run: corepack enable
+      - name: Setup Yarn
+        run: corepack enable
 
-            - name: Install Yarn Dependencies
-              run: |
-                  unbuffer yarn install --immutable | tee yarn_output.log
-                  if cat yarn_output.log | grep YN0060; then
-                    echo "Detected incompatible peer dependencies!"
-                    exit 1
-                  fi
+      - name: Install Yarn Dependencies
+        run: |
+          unbuffer yarn install --immutable | tee yarn_output.log
+          if cat yarn_output.log | grep YN0060; then
+            echo "Detected incompatible peer dependencies!"
+            exit 1
+          fi
 
-            - name: Compile
-              if: steps.get-tag.outputs.deploy_tag != 'FAILED'
-              run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA --env GITHUB_TAG="${{ steps.get-tag.outputs.deploy_tag }}"
+      - name: Compile
+        if: steps.get-tag.outputs.deploy_tag != 'FAILED'
+        run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA --env GITHUB_TAG="${{ steps.get-tag.outputs.deploy_tag }}"
 
-            - name: Compile (no tag)
-              if: steps.get-tag.outputs.deploy_tag == 'FAILED'
-              run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA
+      - name: Compile (no tag)
+        if: steps.get-tag.outputs.deploy_tag == 'FAILED'
+        run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA
 
-            #Safety against pushing broken code
-            - name: Run ESLint
-              run: yarn eslint "**/*.{js,jsx,ts,tsx}"
+      #Safety against pushing broken code
+      - name: Run ESLint
+        run: yarn eslint "**/*.{js,jsx,ts,tsx}"
 
-            - name: Create workdir
-              run: |
-                  git fetch origin live
-                  git worktree add $HOME/webpanellive origin/live
-                  touch $HOME/webpanellive/.nojekyll
+      - name: Create workdir
+        run: |
+          git fetch origin live
+          git worktree add $HOME/webpanellive origin/live
+          touch $HOME/webpanellive/.nojekyll
 
-            - name: Copy files
-              run: |
-                  export WEBPANEL_VERSION=$(node -pe "require('./package.json').version")
-                  export API_VERSION=$(node -pe "require('./package.json').tgs_api_version")
-                  rm -rf $HOME/webpanellive/api/$API_VERSION
-                  rm -rf $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
-                  mkdir -p $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
-                  cp ./dist/* $HOME/webpanellive/webpanel/$WEBPANEL_VERSION -R
-                  cd $HOME/webpanellive/api
-                  ln -s ../webpanel/$WEBPANEL_VERSION $API_VERSION
+      - name: Copy files
+        run: |
+          export WEBPANEL_VERSION=$(node -pe "require('./package.json').version")
+          export API_VERSION=$(node -pe "require('./package.json').tgs_api_version")
+          rm -rf $HOME/webpanellive/api/$API_VERSION
+          rm -rf $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
+          mkdir -p $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
+          cp ./dist/* $HOME/webpanellive/webpanel/$WEBPANEL_VERSION -R
+          cd $HOME/webpanellive/api
+          ln -s ../webpanel/$WEBPANEL_VERSION $API_VERSION
 
-            - name: Deploy to Github
-              if: steps.get-tag.outputs.deploy_tag != 'FAILED'
-              run: |
-                  cd $HOME/webpanellive
-                  git config --local user.email "161980869+tgstation-server-ci[bot]@users.noreply.github.com"
-                  git config --local user.name "tgstation-server-ci[bot]"
-                  git add *
-                  git commit -m "Update webpanel"
-                  git pull --rebase origin live
-                  git push origin HEAD:live
+      - name: Deploy to Github
+        if: steps.get-tag.outputs.deploy_tag != 'FAILED'
+        run: |
+          cd $HOME/webpanellive
+          git config --local user.email "161980869+tgstation-server-ci[bot]@users.noreply.github.com"
+          git config --local user.name "tgstation-server-ci[bot]"
+          git add *
+          git commit -m "Update webpanel"
+          git pull --rebase origin live
+          git push origin HEAD:live

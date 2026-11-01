@@ -3,11 +3,7 @@
     "outDir": "build/lib",
     "module": "ESNext",
     "target": "ES2018",
-    "lib": [
-      "ESNext",
-      "dom",
-      "dom.iterable"
-    ],
+    "lib": ["ESNext", "dom", "dom.iterable"],
     "sourceMap": true,
     "allowJs": false,
     "jsx": "react-jsx",
@@ -26,10 +22,6 @@
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true
   },
-  "exclude": [
-    "./src/**/*generated.ts"
-  ],
-  "include": [
-    "./src"
-  ]
+  "exclude": ["./src/**/*generated.ts"],
+  "include": ["./src"]
 }

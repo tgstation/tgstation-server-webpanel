@@ -1,13 +1,18 @@
-import { ApiClient } from "./_base";
-import {
-    ErrorMessageResponse,
-    RepositoryCreateRequest,
-    RepositoryResponse,
-    RepositoryUpdateRequest
-} from "./generatedcode/generated";
-import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
-import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
-import ServerClient from "./ServerClient";
+import { ApiClient } from './_base';
+import type {
+  ErrorMessageResponse,
+  RepositoryCreateRequest,
+  RepositoryResponse,
+  RepositoryUpdateRequest,
+} from './generatedcode/generated';
+import InternalError, {
+  ErrorCode,
+  type GenericErrors,
+} from './models/InternalComms/InternalError';
+import InternalStatus, {
+  StatusCode,
+} from './models/InternalComms/InternalStatus';
+import ServerClient from './ServerClient';
 
 export type cloneRepositoryErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export type deleteRepositoryErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
@@ -16,282 +21,294 @@ export type getRepositoryErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export type editRepositoryErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 
 export default new (class RepositoryClient extends ApiClient {
-    public async cloneRepository(
-        instanceid: number,
-        settings: RepositoryCreateRequest
-    ): Promise<InternalStatus<RepositoryResponse, cloneRepositoryErrors>> {
-        await ServerClient.wait4Init();
+  public async cloneRepository(
+    instanceid: number,
+    settings: RepositoryCreateRequest,
+  ): Promise<InternalStatus<RepositoryResponse, cloneRepositoryErrors>> {
+    await ServerClient.wait4Init();
 
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.repositoryControllerCreate(settings, {
-                headers: {
-                    Instance: instanceid
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
-
-        switch (response.status) {
-            case 201: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as RepositoryResponse
-                });
-            }
-            case 410: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.NO_DB_ENTITY,
-                        {
-                            errorMessage: response.data as ErrorMessageResponse
-                        },
-                        response
-                    )
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.repositoryControllerCreate(
+        settings,
+        {
+          headers: {
+            Instance: instanceid,
+          },
+        },
+      );
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
     }
 
-    public async recloneRepository(
-        instanceid: number
-    ): Promise<InternalStatus<RepositoryResponse, recloneRepositoryErrors>> {
-        await ServerClient.wait4Init();
+    switch (response.status) {
+      case 201: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as RepositoryResponse,
+        });
+      }
+      case 410: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.NO_DB_ENTITY,
+            {
+              errorMessage: response.data as ErrorMessageResponse,
+            },
+            response,
+          ),
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
+    }
+  }
 
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.repositoryControllerReclone({
-                headers: {
-                    Instance: instanceid
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
+  public async recloneRepository(
+    instanceid: number,
+  ): Promise<InternalStatus<RepositoryResponse, recloneRepositoryErrors>> {
+    await ServerClient.wait4Init();
 
-        switch (response.status) {
-            case 202: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as RepositoryResponse
-                });
-            }
-            case 410: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.NO_DB_ENTITY,
-                        {
-                            errorMessage: response.data as ErrorMessageResponse
-                        },
-                        response
-                    )
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.repositoryControllerReclone({
+        headers: {
+          Instance: instanceid,
+        },
+      });
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
     }
 
-    public async deleteRepository(
-        instanceid: number
-    ): Promise<InternalStatus<RepositoryResponse, deleteRepositoryErrors>> {
-        await ServerClient.wait4Init();
+    switch (response.status) {
+      case 202: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as RepositoryResponse,
+        });
+      }
+      case 410: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.NO_DB_ENTITY,
+            {
+              errorMessage: response.data as ErrorMessageResponse,
+            },
+            response,
+          ),
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
+    }
+  }
 
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.repositoryControllerDelete({
-                headers: {
-                    Instance: instanceid
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
+  public async deleteRepository(
+    instanceid: number,
+  ): Promise<InternalStatus<RepositoryResponse, deleteRepositoryErrors>> {
+    await ServerClient.wait4Init();
 
-        switch (response.status) {
-            case 202: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as RepositoryResponse
-                });
-            }
-            case 410: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.NO_DB_ENTITY,
-                        {
-                            errorMessage: response.data as ErrorMessageResponse
-                        },
-                        response
-                    )
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.repositoryControllerDelete({
+        headers: {
+          Instance: instanceid,
+        },
+      });
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
     }
 
-    public async getRepository(
-        instanceid: number
-    ): Promise<
-        InternalStatus<RepositoryResponse & { bootstrapped?: boolean }, getRepositoryErrors>
-    > {
-        await ServerClient.wait4Init();
+    switch (response.status) {
+      case 202: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as RepositoryResponse,
+        });
+      }
+      case 410: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.NO_DB_ENTITY,
+            {
+              errorMessage: response.data as ErrorMessageResponse,
+            },
+            response,
+          ),
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
+    }
+  }
 
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.repositoryControllerRead({
-                headers: {
-                    Instance: instanceid
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
+  public async getRepository(
+    instanceid: number,
+  ): Promise<
+    InternalStatus<
+      RepositoryResponse & { bootstrapped?: boolean },
+      getRepositoryErrors
+    >
+  > {
+    await ServerClient.wait4Init();
 
-        switch (response.status) {
-            case 200: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as RepositoryResponse
-                });
-            }
-            case 201: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: Object.assign(
-                        { bootstraped: true },
-                        response.data as RepositoryResponse
-                    )
-                });
-            }
-            case 410: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.NO_DB_ENTITY,
-                        {
-                            errorMessage: response.data as ErrorMessageResponse
-                        },
-                        response
-                    )
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.repositoryControllerRead({
+        headers: {
+          Instance: instanceid,
+        },
+      });
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
     }
 
-    public async editRepository(
-        instanceid: number,
-        newSettings: RepositoryUpdateRequest
-    ): Promise<
-        InternalStatus<RepositoryResponse & { longRunning?: boolean }, editRepositoryErrors>
-    > {
-        await ServerClient.wait4Init();
-
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.repositoryControllerUpdate(newSettings, {
-                headers: {
-                    Instance: instanceid
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
-
-        switch (response.status) {
-            case 200: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as RepositoryResponse
-                });
-            }
-            case 202: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: Object.assign(
-                        { longRunning: true },
-                        response.data as RepositoryResponse
-                    )
-                });
-            }
-            case 410: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.NO_DB_ENTITY,
-                        {
-                            errorMessage: response.data as ErrorMessageResponse
-                        },
-                        response
-                    )
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    switch (response.status) {
+      case 200: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as RepositoryResponse,
+        });
+      }
+      case 201: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: Object.assign(
+            { bootstraped: true },
+            response.data as RepositoryResponse,
+          ),
+        });
+      }
+      case 410: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.NO_DB_ENTITY,
+            {
+              errorMessage: response.data as ErrorMessageResponse,
+            },
+            response,
+          ),
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
     }
+  }
+
+  public async editRepository(
+    instanceid: number,
+    newSettings: RepositoryUpdateRequest,
+  ): Promise<
+    InternalStatus<
+      RepositoryResponse & { longRunning?: boolean },
+      editRepositoryErrors
+    >
+  > {
+    await ServerClient.wait4Init();
+
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.repositoryControllerUpdate(
+        newSettings,
+        {
+          headers: {
+            Instance: instanceid,
+          },
+        },
+      );
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
+    }
+
+    switch (response.status) {
+      case 200: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as RepositoryResponse,
+        });
+      }
+      case 202: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: Object.assign(
+            { longRunning: true },
+            response.data as RepositoryResponse,
+          ),
+        });
+      }
+      case 410: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.NO_DB_ENTITY,
+            {
+              errorMessage: response.data as ErrorMessageResponse,
+            },
+            response,
+          ),
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
+    }
+  }
 })();
