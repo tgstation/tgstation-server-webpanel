@@ -116,6 +116,7 @@
     "msbuild": "yarn run build && node scripts/msbuild.js",
     "build-dev": "yarn webpack --mode development",
     "lint": "yarn biome lint src",
+    "lint:ci": "yarn biome ci src --formatter-enabled=false",
     "lint-fix": "yarn biome check --write --unsafe src",
     "test": "yarn run lint && yarn run build",
     "postinstall": "yarn run generate-api",

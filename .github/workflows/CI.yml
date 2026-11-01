@@ -98,7 +98,7 @@ jobs:
           fi
 
       - name: Run linter
-        run: yarn run lint
+        run: yarn run lint:ci
 
   completion_gate: # Serves as a non-moving target for branch rulesets
     if: always() && !cancelled()
