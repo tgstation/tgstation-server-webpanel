@@ -9,20 +9,31 @@ on:
 
 jobs:
     deploy:
+        permissions:
+            contents: write
+            pull-requests: read
         runs-on: ubuntu-24.04
-        strategy:
-            matrix:
-                node-version: [22.x]
         steps:
-            - name: Install Native Dependencies
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y expect-dev
-
-            - name: Checkout
-              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
               with:
                   fetch-depth: 0
+
+            - name: Enable corepack
+              run: |
+                  corepack enable
+                  corepack prepare
+
+            - parallel:
+                  - name: Install Native Dependencies
+                    run: |
+                        sudo apt-get update
+                        sudo apt-get install -y expect-dev
+
+                  - name: Use Node.js (22)
+                    uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # 7.1.0
+                    with:
+                        node-version: 22
+                        cache: yarn
 
             - name: Check if version is tagged
               id: get-tag
@@ -34,21 +45,6 @@ jobs:
                   else
                     echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
                   fi
-
-            - name: Restore Yarn cache
-              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # 6.1.0
-              with:
-                  path: .yarn/cache
-                  key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # 7.1.0
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  package-manager-cache: false
-
-            - name: Setup Yarn
-              run: corepack enable
 
             - name: Install Yarn Dependencies
               run: |
@@ -87,12 +83,34 @@ jobs:
                   cd $HOME/webpanellive/api
                   ln -s ../webpanel/$WEBPANEL_VERSION $API_VERSION
 
+            - name: Get bot token
+              uses: actions/create-github-app-token@v3
+              if: steps.get-tag.outputs.deploy_tag != 'FAILED' && env.APP_PRIVATE_KEY != '' && env.APP_ID != ''
+              id: app-token
+              with:
+                  client-id: ${{ secrets.APP_ID }}
+                  private-key: ${{ secrets.APP_PRIVATE_KEY }}
+                  permission-contents: write
+              env:
+                  APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+                  APP_ID: ${{ secrets.APP_ID }}
+
+            - name: Set user
+              if: steps.get-tag.outputs.deploy_tag != 'FAILED'
+              run: |
+                  git config --local user.name "tgstation-server-ci[bot]"
+                  git config --local user.email "161980869+tgstation-server-ci[bot]@users.noreply.github.com
+
+            - name: Authenticate user
+              if: steps.get-tag.outputs.deploy_tag != 'FAILED' && env.GH_TOKEN != ''
+              run: gh auth setup-git
+              env:
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
             - name: Deploy to Github
               if: steps.get-tag.outputs.deploy_tag != 'FAILED'
               run: |
                   cd $HOME/webpanellive
-                  git config --local user.email "161980869+tgstation-server-ci[bot]@users.noreply.github.com"
-                  git config --local user.name "tgstation-server-ci[bot]"
                   git add *
                   git commit -m "Update webpanel"
                   git pull --rebase origin live
