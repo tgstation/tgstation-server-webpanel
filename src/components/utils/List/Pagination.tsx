@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import RBSPage from "react-bootstrap/esm/Pagination";
+import { FormattedMessage } from "react-intl";
 
 export type PaginationProps = {
     onPageChange?: React.Dispatch<React.SetStateAction<number>>;
@@ -52,8 +53,14 @@ export const Pagination = ({
         <div className="d-flex justify-content-between">
             <div className="d-flex align-items-center">
                 <small>
-                    Showing {Math.max((page - 1) * pageSize, 0) + 1}-
-                    {Math.min(page * pageSize, totalItems)} of {totalItems}
+                    <FormattedMessage
+                        id="pagination.desc"
+                        values={{
+                            pageCount: Math.max((page - 1) * pageSize, 0) + 1,
+                            totalPageCount: Math.min(page * pageSize, totalItems),
+                            totalItems
+                        }}
+                    />
                 </small>
             </div>
             <RBSPage className="mb-0">
