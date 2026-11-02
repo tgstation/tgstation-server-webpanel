@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -181,6 +182,10 @@ module.exports = (env, options) => {
         stats: createStats(true),
 
         plugins: [
+            // fucking webpack!!!
+            new webpack.ProvidePlugin({
+                "React": "react",
+            }),
             new MiniCssExtractPlugin(),
             new CopyPlugin({
                 patterns: [

@@ -192,6 +192,10 @@
     "view.admin.update.major_warn.title": "WARNING: Attempting Major TGS Version Change",
     "view.admin.update.major_warn.body": "You are attempting to switch the major version of TGS from {currentMajor} to {targetMajor}! READ THE RELEASE NOTES CAREFULLY! Most TGS major upgrades constitute a change in the required .NET runtime. If this runtime is not installed PRIOR to updating, TGS will FAIL to restart after upgrading until it is! There also may be REQUIRED configuration changes that, if not made, may also result in a failure to restart!",
     "view.admin.logs.button": "TGS Logs",
+    "user.list.identity": "Identity Provider",
+    "user.list.row.delete": "Are you sure?",
+    "user.list.row.delete.desc": "Once disabled you are unable to login into this account.",
+    "view.user.list.title": "Users",
     "view.user.list.cantlist": "This user does not have the permission to list users, only the current user is listed/editable.",
     "view.user.list.showdisabled": "Show disabled users",
     "view.user.edit.cantedit": "This user does not have the permission to edit users.",
@@ -919,5 +923,6 @@
     "fields.instance.deploy.validateapi.Required": "Require validation to succeed for the deployment to succeed",
     "fields.instance.deploy.validateapi.Skipped": "Skip validation disabling all DMAPI features",
     "warning.screensize.header": "Screen size warning",
-    "warning.screensize": "The TGS webpanel does not guarentee support for viewports with a width of under 992px."
+    "warning.screensize": "The TGS webpanel does not guarentee support for viewports with a width of under 992px.",
+    "pagination.desc": "Showing {pageCount}-{totalPageCount} of {totalItems}"
 }

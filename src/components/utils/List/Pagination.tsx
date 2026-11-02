@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import RBSPage from "react-bootstrap/esm/Pagination";
+import { FormattedMessage } from "react-intl";
 
 export type PaginationProps = {
     onPageChange?: React.Dispatch<React.SetStateAction<number>>;
@@ -24,6 +25,9 @@ export const Pagination = ({
     pageSize = 10,
     totalItems = 100
 }: PaginationProps) => {
+    if (!totalItems) {
+        maxPage = 1;
+    }
     if (!maxPage) {
         maxPage = Math.round(pageSize / totalItems);
     }
@@ -49,8 +53,14 @@ export const Pagination = ({
         <div className="d-flex justify-content-between">
             <div className="d-flex align-items-center">
                 <small>
-                    Showing {Math.max((page - 1) * pageSize + 1, 1)}-
-                    {Math.min(page * pageSize, totalItems)} of {totalItems}
+                    <FormattedMessage
+                        id="pagination.desc"
+                        values={{
+                            pageCount: Math.max((page - 1) * pageSize, 0) + 1,
+                            totalPageCount: Math.min(page * pageSize, totalItems),
+                            totalItems
+                        }}
+                    />
                 </small>
             </div>
             <RBSPage className="mb-0">
@@ -67,11 +77,39 @@ export const Pagination = ({
                         setPage(myPage - 1);
                     }}
                 />
-                {isAValidSalad(myPage - 2) && <RBSPage.Item>{myPage - 2}</RBSPage.Item>}
-                {isAValidSalad(myPage - 1) && <RBSPage.Item>{myPage - 1}</RBSPage.Item>}
+                {isAValidSalad(myPage - 2) && (
+                    <RBSPage.Item
+                        onClick={() => {
+                            setPage(myPage - 2);
+                        }}>
+                        {myPage - 2}
+                    </RBSPage.Item>
+                )}
+                {isAValidSalad(myPage - 1) && (
+                    <RBSPage.Item
+                        onClick={() => {
+                            setPage(myPage - 1);
+                        }}>
+                        {myPage - 1}
+                    </RBSPage.Item>
+                )}
                 <RBSPage.Item active>{myPage}</RBSPage.Item>
-                {isAValidSalad(myPage + 1) && <RBSPage.Item>{myPage + 1}</RBSPage.Item>}
-                {isAValidSalad(myPage + 2) && <RBSPage.Item>{myPage + 2}</RBSPage.Item>}
+                {isAValidSalad(myPage + 1) && (
+                    <RBSPage.Item
+                        onClick={() => {
+                            setPage(myPage + 1);
+                        }}>
+                        {myPage + 1}
+                    </RBSPage.Item>
+                )}
+                {isAValidSalad(myPage + 2) && (
+                    <RBSPage.Item
+                        onClick={() => {
+                            setPage(myPage + 2);
+                        }}>
+                        {myPage + 2}
+                    </RBSPage.Item>
+                )}
                 <RBSPage.Next
                     disabled={!isAValidSalad(myPage + 1)}
                     onClick={() => {
