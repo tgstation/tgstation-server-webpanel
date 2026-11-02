@@ -1,103 +1,103 @@
 name: Node.js CI
 
 on:
-    push:
-        branches:
-            - next
-    pull_request:
-        branches:
-            - next
-    merge_group:
-        branches:
-            - next
+  push:
+    branches:
+      - next
+  pull_request:
+    branches:
+      - next
+  merge_group:
+    branches:
+      - next
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    build:
-        name: Build
-        runs-on: ubuntu-24.04
-        timeout-minutes: 5
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
 
-        strategy:
-            matrix:
-                node-version: [22, 24, 26]
-        steps:
-            - uses: actions/checkout@v7
+    strategy:
+      matrix:
+        node-version: [22, 24, 26]
+    steps:
+      - uses: actions/checkout@v7
 
-            - name: Enable corepack
-              run: |
-                  corepack enable
-                  corepack prepare
+      - name: Enable corepack
+        run: |
+          corepack enable
+          corepack prepare
 
-            - parallel:
-                  - name: Install Native Dependencies
-                    run: |
-                        sudo apt-get update
-                        sudo apt-get install -y expect-dev
+      - parallel:
+          - name: Install Native Dependencies
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y expect-dev
 
-                  - name: Use Node.js ${{ matrix.node-version }}
-                    uses: actions/setup-node@v7
-                    with:
-                        node-version: ${{ matrix.node-version }}
-                        cache: yarn
+          - name: Use Node.js ${{ matrix.node-version }}
+            uses: actions/setup-node@v7
+            with:
+              node-version: ${{ matrix.node-version }}
+              cache: yarn
 
-            - name: Install Yarn Dependencies
-              run: |
-                  unbuffer yarn install --immutable | tee yarn_output.log
-                  if cat yarn_output.log | grep YN0060; then
-                    echo "Detected incompatible peer dependencies!"
-                    exit 1
-                  fi
+      - name: Install Yarn Dependencies
+        run: |
+          unbuffer yarn install --immutable | tee yarn_output.log
+          if cat yarn_output.log | grep YN0060; then
+            echo "Detected incompatible peer dependencies!"
+            exit 1
+          fi
 
-            - name: Compile
-              run: yarn build
+      - name: Compile
+        run: yarn run build
 
-    lint:
-        name: Run Linter
-        runs-on: ubuntu-24.04
-        timeout-minutes: 5
+  lint:
+    name: Run Linter
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
 
-        steps:
-            - uses: actions/checkout@v7
+    steps:
+      - uses: actions/checkout@v7
 
-            - name: Enable corepack
-              run: |
-                  corepack enable
-                  corepack prepare
+      - name: Enable corepack
+        run: |
+          corepack enable
+          corepack prepare
 
-            - parallel:
-                  - name: Install Native Dependencies
-                    run: |
-                        sudo apt-get update
-                        sudo apt-get install -y expect-dev
+      - parallel:
+          - name: Install Native Dependencies
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y expect-dev
 
-                  - name: Use Node.js (22)
-                    uses: actions/setup-node@v7
-                    with:
-                        node-version: 22
-                        cache: yarn
+          - name: Use Node.js (22)
+            uses: actions/setup-node@v7
+            with:
+              node-version: 22
+              cache: yarn
 
-            - name: Install Yarn Dependencies
-              run: |
-                  unbuffer yarn install --immutable | tee yarn_output.log
-                  if cat yarn_output.log | grep YN0060; then
-                    echo "Detected incompatible peer dependencies!"
-                    exit 1
-                  fi
+      - name: Install Yarn Dependencies
+        run: |
+          unbuffer yarn install --immutable | tee yarn_output.log
+          if cat yarn_output.log | grep YN0060; then
+            echo "Detected incompatible peer dependencies!"
+            exit 1
+          fi
 
-            - name: Run ESLint
-              run: yarn eslint "**/*.{js,jsx,ts,tsx}"
+      - name: Run linter
+        run: yarn run lint:ci
 
-    completion_gate: # Serves as a non-moving target for branch rulesets
-        if: always() && !cancelled()
-        name: Completion Gate
-        needs: [build, lint]
-        runs-on: ubuntu-24.04
-        steps:
-            - name: Decide whether the needed jobs succeeded or failed
-              uses: re-actors/alls-green@release/v1
-              with:
-                  jobs: ${{ toJSON(needs) }}
+  completion_gate: # Serves as a non-moving target for branch rulesets
+    if: always() && !cancelled()
+    name: Completion Gate
+    needs: [build, lint]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}

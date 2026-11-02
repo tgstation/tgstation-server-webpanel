@@ -1,31 +1,34 @@
-import InternalError, { ErrorCode } from "./InternalError";
+import type InternalError from './InternalError';
+import type { ErrorCode } from './InternalError';
 
 export enum StatusCode {
-    OK,
-    ERROR
+  OK,
+  ERROR,
 }
 
 export interface InternalStatusErr<Codes extends ErrorCode> {
-    code: StatusCode.ERROR;
-    error: InternalError<Codes>;
+  code: StatusCode.ERROR;
+  error: InternalError<Codes>;
 }
 
 export interface InternalStatusOK<T> {
-    code: StatusCode.OK;
-    payload: T;
+  code: StatusCode.OK;
+  payload: T;
 }
 
-type InternalStatus<T, Codes extends ErrorCode> = InternalStatusOK<T> | InternalStatusErr<Codes>;
+type InternalStatus<T, Codes extends ErrorCode> =
+  | InternalStatusOK<T>
+  | InternalStatusErr<Codes>;
 
 const InternalStatus = function InternalStatus<T, Codes extends ErrorCode>(
-    this: InternalStatus<T, Codes>,
-    args: InternalStatus<T, Codes>
+  this: InternalStatus<T, Codes>,
+  args: InternalStatus<T, Codes>,
 ): Readonly<InternalStatus<T, Codes>> {
-    return Object.freeze(Object.assign({}, args));
+  return Object.freeze(Object.assign({}, args));
 } as unknown as {
-    new <T, Codes extends ErrorCode>(
-        args: InternalStatus<T, Codes>
-    ): Readonly<InternalStatus<T, Codes>>;
+  new <T, Codes extends ErrorCode>(
+    args: InternalStatus<T, Codes>,
+  ): Readonly<InternalStatus<T, Codes>>;
 };
 
 export default InternalStatus;

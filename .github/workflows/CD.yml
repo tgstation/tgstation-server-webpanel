@@ -1,117 +1,118 @@
 name: Deploy code
 
 on:
-    push:
-        branches:
-            - next
-            - back-patch
-    workflow_dispatch:
+  push:
+    branches:
+      - next
+      - back-patch
+  workflow_dispatch:
 
 jobs:
-    deploy:
-        permissions:
-            contents: write
-            pull-requests: read
-        runs-on: ubuntu-24.04
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
-              with:
-                  fetch-depth: 0
+  deploy:
+    permissions:
+      contents: write
+      pull-requests: read
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
+        with:
+          fetch-depth: 0
 
-            - name: Enable corepack
-              run: |
-                  corepack enable
-                  corepack prepare
+      - name: Enable corepack
+        run: |
+          corepack enable
+          corepack prepare
 
-            - parallel:
-                  - name: Install Native Dependencies
-                    run: |
-                        sudo apt-get update
-                        sudo apt-get install -y expect-dev
+      - parallel:
+          - name: Install Native Dependencies
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y expect-dev
 
-                  - name: Use Node.js (22)
-                    uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # 7.1.0
-                    with:
-                        node-version: 22
-                        cache: yarn
+          - name: Use Node.js (22)
+            uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # 7.1.0
+            with:
+              node-version: 22
+              cache: yarn
 
-            - name: Check if version is tagged
-              id: get-tag
-              run: |
-                  set +ea
-                  git describe --exact-match HEAD
-                  if [ $? -eq 0 ]; then
-                    echo "deploy_tag=$(git describe --exact-match HEAD)" >> $GITHUB_OUTPUT
-                  else
-                    echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
-                  fi
+      - name: Check if version is tagged
+        id: get-tag
+        run: |
+          set +ea
+          git describe --exact-match HEAD
+          if [ $? -eq 0 ]; then
+            echo "deploy_tag=$(git describe --exact-match HEAD)" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_tag=FAILED" >> $GITHUB_OUTPUT
+          fi
 
-            - name: Install Yarn Dependencies
-              run: |
-                  unbuffer yarn install --immutable | tee yarn_output.log
-                  if cat yarn_output.log | grep YN0060; then
-                    echo "Detected incompatible peer dependencies!"
-                    exit 1
-                  fi
+      - name: Install Yarn Dependencies
+        run: |
+          unbuffer yarn install --immutable | tee yarn_output.log
+          if cat yarn_output.log | grep YN0060; then
+            echo "Detected incompatible peer dependencies!"
+            exit 1
+          fi
 
-            - name: Compile
-              if: steps.get-tag.outputs.deploy_tag != 'FAILED'
-              run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA --env GITHUB_TAG="${{ steps.get-tag.outputs.deploy_tag }}"
+      - parallel:
+          - name: Compile
+            if: steps.get-tag.outputs.deploy_tag != 'FAILED'
+            run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA --env GITHUB_TAG="${{ steps.get-tag.outputs.deploy_tag }}"
 
-            - name: Compile (no tag)
-              if: steps.get-tag.outputs.deploy_tag == 'FAILED'
-              run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA
+          - name: Compile (no tag)
+            if: steps.get-tag.outputs.deploy_tag == 'FAILED'
+            run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA
 
-            #Safety against pushing broken code
-            - name: Run ESLint
-              run: yarn eslint "**/*.{js,jsx,ts,tsx}"
+          #Safety against pushing broken code
+          - name: Run linter
+            run: yarn run lint:ci
 
-            - name: Create workdir
-              run: |
-                  git fetch origin live
-                  git worktree add $HOME/webpanellive origin/live
-                  touch $HOME/webpanellive/.nojekyll
+      - name: Create workdir
+        run: |
+          git fetch origin live
+          git worktree add $HOME/webpanellive origin/live
+          touch $HOME/webpanellive/.nojekyll
 
-            - name: Copy files
-              run: |
-                  export WEBPANEL_VERSION=$(node -pe "require('./package.json').version")
-                  export API_VERSION=$(node -pe "require('./package.json').tgs_api_version")
-                  rm -rf $HOME/webpanellive/api/$API_VERSION
-                  rm -rf $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
-                  mkdir -p $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
-                  cp ./dist/* $HOME/webpanellive/webpanel/$WEBPANEL_VERSION -R
-                  cd $HOME/webpanellive/api
-                  ln -s ../webpanel/$WEBPANEL_VERSION $API_VERSION
+      - name: Copy files
+        run: |
+          export WEBPANEL_VERSION=$(node -pe "require('./package.json').version")
+          export API_VERSION=$(node -pe "require('./package.json').tgs_api_version")
+          rm -rf $HOME/webpanellive/api/$API_VERSION
+          rm -rf $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
+          mkdir -p $HOME/webpanellive/webpanel/$WEBPANEL_VERSION
+          cp ./dist/* $HOME/webpanellive/webpanel/$WEBPANEL_VERSION -R
+          cd $HOME/webpanellive/api
+          ln -s ../webpanel/$WEBPANEL_VERSION $API_VERSION
 
-            - name: Get bot token
-              uses: actions/create-github-app-token@v3
-              if: steps.get-tag.outputs.deploy_tag != 'FAILED' && env.APP_PRIVATE_KEY != '' && env.APP_ID != ''
-              id: app-token
-              with:
-                  client-id: ${{ secrets.APP_ID }}
-                  private-key: ${{ secrets.APP_PRIVATE_KEY }}
-                  permission-contents: write
-              env:
-                  APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
-                  APP_ID: ${{ secrets.APP_ID }}
+      - name: Get bot token
+        uses: actions/create-github-app-token@v3
+        if: steps.get-tag.outputs.deploy_tag != 'FAILED' && env.APP_PRIVATE_KEY != '' && env.APP_ID != ''
+        id: app-token
+        with:
+          client-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: write
+        env:
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          APP_ID: ${{ secrets.APP_ID }}
 
-            - name: Set user
-              if: steps.get-tag.outputs.deploy_tag != 'FAILED'
-              run: |
-                  git config --local user.name "tgstation-server-ci[bot]"
-                  git config --local user.email "161980869+tgstation-server-ci[bot]@users.noreply.github.com
+      - name: Set user
+        if: steps.get-tag.outputs.deploy_tag != 'FAILED'
+        run: |
+          git config --local user.name "tgstation-server-ci[bot]"
+          git config --local user.email "161980869+tgstation-server-ci[bot]@users.noreply.github.com
 
-            - name: Authenticate user
-              if: steps.get-tag.outputs.deploy_tag != 'FAILED' && env.GH_TOKEN != ''
-              run: gh auth setup-git
-              env:
-                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      - name: Authenticate user
+        if: steps.get-tag.outputs.deploy_tag != 'FAILED' && env.GH_TOKEN != ''
+        run: gh auth setup-git
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
-            - name: Deploy to Github
-              if: steps.get-tag.outputs.deploy_tag != 'FAILED'
-              run: |
-                  cd $HOME/webpanellive
-                  git add *
-                  git commit -m "Update webpanel"
-                  git pull --rebase origin live
-                  git push origin HEAD:live
+      - name: Deploy to Github
+        if: steps.get-tag.outputs.deploy_tag != 'FAILED'
+        run: |
+          cd $HOME/webpanellive
+          git add *
+          git commit -m "Update webpanel"
+          git pull --rebase origin live
+          git push origin HEAD:live

@@ -1,232 +1,233 @@
-import "./App.css";
+import './App.css';
 
-import React, { Component, Suspense } from "react";
+import React, { Component, Suspense } from 'react';
 
-import InternalError, {
-    ErrorCode,
-    GenericErrors
-} from "./ApiClient/models/InternalComms/InternalError";
-import { StatusCode } from "./ApiClient/models/InternalComms/InternalStatus";
-import ServerClient from "./ApiClient/ServerClient";
-import UserClient from "./ApiClient/UserClient";
-import LoginHooks from "./ApiClient/util/LoginHooks";
-import Loading from "./components/utils/Loading";
-import { GeneralContext, UnsafeGeneralContext } from "./contexts/GeneralContext";
-import { Localization } from "./translations/Localization";
+import type InternalError from './ApiClient/models/InternalComms/InternalError';
+import {
+  ErrorCode,
+  type GenericErrors,
+} from './ApiClient/models/InternalComms/InternalError';
+import { StatusCode } from './ApiClient/models/InternalComms/InternalStatus';
+import ServerClient from './ApiClient/ServerClient';
+import UserClient from './ApiClient/UserClient';
+import LoginHooks from './ApiClient/util/LoginHooks';
+import Loading from './components/utils/Loading';
+import {
+  GeneralContext,
+  type UnsafeGeneralContext,
+} from './contexts/GeneralContext';
+import { Localization } from './translations/Localization';
 
-const polyfills = import("./polyfills");
-const icolibrary = import("./utils/icolibrary");
-const ConfigController = import("./ApiClient/util/ConfigController");
-const JobsController = import("./ApiClient/util/JobsController");
-const InnerApp = React.lazy(() => import("./InnerApp"));
+const polyfills = import('./polyfills');
+const icolibrary = import('./utils/icolibrary');
+const ConfigController = import('./ApiClient/util/ConfigController');
+const JobsController = import('./ApiClient/util/JobsController');
+const InnerApp = React.lazy(() => import('./InnerApp'));
 
 interface IState {
-    loggedIn: boolean;
-    loggedOut: boolean;
-    loading: boolean;
-    polyfills: boolean;
-    GeneralContextInfo: UnsafeGeneralContext;
+  loggedIn: boolean;
+  loggedOut: boolean;
+  loading: boolean;
+  polyfills: boolean;
+  GeneralContextInfo: UnsafeGeneralContext;
 }
 
 class App extends Component<unknown, IState> {
-    public constructor(props: unknown) {
-        super(props);
+  public constructor(props: unknown) {
+    super(props);
 
-        this.finishLogin = this.finishLogin.bind(this);
-        this.finishLogout = this.finishLogout.bind(this);
-        this.updateContextUser = this.updateContextUser.bind(this);
-        this.updateContextServer = this.updateContextServer.bind(this);
-        this.deleteGeneralContextError = this.deleteGeneralContextError.bind(this);
+    this.finishLogin = this.finishLogin.bind(this);
+    this.finishLogout = this.finishLogout.bind(this);
+    this.updateContextUser = this.updateContextUser.bind(this);
+    this.updateContextServer = this.updateContextServer.bind(this);
+    this.deleteGeneralContextError = this.deleteGeneralContextError.bind(this);
 
-        this.state = {
-            loggedIn: false,
-            loggedOut: false,
-            loading: true,
-            polyfills: false,
-            GeneralContextInfo: {
-                errors: new Set(),
-                user: null,
-                serverInfo: null,
-                deleteError: this.deleteGeneralContextError
-            }
+    this.state = {
+      loggedIn: false,
+      loggedOut: false,
+      loading: true,
+      polyfills: false,
+      GeneralContextInfo: {
+        errors: new Set(),
+        user: null,
+        serverInfo: null,
+        deleteError: this.deleteGeneralContextError,
+      },
+    };
+  }
+
+  private async updateContextUser() {
+    const response = await UserClient.getCurrentUser();
+    if (response.code === StatusCode.OK) {
+      this.setState((prev) => {
+        return {
+          GeneralContextInfo: {
+            errors: prev.GeneralContextInfo.errors,
+            user: response.payload,
+            serverInfo: prev.GeneralContextInfo.serverInfo,
+            deleteError: prev.GeneralContextInfo.deleteError,
+          },
         };
-    }
-
-    private async updateContextUser() {
-        const response = await UserClient.getCurrentUser();
-        if (response.code === StatusCode.OK) {
-            this.setState(prev => {
-                return {
-                    GeneralContextInfo: {
-                        errors: prev.GeneralContextInfo.errors,
-                        user: response.payload,
-                        serverInfo: prev.GeneralContextInfo.serverInfo,
-                        deleteError: prev.GeneralContextInfo.deleteError
-                    }
-                };
-            });
-        } else {
-            if (response.error.code === ErrorCode.HTTP_ACCESS_DENIED) {
-                this.setState(prev => {
-                    return {
-                        GeneralContextInfo: {
-                            user: null,
-                            serverInfo: prev.GeneralContextInfo.serverInfo,
-                            deleteError: prev.GeneralContextInfo.deleteError,
-                            errors: prev.GeneralContextInfo.errors
-                        }
-                    };
-                });
-            } else {
-                setTimeout(() => void this.updateContextUser(), 5000);
-                this.setState(prev => {
-                    const newSet = new Set(prev.GeneralContextInfo.errors);
-                    newSet.add(response.error);
-                    return {
-                        GeneralContextInfo: {
-                            errors: newSet,
-                            deleteError: prev.GeneralContextInfo.deleteError,
-                            user: null,
-                            serverInfo: prev.GeneralContextInfo.serverInfo
-                        }
-                    };
-                });
-            }
-        }
-    }
-
-    private async updateContextServer(lastError?: InternalError<GenericErrors>) {
-        const response = await ServerClient.getServerInfo();
-        if (response.code === StatusCode.OK) {
-            this.setState(prev => {
-                const newSet = new Set(prev.GeneralContextInfo.errors);
-                if (lastError) {
-                    newSet.delete(lastError);
-                }
-                return {
-                    GeneralContextInfo: {
-                        errors: newSet,
-                        user: prev.GeneralContextInfo.user,
-                        serverInfo: response.payload,
-                        deleteError: prev.GeneralContextInfo.deleteError
-                    }
-                };
-            });
-        } else {
-            setTimeout(() => void this.updateContextServer(response.error), 5000);
-            this.setState(prev => {
-                const newSet = new Set(prev.GeneralContextInfo.errors);
-                newSet.add(response.error);
-                if (lastError) {
-                    newSet.delete(lastError);
-                }
-                return {
-                    GeneralContextInfo: {
-                        errors: newSet,
-                        deleteError: prev.GeneralContextInfo.deleteError,
-                        user: prev.GeneralContextInfo.user,
-                        serverInfo: null
-                    }
-                };
-            });
-        }
-    }
-
-    public deleteGeneralContextError(error: InternalError): void {
-        this.setState(prev => {
-            const newSet = new Set(prev.GeneralContextInfo.errors);
-            newSet.delete(error);
-            return {
-                GeneralContextInfo: {
-                    deleteError: prev.GeneralContextInfo.deleteError,
-                    user: prev.GeneralContextInfo.user,
-                    serverInfo: prev.GeneralContextInfo.serverInfo,
-                    errors: newSet
-                }
-            };
+      });
+    } else {
+      if (response.error.code === ErrorCode.HTTP_ACCESS_DENIED) {
+        this.setState((prev) => {
+          return {
+            GeneralContextInfo: {
+              user: null,
+              serverInfo: prev.GeneralContextInfo.serverInfo,
+              deleteError: prev.GeneralContextInfo.deleteError,
+              errors: prev.GeneralContextInfo.errors,
+            },
+          };
         });
-    }
-
-    private finishLogin() {
-        console.log("Logging in");
-
-        void this.updateContextUser().then(() =>
-            this.setState({
-                loggedIn: true,
-                loading: false
-            })
-        );
-    }
-
-    private finishLogout() {
-        this.setState({
-            loggedIn: false,
-            loggedOut: true
+      } else {
+        setTimeout(() => void this.updateContextUser(), 5000);
+        this.setState((prev) => {
+          const newSet = new Set(prev.GeneralContextInfo.errors);
+          newSet.add(response.error);
+          return {
+            GeneralContextInfo: {
+              errors: newSet,
+              deleteError: prev.GeneralContextInfo.deleteError,
+              user: null,
+              serverInfo: prev.GeneralContextInfo.serverInfo,
+            },
+          };
         });
-
-        void this.updateContextUser();
+      }
     }
-    public componentDidMount() {
-        void (async () => {
-            // dont lag the dom
-            const initIcons = await icolibrary;
-            initIcons.default();
-            (await ConfigController).default.loadconfig();
-            (await JobsController).default.init();
+  }
 
-            LoginHooks.on("loginSuccess", this.finishLogin);
-            ServerClient.on("logout", this.finishLogout);
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            ServerClient.on("purgeCache", this.updateContextServer);
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            ServerClient.on("purgeCache", this.updateContextUser);
-
-            await polyfills;
-
-            this.setState({ polyfills: true });
-
-            const loggedInSuccessfully = await ServerClient.initApi();
-            await this.updateContextServer();
-            if (loggedInSuccessfully) {
-                await this.updateContextUser();
-            }
-
-            this.setState({
-                loading: false,
-                loggedIn: loggedInSuccessfully
-            });
-        })();
-    }
-
-    public componentWillUnmount(): void {
-        LoginHooks.removeListener("loginSuccess", this.finishLogin);
-        ServerClient.removeListener("logout", this.finishLogout);
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        ServerClient.removeListener("purgeCache", this.updateContextServer);
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        ServerClient.removeListener("purgeCache", this.updateContextUser);
-    }
-
-    public render() {
-        if (!this.state.polyfills) {
-            return <Loading>Loading polyfills...</Loading>;
+  private async updateContextServer(lastError?: InternalError<GenericErrors>) {
+    const response = await ServerClient.getServerInfo();
+    if (response.code === StatusCode.OK) {
+      this.setState((prev) => {
+        const newSet = new Set(prev.GeneralContextInfo.errors);
+        if (lastError) {
+          newSet.delete(lastError);
         }
-
-        return (
-            <Localization>
-                <Suspense fallback={<Loading text="loading.app" />}>
-                    <GeneralContext.Provider
-                        value={this.state.GeneralContextInfo as GeneralContext}>
-                        <InnerApp
-                            loading={this.state.loading}
-                            loggedIn={this.state.loggedIn}
-                            loggedOut={this.state.loggedOut}
-                        />
-                    </GeneralContext.Provider>
-                </Suspense>
-            </Localization>
-        );
+        return {
+          GeneralContextInfo: {
+            errors: newSet,
+            user: prev.GeneralContextInfo.user,
+            serverInfo: response.payload,
+            deleteError: prev.GeneralContextInfo.deleteError,
+          },
+        };
+      });
+    } else {
+      setTimeout(() => void this.updateContextServer(response.error), 5000);
+      this.setState((prev) => {
+        const newSet = new Set(prev.GeneralContextInfo.errors);
+        newSet.add(response.error);
+        if (lastError) {
+          newSet.delete(lastError);
+        }
+        return {
+          GeneralContextInfo: {
+            errors: newSet,
+            deleteError: prev.GeneralContextInfo.deleteError,
+            user: prev.GeneralContextInfo.user,
+            serverInfo: null,
+          },
+        };
+      });
     }
+  }
+
+  public deleteGeneralContextError(error: InternalError): void {
+    this.setState((prev) => {
+      const newSet = new Set(prev.GeneralContextInfo.errors);
+      newSet.delete(error);
+      return {
+        GeneralContextInfo: {
+          deleteError: prev.GeneralContextInfo.deleteError,
+          user: prev.GeneralContextInfo.user,
+          serverInfo: prev.GeneralContextInfo.serverInfo,
+          errors: newSet,
+        },
+      };
+    });
+  }
+
+  private finishLogin() {
+    console.log('Logging in');
+
+    void this.updateContextUser().then(() =>
+      this.setState({
+        loggedIn: true,
+        loading: false,
+      }),
+    );
+  }
+
+  private finishLogout() {
+    this.setState({
+      loggedIn: false,
+      loggedOut: true,
+    });
+
+    void this.updateContextUser();
+  }
+  public componentDidMount() {
+    void (async () => {
+      // dont lag the dom
+      const initIcons = await icolibrary;
+      initIcons.default();
+      (await ConfigController).default.loadconfig();
+      (await JobsController).default.init();
+
+      LoginHooks.on('loginSuccess', this.finishLogin);
+      ServerClient.on('logout', this.finishLogout);
+      ServerClient.on('purgeCache', this.updateContextServer);
+      ServerClient.on('purgeCache', this.updateContextUser);
+
+      await polyfills;
+
+      this.setState({ polyfills: true });
+
+      const loggedInSuccessfully = await ServerClient.initApi();
+      await this.updateContextServer();
+      if (loggedInSuccessfully) {
+        await this.updateContextUser();
+      }
+
+      this.setState({
+        loading: false,
+        loggedIn: loggedInSuccessfully,
+      });
+    })();
+  }
+
+  public componentWillUnmount(): void {
+    LoginHooks.removeListener('loginSuccess', this.finishLogin);
+    ServerClient.removeListener('logout', this.finishLogout);
+    ServerClient.removeListener('purgeCache', this.updateContextServer);
+    ServerClient.removeListener('purgeCache', this.updateContextUser);
+  }
+
+  public render() {
+    if (!this.state.polyfills) {
+      return <Loading>Loading polyfills...</Loading>;
+    }
+
+    return (
+      <Localization>
+        <Suspense fallback={<Loading text="loading.app" />}>
+          <GeneralContext.Provider
+            value={this.state.GeneralContextInfo as GeneralContext}
+          >
+            <InnerApp
+              loading={this.state.loading}
+              loggedIn={this.state.loggedIn}
+              loggedOut={this.state.loggedOut}
+            />
+          </GeneralContext.Provider>
+        </Suspense>
+      </Localization>
+    );
+  }
 }
 
 export default App;

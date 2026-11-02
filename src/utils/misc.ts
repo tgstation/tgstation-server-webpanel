@@ -1,139 +1,155 @@
-import { pathToRegexp } from "path-to-regexp";
+import { pathToRegexp } from 'path-to-regexp';
 
-import {
-    AdministrationRights,
-    ChatBotRights,
-    ConfigurationRights,
-    DreamDaemonRights,
-    DreamMakerRights,
-    EngineRights,
-    InstanceManagerRights,
-    InstancePermissionSetResponse,
-    InstancePermissionSetRights,
-    PermissionSet,
-    RepositoryRights,
-    UserResponse
-} from "../ApiClient/generatedcode/generated";
+import type {
+  AdministrationRights,
+  ChatBotRights,
+  ConfigurationRights,
+  DreamDaemonRights,
+  DreamMakerRights,
+  EngineRights,
+  InstanceManagerRights,
+  InstancePermissionSetResponse,
+  InstancePermissionSetRights,
+  PermissionSet,
+  RepositoryRights,
+  UserResponse,
+} from '../ApiClient/generatedcode/generated';
 
-export type DistributiveOmit<T, K extends keyof T> = T extends T ? Omit<T, K> : never;
+export type DistributiveOmit<T, K extends keyof T> = T extends T
+  ? Omit<T, K>
+  : never;
 
 function download(filename: string, text: string): void {
-    const element = document.createElement("a");
-    element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
-    element.setAttribute("download", filename);
+  const element = document.createElement('a');
+  element.setAttribute(
+    'href',
+    `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`,
+  );
+  element.setAttribute('download', filename);
 
-    element.style.display = "none";
-    document.body.appendChild(element);
+  element.style.display = 'none';
+  document.body.appendChild(element);
 
-    element.click();
+  element.click();
 
-    document.body.removeChild(element);
+  document.body.removeChild(element);
 }
 
-function replaceAll(str: string, find: string, replace: string, ignore?: boolean): string {
-    return str.replace(
-        new RegExp(find.replace(/([/,!\\^${}[\]().*+?|<>\-&])/g, "\\$&"), ignore ? "gi" : "g"),
-        replace.replace(/\$/g, "$$$$")
-    );
+function replaceAll(
+  str: string,
+  find: string,
+  replace: string,
+  ignore?: boolean,
+): string {
+  return str.replace(
+    new RegExp(
+      find.replace(/([/,!\\^${}[\]().*+?|<>\-&])/g, '\\$&'),
+      ignore ? 'gi' : 'g',
+    ),
+    replace.replace(/\$/g, '$$$$'),
+  );
 }
 
 function matchesPath(path: string, target: string, exact = false): boolean {
-    //remove trailing slashes
-    if (path.slice(-1) === "/") path = path.slice(0, -1);
-    if (target.slice(-1) === "/") target = target.slice(0, -1);
+  //remove trailing slashes
+  if (path.slice(-1) === '/') path = path.slice(0, -1);
+  if (target.slice(-1) === '/') target = target.slice(0, -1);
 
-    return pathToRegexp(target, undefined, { end: exact }).test(path);
+  return pathToRegexp(target, undefined, { end: exact }).test(path);
 }
 
 function resolvePermissionSet(user: UserResponse): PermissionSet {
-    return (user.permissionSet ?? user.group?.permissionSet) as PermissionSet;
+  return (user.permissionSet ?? user.group?.permissionSet) as PermissionSet;
 }
 
 function bitflagIsTrue(bitfield: number, bitflag: number): boolean {
-    return !!(bitflag & bitfield);
+  return !!(bitflag & bitfield);
 }
 
-function hasAdminRight(permissionSet: PermissionSet, right: AdministrationRights): boolean {
-    return bitflagIsTrue(permissionSet.administrationRights, right);
+function hasAdminRight(
+  permissionSet: PermissionSet,
+  right: AdministrationRights,
+): boolean {
+  return bitflagIsTrue(permissionSet.administrationRights, right);
 }
 
 function hasInstanceManagerRight(
-    permissionSet: PermissionSet,
-    right: InstanceManagerRights
+  permissionSet: PermissionSet,
+  right: InstanceManagerRights,
 ): boolean {
-    return bitflagIsTrue(permissionSet.instanceManagerRights, right);
+  return bitflagIsTrue(permissionSet.instanceManagerRights, right);
 }
 
 function hasEngineRight(
-    permissionSet: InstancePermissionSetResponse,
-    right: EngineRights
+  permissionSet: InstancePermissionSetResponse,
+  right: EngineRights,
 ): boolean {
-    return bitflagIsTrue(permissionSet.engineRights, right);
+  return bitflagIsTrue(permissionSet.engineRights, right);
 }
 
 function hasChatBotRight(
-    permissionSet: InstancePermissionSetResponse,
-    right: ChatBotRights
+  permissionSet: InstancePermissionSetResponse,
+  right: ChatBotRights,
 ): boolean {
-    return bitflagIsTrue(permissionSet.chatBotRights, right);
+  return bitflagIsTrue(permissionSet.chatBotRights, right);
 }
 
 function hasConfigRight(
-    permissionSet: InstancePermissionSetResponse,
-    right: ConfigurationRights
+  permissionSet: InstancePermissionSetResponse,
+  right: ConfigurationRights,
 ): boolean {
-    return bitflagIsTrue(permissionSet.configurationRights, right);
+  return bitflagIsTrue(permissionSet.configurationRights, right);
 }
 
 function hasDreamDaemonRight(
-    permissionSet: InstancePermissionSetResponse,
-    right: DreamDaemonRights
+  permissionSet: InstancePermissionSetResponse,
+  right: DreamDaemonRights,
 ): boolean {
-    return bitflagIsTrue(permissionSet.dreamDaemonRights, right);
+  return bitflagIsTrue(permissionSet.dreamDaemonRights, right);
 }
 
 function hasDreamMakerRight(
-    permissionSet: InstancePermissionSetResponse,
-    right: DreamMakerRights
+  permissionSet: InstancePermissionSetResponse,
+  right: DreamMakerRights,
 ): boolean {
-    return bitflagIsTrue(permissionSet.dreamMakerRights, right);
+  return bitflagIsTrue(permissionSet.dreamMakerRights, right);
 }
 
 function hasInstancePermRight(
-    permissionSet: InstancePermissionSetResponse,
-    right: InstancePermissionSetRights
+  permissionSet: InstancePermissionSetResponse,
+  right: InstancePermissionSetRights,
 ): boolean {
-    return bitflagIsTrue(permissionSet.instancePermissionSetRights, right);
+  return bitflagIsTrue(permissionSet.instancePermissionSetRights, right);
 }
 
 function hasRepoRight(
-    permissionSet: InstancePermissionSetResponse,
-    right: RepositoryRights
+  permissionSet: InstancePermissionSetResponse,
+  right: RepositoryRights,
 ): boolean {
-    return bitflagIsTrue(permissionSet.repositoryRights, right);
+  return bitflagIsTrue(permissionSet.repositoryRights, right);
 }
 
 function hasFilesRight(
-    permissionSet: InstancePermissionSetResponse,
-    right: ConfigurationRights
+  permissionSet: InstancePermissionSetResponse,
+  right: ConfigurationRights,
 ): boolean {
-    return bitflagIsTrue(permissionSet.configurationRights, right);
+  return bitflagIsTrue(permissionSet.configurationRights, right);
 }
 
 export {
-    download,
-    replaceAll,
-    matchesPath,
-    resolvePermissionSet,
-    bitflagIsTrue,
-    hasAdminRight,
-    hasEngineRight,
-    hasConfigRight,
-    hasRepoRight,
-    hasChatBotRight,
-    hasInstancePermRight,
-    hasInstanceManagerRight,
-    hasDreamMakerRight,
-    hasDreamDaemonRight,
-    hasFilesRight
+  bitflagIsTrue,
+  download,
+  hasAdminRight,
+  hasChatBotRight,
+  hasConfigRight,
+  hasDreamDaemonRight,
+  hasDreamMakerRight,
+  hasEngineRight,
+  hasFilesRight,
+  hasInstanceManagerRight,
+  hasInstancePermRight,
+  hasRepoRight,
+  matchesPath,
+  replaceAll,
+  resolvePermissionSet,
 };

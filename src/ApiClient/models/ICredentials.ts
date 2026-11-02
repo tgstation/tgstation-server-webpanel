@@ -1,20 +1,20 @@
-import { OAuthProvider } from "../generatedcode/generated";
+import type { OAuthProvider } from '../generatedcode/generated';
 
 export enum CredentialsType {
-    Password,
-    OAuth
+  Password,
+  OAuth,
 }
 
 export interface IPasswordCredentials {
-    type: CredentialsType.Password;
-    userName: string;
-    password: string;
+  type: CredentialsType.Password;
+  userName: string;
+  password: string;
 }
 
 export interface IOAuthCredentials {
-    type: CredentialsType.OAuth;
-    provider: OAuthProvider;
-    token: string;
+  type: CredentialsType.OAuth;
+  provider: OAuthProvider;
+  token: string;
 }
 
 export type ICredentials = IPasswordCredentials | IOAuthCredentials;

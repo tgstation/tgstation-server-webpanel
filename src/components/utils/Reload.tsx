@@ -1,45 +1,45 @@
-import { Component, ReactNode } from "react";
-import { RouteComponentProps, withRouter } from "react-router";
+import { Component, type ReactNode } from 'react';
+import { type RouteComponentProps, withRouter } from 'react-router';
 
 type IProps = RouteComponentProps<
-    Record<string, string>,
-    {
-        statusCode?: number;
-    },
-    { reload?: boolean }
+  Record<string, string>,
+  {
+    statusCode?: number;
+  },
+  { reload?: boolean }
 >;
 interface IState {
-    clear: boolean;
+  clear: boolean;
 }
 
 class Reload extends Component<IProps, IState> {
-    public constructor(props: IProps) {
-        super(props);
-        this.state = {
-            clear: false
-        };
+  public constructor(props: IProps) {
+    super(props);
+    this.state = {
+      clear: false,
+    };
+  }
+  public componentDidUpdate(prevProps: IProps): void {
+    if (this.state.clear) {
+      this.setState({
+        clear: false,
+      });
+      return;
     }
-    public componentDidUpdate(prevProps: IProps): void {
-        if (this.state.clear) {
-            this.setState({
-                clear: false
-            });
-            return;
-        }
-        if (
-            prevProps.match.path == this.props.match.path &&
-            prevProps.location.key != this.props.location.key &&
-            this.props.location.state?.reload
-        ) {
-            this.setState({
-                clear: true
-            });
-        }
+    if (
+      prevProps.match.path === this.props.match.path &&
+      prevProps.location.key !== this.props.location.key &&
+      this.props.location.state?.reload
+    ) {
+      this.setState({
+        clear: true,
+      });
     }
+  }
 
-    public render(): ReactNode {
-        return this.state.clear ? "" : this.props.children;
-    }
+  public render(): ReactNode {
+    return this.state.clear ? '' : this.props.children;
+  }
 }
 
 export default withRouter(Reload);

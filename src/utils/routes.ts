@@ -1,78 +1,86 @@
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 
-import { AdministrationRights, InstanceManagerRights } from "../ApiClient/generatedcode/generated";
-import InternalError, { ErrorCode } from "../ApiClient/models/InternalComms/InternalError";
-import { StatusCode } from "../ApiClient/models/InternalComms/InternalStatus";
-import UserClient from "../ApiClient/UserClient";
-import CredentialsProvider from "../ApiClient/util/CredentialsProvider";
-import { resolvePermissionSet } from "./misc";
+import {
+  AdministrationRights,
+  InstanceManagerRights,
+} from '../ApiClient/generatedcode/generated';
+import type InternalError from '../ApiClient/models/InternalComms/InternalError';
+import type { ErrorCode } from '../ApiClient/models/InternalComms/InternalError';
+import { StatusCode } from '../ApiClient/models/InternalComms/InternalStatus';
+import UserClient from '../ApiClient/UserClient';
+import CredentialsProvider from '../ApiClient/util/CredentialsProvider';
+import { resolvePermissionSet } from './misc';
 
 export interface AppRoute {
-    ///Base parameters
-    //must be unique, also is the id of the route name message
-    name: string;
-    //must be unique, url to access
-    route: string;
-    //link to link to when linking to the route, defaults to the "route"
-    link?: string;
-    //filename in components/view that the route should display
-    file: string;
+  ///Base parameters
+  //must be unique, also is the id of the route name message
+  name: string;
+  //must be unique, url to access
+  route: string;
+  //link to link to when linking to the route, defaults to the "route"
+  link?: string;
+  //filename in components/view that the route should display
+  file: string;
 
-    ///Path parameters
-    //If subpaths should route here
-    loose: boolean;
-    //If subpaths should light up the navbar button
-    navbarLoose: boolean;
+  ///Path parameters
+  //If subpaths should route here
+  loose: boolean;
+  //If subpaths should light up the navbar button
+  navbarLoose: boolean;
 
-    ///Authentication
-    //if we can route to it even on the login page
-    loginless?: boolean;
-    //function to tell if we are authorized
-    isAuthorized?: () => Promise<boolean>;
-    //result of isAuthorized() after RouteController runs it, can be used by components but only set by RouteController
-    cachedAuth?: boolean;
+  ///Authentication
+  //if we can route to it even on the login page
+  loginless?: boolean;
+  //function to tell if we are authorized
+  isAuthorized?: () => Promise<boolean>;
+  //result of isAuthorized() after RouteController runs it, can be used by components but only set by RouteController
+  cachedAuth?: boolean;
 
-    disallowInOidcStrictMode?: boolean;
+  disallowInOidcStrictMode?: boolean;
 
-    ///Visibility
-    //if this shows up on the navbar
-    visibleNavbar: boolean;
-    //serves two purposes, first one is to give it an icon, the second one is to not display it if the icon is undefined
-    homeIcon?: IconProp;
+  ///Visibility
+  //if this shows up on the navbar
+  visibleNavbar: boolean;
+  //serves two purposes, first one is to give it an icon, the second one is to not display it if the icon is undefined
+  homeIcon?: IconProp;
 
-    ///Categories
-    //name of the category it belongs to
-    category?: string;
-    //if this is the main button in the category
-    catleader?: boolean;
+  ///Categories
+  //name of the category it belongs to
+  category?: string;
+  //if this is the main button in the category
+  catleader?: boolean;
 
-    ///Misc
-    //Should we not wrap this component in a <Container>?
-    noContainer?: boolean;
+  ///Misc
+  //Should we not wrap this component in a <Container>?
+  noContainer?: boolean;
 }
 
 function adminRight(right: AdministrationRights) {
-    return async (): Promise<boolean> => {
-        if (!CredentialsProvider.hasToken()) return false;
-        const response = await UserClient.getCurrentUser();
+  return async (): Promise<boolean> => {
+    if (!CredentialsProvider.hasToken()) return false;
+    const response = await UserClient.getCurrentUser();
 
-        if (response.code == StatusCode.OK) {
-            return !!(resolvePermissionSet(response.payload).administrationRights & right);
-        }
-        return false;
-    };
+    if (response.code === StatusCode.OK) {
+      return !!(
+        resolvePermissionSet(response.payload).administrationRights & right
+      );
+    }
+    return false;
+  };
 }
 
 function instanceManagerRight(right: InstanceManagerRights) {
-    return async (): Promise<boolean> => {
-        if (!CredentialsProvider.hasToken()) return false;
-        const response = await UserClient.getCurrentUser();
+  return async (): Promise<boolean> => {
+    if (!CredentialsProvider.hasToken()) return false;
+    const response = await UserClient.getCurrentUser();
 
-        if (response.code == StatusCode.OK) {
-            return !!(resolvePermissionSet(response.payload).instanceManagerRights & right);
-        }
-        return false;
-    };
+    if (response.code === StatusCode.OK) {
+      return !!(
+        resolvePermissionSet(response.payload).instanceManagerRights & right
+      );
+    }
+    return false;
+  };
 }
 
 //https://stackoverflow.com/questions/54598322/how-to-make-typescript-infer-the-keys-of-an-object-but-define-type-of-its-value
@@ -80,310 +88,318 @@ function instanceManagerRight(right: InstanceManagerRights) {
 const asElementTypesAppRoute = <T>(et: { [K in keyof T]: AppRoute }) => et;
 
 const AppRoutes = asElementTypesAppRoute({
-    home: {
-        name: "routes.home",
-        route: "/",
-        file: "Home",
+  home: {
+    name: 'routes.home',
+    route: '/',
+    file: 'Home',
 
-        loose: false,
-        navbarLoose: false,
+    loose: false,
+    navbarLoose: false,
 
-        visibleNavbar: true,
-        homeIcon: undefined,
+    visibleNavbar: true,
+    homeIcon: undefined,
 
-        category: "home",
-        catleader: true
+    category: 'home',
+    catleader: true,
+  },
+  instancecreate: {
+    name: 'routes.instancecreate',
+    route: '/instances/create',
+    file: 'Instance/Create',
+
+    loose: false,
+    navbarLoose: false,
+
+    isAuthorized: instanceManagerRight(InstanceManagerRights.Create),
+
+    visibleNavbar: false,
+
+    category: 'instance',
+    catleader: false,
+  },
+  instancelist: {
+    name: 'routes.instancelist',
+    route: '/instances/',
+    file: 'Instance/List',
+
+    loose: false,
+    navbarLoose: true,
+
+    isAuthorized: instanceManagerRight(
+      InstanceManagerRights.List | InstanceManagerRights.Read,
+    ),
+
+    visibleNavbar: true,
+    homeIcon: 'hdd',
+
+    category: 'instance',
+    catleader: true,
+  },
+  instanceedit: {
+    name: 'routes.instanceedit',
+    route: '/instances/edit/:id(\\d+)/:tab?/',
+    file: 'Instance/InstanceEdit',
+
+    get link(): string {
+      return RouteData.selectedinstanceid !== undefined
+        ? `/instances/edit/${RouteData.selectedinstanceid}/${
+            RouteData.selectedinstanceedittab !== undefined
+              ? `${RouteData.selectedinstanceedittab}/`
+              : ''
+          }`
+        : (AppRoutes.instancelist.link ?? AppRoutes.instancelist.route);
     },
-    instancecreate: {
-        name: "routes.instancecreate",
-        route: "/instances/create",
-        file: "Instance/Create",
 
-        loose: false,
-        navbarLoose: false,
+    loose: false,
+    navbarLoose: true,
 
-        isAuthorized: instanceManagerRight(InstanceManagerRights.Create),
+    visibleNavbar: true,
+    homeIcon: undefined,
 
-        visibleNavbar: false,
+    category: 'instance',
+  },
+  instancejobs: {
+    name: 'routes.instancejobs',
+    route: '/instances/jobs/',
+    file: 'Instance/Jobs',
 
-        category: "instance",
-        catleader: false
+    loose: false,
+    navbarLoose: true,
+
+    visibleNavbar: true,
+    homeIcon: undefined,
+
+    category: 'instance',
+  },
+  userlist: {
+    name: 'routes.usermanager',
+    route: '/users/',
+    file: 'User/List',
+
+    loose: false,
+    navbarLoose: true,
+
+    visibleNavbar: true,
+    homeIcon: 'user',
+
+    category: 'user',
+    catleader: true,
+  },
+  useredit: {
+    name: 'routes.useredit',
+    route: '/users/edit/user/:id(\\d+)/:tab?/',
+
+    //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
+    get link(): string {
+      return RouteData.selecteduserid !== undefined
+        ? `/users/edit/user/${RouteData.selecteduserid}/${
+            RouteData.selectedusertab !== undefined
+              ? `${RouteData.selectedusertab}/`
+              : ''
+          }`
+        : (AppRoutes.userlist.link ?? AppRoutes.userlist.route);
     },
-    instancelist: {
-        name: "routes.instancelist",
-        route: "/instances/",
-        file: "Instance/List",
+    file: 'User/Edit',
 
-        loose: false,
-        navbarLoose: true,
+    loose: true,
+    navbarLoose: true,
 
-        isAuthorized: instanceManagerRight(InstanceManagerRights.List | InstanceManagerRights.Read),
+    visibleNavbar: true,
+    homeIcon: undefined,
 
-        visibleNavbar: true,
-        homeIcon: "hdd",
+    category: 'user',
+  },
+  usercreate: {
+    name: 'routes.usercreate',
+    route: '/users/create/',
 
-        category: "instance",
-        catleader: true
-    },
-    instanceedit: {
-        name: "routes.instanceedit",
-        route: "/instances/edit/:id(\\d+)/:tab?/",
-        file: "Instance/InstanceEdit",
+    link: '/users/create/',
+    file: 'User/Create',
 
-        get link(): string {
-            return RouteData.selectedinstanceid !== undefined
-                ? `/instances/edit/${RouteData.selectedinstanceid}/${
-                      RouteData.selectedinstanceedittab !== undefined
-                          ? `${RouteData.selectedinstanceedittab}/`
-                          : ""
-                  }`
-                : (AppRoutes.instancelist.link ?? AppRoutes.instancelist.route);
-        },
+    loose: true,
+    navbarLoose: true,
 
-        loose: false,
-        navbarLoose: true,
+    isAuthorized: adminRight(AdministrationRights.WriteUsers),
 
-        visibleNavbar: true,
-        homeIcon: undefined,
+    visibleNavbar: true,
+    homeIcon: undefined,
 
-        category: "instance"
-    },
-    instancejobs: {
-        name: "routes.instancejobs",
-        route: "/instances/jobs/",
-        file: "Instance/Jobs",
+    category: 'user',
+  },
+  admin: {
+    name: 'routes.admin',
+    route: '/admin/',
+    file: 'Administration',
 
-        loose: false,
-        navbarLoose: true,
+    loose: false,
+    navbarLoose: true,
 
-        visibleNavbar: true,
-        homeIcon: undefined,
+    isAuthorized: adminRight(
+      AdministrationRights.ChangeVersion |
+        AdministrationRights.DownloadLogs |
+        AdministrationRights.UploadVersion,
+    ),
 
-        category: "instance"
-    },
-    userlist: {
-        name: "routes.usermanager",
-        route: "/users/",
-        file: "User/List",
+    visibleNavbar: true,
+    homeIcon: 'tools',
 
-        loose: false,
-        navbarLoose: true,
+    category: 'admin',
+    catleader: true,
+  },
+  admin_update: {
+    name: 'routes.admin.update',
+    route: '/admin/update/:all?/',
+    file: 'Admin/Update',
 
-        visibleNavbar: true,
-        homeIcon: "user",
+    link: '/admin/update/',
 
-        category: "user",
-        catleader: true
-    },
-    useredit: {
-        name: "routes.useredit",
-        route: "/users/edit/user/:id(\\d+)/:tab?/",
+    loose: true,
+    navbarLoose: true,
 
-        //whole lot of bullshit just to make it that if you have an id, link to the edit page, otherwise link to the list page, and if you link to the user page, put the tab in
-        get link(): string {
-            return RouteData.selecteduserid !== undefined
-                ? `/users/edit/user/${RouteData.selecteduserid}/${
-                      RouteData.selectedusertab !== undefined ? `${RouteData.selectedusertab}/` : ""
-                  }`
-                : (AppRoutes.userlist.link ?? AppRoutes.userlist.route);
-        },
-        file: "User/Edit",
+    isAuthorized: adminRight(
+      AdministrationRights.ChangeVersion | AdministrationRights.UploadVersion,
+    ),
+    visibleNavbar: true,
+    homeIcon: undefined,
 
-        loose: true,
-        navbarLoose: true,
+    category: 'admin',
+  },
+  admin_logs: {
+    name: 'routes.admin.logs',
+    route: '/admin/logs/:name?/',
+    link: '/admin/logs/',
+    file: 'Admin/Logs',
 
-        visibleNavbar: true,
-        homeIcon: undefined,
+    loose: false,
+    navbarLoose: true,
 
-        category: "user"
-    },
-    usercreate: {
-        name: "routes.usercreate",
-        route: "/users/create/",
+    isAuthorized: adminRight(AdministrationRights.DownloadLogs),
+    visibleNavbar: true,
+    homeIcon: undefined,
 
-        link: "/users/create/",
-        file: "User/Create",
+    category: 'admin',
 
-        loose: true,
-        navbarLoose: true,
+    noContainer: true,
+  },
+  passwd: {
+    name: 'routes.passwd',
+    route: '/users/passwd/:id(\\d+)?/',
+    link: '/users/passwd/',
+    file: 'ChangePassword',
 
-        isAuthorized: adminRight(AdministrationRights.WriteUsers),
+    loose: true,
+    navbarLoose: true,
 
-        visibleNavbar: true,
-        homeIcon: undefined,
+    disallowInOidcStrictMode: true,
 
-        category: "user"
-    },
-    admin: {
-        name: "routes.admin",
-        route: "/admin/",
-        file: "Administration",
+    isAuthorized: adminRight(AdministrationRights.EditOwnPassword),
 
-        loose: false,
-        navbarLoose: true,
+    visibleNavbar: false,
+    homeIcon: 'key',
+  },
+  config: {
+    name: 'routes.config',
+    route: '/config/',
+    file: 'Configuration',
 
-        isAuthorized: adminRight(
-            AdministrationRights.ChangeVersion |
-                AdministrationRights.DownloadLogs |
-                AdministrationRights.UploadVersion
-        ),
+    loose: true,
+    navbarLoose: true,
 
-        visibleNavbar: true,
-        homeIcon: "tools",
+    loginless: true,
 
-        category: "admin",
-        catleader: true
-    },
-    admin_update: {
-        name: "routes.admin.update",
-        route: "/admin/update/:all?/",
-        file: "Admin/Update",
+    visibleNavbar: false,
+    homeIcon: 'cogs',
+  },
+  setup: {
+    name: 'routes.setup',
+    route: '/setup/',
+    file: 'Setup',
 
-        link: "/admin/update/",
+    loose: true,
+    navbarLoose: true,
 
-        loose: true,
-        navbarLoose: true,
+    loginless: true,
 
-        isAuthorized: adminRight(
-            AdministrationRights.ChangeVersion | AdministrationRights.UploadVersion
-        ),
-        visibleNavbar: true,
-        homeIcon: undefined,
+    visibleNavbar: false,
+  },
+  oAuth: {
+    name: 'routes.oauth',
+    route: '/oauth/:provider?/',
+    file: 'Login',
 
-        category: "admin"
-    },
-    admin_logs: {
-        name: "routes.admin.logs",
-        route: "/admin/logs/:name?/",
-        link: "/admin/logs/",
-        file: "Admin/Logs",
+    loose: true,
+    navbarLoose: false,
 
-        loose: false,
-        navbarLoose: true,
+    loginless: true,
 
-        isAuthorized: adminRight(AdministrationRights.DownloadLogs),
-        visibleNavbar: true,
-        homeIcon: undefined,
+    visibleNavbar: false,
+  },
+  info: {
+    name: 'routes.info',
+    route: '/info',
+    file: 'Info',
 
-        category: "admin",
+    loose: false,
+    navbarLoose: false,
 
-        noContainer: true
-    },
-    passwd: {
-        name: "routes.passwd",
-        route: "/users/passwd/:id(\\d+)?/",
-        link: "/users/passwd/",
-        file: "ChangePassword",
+    loginless: true,
 
-        loose: true,
-        navbarLoose: true,
+    visibleNavbar: true,
+    homeIcon: 'info-circle',
 
-        disallowInOidcStrictMode: true,
-
-        isAuthorized: adminRight(AdministrationRights.EditOwnPassword),
-
-        visibleNavbar: false,
-        homeIcon: "key"
-    },
-    config: {
-        name: "routes.config",
-        route: "/config/",
-        file: "Configuration",
-
-        loose: true,
-        navbarLoose: true,
-
-        loginless: true,
-
-        visibleNavbar: false,
-        homeIcon: "cogs"
-    },
-    setup: {
-        name: "routes.setup",
-        route: "/setup/",
-        file: "Setup",
-
-        loose: true,
-        navbarLoose: true,
-
-        loginless: true,
-
-        visibleNavbar: false
-    },
-    oAuth: {
-        name: "routes.oauth",
-        route: "/oauth/:provider?/",
-        file: "Login",
-
-        loose: true,
-        navbarLoose: false,
-
-        loginless: true,
-
-        visibleNavbar: false
-    },
-    info: {
-        name: "routes.info",
-        route: "/info",
-        file: "Info",
-
-        loose: false,
-        navbarLoose: false,
-
-        loginless: true,
-
-        visibleNavbar: true,
-        homeIcon: "info-circle",
-
-        category: undefined,
-        catleader: false
-    }
+    category: undefined,
+    catleader: false,
+  },
 });
 
 export { AppRoutes };
 
 //https://stackoverflow.com/questions/54598322/how-to-make-typescript-infer-the-keys-of-an-object-but-define-type-of-its-value
 //Infer the keys but restrict the values to a type
-const asElementTypesCategory = <T>(et: { [K in keyof T]: UnpopulatedAppCategory }) => et;
+const asElementTypesCategory = <T>(
+  et: { [K in keyof T]: UnpopulatedAppCategory },
+) => et;
 
 export type UnpopulatedAppCategory = Partial<AppCategory>;
 
 export interface AppCategory {
-    name: string; //doesnt really matter, kinda bullshit
-    routes: AppRoute[];
-    leader: AppRoute;
+  name: string; //doesnt really matter, kinda bullshit
+  routes: AppRoute[];
+  leader: AppRoute;
 }
 
 export const UnpopulatedAppCategories = asElementTypesCategory({
-    home: {
-        name: "home"
-    },
-    instance: {
-        name: "instance"
-    },
-    user: {
-        name: "user"
-    },
-    admin: {
-        name: "admin"
-    }
+  home: {
+    name: 'home',
+  },
+  instance: {
+    name: 'instance',
+  },
+  user: {
+    name: 'user',
+  },
+  admin: {
+    name: 'admin',
+  },
 });
 
 // @ts-expect-error This is populated in the constructor after its populated
-export const AppCategories: { [K in keyof typeof UnpopulatedAppCategories]: AppCategory } = {};
+export const AppCategories: {
+  [K in keyof typeof UnpopulatedAppCategories]: AppCategory;
+} = {};
 
 export const RouteData = {
-    selecteduserid: undefined as undefined | number,
-    selectedusertab: undefined as undefined | string,
+  selecteduserid: undefined as undefined | number,
+  selectedusertab: undefined as undefined | string,
 
-    selectedinstanceid: undefined as undefined | number,
-    selectedinstanceedittab: undefined as undefined | string,
+  selectedinstanceid: undefined as undefined | number,
+  selectedinstanceedittab: undefined as undefined | string,
 
-    instancelistpage: undefined as undefined | number,
-    loglistpage: undefined as undefined | number,
-    byondlistpage: undefined as undefined | number,
-    userlistpage: undefined as undefined | number,
-    jobhistorypage: new Map<number, number>(),
+  instancelistpage: undefined as undefined | number,
+  loglistpage: undefined as undefined | number,
+  byondlistpage: undefined as undefined | number,
+  userlistpage: undefined as undefined | number,
+  jobhistorypage: new Map<number, number>(),
 
-    oautherrors: [] as InternalError<ErrorCode>[]
+  oautherrors: [] as InternalError<ErrorCode>[],
 };

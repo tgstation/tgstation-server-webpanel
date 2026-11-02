@@ -1,271 +1,284 @@
-import { ApiClient } from "./_base";
+import { ApiClient } from './_base';
 import type {
-    DreamDaemonRequest,
-    DreamDaemonResponse,
-    ErrorMessageResponse,
-    JobResponse
-} from "./generatedcode/generated";
-import InternalError, { ErrorCode, GenericErrors } from "./models/InternalComms/InternalError";
-import InternalStatus, { StatusCode } from "./models/InternalComms/InternalStatus";
-import ServerClient from "./ServerClient";
+  DreamDaemonRequest,
+  DreamDaemonResponse,
+  ErrorMessageResponse,
+  JobResponse,
+} from './generatedcode/generated';
+import InternalError, {
+  ErrorCode,
+  type GenericErrors,
+} from './models/InternalComms/InternalError';
+import InternalStatus, {
+  StatusCode,
+} from './models/InternalComms/InternalStatus';
+import ServerClient from './ServerClient';
 
 export type getWatchdogStatusErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export type updateWatchdogStatusErrors = GenericErrors | ErrorCode.NO_DB_ENTITY;
 export default new (class DreamDaemonClient extends ApiClient {
-    public async getWatchdogStatus(
-        instance: number
-    ): Promise<InternalStatus<DreamDaemonResponse, getWatchdogStatusErrors>> {
-        await ServerClient.wait4Init();
+  public async getWatchdogStatus(
+    instance: number,
+  ): Promise<InternalStatus<DreamDaemonResponse, getWatchdogStatusErrors>> {
+    await ServerClient.wait4Init();
 
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.dreamDaemonControllerRead({
-                headers: {
-                    Instance: instance.toString()
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
-
-        switch (response.status) {
-            case 200: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as DreamDaemonResponse
-                });
-            }
-            case 410: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.NO_DB_ENTITY,
-                        {
-                            errorMessage: response.data as ErrorMessageResponse
-                        },
-                        response
-                    )
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.dreamDaemonControllerRead({
+        headers: {
+          Instance: instance.toString(),
+        },
+      });
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
     }
 
-    public async updateWatchdogStatus(
-        instance: number,
-        newSettings: DreamDaemonRequest
-    ): Promise<InternalStatus<DreamDaemonResponse, updateWatchdogStatusErrors>> {
-        await ServerClient.wait4Init();
+    switch (response.status) {
+      case 200: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as DreamDaemonResponse,
+        });
+      }
+      case 410: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.NO_DB_ENTITY,
+            {
+              errorMessage: response.data as ErrorMessageResponse,
+            },
+            response,
+          ),
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
+    }
+  }
 
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.dreamDaemonControllerUpdate(newSettings, {
-                headers: {
-                    Instance: instance.toString()
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
+  public async updateWatchdogStatus(
+    instance: number,
+    newSettings: DreamDaemonRequest,
+  ): Promise<InternalStatus<DreamDaemonResponse, updateWatchdogStatusErrors>> {
+    await ServerClient.wait4Init();
 
-        switch (response.status) {
-            case 200: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as DreamDaemonResponse
-                });
-            }
-            case 410: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.NO_DB_ENTITY,
-                        {
-                            errorMessage: response.data as ErrorMessageResponse
-                        },
-                        response
-                    )
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.dreamDaemonControllerUpdate(
+        newSettings,
+        {
+          headers: {
+            Instance: instance.toString(),
+          },
+        },
+      );
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
     }
 
-    public async startWatchdog(
-        instance: number
-    ): Promise<InternalStatus<JobResponse, GenericErrors>> {
-        await ServerClient.wait4Init();
+    switch (response.status) {
+      case 200: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as DreamDaemonResponse,
+        });
+      }
+      case 410: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.NO_DB_ENTITY,
+            {
+              errorMessage: response.data as ErrorMessageResponse,
+            },
+            response,
+          ),
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
+    }
+  }
 
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.dreamDaemonControllerCreate({
-                headers: {
-                    Instance: instance.toString()
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
+  public async startWatchdog(
+    instance: number,
+  ): Promise<InternalStatus<JobResponse, GenericErrors>> {
+    await ServerClient.wait4Init();
 
-        switch (response.status) {
-            case 202: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as JobResponse
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.dreamDaemonControllerCreate({
+        headers: {
+          Instance: instance.toString(),
+        },
+      });
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
     }
 
-    public async stopWatchdog(instance: number): Promise<InternalStatus<null, GenericErrors>> {
-        await ServerClient.wait4Init();
+    switch (response.status) {
+      case 202: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as JobResponse,
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
+    }
+  }
 
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.dreamDaemonControllerDelete({
-                headers: {
-                    Instance: instance.toString()
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
+  public async stopWatchdog(
+    instance: number,
+  ): Promise<InternalStatus<null, GenericErrors>> {
+    await ServerClient.wait4Init();
 
-        switch (response.status) {
-            case 204: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: null
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.dreamDaemonControllerDelete({
+        headers: {
+          Instance: instance.toString(),
+        },
+      });
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
     }
 
-    public async restartWatchdog(
-        instance: number
-    ): Promise<InternalStatus<JobResponse, GenericErrors>> {
-        await ServerClient.wait4Init();
+    switch (response.status) {
+      case 204: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: null,
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
+    }
+  }
 
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.dreamDaemonControllerRestart({
-                headers: {
-                    Instance: instance.toString()
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
+  public async restartWatchdog(
+    instance: number,
+  ): Promise<InternalStatus<JobResponse, GenericErrors>> {
+    await ServerClient.wait4Init();
 
-        switch (response.status) {
-            case 202: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as JobResponse
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    let response;
+    try {
+      response = await ServerClient.apiClient!.api.dreamDaemonControllerRestart(
+        {
+          headers: {
+            Instance: instance.toString(),
+          },
+        },
+      );
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
     }
 
-    public async dumpWatchdog(
-        instance: number
-    ): Promise<InternalStatus<JobResponse, GenericErrors>> {
-        await ServerClient.wait4Init();
-
-        let response;
-        try {
-            response = await ServerClient.apiClient!.api.dreamDaemonControllerCreateDump({
-                headers: {
-                    Instance: instance.toString()
-                }
-            });
-        } catch (stat) {
-            return new InternalStatus({
-                code: StatusCode.ERROR,
-                error: stat as InternalError<GenericErrors>
-            });
-        }
-
-        switch (response.status) {
-            case 202: {
-                return new InternalStatus({
-                    code: StatusCode.OK,
-                    payload: response.data as JobResponse
-                });
-            }
-            default: {
-                return new InternalStatus({
-                    code: StatusCode.ERROR,
-                    error: new InternalError(
-                        ErrorCode.UNHANDLED_RESPONSE,
-                        { axiosResponse: response },
-                        response
-                    )
-                });
-            }
-        }
+    switch (response.status) {
+      case 202: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as JobResponse,
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
     }
+  }
+
+  public async dumpWatchdog(
+    instance: number,
+  ): Promise<InternalStatus<JobResponse, GenericErrors>> {
+    await ServerClient.wait4Init();
+
+    let response;
+    try {
+      response =
+        await ServerClient.apiClient!.api.dreamDaemonControllerCreateDump({
+          headers: {
+            Instance: instance.toString(),
+          },
+        });
+    } catch (stat) {
+      return new InternalStatus({
+        code: StatusCode.ERROR,
+        error: stat as InternalError<GenericErrors>,
+      });
+    }
+
+    switch (response.status) {
+      case 202: {
+        return new InternalStatus({
+          code: StatusCode.OK,
+          payload: response.data as JobResponse,
+        });
+      }
+      default: {
+        return new InternalStatus({
+          code: StatusCode.ERROR,
+          error: new InternalError(
+            ErrorCode.UNHANDLED_RESPONSE,
+            { axiosResponse: response },
+            response,
+          ),
+        });
+      }
+    }
+  }
 })();
