@@ -54,17 +54,18 @@ jobs:
             exit 1
           fi
 
-      - name: Compile
-        if: steps.get-tag.outputs.deploy_tag != 'FAILED'
-        run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA --env GITHUB_TAG="${{ steps.get-tag.outputs.deploy_tag }}"
+      - parallel:
+          - name: Compile
+            if: steps.get-tag.outputs.deploy_tag != 'FAILED'
+            run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA --env GITHUB_TAG="${{ steps.get-tag.outputs.deploy_tag }}"
 
-      - name: Compile (no tag)
-        if: steps.get-tag.outputs.deploy_tag == 'FAILED'
-        run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA
+          - name: Compile (no tag)
+            if: steps.get-tag.outputs.deploy_tag == 'FAILED'
+            run: yarn run build --env GITHUB_CD --env GITHUB_SHA=$GITHUB_SHA
 
-      #Safety against pushing broken code
-      - name: Run ESLint
-        run: yarn eslint "**/*.{js,jsx,ts,tsx}"
+          #Safety against pushing broken code
+          - name: Run linter
+            run: yarn run lint:ci
 
       - name: Create workdir
         run: |
