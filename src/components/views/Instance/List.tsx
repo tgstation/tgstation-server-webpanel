@@ -105,6 +105,12 @@ export const InstanceListPage = () => {
                                 pageSize={instanceList?.pageSize}
                                 totalItems={instanceList?.totalItems}
                             />
+                        ) : canList ? (
+                            <Empty
+                                icon={<FontAwesomeIcon icon={faLock} size="4x" />}
+                                title={"No instances"}
+                                description={`There are no instances here!${canCreate ? " Create your first one." : ""}`}
+                            />
                         ) : (
                             <Empty
                                 icon={<FontAwesomeIcon icon={faLock} size="4x" />}
