@@ -620,7 +620,7 @@ export default new (class JobsController extends TypedEmitter<IEvents> {
             return true;
         }
 
-        switch (job.cancelRightsType as RightsType) {
+        switch (job.cancelRightsType) {
             case RightsType.Administration: {
                 const userInfo = await UserClient.getCurrentUser();
                 if (userInfo.code === StatusCode.OK) {
