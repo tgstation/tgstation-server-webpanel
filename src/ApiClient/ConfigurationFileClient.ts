@@ -120,9 +120,12 @@ export default new (class ConfigurationFileClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.configurationControllerFile(filePath, {
-                headers: { Instance: instance.toString() }
-            });
+            response = await ServerClient.apiClient!.api.configurationControllerFile(
+                { filePath },
+                {
+                    headers: { Instance: instance.toString() }
+                }
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

@@ -88,11 +88,14 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.jobControllerGetId(jobid, {
-                headers: {
-                    Instance: instanceid.toString()
+            response = await ServerClient.apiClient!.api.jobControllerGetId(
+                { id: jobid },
+                {
+                    headers: {
+                        Instance: instanceid.toString()
+                    }
                 }
-            });
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -140,11 +143,14 @@ export default new (class JobsClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.jobControllerDelete(jobid, {
-                headers: {
-                    Instance: instanceid.toString()
+            response = await ServerClient.apiClient!.api.jobControllerDelete(
+                { id: jobid },
+                {
+                    headers: {
+                        Instance: instanceid.toString()
+                    }
                 }
-            });
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

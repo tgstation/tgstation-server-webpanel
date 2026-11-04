@@ -58,14 +58,17 @@ async function buildAPI() {
   codeZeroOrBreak();
 
   generateApi({
-    name: "generated.ts",
-    output: GENERATED_FILE,
     input: SWAGGER_FILE.path,
-    httpClientType: "axios",
-    generateRouteTypes: false,
+    output: GENERATED_FILE,
+    fileName: "generated.ts",
+    // url: `https://github.com/tgstation/tgstation-server/releases/download/api-v${schemaGenValue}/swagger.json`,
+    templates: path.resolve(__dirname, "./templates"),
     generateResponses: true,
+    defaultResponseAsSuccess: true,
+    generateRouteTypes: false,
     extractRequestParams: true,
     extractRequestBody: true,
+    httpClientType: "axios",
     prettier: {
       printWidth: 120,
       tabWidth: 2,
@@ -74,23 +77,25 @@ async function buildAPI() {
     },
     defaultResponseType: "void",
     singleHttpClient: true,
-    templates: path.resolve(__dirname, "./templates"),
+    codeGenConstructs: () => ({
+      Keyword: {
+        Null: 'undefined'
+      }
+    }),
     hooks: {
-      onParseSchema: (originalSchema, parsedSchema) => {
-        if (parsedSchema["type"] !== "object") {
-          return;
+      // stupid shit to make anything not nullable required
+      onCreateComponent: (component) => {
+        if (component.componentName !== "schemas") {
+          return component;
         }
-        // parsedSchema["allFieldsAreOptional"] = false; // currently setting this is useless
-        if (!parsedSchema.content) {
-          return;
+
+        if (component.rawTypeData?.properties) {
+          Object.keys(component.rawTypeData.properties).forEach(r => {
+            if (component.rawTypeData.properties[r]['nullable']) return;
+            component.rawTypeData.properties[r]['required'] = true;
+          })
         }
-        parsedSchema.content.map(v => {
-          if (v.isNullable) {
-            return;
-          }
-          v.field = v.field.replace("?:", ":");
-        });
-        return parsedSchema;
+        return component
       }
     }
   }).catch(e => {
