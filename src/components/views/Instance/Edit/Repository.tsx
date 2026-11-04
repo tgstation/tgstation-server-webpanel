@@ -285,7 +285,7 @@ class Repository extends React.Component<IProps, IState> {
                 testMergeArray.push({
                     number: number,
                     targetCommitSha: commit,
-                    comment
+                    comment: comment !== null ? comment : undefined
                 });
             });
             if (testMergeArray.length) editOptions.newTestMerges = testMergeArray;
@@ -540,7 +540,7 @@ class Repository extends React.Component<IProps, IState> {
                             ...result
                         };
 
-                        if (result.reference == "") repoCloneRequest.reference = null;
+                        if (result.reference == "") repoCloneRequest.reference = undefined;
                         if (this.state.writableCredentials) {
                             repoCloneRequest.accessUser = this.state.writableCredentials.accessUser;
                             repoCloneRequest.accessToken =

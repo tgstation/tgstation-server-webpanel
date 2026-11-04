@@ -206,11 +206,14 @@ export default new (class DreamDaemonClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.dreamMakerControllerGetId(compileJob, {
-                headers: {
-                    Instance: instance.toString()
+            response = await ServerClient.apiClient!.api.dreamMakerControllerGetId(
+                { id: compileJob },
+                {
+                    headers: {
+                        Instance: instance.toString()
+                    }
                 }
-            });
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

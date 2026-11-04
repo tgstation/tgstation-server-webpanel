@@ -62,7 +62,7 @@ class InstanceSettings extends React.Component<IProps, IState> {
         let newPath: string | undefined;
         if (instance.path && instance.path != this.context.instance.path) {
             newPath = instance.path;
-            instance.path = null;
+            instance.path = undefined;
             instance.online = false; // need to offline the instance before moving it
             this.setState({ moving: true });
         }

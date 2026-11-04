@@ -175,7 +175,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
         let response;
         try {
             response = await ServerClient.apiClient!.api.instancePermissionSetControllerGetId(
-                permissionSetId,
+                { id: permissionSetId },
                 {
                     headers: {
                         Instance: instanceid.toString()
@@ -352,7 +352,7 @@ export default new (class InstancePermissionSetClient extends ApiClient<IEvents>
         let response;
         try {
             response = await ServerClient.apiClient!.api.instancePermissionSetControllerDelete(
-                permissionSetId,
+                { id: permissionSetId },
                 {
                     headers: {
                         Instance: instanceid.toString()

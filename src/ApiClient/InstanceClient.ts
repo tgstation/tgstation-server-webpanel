@@ -69,9 +69,9 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.instanceControllerGrantPermissions(
-                instance.id
-            );
+            response = await ServerClient.apiClient!.api.instanceControllerGrantPermissions({
+                id: instance.id
+            });
             this.emit("instanceChange", instance.id);
         } catch (stat) {
             return new InternalStatus({
@@ -154,7 +154,7 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.instanceControllerDelete(id);
+            response = await ServerClient.apiClient!.api.instanceControllerDelete({ id });
             this.emit("instanceChange", id);
         } catch (stat) {
             return new InternalStatus({
@@ -242,7 +242,9 @@ export default new (class InstanceClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.instanceControllerGetId(instanceid);
+            response = await ServerClient.apiClient!.api.instanceControllerGetId({
+                id: instanceid
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

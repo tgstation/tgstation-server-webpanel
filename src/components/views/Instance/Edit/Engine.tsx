@@ -557,9 +557,9 @@ class Engine extends React.Component<IProps, IState> {
                 <InputGroup className="w-md-50 w-lg-25 mb-3 mx-auto">
                     <FormControl
                         type="string"
-                        defaultValue={this.state.latestODVersion.sourceSHA!}
+                        defaultValue={this.state.latestODVersion.sourceSHA}
                         value={
-                            (this.state.selectedODVersion ?? this.state.latestODVersion).sourceSHA!
+                            (this.state.selectedODVersion ?? this.state.latestODVersion).sourceSHA
                         }
                         onChange={e => {
                             this.setState({
