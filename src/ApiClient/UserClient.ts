@@ -209,7 +209,7 @@ export default new (class UserClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.userControllerGetId(id);
+            response = await ServerClient.apiClient!.api.userControllerGetId({ id });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

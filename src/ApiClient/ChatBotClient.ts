@@ -167,11 +167,14 @@ export default new (class ChatBotClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.chatControllerGetId(chatBotId, {
-                headers: {
-                    Instance: instance.toString()
+            response = await ServerClient.apiClient!.api.chatControllerGetId(
+                { id: chatBotId },
+                {
+                    headers: {
+                        Instance: instance.toString()
+                    }
                 }
-            });
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,
@@ -219,11 +222,14 @@ export default new (class ChatBotClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.chatControllerDelete(chatBotId, {
-                headers: {
-                    Instance: instance.toString()
+            response = await ServerClient.apiClient!.api.chatControllerDelete(
+                { id: chatBotId },
+                {
+                    headers: {
+                        Instance: instance.toString()
+                    }
                 }
-            });
+            );
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

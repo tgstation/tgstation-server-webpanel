@@ -147,7 +147,7 @@ export default new (class UserGroupClient extends ApiClient {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.userGroupControllerDelete(id);
+            response = await ServerClient.apiClient!.api.userGroupControllerDelete({ id });
         } catch (e) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

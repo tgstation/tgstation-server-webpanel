@@ -103,7 +103,10 @@ export default new (class ServerClient extends ApiClient<IEvents> {
     public apiResponseInterceptor = {
         onFulfilled: (val: AxiosResponse) => val,
         // it is real, we do not know what type though
-        onRejected: (error: AxiosError, axiosServer: AxiosInstance): Promise<AxiosResponse> => {
+        onRejected: (
+            error: AxiosError<ErrorMessageResponse>,
+            axiosServer: AxiosInstance
+        ): Promise<AxiosResponse<ErrorMessageResponse>> => {
             //THIS IS SNOWFLAKE KEKW
             //As the above comment mentions, this shitcode is very snowflake
             // it tries to typecast the "response" we got into an error then tries to check if that "error" is
@@ -141,7 +144,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             switch (error.response.status) {
                 //Error code 400: Bad request, show message to user and instruct them to report it as its probably a bug
                 case 400: {
-                    const errorMessage = res.data as ErrorMessageResponse;
+                    const errorMessage = res.data;
                     const errorobj = new InternalError(
                         ErrorCode.HTTP_BAD_REQUEST,
                         { errorMessage },
@@ -207,7 +210,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     return Promise.reject(errorobj);
                 }
                 case 409: {
-                    const errorMessage = res.data as ErrorMessageResponse;
+                    const errorMessage = res.data;
 
                     //Thanks for reusing a global erorr status cyber. Log operations can return 409
                     const request = error.config!;
@@ -223,7 +226,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     return Promise.reject(errorobj);
                 }
                 case 426: {
-                    const errorMessage = res.data as ErrorMessageResponse;
+                    const errorMessage = res.data;
                     const errorobj = new InternalError(
                         ErrorCode.HTTP_API_MISMATCH,
                         { errorMessage },
@@ -232,7 +235,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     return Promise.reject(errorobj);
                 }
                 case 500: {
-                    const errorMessage = res.data as ErrorMessageResponse;
+                    const errorMessage = res.data;
                     const errorobj = new InternalError(
                         ErrorCode.HTTP_SERVER_ERROR,
                         { errorMessage },
@@ -241,7 +244,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
                     return Promise.reject(errorobj);
                 }
                 case 501: {
-                    const errorMessage = res.data as ErrorMessageResponse;
+                    const errorMessage = res.data;
                     const errorobj = new InternalError(
                         ErrorCode.HTTP_UNIMPLEMENTED,
                         { errorMessage },
@@ -335,11 +338,8 @@ export default new (class ServerClient extends ApiClient<IEvents> {
         );
         this.apiHttpClient.instance.interceptors.response.use(
             this.apiResponseInterceptor.onFulfilled,
-            error =>
-                this.apiResponseInterceptor.onRejected(
-                    error as AxiosError,
-                    this.apiHttpClient!.instance
-                )
+            (error: AxiosError<ErrorMessageResponse>) =>
+                this.apiResponseInterceptor.onRejected(error, this.apiHttpClient!.instance)
         );
 
         this.apiClient = new Api(this.apiHttpClient);
@@ -722,6 +722,7 @@ export default new (class ServerClient extends ApiClient<IEvents> {
             let failed;
             try {
                 const response = await this.apiClient!.api.apiRootControllerServerInfo({
+                    // @ts-expect-error: this is a bullshit thing to trigger the `onFulfilled` middleware
                     overrideTokenDetection: true
                 });
 

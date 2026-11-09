@@ -425,7 +425,9 @@ export default new (class AdminClient extends ApiClient<IEvents> {
 
         let response;
         try {
-            response = await ServerClient.apiClient!.api.administrationControllerGetLog(logName);
+            response = await ServerClient.apiClient!.api.administrationControllerGetLog({
+                path: logName
+            });
         } catch (stat) {
             return new InternalStatus({
                 code: StatusCode.ERROR,

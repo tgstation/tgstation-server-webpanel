@@ -244,7 +244,7 @@ class Files extends React.Component<IProps, IState> {
                 file.fileResponse = response.payload;
             } else {
                 this.addError(response.error);
-                file.fileResponse.lastReadHash = null;
+                file.fileResponse.lastReadHash = undefined;
             }
         }
 
@@ -262,7 +262,7 @@ class Files extends React.Component<IProps, IState> {
                 path: selectedFile.fileResponse.path,
                 lastReadHash: selectedFile.fileResponse.lastReadHash
             },
-            new Uint8Array()
+            new Uint8Array().buffer
         );
 
         if (response.code === StatusCode.OK) {
@@ -454,7 +454,7 @@ class Files extends React.Component<IProps, IState> {
     ): Promise<void> {
         let fileData: ArrayBuffer;
         if (settings.isDirectory) {
-            fileData = new Uint8Array();
+            fileData = new Uint8Array().buffer;
         } else {
             const inputPromise = new Promise<File | null>(resolve => {
                 const input = document.createElement("input");
@@ -486,7 +486,7 @@ class Files extends React.Component<IProps, IState> {
             this.context.instance.id,
             {
                 path: remoteFilePath,
-                lastReadHash: settings.replace ? parent.fileResponse.lastReadHash : null
+                lastReadHash: settings.replace ? parent.fileResponse.lastReadHash : undefined
             },
             fileData
         );
