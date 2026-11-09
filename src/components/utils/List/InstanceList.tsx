@@ -115,24 +115,24 @@ export const InstanceListLoading = () => {
                     <tbody>
                         {[...Array(5).keys()].map(k => (
                             <tr key={k}>
-                                <th>{k}</th>
-                                <th>
+                                <td>{k}</td>
+                                <td>
                                     <FormattedMessage id="generic.name" />
-                                </th>
-                                <th>/home/user/tgstation-server/{k}</th>
-                                <th>
+                                </td>
+                                <td>/home/user/tgstation-server/{k}</td>
+                                <td>
                                     <FormattedMessage id={`view.instance.configmode.1`} />
-                                </th>
-                                <th>
+                                </td>
+                                <td>
                                     <Badge pill variant={"success"}>
                                         <FormattedMessage id={`generic.online`} />
                                     </Badge>
-                                </th>
-                                <th>
+                                </td>
+                                <td>
                                     <Button size="sm" variant="link">
                                         <FontAwesomeIcon icon={faEllipsis} />
                                     </Button>
-                                </th>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -145,7 +145,7 @@ export const InstanceListLoading = () => {
 
 export type InstanceListRawProps =
     | {
-          pagination: false;
+          pagination?: false;
       }
     | ({
           pagination: true;
@@ -300,8 +300,8 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <th>{isR.id}</th>
-            <th>
+            <td>{isR.id}</td>
+            <td>
                 <u>
                     <a
                         href={canAccess ? "#" : undefined}
@@ -316,14 +316,14 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                         {isR.name}
                     </a>
                 </u>
-            </th>
-            <th>{isR.path}</th>
-            <th>
+            </td>
+            <td>{isR.path}</td>
+            <td>
                 <FormattedMessage
                     id={`view.instance.configmode.${isR.configurationType.toString()}`}
                 />
-            </th>
-            <th>
+            </td>
+            <td>
                 <Badge pill variant={isR.moveJob ? "warning" : isR.online ? "success" : "danger"}>
                     {isR.moveJob ? (
                         <FormattedMessage id="view.instance.moving" />
@@ -331,86 +331,88 @@ const InstanceItem = ({ instance }: { instance: InstanceResponse }) => {
                         <FormattedMessage id={`generic.${isR.online ? "online" : "offline"}`} />
                     )}
                 </Badge>
-            </th>
-            <th>
-                <DropdownButtonWithAPortal
-                    size="sm"
-                    variant="link"
-                    menuAlign={"left"}
-                    role="menuitem"
-                    title={<FontAwesomeIcon icon={faEllipsis} />}>
-                    <Dropdown.Item
-                        disabled={!canAccess}
-                        onClick={() => {
-                            RouteData.selectedinstanceid = isR.id;
-                            history.push(
-                                AppRoutes.instanceedit.link ?? AppRoutes.instanceedit.route
-                            );
-                        }}>
-                        <FormattedMessage id="generic.access" />
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                        onClick={() => {
-                            setIsDoingPowerOp(true);
-                            InstanceClient.editInstance({
-                                id: isR.id,
-                                online: !isR.online
-                            })
-                                .then(r => {
-                                    if (r.code !== StatusCode.OK) {
-                                        return;
-                                    }
-                                    setisR(r.payload);
+            </td>
+            <td>
+                <div className="d-flex justify-content-center">
+                    <DropdownButtonWithAPortal
+                        size="sm"
+                        variant="link"
+                        menuAlign={"left"}
+                        role="menuitem"
+                        title={<FontAwesomeIcon icon={faEllipsis} />}>
+                        <Dropdown.Item
+                            disabled={!canAccess}
+                            onClick={() => {
+                                RouteData.selectedinstanceid = isR.id;
+                                history.push(
+                                    AppRoutes.instanceedit.link ?? AppRoutes.instanceedit.route
+                                );
+                            }}>
+                            <FormattedMessage id="generic.access" />
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={() => {
+                                setIsDoingPowerOp(true);
+                                InstanceClient.editInstance({
+                                    id: isR.id,
+                                    online: !isR.online
                                 })
-                                .catch(e => {
-                                    // idgaf
-                                    console.log(e);
+                                    .then(r => {
+                                        if (r.code !== StatusCode.OK) {
+                                            return;
+                                        }
+                                        setisR(r.payload);
+                                    })
+                                    .catch(e => {
+                                        // idgaf
+                                        console.log(e);
+                                    })
+                                    .finally(() => {
+                                        setIsDoingPowerOp(false);
+                                    });
+                            }}
+                            disabled={!canOnline || isDoingPowerOp}>
+                            {isR.online ? (
+                                <FormattedMessage id="generic.disable" />
+                            ) : (
+                                <FormattedMessage id="generic.enable" />
+                            )}
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={() => {
+                                setIsDoingPowerOp(true);
+                                InstanceClient.grantPermissions({
+                                    id: instance.id
                                 })
-                                .finally(() => {
-                                    setIsDoingPowerOp(false);
-                                });
-                        }}
-                        disabled={!canOnline || isDoingPowerOp}>
-                        {isR.online ? (
-                            <FormattedMessage id="generic.disable" />
-                        ) : (
-                            <FormattedMessage id="generic.enable" />
-                        )}
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                        onClick={() => {
-                            setIsDoingPowerOp(true);
-                            InstanceClient.grantPermissions({
-                                id: instance.id
-                            })
-                                .then(r => {
-                                    if (r.code !== StatusCode.OK) {
-                                        return;
-                                    }
-                                    setisR(r.payload);
-                                })
-                                .catch(e => {
-                                    // idgaf
-                                    console.log(e);
-                                })
-                                .finally(() => {
-                                    setIsDoingPowerOp(false);
-                                });
-                        }}
-                        disabled={!isR.online || canAccess || !canGrant || isDoingPowerOp}>
-                        <FormattedMessage id="view.instance.list.all_access" />
-                    </Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item
-                        disabled={!canDetach || isDoingPowerOp}
-                        onClick={() => {
-                            setIsTryingToDetatch(true);
-                        }}
-                        style={{ color: "var(--red-ish)" }}>
-                        <FormattedMessage id="generic.detatch" />
-                    </Dropdown.Item>
-                </DropdownButtonWithAPortal>
-            </th>
+                                    .then(r => {
+                                        if (r.code !== StatusCode.OK) {
+                                            return;
+                                        }
+                                        setisR(r.payload);
+                                    })
+                                    .catch(e => {
+                                        // idgaf
+                                        console.log(e);
+                                    })
+                                    .finally(() => {
+                                        setIsDoingPowerOp(false);
+                                    });
+                            }}
+                            disabled={!isR.online || canAccess || !canGrant || isDoingPowerOp}>
+                            <FormattedMessage id="view.instance.list.all_access" />
+                        </Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item
+                            disabled={!canDetach || isDoingPowerOp}
+                            onClick={() => {
+                                setIsTryingToDetatch(true);
+                            }}
+                            style={{ color: "var(--red-ish)" }}>
+                            <FormattedMessage id="generic.detatch" />
+                        </Dropdown.Item>
+                    </DropdownButtonWithAPortal>
+                </div>
+            </td>
         </tr>
     );
 };
